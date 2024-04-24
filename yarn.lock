@@ -2711,17 +2711,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@improbable-eng/grpc-web@npm:^0.14.1":
-  version: 0.14.1
-  resolution: "@improbable-eng/grpc-web@npm:0.14.1"
-  dependencies:
-    browser-headers: "npm:^0.4.1"
-  peerDependencies:
-    google-protobuf: ^3.14.0
-  checksum: 10c0/972f20d97970b3c7239ef8f26866e417e3079faec5a66e86755cc49b1dc3c56ed50a8f04dbb9d23d2f12ffb5719e39500d5e513d0087d576bc0844d2034491c1
-  languageName: node
-  linkType: hard
-
 "@ioredis/commands@npm:^1.1.1":
   version: 1.2.0
   resolution: "@ioredis/commands@npm:1.2.0"
@@ -3236,7 +3225,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:^1, @noble/hashes@npm:^1.0.0, @noble/hashes@npm:^1.2.0":
+"@noble/hashes@npm:^1, @noble/hashes@npm:^1.0.0":
   version: 1.3.3
   resolution: "@noble/hashes@npm:1.3.3"
   checksum: 10c0/23c020b33da4172c988e44100e33cd9f8f6250b68b43c467d3551f82070ebd9716e0d9d2347427aa3774c85934a35fa9ee6f026fca2117e3fa12db7bedae7668
@@ -3416,7 +3405,6 @@ __metadata:
     "@repo/typescript-config": "workspace:*"
     "@simplewebauthn/typescript-types": "npm:^8.3.4"
     "@tanstack/query-core": "npm:^5.32.0"
-    "@terra-money/feather.js": "npm:^1.2.1"
     "@types/luxon": "npm:^3.4.2"
     "@types/ramda": "npm:^0.29.12"
     "@types/secp256k1": "npm:^4.0.6"
@@ -5279,58 +5267,6 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
   checksum: 10c0/0b55b4f9d91e0f72cf12298c1659ee6520723eed16b7d523bc69269331544af8b62699b72d89840dc8ae75076144ac121ed1373d4f8e7d4cd48f5e0eb1d73d80
-  languageName: node
-  linkType: hard
-
-"@terra-money/feather.js@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@terra-money/feather.js@npm:1.2.1"
-  dependencies:
-    "@ethersproject/bytes": "npm:^5.7.0"
-    "@terra-money/legacy.proto": "npm:@terra-money/terra.proto@^0.1.7"
-    "@terra-money/terra.proto": "npm:^4.0.3"
-    assert: "npm:^2.0.0"
-    axios: "npm:^0.27.2"
-    bech32: "npm:^2.0.0"
-    bip32: "npm:^2.0.6"
-    bip39: "npm:^3.0.3"
-    bufferutil: "npm:^4.0.3"
-    crypto-browserify: "npm:^3.12.0"
-    decimal.js: "npm:^10.2.1"
-    ethers: "npm:^5.7.2"
-    jscrypto: "npm:^1.0.1"
-    keccak256: "npm:^1.0.6"
-    long: "npm:^5.2.3"
-    readable-stream: "npm:^3.6.0"
-    secp256k1: "npm:^4.0.2"
-    tmp: "npm:^0.2.1"
-    utf-8-validate: "npm:^5.0.5"
-    ws: "npm:^7.5.9"
-  checksum: 10c0/bf1c952bf6e6531f663727c5793bfc4a9fb1a6025eed0b8f68f994bedced184a11d961a4ae42620690108171428933fc48e68ea078b53c2375b938b791eb4ff0
-  languageName: node
-  linkType: hard
-
-"@terra-money/legacy.proto@npm:@terra-money/terra.proto@^0.1.7":
-  version: 0.1.7
-  resolution: "@terra-money/terra.proto@npm:0.1.7"
-  dependencies:
-    google-protobuf: "npm:^3.17.3"
-    long: "npm:^4.0.0"
-    protobufjs: "npm:~6.11.2"
-  checksum: 10c0/3ae54002eac9b8fa7dcc90e167ca50134fd5d36549a336e1aa02c9deb6133441d755e6681a6a272e51c70e27610e1566ee5ccf1e2174f239f81b631cb7a8eead
-  languageName: node
-  linkType: hard
-
-"@terra-money/terra.proto@npm:^4.0.3":
-  version: 4.0.4
-  resolution: "@terra-money/terra.proto@npm:4.0.4"
-  dependencies:
-    "@improbable-eng/grpc-web": "npm:^0.14.1"
-    browser-headers: "npm:^0.4.1"
-    google-protobuf: "npm:^3.17.3"
-    long: "npm:^4.0.0"
-    protobufjs: "npm:~6.11.2"
-  checksum: 10c0/04c9a38fa3264f867106779c49fec3e1074ca6d8102ff56a65ed88b660ea6bfed3cb0c6640169786e379b75d659e6087c3fbc91c82192a2fd7981101abde8e10
   languageName: node
   linkType: hard
 
@@ -7649,16 +7585,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.27.2":
-  version: 0.27.2
-  resolution: "axios@npm:0.27.2"
-  dependencies:
-    follow-redirects: "npm:^1.14.9"
-    form-data: "npm:^4.0.0"
-  checksum: 10c0/76d673d2a90629944b44d6f345f01e58e9174690f635115d5ffd4aca495d99bcd8f95c590d5ccb473513f5ebc1d1a6e8934580d0c57cdd0498c3a101313ef771
-  languageName: node
-  linkType: hard
-
 "axios@npm:^1.6.0, axios@npm:^1.6.1, axios@npm:^1.6.8":
   version: 1.6.8
   resolution: "axios@npm:1.6.8"
@@ -7910,7 +7836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bip32@npm:2.0.6, bip32@npm:^2.0.6":
+"bip32@npm:2.0.6":
   version: 2.0.6
   resolution: "bip32@npm:2.0.6"
   dependencies:
@@ -7934,15 +7860,6 @@ __metadata:
     pbkdf2: "npm:^3.0.9"
     randombytes: "npm:^2.0.1"
   checksum: 10c0/f95f40613474b64c82e2db046a6245e9dd6011e09d12b90c1cd0455e92830d7f0b92b9d7e120f583974047d2da7b5eb18afa6645647d841c11ff5cca5aaeb67d
-  languageName: node
-  linkType: hard
-
-"bip39@npm:^3.0.3":
-  version: 3.1.0
-  resolution: "bip39@npm:3.1.0"
-  dependencies:
-    "@noble/hashes": "npm:^1.2.0"
-  checksum: 10c0/68f9673a0d6a851e9635f3af8a85f2a1ecef9066c76d77e6f0d58d274b5bf22a67f429da3997e07c0d2cf153a4d7321f9273e656cac0526f667575ddee28ef71
   languageName: node
   linkType: hard
 
@@ -8046,13 +7963,6 @@ __metadata:
   version: 1.2.1
   resolution: "browser-assert@npm:1.2.1"
   checksum: 10c0/902abf999f92c9c951fdb6d7352c09eea9a84706258699655f7e7906e42daa06a1ae286398a755872740e05a6a71c43c5d1a0c0431d67a8cdb66e5d859a3fc0c
-  languageName: node
-  linkType: hard
-
-"browser-headers@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "browser-headers@npm:0.4.1"
-  checksum: 10c0/3b08864bb955b295ab3dd6ab775c7798096c2e85486571803b4070ec484de83ccceebe531a8b00d5daf4463fada5e7ca18cd1a71cc1ee0dfdbab705332318cef
   languageName: node
   linkType: hard
 
@@ -8219,16 +8129,6 @@ __metadata:
     base64-js: "npm:^1.3.1"
     ieee754: "npm:^1.2.1"
   checksum: 10c0/2a905fbbcde73cc5d8bd18d1caa23715d5f83a5935867c2329f0ac06104204ba7947be098fe1317fbd8830e26090ff8e764f08cd14fefc977bb248c3487bcbd0
-  languageName: node
-  linkType: hard
-
-"bufferutil@npm:^4.0.3":
-  version: 4.0.8
-  resolution: "bufferutil@npm:4.0.8"
-  dependencies:
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.3.0"
-  checksum: 10c0/36cdc5b53a38d9f61f89fdbe62029a2ebcd020599862253fefebe31566155726df9ff961f41b8c97b02b4c12b391ef97faf94e2383392654cf8f0ed68f76e47c
   languageName: node
   linkType: hard
 
@@ -9319,13 +9219,6 @@ __metadata:
   version: 1.2.0
   resolution: "decamelize@npm:1.2.0"
   checksum: 10c0/85c39fe8fbf0482d4a1e224ef0119db5c1897f8503bcef8b826adff7a1b11414972f6fef2d7dec2ee0b4be3863cf64ac1439137ae9e6af23a3d8dcbe26a5b4b2
-  languageName: node
-  linkType: hard
-
-"decimal.js@npm:^10.2.1":
-  version: 10.4.3
-  resolution: "decimal.js@npm:10.4.3"
-  checksum: 10c0/6d60206689ff0911f0ce968d40f163304a6c1bc739927758e6efc7921cfa630130388966f16bf6ef6b838cb33679fbe8e7a78a2f3c478afce841fd55ac8fb8ee
   languageName: node
   linkType: hard
 
@@ -11674,7 +11567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
@@ -12271,7 +12164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-protobuf@npm:^3.14.0, google-protobuf@npm:^3.17.3":
+"google-protobuf@npm:^3.14.0":
   version: 3.21.2
   resolution: "google-protobuf@npm:3.21.2"
   checksum: 10c0/df20b41aad9eba4d842d69c717a4d73ac6d321084c12f524ad5eb79a47ad185323bd1b477c19565a15fd08b6eef29e475c8ac281dbc6fe547b81d8b6b99974f5
@@ -14150,7 +14043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jscrypto@npm:^1.0.1, jscrypto@npm:^1.0.3":
+"jscrypto@npm:^1.0.3":
   version: 1.0.3
   resolution: "jscrypto@npm:1.0.3"
   bin:
@@ -14305,29 +14198,6 @@ __metadata:
     object.assign: "npm:^4.1.4"
     object.values: "npm:^1.1.6"
   checksum: 10c0/a32679e9cb55469cb6d8bbc863f7d631b2c98b7fc7bf172629261751a6e7bc8da6ae374ddb74d5fbd8b06cf0eb4572287b259813d92b36e384024ed35e4c13e1
-  languageName: node
-  linkType: hard
-
-"keccak256@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "keccak256@npm:1.0.6"
-  dependencies:
-    bn.js: "npm:^5.2.0"
-    buffer: "npm:^6.0.3"
-    keccak: "npm:^3.0.2"
-  checksum: 10c0/2a3f1e281ffd65bcbbae2ee8d62e27f0336efe6f16b7ed9932ad642ed398da62ccbc3d38dcdf43bd2fad9885f02df501dc77a900c358644df296396ed194056f
-  languageName: node
-  linkType: hard
-
-"keccak@npm:^3.0.2":
-  version: 3.0.4
-  resolution: "keccak@npm:3.0.4"
-  dependencies:
-    node-addon-api: "npm:^2.0.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.2.0"
-    readable-stream: "npm:^3.6.0"
-  checksum: 10c0/153525c1c1f770beadb8f8897dec2f1d2dcbee11d063fe5f61957a5b236bfd3d2a111ae2727e443aa6a848df5edb98b9ef237c78d56df49087b0ca8a232ca9cd
   languageName: node
   linkType: hard
 
@@ -14612,7 +14482,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"long@npm:^5.0.0, long@npm:^5.2.3":
+"long@npm:^5.0.0":
   version: 5.2.3
   resolution: "long@npm:5.2.3"
   checksum: 10c0/6a0da658f5ef683b90330b1af76f06790c623e148222da9d75b60e266bbf88f803232dd21464575681638894a84091616e7f89557aa087fd14116c0f4e0e43d9
@@ -15442,15 +15312,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-addon-api@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "node-addon-api@npm:2.0.2"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/ade6c097ba829fa4aee1ca340117bb7f8f29fdae7b777e343a9d5cbd548481d1f0894b7b907d23ce615c70d932e8f96154caed95c3fa935cfe8cf87546510f64
-  languageName: node
-  linkType: hard
-
 "node-addon-api@npm:^5.0.0":
   version: 5.1.0
   resolution: "node-addon-api@npm:5.1.0"
@@ -15534,7 +15395,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.2.2, node-gyp-build@npm:^4.3.0":
+"node-gyp-build@npm:^4.2.0, node-gyp-build@npm:^4.2.2":
   version: 4.8.0
   resolution: "node-gyp-build@npm:4.8.0"
   bin:
@@ -16962,7 +16823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2":
+"protobufjs@npm:^6.8.8":
   version: 6.11.4
   resolution: "protobufjs@npm:6.11.4"
   dependencies:
@@ -18049,18 +17910,6 @@ __metadata:
   version: 3.0.1
   resolution: "scrypt-js@npm:3.0.1"
   checksum: 10c0/e2941e1c8b5c84c7f3732b0153fee624f5329fc4e772a06270ee337d4d2df4174b8abb5e6ad53804a29f53890ecbc78f3775a319323568c0313040c0e55f5b10
-  languageName: node
-  linkType: hard
-
-"secp256k1@npm:^4.0.2":
-  version: 4.0.3
-  resolution: "secp256k1@npm:4.0.3"
-  dependencies:
-    elliptic: "npm:^6.5.4"
-    node-addon-api: "npm:^2.0.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.2.0"
-  checksum: 10c0/de0a0e525a6f8eb2daf199b338f0797dbfe5392874285a145bb005a72cabacb9d42c0197d0de129a1a0f6094d2cc4504d1f87acb6a8bbfb7770d4293f252c401
   languageName: node
   linkType: hard
 
@@ -19403,15 +19252,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tmp@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "tmp@npm:0.2.1"
-  dependencies:
-    rimraf: "npm:^3.0.0"
-  checksum: 10c0/67607aa012059c9ce697bee820ee51bc0f39b29a8766def4f92d3f764d67c7cf9205d537d24e0cb1ce9685c40d4c628ead010910118ea18348666b5c46ed9123
-  languageName: node
-  linkType: hard
-
 "tmpl@npm:1.0.5":
   version: 1.0.5
   resolution: "tmpl@npm:1.0.5"
@@ -20293,16 +20133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"utf-8-validate@npm:^5.0.5":
-  version: 5.0.10
-  resolution: "utf-8-validate@npm:5.0.10"
-  dependencies:
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.3.0"
-  checksum: 10c0/23cd6adc29e6901aa37ff97ce4b81be9238d0023c5e217515b34792f3c3edb01470c3bd6b264096dd73d0b01a1690b57468de3a24167dd83004ff71c51cc025f
-  languageName: node
-  linkType: hard
-
 "util-deprecate@npm:^1.0.1, util-deprecate@npm:^1.0.2, util-deprecate@npm:~1.0.1":
   version: 1.0.2
   resolution: "util-deprecate@npm:1.0.2"
@@ -20822,7 +20652,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^7, ws@npm:^7.5.1, ws@npm:^7.5.9":
+"ws@npm:^7, ws@npm:^7.5.1":
   version: 7.5.9
   resolution: "ws@npm:7.5.9"
   peerDependencies:

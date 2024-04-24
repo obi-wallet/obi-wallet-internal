@@ -1,7 +1,4 @@
-import {
-  LegacyAminoMultisigPublicKey,
-  SimplePublicKey,
-} from "@terra-money/feather.js";
+import { pubkeyToAddress } from "@cosmjs/amino";
 
 import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
@@ -25,16 +22,7 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   public getAddressOfPublicKey(publicKey: PublicKey) {
-    switch (publicKey.type) {
-      case "tendermint/PubKeySecp256k1":
-        return SimplePublicKey.fromAmino(publicKey).address(this.chain.prefix);
-      case "tendermint/PubKeyMultisigThreshold":
-        return LegacyAminoMultisigPublicKey.fromAmino(publicKey).address(
-          this.chain.prefix,
-        );
-      default:
-        throw new Error("Unsupported public key type");
-    }
+    return pubkeyToAddress(publicKey, this.chain.prefix);
   }
 
   protected get chain() {
