@@ -1,5 +1,4 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import {
   LegacyAminoMultisigPublicKey,
   SimplePublicKey,
@@ -87,10 +86,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
       return AccountValidationResult.PUBLIC_KEY_NOT_READY;
     }
     return AccountValidationResult.READY;
-  }
-
-  protected async prepareKeyPairQueryFn(_: Secp256k1KeyPair) {
-    notImplemented("prepareKeyPairQueryFn not implemented for SecretJS");
   }
 
   protected isBaseAccount(account: Account): account is Account & BaseAccount {

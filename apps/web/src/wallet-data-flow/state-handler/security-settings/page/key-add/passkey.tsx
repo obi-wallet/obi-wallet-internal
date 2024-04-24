@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { Input } from "@/ui/input";
-import { createPasskey, Sdk } from "@obi-wallet/sdk";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPasskey } from "@obi-wallet/sdk";
+import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -9,7 +9,6 @@ import { useState } from "react";
 import { useSecuritySettingsContext } from "../../context";
 
 export const AddPasskeyPage = observer(function AddPasskeyPage() {
-  const queryClient = useQueryClient();
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
   const [name, setName] = useState("");
 
@@ -20,12 +19,6 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
       if (!draft.value.primaryKey) {
         draft.value.setPrimaryKey(passkey);
       }
-
-      await queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.chainId).transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
-      );
       setKeyMetaData(keyPair.publicKey, {
         name,
         timestamp: DateTime.now().toISO(),

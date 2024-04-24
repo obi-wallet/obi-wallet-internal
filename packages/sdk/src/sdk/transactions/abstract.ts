@@ -1,9 +1,8 @@
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 
 import { ChainId } from "../../chains";
 import { PublicKey } from "../../keys";
-import { queryClient, QueryClientNamespace } from "../../query-client";
+import { QueryClientNamespace } from "../../query-client";
 import { SignedTransaction } from "../../transactions";
 import { AccountValidationResult, BroadcastTransactionResult } from "../common";
 
@@ -42,31 +41,6 @@ export abstract class AbstractTransactionsSdk {
   public abstract validateAccount(
     address: string,
   ): Promise<AccountValidationResult>;
-
-  /**
-   * Prepares a key pair for signing transactions.
-   *
-   * @see {@link prepareKeyPairQuery} for usage with TanStack Query.
-   */
-  public prepareKeyPair(keyPair: Secp256k1KeyPair) {
-    return queryClient.fetchQuery(this.prepareKeyPairQuery(keyPair));
-  }
-
-  public prepareKeyPairQuery(keyPair: Secp256k1KeyPair) {
-    return this.queryNamespace.createQuery({
-      name: "prepareKeyPair",
-      fn: async (keyPair) => {
-        await this.prepareKeyPairQueryFn(keyPair);
-        return true;
-      },
-      params: keyPair,
-      staleTime: { day: 1 },
-    });
-  }
-
-  protected abstract prepareKeyPairQueryFn(
-    keyPair: Secp256k1KeyPair,
-  ): Promise<void>;
 
   /**
    * Prepares an account for signing transactions.
