@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 
@@ -47,9 +48,10 @@ export default observer(function AppConnect() {
               option and display the QR code. In some apps, you may need to
               select <strong className="font-bold">Keplr Mobile</strong> to
               display the code.
-              <img
+              <Image
                 className="my-2 w-full object-contain"
                 src="/assets/images/app-connect-pairing.png"
+                alt="WalletConnect pairing screen"
               />
             </li>
             <li className="mb-6">

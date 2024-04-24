@@ -115,7 +115,7 @@ export const toAssets: Record<string, ToAsset> = {
   },
 
   celestia: {
-    chainId: "tia-4", // TODO: change to  tia chain
+    chainId: "tia-4",
     decimals: 6,
     label: "Celestia (TIA)",
     denom: "utia",
@@ -124,7 +124,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: true,
   },
   autism: {
-    chainId: "inj-4", // TODO: change to  injective chain
+    chainId: "inj-4",
     decimals: 6,
     label: "AUTISM",
     denom: "uautism",
