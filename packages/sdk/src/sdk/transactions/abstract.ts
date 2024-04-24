@@ -34,19 +34,4 @@ export abstract class AbstractTransactionsSdk {
   }: {
     signedTransaction: SignedTransaction;
   }): Promise<BroadcastTransactionResult>;
-
-  /**
-   * Broadcasts a signed transaction and lends fees if necessary.
-   */
-  public abstract broadcastSignedTransactionAndLendFees({
-    signedTransaction,
-    sender,
-  }: {
-    signedTransaction: SignedTransaction;
-    sender: string;
-  }): Promise<BroadcastTransactionResult>;
-
-  protected wait({ ms }: { ms: number }): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 }

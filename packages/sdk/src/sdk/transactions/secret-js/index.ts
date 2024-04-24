@@ -86,20 +86,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     return await this.client.broadcastSignedTransaction(signedTransaction);
   }
 
-  public async broadcastSignedTransactionAndLendFees({
-    signedTransaction,
-  }: {
-    signedTransaction: SignedTransaction;
-    sender: string;
-  }): Promise<BroadcastTransactionResult> {
-    notImplemented(
-      "broadcastSignedTransactionAndLendFees not implemented for SecretJS",
-    );
-    return await this.broadcastSignedTransaction({
-      signedTransaction,
-    });
-  }
-
   protected get chain() {
     return SecretJsChains[this.chainId];
   }
