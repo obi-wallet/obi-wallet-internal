@@ -52,17 +52,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
     }
   }
 
-  public async getPublicKeyOfAddress(address: string): Promise<unknown | null> {
-    try {
-      const account = await this.fetchAccount(address);
-      if (!account || !this.isBaseAccount(account)) return null;
-      return account.pubKey ?? null;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-
   public validateAddress(address: string): boolean {
     try {
       Bech32Address.validate(address, this.chain.prefix);

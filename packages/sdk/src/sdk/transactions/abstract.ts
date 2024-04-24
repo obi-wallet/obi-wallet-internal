@@ -24,13 +24,6 @@ export abstract class AbstractTransactionsSdk {
   public abstract getAddressOfPublicKey(publicKey: PublicKey): string;
 
   /**
-   * Public key of the given address
-   */
-  public abstract getPublicKeyOfAddress(
-    address: string,
-  ): Promise<unknown | null>;
-
-  /**
    * Validates the given address
    */
   public abstract validateAddress(address: string): boolean;
