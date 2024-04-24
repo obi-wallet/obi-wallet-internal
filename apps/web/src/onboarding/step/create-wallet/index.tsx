@@ -59,6 +59,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   if (createWalletMutation.isPending)
     return (
       <div className="flex flex-col items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/assets/images/loading.gif"
           alt="loading"
