@@ -2097,7 +2097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/address@npm:5.7.0, @ethersproject/address@npm:^5.6.0, @ethersproject/address@npm:^5.7.0":
+"@ethersproject/address@npm:5.7.0, @ethersproject/address@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/address@npm:5.7.0"
   dependencies:
@@ -2234,7 +2234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/keccak256@npm:5.7.0, @ethersproject/keccak256@npm:^5.5.0, @ethersproject/keccak256@npm:^5.7.0":
+"@ethersproject/keccak256@npm:5.7.0, @ethersproject/keccak256@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/keccak256@npm:5.7.0"
   dependencies:
@@ -3064,91 +3064,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keplr-wallet/common@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/common@npm:0.12.70"
-  dependencies:
-    "@keplr-wallet/crypto": "npm:0.12.70"
-    "@keplr-wallet/types": "npm:0.12.70"
-    buffer: "npm:^6.0.3"
-    delay: "npm:^4.4.0"
-    mobx: "npm:^6.1.7"
-  checksum: 10c0/06e40ec99b43d5717ec90ed0d6a7d0da061082c6db94e94e7521215fb1b238b58821dfd66dc4ab7d47a733462100c28171c0d404e4410382149b97e609d30294
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/cosmos@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/cosmos@npm:0.12.70"
-  dependencies:
-    "@ethersproject/address": "npm:^5.6.0"
-    "@keplr-wallet/common": "npm:0.12.70"
-    "@keplr-wallet/crypto": "npm:0.12.70"
-    "@keplr-wallet/proto-types": "npm:0.12.70"
-    "@keplr-wallet/simple-fetch": "npm:0.12.70"
-    "@keplr-wallet/types": "npm:0.12.70"
-    "@keplr-wallet/unit": "npm:0.12.70"
-    bech32: "npm:^1.1.4"
-    buffer: "npm:^6.0.3"
-    long: "npm:^4.0.0"
-    protobufjs: "npm:^6.11.2"
-  checksum: 10c0/368d9b7b47898b21ac91f594d7a12aac6afc6c0adbe9bfc2d665a5fb273a36efb60b95e10a92c1031d3c84b267f1ad069c98f1c4cd390bc7284aba7945498c7a
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/crypto@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/crypto@npm:0.12.70"
-  dependencies:
-    "@ethersproject/keccak256": "npm:^5.5.0"
-    bip32: "npm:^2.0.6"
-    bip39: "npm:^3.0.3"
-    bs58check: "npm:^2.1.2"
-    buffer: "npm:^6.0.3"
-    crypto-js: "npm:^4.0.0"
-    elliptic: "npm:^6.5.3"
-    sha.js: "npm:^2.4.11"
-  checksum: 10c0/9dfca13ebe93df50442241ed10d3ed7247dd2caa6143abbbbdc828582724823d63e4d2e8897af2c2e50bc7e14a634c9b0283cffa95e2069c1d1f97095f005a8b
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/proto-types@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/proto-types@npm:0.12.70"
-  dependencies:
-    long: "npm:^4.0.0"
-    protobufjs: "npm:^6.11.2"
-  checksum: 10c0/015b9255bbf13a41f62377cf83b6570b461a9c397aca5da25b241f2aeb6ef14aef10b6f45551a5a1d4bc02c0a99c020ab3c4de3af71e361fe7ba46f47d7fb793
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/simple-fetch@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/simple-fetch@npm:0.12.70"
-  checksum: 10c0/e78515e9f6f66c3bcde3f4d426dfddfcee35f66e5b80dfbc14c940cb4f165c526c3b124d4c40285ffea607931b8b393cb0231633c3abf9d6c1824e5b6945d9ad
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/types@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/types@npm:0.12.70"
-  dependencies:
-    long: "npm:^4.0.0"
-  checksum: 10c0/b76aebffe84a742d084b48dfe2a697b0cae4c0fe810e484b1f8d7a10e74ada77d261b6e8936dbd7d5217cf28a7886104faf15642bfe31fbb1c71a76086f68494
-  languageName: node
-  linkType: hard
-
-"@keplr-wallet/unit@npm:0.12.70":
-  version: 0.12.70
-  resolution: "@keplr-wallet/unit@npm:0.12.70"
-  dependencies:
-    "@keplr-wallet/types": "npm:0.12.70"
-    big-integer: "npm:^1.6.48"
-    utility-types: "npm:^3.10.0"
-  checksum: 10c0/69ecce2e9e48149177386219548a4c2576ba5b72a13de75737fb6752cd61acd5ff4d77b833dd1d7b7585d8e0b9179ca03ee7af25c79dd8ff67345ead0f7ffbf6
-  languageName: node
-  linkType: hard
-
 "@mapbox/node-pre-gyp@npm:^1.0.5":
   version: 1.0.11
   resolution: "@mapbox/node-pre-gyp@npm:1.0.11"
@@ -3495,7 +3410,6 @@ __metadata:
     "@cosmjs/proto-signing": "npm:^0.32.3"
     "@cosmjs/stargate": "npm:^0.32.3"
     "@github/webauthn-json": "npm:^2.1.1"
-    "@keplr-wallet/cosmos": "npm:0.12.70"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -7952,7 +7866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:^1.6.44, big-integer@npm:^1.6.48":
+"big-integer@npm:^1.6.44":
   version: 1.6.52
   resolution: "big-integer@npm:1.6.52"
   checksum: 10c0/9604224b4c2ab3c43c075d92da15863077a9f59e5d4205f4e7e76acd0cd47e8d469ec5e5dba8d9b32aa233951893b29329ca56ac80c20ce094b4a647a66abae0
@@ -8247,7 +8161,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bs58check@npm:<3.0.0, bs58check@npm:^2.1.1, bs58check@npm:^2.1.2":
+"bs58check@npm:<3.0.0, bs58check@npm:^2.1.1":
   version: 2.1.2
   resolution: "bs58check@npm:2.1.2"
   dependencies:
@@ -9230,7 +9144,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0, crypto-js@npm:^4.2.0":
+"crypto-js@npm:^4.2.0":
   version: 4.2.0
   resolution: "crypto-js@npm:4.2.0"
   checksum: 10c0/8fbdf9d56f47aea0794ab87b0eb9833baf80b01a7c5c1b0edc7faf25f662fb69ab18dc2199e2afcac54670ff0cd9607a9045a3f7a80336cccd18d77a55b9fdf0
@@ -9567,13 +9481,6 @@ __metadata:
     rimraf: "npm:^3.0.2"
     slash: "npm:^3.0.0"
   checksum: 10c0/8a095c5ccade42c867a60252914ae485ec90da243d735d1f63ec1e64c1cfbc2b8810ad69a29ab6326d159d4fddaa2f5bad067808c42072351ec458efff86708f
-  languageName: node
-  linkType: hard
-
-"delay@npm:^4.4.0":
-  version: 4.4.1
-  resolution: "delay@npm:4.4.1"
-  checksum: 10c0/9b3aa8c4cc88ee5e18a92c2e53f3912ed2930d4279c7d16d913813de6c2214eaf8bc5704b7357c72bf0f2f28f4507f9ab37599c3f84dc7d99ac178ae91dea3f9
   languageName: node
   linkType: hard
 
@@ -15266,7 +15173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.1.7, mobx@npm:^6.12.3":
+"mobx@npm:^6.12.3":
   version: 6.12.3
   resolution: "mobx@npm:6.12.3"
   checksum: 10c0/33e1d27d33adea0ceb4de32eb66b4384e81a249be5e01baa6bf556f458fd62a83d23bfa0cf8ba9e87c28f0d810ae301ee0e7322fd48a3bf47db33ffb08d5826c
@@ -17055,7 +16962,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^6.11.2, protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2":
+"protobufjs@npm:^6.8.8, protobufjs@npm:~6.11.2":
   version: 6.11.4
   resolution: "protobufjs@npm:6.11.4"
   dependencies:
@@ -18336,7 +18243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sha.js@npm:^2.4.0, sha.js@npm:^2.4.11, sha.js@npm:^2.4.8":
+"sha.js@npm:^2.4.0, sha.js@npm:^2.4.8":
   version: 2.4.11
   resolution: "sha.js@npm:2.4.11"
   dependencies:
@@ -20420,13 +20327,6 @@ __metadata:
   version: 0.4.0
   resolution: "utila@npm:0.4.0"
   checksum: 10c0/2791604e09ca4f77ae314df83e80d1805f867eb5c7e13e7413caee01273c278cf2c9a3670d8d25c889a877f7b149d892fe61b0181a81654b425e9622ab23d42e
-  languageName: node
-  linkType: hard
-
-"utility-types@npm:^3.10.0":
-  version: 3.10.0
-  resolution: "utility-types@npm:3.10.0"
-  checksum: 10c0/79a6f7ea0cdd4fcafcec8c6e68e1e0cfa657e414b6f1696552d89ae70a3634b12ac6c16b7a0a3bfdb0a222ebc3d9a7649f2de434a78f2d65d318b50f314a85e4
   languageName: node
   linkType: hard
 
