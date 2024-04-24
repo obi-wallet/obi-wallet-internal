@@ -8,7 +8,6 @@ import {
   WalletData,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
-import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -56,25 +55,6 @@ export async function POST(request: Request) {
 
   const client = new SecretJsClient(homeChainId);
   const messagesSdk = Messages.chainId(homeChainId);
-  const lender1 = getFeeLender(homeChainId);
-  const sendMessage = new MsgSend({
-    from_address: lender1.wallet.address,
-    to_address: ownerAddress,
-    amount: [
-      {
-        amount: "100",
-        denom: "uscrt",
-      },
-    ],
-  });
-  const lendSignedTransaction = await client.createAndSignTransaction({
-    signer: lender1.signer,
-    messages: [sendMessage],
-  });
-  // fire and forget
-  const _lendBroadcastTransactionResult = client.broadcastSignedTransaction(
-    lendSignedTransaction,
-  );
 
   // old lender from before, which is the only account capable of
   // updating owner, even with "magic" first_update_owner
