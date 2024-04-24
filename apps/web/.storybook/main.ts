@@ -16,15 +16,12 @@ const config: StorybookConfig = {
   addons: [
     getAbsolutePath("@storybook/addon-links"),
     getAbsolutePath("@storybook/addon-essentials"),
-    getAbsolutePath("@storybook/addon-onboarding"),
     getAbsolutePath("@storybook/addon-interactions"),
   ],
   framework: {
     name: getAbsolutePath("@storybook/nextjs"),
     options: {
-      builder: {
-        useSWC: true,
-      },
+      builder: {},
     },
   },
   docs: {
