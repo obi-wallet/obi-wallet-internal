@@ -5,9 +5,21 @@ import { ReactNode } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export function RootContainer({ children }: { children: ReactNode }) {
+export function RootContainer({
+  className,
+  children,
+}: {
+  className?: string;
+  children: ReactNode;
+}) {
   return (
-    <div className={cn(inter.className, "flex h-full flex-grow flex-col")}>
+    <div
+      className={cn(
+        inter.className,
+        "flex h-full flex-grow flex-col",
+        className,
+      )}
+    >
       {children}
     </div>
   );
