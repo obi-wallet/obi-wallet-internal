@@ -1,5 +1,3 @@
-import invariant from "tiny-invariant";
-
 import { ChainId } from "../../chains";
 import { PublicKey } from "../../keys";
 import { QueryClientNamespace } from "../../query-client";
@@ -47,22 +45,6 @@ export abstract class AbstractTransactionsSdk {
     signedTransaction: SignedTransaction;
     sender: string;
   }): Promise<BroadcastTransactionResult>;
-
-  // TODO: mutation with retry
-  protected async lendFees(address: string) {
-    invariant(this.validateAddress(address), "Invalid address");
-    const response = await fetch(
-      "https://fee-lender-worker.obiwallet.workers.dev/",
-      {
-        method: "POST",
-        body: `${this.chainId},${address}`,
-      },
-    );
-    if (response.status !== 200) {
-      console.log(response);
-      throw new Error("Lending fees failed");
-    }
-  }
 
   protected wait({ ms }: { ms: number }): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
