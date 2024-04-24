@@ -3603,7 +3603,7 @@ __metadata:
     copy-to-clipboard: "npm:^3.3.3"
     cosmjs-types: "npm:^0.9.0"
     crypto-js: "npm:^4.2.0"
-    downshift: "npm:^8.3.2"
+    downshift: "npm:^9.0.4"
     ecies-wasm: "npm:^0.2.0"
     elliptic: "npm:^6.5.5"
     eslint: "npm:^8.57.0"
@@ -9942,9 +9942,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"downshift@npm:^8.3.2":
-  version: 8.3.2
-  resolution: "downshift@npm:8.3.2"
+"downshift@npm:^9.0.4":
+  version: 9.0.4
+  resolution: "downshift@npm:9.0.4"
   dependencies:
     "@babel/runtime": "npm:^7.22.15"
     compute-scroll-into-view: "npm:^3.0.3"
@@ -9953,7 +9953,7 @@ __metadata:
     tslib: "npm:^2.6.2"
   peerDependencies:
     react: ">=16.12.0"
-  checksum: 10c0/dcf0b54c59bb9c4a543e16d29924daa71b0a17e98ea4c0a296e08e01f22aed8609fec4c809ba40ba4e12b5385c3bf08a618c2d1c16216b5cd324e3ad29e5a6a2
+  checksum: 10c0/8474a42d7fdbe9e5fb748c79b0f824610375921a5300426312d8b8e13d72aa29a6a5d45dba42b599878855d127ba7fa4b26862a8a12d12fd576e8d955b6670c4
   languageName: node
   linkType: hard
 
