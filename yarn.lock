@@ -3410,7 +3410,7 @@ __metadata:
     "@tanstack/react-query": "npm:^5.32.0"
     "@tanstack/react-query-persist-client": "npm:^5.32.0"
     "@types/ramda": "npm:^0.29.12"
-    dexie: "npm:^3.2.6"
+    dexie: "npm:^4.0.4"
     eslint: "npm:^8.57.0"
     ethers: "npm:^6.12.0"
     mobx: "npm:^6.12.3"
@@ -9716,12 +9716,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dexie@npm:^3.2.6":
-  version: 3.2.6
-  resolution: "dexie@npm:3.2.6"
-  dependencies:
-    karma-safari-launcher: "npm:^1.0.0"
-  checksum: 10c0/9d2ffd14552845dddcbbdf94d7cbdf12ab9890d25a9f1d6dac7f16de1fd7ba109860b4b35a1862e13b3478aeef8cdf3f5dd901213ee2dffbc28e669e8b4615d8
+"dexie@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "dexie@npm:4.0.4"
+  checksum: 10c0/e278b4533112c0af1f90363c25eda3715c4f05bcdd13cee32f5124e1dadce4ea1996ba1f15d4d74d5aba8f7fa2be39c4a8968e3bea925ae16c76655b688bea2b
   languageName: node
   linkType: hard
 
@@ -14400,15 +14398,6 @@ __metadata:
     object.assign: "npm:^4.1.4"
     object.values: "npm:^1.1.6"
   checksum: 10c0/a32679e9cb55469cb6d8bbc863f7d631b2c98b7fc7bf172629261751a6e7bc8da6ae374ddb74d5fbd8b06cf0eb4572287b259813d92b36e384024ed35e4c13e1
-  languageName: node
-  linkType: hard
-
-"karma-safari-launcher@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "karma-safari-launcher@npm:1.0.0"
-  peerDependencies:
-    karma: ">=0.9"
-  checksum: 10c0/7e8a005b01b19db6c1bc6019dc724a335c1bd47df9d63a2ae18caa200149409f210f85b67b3efec3894994d6506bcd186280dbc470c96d7d61e4afa18036d50c
   languageName: node
   linkType: hard
 
