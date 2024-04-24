@@ -53,9 +53,9 @@
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
     "nanoid": "^5.0.6",
-    "next": "patch:next@npm%3A14.1.0#~/.yarn/patches/next-npm-14.1.0-a62036d298.patch",
+    "next": "patch:next@npm%3A14.2.2#~/.yarn/patches/next-npm-14.2.2-99b4c99f66.patch",
     "next-qrcode": "^2.5.1",
-    "next-themes": "^0.2.1",
+    "next-themes": "^0.3.0",
     "ramda": "^0.29.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
@@ -73,7 +73,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^14.1.0",
+    "@next/eslint-plugin-next": "^14.2.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@storybook/addon-essentials": "^8.0.9",
@@ -104,7 +104,7 @@
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
-    "vercel": "^34.0.0",
+    "vercel": "^34.1.1",
     "zora": "^5.2.0"
   }
 }
