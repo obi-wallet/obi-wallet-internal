@@ -22,7 +22,7 @@
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@simplewebauthn/typescript-types": "^8.3.4",
-    "@tanstack/query-core": "^5.22.2",
+    "@tanstack/query-core": "^5.32.0",
     "@terra-money/feather.js": "^1.2.1",
     "bignumber.js": "^9.1.2",
     "cosmjs-types": "^0.9.0",
