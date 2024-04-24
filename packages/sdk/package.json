@@ -11,12 +11,12 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@cosmjs/amino": "^0.32.2",
-    "@cosmjs/cosmwasm-stargate": "0.32.2",
-    "@cosmjs/crypto": "0.32.2",
-    "@cosmjs/math": "0.32.2",
-    "@cosmjs/proto-signing": "0.32.2",
-    "@cosmjs/stargate": "0.32.2",
+    "@cosmjs/amino": "^0.32.3",
+    "@cosmjs/cosmwasm-stargate": "^0.32.3",
+    "@cosmjs/crypto": "^0.32.3",
+    "@cosmjs/math": "^0.32.3",
+    "@cosmjs/proto-signing": "^0.32.3",
+    "@cosmjs/stargate": "^0.32.3",
     "@github/webauthn-json": "^2.1.1",
     "@keplr-wallet/cosmos": "0.12.70",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
