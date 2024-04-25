@@ -28,12 +28,17 @@ export async function POST(request: Request) {
     Buffer.from(wallet.publicKey).toString("base64"),
     wallet.address,
   );
+
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [message],
   });
+
   const broadcastTransactionResult =
-    await client.broadcastSignedTransaction(signedTransaction);
+    await client.broadcastSignedTransactionOrMockTxDuringTest({
+      signedTransaction,
+      hash: "60CC34C88CEF401B185E983A210DCA840FA523BE5BD6297FF5D7164F89AE45EB",
+    });
 
   if (!broadcastTransactionResult.success) {
     return new Response("TX failed", {

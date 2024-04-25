@@ -15,6 +15,7 @@
     "prettier": "prettier --check .",
     "setup": "node scripts/setup.mjs",
     "storybook": "turbo storybook",
+    "test": "turbo test",
     "test-storybook": "turbo test-storybook",
     "tsc": "turbo tsc"
   },

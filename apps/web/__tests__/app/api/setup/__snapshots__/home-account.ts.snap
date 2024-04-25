@@ -1,0 +1,1123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api/setup/home-account 1`] = `
+{
+  "homeAccountAddress": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+  "txResult": {
+    "arrayLog": [
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "execute",
+        "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+      },
+      {
+        "key": "code_id",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "1616",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "code_id",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "1614",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+      },
+      {
+        "key": "code_id",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "1610",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+      },
+      {
+        "key": "code_id",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "1618",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "instantiate",
+        "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+      },
+      {
+        "key": "action",
+        "msg": 0,
+        "type": "message",
+        "value": "/secret.compute.v1beta1.MsgExecuteContract",
+      },
+      {
+        "key": "module",
+        "msg": 0,
+        "type": "message",
+        "value": "compute",
+      },
+      {
+        "key": "sender",
+        "msg": 0,
+        "type": "message",
+        "value": "secret1e6jltydcg3xg8cvcm0xpx7p90l5pw206n8xk2p",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "message",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "reply",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "reply",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "reply",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "reply",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "update_contract_admin",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "new_admin_address",
+        "msg": 0,
+        "type": "update_contract_admin",
+        "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "update_contract_admin",
+        "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+      },
+      {
+        "key": "new_admin_address",
+        "msg": 0,
+        "type": "update_contract_admin",
+        "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm",
+        "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+      },
+      {
+        "key": "7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=",
+        "msg": 0,
+        "type": "wasm-factory_instantiate",
+        "value": "vTQMZQ2+/PJN7seraLOz/1B2A4GjZlLXikFW7lTCK0ueC02YoTSBMcitmg/6h70kHGJE/aUxH3/sxFMuiw==",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm-factory_instantiate",
+        "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+      },
+      {
+        "key": "7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=",
+        "msg": 0,
+        "type": "wasm-factory_instantiate",
+        "value": "+zmYeEnmzB7aLlVBiC7+CtN2Ip5syx2epNXGmd1xK+GdODQ93wwZippkCx+NvemwgLOdmBufhtCa8hov0A==",
+      },
+      {
+        "key": "contract_address",
+        "msg": 0,
+        "type": "wasm-factory_instantiate",
+        "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+      },
+    ],
+    "code": 0,
+    "codespace": "",
+    "data": [
+      {},
+    ],
+    "events": [
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "c3BlbmRlcg==",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJw",
+          },
+          {
+            "index": false,
+            "key": "YW1vdW50",
+            "value": "NDAwMDB1c2NydA==",
+          },
+        ],
+        "type": "coin_spent",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "cmVjZWl2ZXI=",
+            "value": "c2VjcmV0MTd4cGZ2YWttMmFtZzk2MnlsczZmODR6M2tlbGw4YzVsanVoZmtw",
+          },
+          {
+            "index": false,
+            "key": "YW1vdW50",
+            "value": "NDAwMDB1c2NydA==",
+          },
+        ],
+        "type": "coin_received",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "cmVjaXBpZW50",
+            "value": "c2VjcmV0MTd4cGZ2YWttMmFtZzk2MnlsczZmODR6M2tlbGw4YzVsanVoZmtw",
+          },
+          {
+            "index": false,
+            "key": "c2VuZGVy",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJw",
+          },
+          {
+            "index": false,
+            "key": "YW1vdW50",
+            "value": "NDAwMDB1c2NydA==",
+          },
+        ],
+        "type": "transfer",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "c2VuZGVy",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJw",
+          },
+        ],
+        "type": "message",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "ZmVl",
+            "value": "NDAwMDB1c2NydA==",
+          },
+          {
+            "index": false,
+            "key": "ZmVlX3BheWVy",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJw",
+          },
+        ],
+        "type": "tx",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "YWNjX3NlcQ==",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJwLzE1",
+          },
+        ],
+        "type": "tx",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "c2lnbmF0dXJl",
+            "value": "WGJYME9MTXRLWFVORkJ1NTZ5Z1JpQlFvTEkzblpHNzF3K2l1QndCQTMyRlFTVmxER2prSTErTXpHTkFiUngrMUllVWo3MXBSNmJnSXNYT2g4YnpnaHc9PQ==",
+          },
+        ],
+        "type": "tx",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "YWN0aW9u",
+            "value": "L3NlY3JldC5jb21wdXRlLnYxYmV0YTEuTXNnRXhlY3V0ZUNvbnRyYWN0",
+          },
+        ],
+        "type": "message",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "bW9kdWxl",
+            "value": "Y29tcHV0ZQ==",
+          },
+          {
+            "index": false,
+            "key": "c2VuZGVy",
+            "value": "c2VjcmV0MWU2amx0eWRjZzN4ZzhjdmNtMHhweDdwOTBsNXB3MjA2bjh4azJw",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "message",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29kZV9pZA==",
+            "value": "MTYxNg==",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "reply",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29kZV9pZA==",
+            "value": "MTYxNA==",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWtjMG42azIyanpmeHhmOHlrZ2E3YTBncHRwOHM1c2N6bjhzMmN1",
+          },
+        ],
+        "type": "instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWtjMG42azIyanpmeHhmOHlrZ2E3YTBncHRwOHM1c2N6bjhzMmN1",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "reply",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+          {
+            "index": false,
+            "key": "bmV3X2FkbWluX2FkZHJlc3M=",
+            "value": "c2VjcmV0MWtjMG42azIyanpmeHhmOHlrZ2E3YTBncHRwOHM1c2N6bjhzMmN1",
+          },
+        ],
+        "type": "update_contract_admin",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWtjMG42azIyanpmeHhmOHlrZ2E3YTBncHRwOHM1c2N6bjhzMmN1",
+          },
+          {
+            "index": false,
+            "key": "bmV3X2FkbWluX2FkZHJlc3M=",
+            "value": "c2VjcmV0MWtjMG42azIyanpmeHhmOHlrZ2E3YTBncHRwOHM1c2N6bjhzMmN1",
+          },
+        ],
+        "type": "update_contract_admin",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29kZV9pZA==",
+            "value": "MTYxMA==",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MTU0ZGxrYzBuZXJyNzVyMDhkbDA3djYzNXZjbGZ4dGg0cjcwd2d0",
+          },
+        ],
+        "type": "instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MTU0ZGxrYzBuZXJyNzVyMDhkbDA3djYzNXZjbGZ4dGg0cjcwd2d0",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "N0c3R2VWOFBTd1ZFMi9JVTFSUzhLcTNhN0NxWXRSRWRJTHB4T3RQWVRNQT0=",
+            "value": "dlRRTVpRMisvUEpON3NlcmFMT3ovMUIyQTRHalpsTFhpa0ZXN2xUQ0swdWVDMDJZb1RTQk1jaXRtZy82aDcwa0hHSkUvYVV4SDMvc3hGTXVpdz09",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MTU0ZGxrYzBuZXJyNzVyMDhkbDA3djYzNXZjbGZ4dGg0cjcwd2d0",
+          },
+        ],
+        "type": "wasm-factory_instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "reply",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29kZV9pZA==",
+            "value": "MTYxOA==",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWxqZHBwbDYwM3I3azkwZGhlMDhyNTJlZGxwMHhyYXo3cjJ5ZG40",
+          },
+        ],
+        "type": "instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWxqZHBwbDYwM3I3azkwZGhlMDhyNTJlZGxwMHhyYXo3cjJ5ZG40",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "N0c3R2VWOFBTd1ZFMi9JVTFSUzhLcTNhN0NxWXRSRWRJTHB4T3RQWVRNQT0=",
+            "value": "K3ptWWVFbm16QjdhTGxWQmlDNytDdE4ySXA1c3l4MmVwTlhHbWQxeEsrR2RPRFE5M3d3WmlwcGtDeCtOdmVtd2dMT2RtQnVmaHRDYThob3YwQT09",
+          },
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWxqZHBwbDYwM3I3azkwZGhlMDhyNTJlZGxwMHhyYXo3cjJ5ZG40",
+          },
+        ],
+        "type": "wasm-factory_instantiate",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "reply",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWo0eTB2bmhqcWVuOGVmanNxemh2c2xhcGhnbDZzemFxOTYwMDJ2",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWV1dGM1N2tzOHI3eWR4c2M4NmY2ZGFqd3hzcmNtYXgwdHgwN2No",
+          },
+        ],
+        "type": "wasm",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWxqZHBwbDYwM3I3azkwZGhlMDhyNTJlZGxwMHhyYXo3cjJ5ZG40",
+          },
+        ],
+        "type": "execute",
+      },
+      {
+        "attributes": [
+          {
+            "index": false,
+            "key": "Y29udHJhY3RfYWRkcmVzcw==",
+            "value": "c2VjcmV0MWxqZHBwbDYwM3I3azkwZGhlMDhyNTJlZGxwMHhyYXo3cjJ5ZG40",
+          },
+        ],
+        "type": "wasm",
+      },
+    ],
+    "gasUsed": 510668,
+    "gasWanted": 800000,
+    "height": 13937532,
+    "ibcResponses": [],
+    "info": "",
+    "jsonLog": [
+      {
+        "events": [
+          {
+            "attributes": [
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+              },
+            ],
+            "type": "execute",
+          },
+          {
+            "attributes": [
+              {
+                "key": "code_id",
+                "value": "1616",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "code_id",
+                "value": "1614",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+              },
+              {
+                "key": "code_id",
+                "value": "1610",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+              },
+              {
+                "key": "code_id",
+                "value": "1618",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+              },
+            ],
+            "type": "instantiate",
+          },
+          {
+            "attributes": [
+              {
+                "key": "action",
+                "value": "/secret.compute.v1beta1.MsgExecuteContract",
+              },
+              {
+                "key": "module",
+                "value": "compute",
+              },
+              {
+                "key": "sender",
+                "value": "secret1e6jltydcg3xg8cvcm0xpx7p90l5pw206n8xk2p",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+            ],
+            "type": "message",
+          },
+          {
+            "attributes": [
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+            ],
+            "type": "reply",
+          },
+          {
+            "attributes": [
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "new_admin_address",
+                "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+              },
+              {
+                "key": "new_admin_address",
+                "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+              },
+            ],
+            "type": "update_contract_admin",
+          },
+          {
+            "attributes": [
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+              },
+            ],
+            "type": "wasm",
+          },
+          {
+            "attributes": [
+              {
+                "key": "7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=",
+                "value": "vTQMZQ2+/PJN7seraLOz/1B2A4GjZlLXikFW7lTCK0ueC02YoTSBMcitmg/6h70kHGJE/aUxH3/sxFMuiw==",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt",
+              },
+              {
+                "key": "7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=",
+                "value": "+zmYeEnmzB7aLlVBiC7+CtN2Ip5syx2epNXGmd1xK+GdODQ93wwZippkCx+NvemwgLOdmBufhtCa8hov0A==",
+              },
+              {
+                "key": "contract_address",
+                "value": "secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4",
+              },
+            ],
+            "type": "wasm-factory_instantiate",
+          },
+        ],
+        "msg_index": 0,
+      },
+    ],
+    "rawLog": "[{"events":[{"type":"execute","attributes":[{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4"}]},{"type":"instantiate","attributes":[{"key":"code_id","value":"1616"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"code_id","value":"1614"},{"key":"contract_address","value":"secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu"},{"key":"code_id","value":"1610"},{"key":"contract_address","value":"secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt"},{"key":"code_id","value":"1618"},{"key":"contract_address","value":"secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4"}]},{"type":"message","attributes":[{"key":"action","value":"/secret.compute.v1beta1.MsgExecuteContract"},{"key":"module","value":"compute"},{"key":"sender","value":"secret1e6jltydcg3xg8cvcm0xpx7p90l5pw206n8xk2p"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"}]},{"type":"reply","attributes":[{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"}]},{"type":"update_contract_admin","attributes":[{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"new_admin_address","value":"secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu"},{"key":"contract_address","value":"secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu"},{"key":"new_admin_address","value":"secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu"}]},{"type":"wasm","attributes":[{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4"},{"key":"contract_address","value":"secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1eutc57ks8r7ydxsc86f6dajwxsrcmax0tx07ch"},{"key":"contract_address","value":"secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4"}]},{"type":"wasm-factory_instantiate","attributes":[{"key":"7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=","value":"vTQMZQ2+/PJN7seraLOz/1B2A4GjZlLXikFW7lTCK0ueC02YoTSBMcitmg/6h70kHGJE/aUxH3/sxFMuiw=="},{"key":"contract_address","value":"secret154dlkc0nerr75r08dl07v635vclfxth4r70wgt"},{"key":"7G7GeV8PSwVE2/IU1RS8Kq3a7CqYtREdILpxOtPYTMA=","value":"+zmYeEnmzB7aLlVBiC7+CtN2Ip5syx2epNXGmd1xK+GdODQ93wwZippkCx+NvemwgLOdmBufhtCa8hov0A=="},{"key":"contract_address","value":"secret1ljdppl603r7k90dhe08r52edlp0xraz7r2ydn4"}]}]}]",
+    "timestamp": "2024-04-25T02:42:38Z",
+    "transactionHash": "60CC34C88CEF401B185E983A210DCA840FA523BE5BD6297FF5D7164F89AE45EB",
+    "tx": {
+      "@type": "/cosmos.tx.v1beta1.Tx",
+      "auth_info": {
+        "fee": {
+          "amount": [
+            {
+              "amount": "40000",
+              "denom": "uscrt",
+            },
+          ],
+          "gas_limit": "800000",
+          "granter": "",
+          "payer": "",
+        },
+        "signer_infos": [
+          {
+            "mode_info": {
+              "single": {
+                "mode": "SIGN_MODE_LEGACY_AMINO_JSON",
+              },
+            },
+            "public_key": {
+              "@type": "/cosmos.crypto.secp256k1.PubKey",
+              "key": "Avd0Co8e15XcMscc5/I7ZuWvSaCWgqiecEedKiwlzEUZ",
+            },
+            "sequence": "15",
+          },
+        ],
+      },
+      "body": {
+        "extension_options": [],
+        "memo": "",
+        "messages": [
+          {
+            "@type": "/secret.compute.v1beta1.MsgExecuteContract",
+            "callback_code_hash": "",
+            "callback_sig": null,
+            "contract": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+            "msg": "FbEGBmQNpjsbUFeDQsDK4Xig6q1vGNEIv68Gw5iKZmQN0zM3eRvU1AssU5RuibeMBgPSqSmn9FBQxD0X7OGGfdLJucE2IaIKW/ZAeGwqQGGlcVYauNhtY7wUl6YYBNBz9BqR2cyoDsSsLgKhFsOzDOXzcWvhZXKP+gQxqRMnHQ3fUC37SyQmKpLsJm0F9ZF6CEn3WopiqQVCqz7rS14Vdg2GL5srNjWXWfGL5SIPdYlvZKrOqxosht9CKWV6wbGq7taluc5tAxGtjnifhOXoHxUi/BZHNIb3e5LaUXltDveGyLtqxxllmNyMFRVBdOhqH/vi79EDPQo+s3eLhBQc8jAkoQxYz8tH3d7uJk9pSLAypJdNF6K9168xTJjGTBrxFtb3QecoUjs0JZni+T2wlneCXWhLuTOlCR6QQrYmdqm7gkfxiXQ54SPsvUhkY0LbsR3iXubzwK3iR1kS6SQXKXu5+etSAI/mRHVi4vPs3DhmPsfKpr3lOsZUCpfncCYR6n6X/Y9IUb/gPWHJFugED+i+0J9rXYHJm8WOwLFhm4zqzIne78GOjYDp0dHQ5Y1w6UsYWAp1isiN0hJsSw+JMliFK4X09wRmETgqHWGnWiur2KzjIRVgGKrmcj65v5C5gfGlsttL/9kZJHmrRqw=",
+            "sender": "secret1e6jltydcg3xg8cvcm0xpx7p90l5pw206n8xk2p",
+            "sent_funds": [],
+          },
+        ],
+        "non_critical_extension_options": [],
+        "timeout_height": "0",
+      },
+      "signatures": [
+        "XbX0OLMtKXUNFBu56ygRiBQoLI3nZG71w+iuBwBA32FQSVlDGjkI1+MzGNAbRx+1IeUj71pR6bgIsXOh8bzghw==",
+      ],
+    },
+  },
+}
+`;

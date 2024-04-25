@@ -10,7 +10,13 @@ import {
   createStakingAminoConverters,
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
-import { BroadcastMode, Msg, SecretNetworkClient, TxOptions } from "secretjs";
+import {
+  BroadcastMode,
+  Msg,
+  SecretNetworkClient,
+  TxOptions,
+  TxResponse,
+} from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -138,6 +144,24 @@ export class SecretJsClient {
     );
   }
 
+  public async broadcastSignedTransactionOrMockTxDuringTest({
+    signedTransaction,
+    hash,
+  }: {
+    signedTransaction: SignedTransaction;
+    hash: string;
+  }): Promise<BroadcastTransactionResult> {
+    if (process.env.NODE_ENV === "test") {
+      const rawResult = await this.withSecretNetworkClient(async (client) => {
+        return client.query.getTx(hash);
+      });
+      invariant(rawResult, "no tx response");
+      return this.wrapTxResponse(rawResult);
+    }
+
+    return await this.broadcastSignedTransaction(signedTransaction);
+  }
+
   public async broadcastSignedTransaction(
     signedTransaction: SignedTransaction,
   ): Promise<BroadcastTransactionResult> {
@@ -187,13 +211,17 @@ export class SecretJsClient {
       // TODO retry handling instead
       rawResult = txResponse;
       invariant(rawResult, "no tx response");
-      return {
-        success: rawResult.code === 0,
-        transactionHash: rawResult.transactionHash,
-        rawLog: rawResult.rawLog,
-        rawResult,
-      };
+      return this.wrapTxResponse(rawResult);
     });
+  }
+
+  protected wrapTxResponse(rawResult: TxResponse): BroadcastTransactionResult {
+    return {
+      success: rawResult.code === 0,
+      transactionHash: rawResult.transactionHash,
+      rawLog: rawResult.rawLog,
+      rawResult,
+    };
   }
 
   public get aminoTypes() {

@@ -26,7 +26,6 @@ export function getFeeLender(
     case SecretJsHomeChainId.MAINNET: {
       invariant(process.env.FEE_LENDER_SECRET_4, "No fee lenders");
       const feeLender = process.env.FEE_LENDER_SECRET_4;
-      console.log("knownLenderIndex is " + knownLenderIndex);
       const lenderIndex = knownLenderIndex ?? Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {
         hdAccountIndex: lenderIndex,
@@ -34,8 +33,6 @@ export function getFeeLender(
       const signer = new Secp256k1PrivateKeySigner(
         Buffer.from(wallet.privateKey).toString("base64"),
       );
-      // we need to return the lender index since it owns the account
-      // before owner is known and first_update_owner is called on it
       return { wallet, signer, lenderIndex };
     }
   }
