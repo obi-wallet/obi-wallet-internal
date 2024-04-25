@@ -1,113 +1,51 @@
+import { TargetChain, TargetChainId } from "@obi-wallet/sdk";
 import {
-  SecretJsChainId,
-  SecretJsChains,
-  SecretJsClient,
-  TargetChain,
-  TargetChainId,
-} from "@obi-wallet/sdk";
-import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import {
-  Secp256k1KeyPair,
+  getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { Signer, SigningKey, Wallet } from "ethers";
-import { MsgExecuteContract } from "secretjs";
+import { AbstractSigner, computeAddress, Signer } from "ethers";
 import { Presets } from "userop";
 
-import { getFeeLender } from "./fee-lender";
+/**
+ * A "signer" that is only capable of computing its address, for use with `Presets.Builder.SimpleAccount`
+ */
+class PublicKeyWallet extends AbstractSigner {
+  public constructor(protected publicKey: Secp256k1PublicKey) {
+    super();
+  }
 
-export interface EthereumAccount {
-  publicKey: Secp256k1PublicKey;
-  evmSigningAddress: string;
-  evmUserContractAddress: string;
+  public async getAddress(): Promise<string> {
+    const u8 = getSec256k1UncompressedPublicKey(this.publicKey);
+    return computeAddress(`0x${Buffer.from(u8).toString("hex")}`);
+  }
+
+  public connect(): Signer {
+    throw new Error("connect not implemented.");
+  }
+
+  public signTransaction(): Promise<string> {
+    throw new Error("signTransaction not implemented.");
+  }
+
+  public signMessage(): Promise<string> {
+    throw new Error("signMessage not implemented.");
+  }
+
+  public signTypedData(): Promise<string> {
+    throw new Error("signTypedData not implemented.");
+  }
 }
 
-export interface HomeChain {
-  zAuthKeyPair: Secp256k1KeyPair;
-  targetChain: {
-    publicKey: Secp256k1PublicKey;
-    evmAddress: string;
-  };
-  proxyAddress: string;
-}
-
-export interface HomeChainWithId extends HomeChain {
-  chainId: SecretJsChainId;
-}
-
-export async function recoverEthereumAccount({
-  targetChain,
-}: HomeChainWithId): Promise<{
-  publicKey: Secp256k1PublicKey;
-  address: string;
-}> {
-  return {
-    publicKey: targetChain.publicKey,
-    address: targetChain.evmAddress,
-  };
-}
-
-export async function generateEthereumAccount({
-  chainId,
-  keyPair,
-}: {
-  chainId: SecretJsChainId;
-  keyPair: Secp256k1KeyPair;
-}): Promise<EthereumAccount> {
-  const chain = SecretJsChains[chainId];
-  const ethKeyPair = generateSec256k1KeyPair();
-  const { evmSigningAddress, evmUserContractAddress } =
-    await generateEthereumAddresses(ethKeyPair);
-
-  const client = new SecretJsClient(chainId);
-  const { wallet, signer } = getFeeLender(chainId);
-
-  const signedTransaction = await client.createAndSignTransaction({
-    signer,
-    messages: [
-      new MsgExecuteContract({
-        sender: wallet.address,
-        contract_address: chain.secretSigner.address,
-        msg: {
-          add_key: {
-            public_key: Buffer.from(keyPair.publicKey.value, "base64").toString(
-              "hex",
-            ),
-            user_entry_address: null,
-            user_entry_code_hash: null,
-            inject_privkey: Buffer.from(
-              ethKeyPair.privateKey,
-              "base64",
-            ).toString("hex"),
-          },
-        },
-        code_hash: chain.secretSigner.codeHash,
-      }),
-    ],
-  });
-  const broadcastTransactionResult =
-    await client.broadcastSignedTransaction(signedTransaction);
-  console.log(broadcastTransactionResult);
-
-  return {
-    publicKey: ethKeyPair.publicKey,
-    evmSigningAddress,
-    evmUserContractAddress,
-  };
-}
-
-export async function generateEthereumAddresses(keyPair: Secp256k1KeyPair) {
+export async function generateEthereumAddresses(publicKey: Secp256k1PublicKey) {
   const config = getConfig(TargetChain.EthereumMainnet)!;
-  const signingKey = new SigningKey(Buffer.from(keyPair.privateKey, "base64"));
-  console.warn("For real debugging this time: " + signingKey.privateKey);
-  const signer: Signer = new Wallet(signingKey);
+  const signer = new PublicKeyWallet(publicKey);
   const simpleAccount = await Presets.Builder.SimpleAccount.init(
     signer,
     config.rpcUrl,
   );
   return {
     evmSigningAddress: await signer.getAddress(),
-    evmUserContractAddress: simpleAccount.getSender(),
+    evmSimpleAccountAddress: simpleAccount.getSender(),
   };
 }
 

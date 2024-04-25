@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`succeeds 1`] = `
+exports[`/api/setup/home-account 1`] = `
 {
   "homeAccountAddress": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
   "txResult": {

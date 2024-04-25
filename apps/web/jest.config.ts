@@ -7,6 +7,7 @@ const createJestConfig = nextJest({
 
 const config: Config = {
   coverageProvider: "v8",
+  setupFilesAfterEnv: [require.resolve("./jest.setup.ts")],
 };
 
 // eslint-disable-next-line import/no-default-export
