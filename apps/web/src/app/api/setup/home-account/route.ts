@@ -1,6 +1,12 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { ChainIdSchema, Messages, SecretJsClient } from "@obi-wallet/sdk";
-import { TxResponse } from "secretjs";
+import { isTest } from "@/lib/testing";
+import {
+  ChainIdSchema,
+  SecretJsClient,
+  SecretJsHomeChains,
+} from "@obi-wallet/sdk";
+import { randomBytes } from "ethers";
+import { MsgExecuteContract, TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -21,13 +27,31 @@ export async function POST(request: Request) {
   const { chainId } = result.data;
   const { wallet, signer, lenderIndex } = getFeeLender(chainId);
 
+  const chain = SecretJsHomeChains[chainId];
   const client = new SecretJsClient(chainId);
-  const messagesSdk = Messages.chainId(chainId);
-  const message = messagesSdk.getCreateWalletMessage(
-    wallet.address,
-    Buffer.from(wallet.publicKey).toString("base64"),
-    wallet.address,
-  );
+  const message = new MsgExecuteContract({
+    sender: wallet.address,
+    contract_address: chain.accountCreator.address,
+    code_hash: chain.accountCreator.codeHash,
+    msg: {
+      new_account: {
+        owner: wallet.address,
+        signers: {
+          signers: [
+            {
+              address: wallet.address,
+              ty: "creator",
+              pubkey_base_64: Buffer.from(wallet.publicKey).toString("base64"),
+            },
+          ],
+        },
+        fee_debt: 0,
+        update_delay: 0,
+        // next_hash_seed is some randomness and doesn't need to be stored at all
+        next_hash_seed: Buffer.from(randomBytes(32)).toString("hex"),
+      },
+    },
+  });
 
   const signedTransaction = await client.createAndSignTransaction({
     signer,
@@ -59,6 +83,13 @@ export async function POST(request: Request) {
       homeAccountAddress,
       txResult,
       ownerIndex: lenderIndex,
+      ...(isTest()
+        ? {
+            __test: {
+              message,
+            },
+          }
+        : {}),
     });
   } catch (e) {
     console.error(e);

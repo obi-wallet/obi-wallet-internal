@@ -7,6 +7,7 @@ const createJestConfig = nextJest({
 
 const config: Config = {
   coverageProvider: "v8",
+  clearMocks: true,
   setupFilesAfterEnv: [require.resolve("./jest.setup.ts")],
 };
 

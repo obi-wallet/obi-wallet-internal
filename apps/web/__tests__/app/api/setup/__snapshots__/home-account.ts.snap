@@ -2,7 +2,36 @@
 
 exports[`/api/setup/home-account 1`] = `
 {
+  "__test": {
+    "message": {
+      "codeHash": "8a50e15844d996fec54306fce3dbe563cb1e4d45346177c0e3baf462324715e5",
+      "contractAddress": "secret1j4y0vnhjqen8efjsqzhvslaphgl6szaq96002v",
+      "msg": {
+        "new_account": {
+          "fee_debt": 0,
+          "next_hash_seed": Any<String>,
+          "owner": "secret1h376q2ns6d0lgfgq9alqtefznrtcg09wrtd5ua",
+          "signers": {
+            "signers": [
+              {
+                "address": "secret1h376q2ns6d0lgfgq9alqtefznrtcg09wrtd5ua",
+                "pubkey_base_64": "AqnFUbe0XOU798MZdwwYV1rgjN1XZw4ttlf5w5lFmbjp",
+                "ty": "creator",
+              },
+            ],
+          },
+          "update_delay": 0,
+        },
+      },
+      "msgEncrypted": Any<Object>,
+      "sender": "secret1h376q2ns6d0lgfgq9alqtefznrtcg09wrtd5ua",
+      "sentFunds": [],
+      "warnCodeHash": false,
+    },
+  },
   "homeAccountAddress": "secret1kc0n6k22jzfxxf8ykga7a0gptp8s5sczn8s2cu",
+  "ownerAddress": "secret1h376q2ns6d0lgfgq9alqtefznrtcg09wrtd5ua",
+  "ownerIndex": 123,
   "txResult": {
     "arrayLog": [
       {
