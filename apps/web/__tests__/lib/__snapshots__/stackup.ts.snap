@@ -1,8 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`generateEthereumAddresses 1`] = `
-{
-  "evmSigningAddress": "0x4457A34a0a04a40c46462aed5D444C5eA5D9DC28",
-  "evmSimpleAccountAddress": "0xc571607fcf2Cc230C9a9c1c490239Df81Bf0F9C6",
-}
-`;
