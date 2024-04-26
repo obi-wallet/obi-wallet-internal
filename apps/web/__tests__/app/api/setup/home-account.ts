@@ -2,7 +2,7 @@ import { SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { testApiHandler } from "next-test-api-route-handler";
 
 test("/api/setup/home-account", async () => {
-  // Make test deterministic by mocking Math.random
+  // Make used fee lender deterministic by mocking Math.random
   jest.spyOn(Math, "random").mockReturnValue(0.1239);
   await testApiHandler({
     appHandler: await import("@/app/api/setup/home-account/route"),

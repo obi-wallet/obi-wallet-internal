@@ -22,6 +22,11 @@ export function ClientSideTests({
 
   return (
     <Text>
+      {clientResults ? (
+        <span id="test-results" className="hidden">
+          {serverSuccess && clientSuccess ? "success" : "failure"}
+        </span>
+      ) : null}
       Server: {serverSuccess ? "success" : "failure"}
       <br />
       Client:{" "}

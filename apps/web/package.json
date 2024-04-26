@@ -10,6 +10,7 @@
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "test": "jest",
+    "test-next": "playwright test",
     "test-storybook": "test-storybook",
     "tsc": "tsc --noEmit"
   },
@@ -75,6 +76,7 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.2.2",
+    "@playwright/test": "^1.43.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@storybook/addon-essentials": "^8.0.9",

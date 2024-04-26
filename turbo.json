@@ -2,6 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env", "**/.env.*local"],
   "globalEnv": [
+    "CI",
     "FAST_TRAVEL_API_URL",
     "FEE_LENDERS_PULSAR_3",
     "FEE_LENDER_SECRET_4",
@@ -27,6 +28,9 @@
     },
     "test": {
       "dependsOn": ["^test"]
+    },
+    "test-next": {
+      "dependsOn": ["^test-next"]
     },
     "test-storybook": {
       "dependsOn": ["^test-storybook"]
