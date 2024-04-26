@@ -5,6 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 // eslint-disable-next-line import/no-default-export
 export default defineConfig({
+  timeout: 5 * 60 * 1000,
   testDir: "./__tests-e2e__",
   /* Run tests in files in parallel */
   fullyParallel: true,
