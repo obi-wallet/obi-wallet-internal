@@ -29,6 +29,7 @@ export async function runTests(fn: (context: TestContext) => void) {
 
     try {
       await fn();
+      console.log("✓", name);
       testResults[testIndex] = {
         success: true,
       };

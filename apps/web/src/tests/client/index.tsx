@@ -2,6 +2,7 @@
 
 import { Text } from "@/components";
 import { hasSucceeded, runTests, TestResults } from "@/tests";
+import { testSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
@@ -13,7 +14,9 @@ export function ClientSideTests({
   const [clientResults, setClientResults] = useState<TestResults | null>(null);
 
   useEffectOnceWhen(async () => {
-    const clientResults = await runTests(() => {});
+    const clientResults = await runTests((context) => {
+      testSuite(context);
+    });
     setClientResults(clientResults);
   });
 
