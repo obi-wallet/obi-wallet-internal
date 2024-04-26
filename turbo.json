@@ -26,6 +26,9 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
+    "setup-ci": {
+      "dependsOn": ["^setup-ci"]
+    },
     "test": {
       "dependsOn": ["^test"]
     },
