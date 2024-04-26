@@ -9,6 +9,7 @@ const config: Config = {
   coverageProvider: "v8",
   clearMocks: true,
   setupFilesAfterEnv: [require.resolve("./jest.setup.ts")],
+  testPathIgnorePatterns: ["/__tests-e2e__/"],
 };
 
 // eslint-disable-next-line import/no-default-export
