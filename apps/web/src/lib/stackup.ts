@@ -1,51 +1,59 @@
-import { TargetChain, TargetChainId } from "@obi-wallet/sdk";
+import { TargetChainId } from "@obi-wallet/sdk";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { AbstractSigner, computeAddress, Signer } from "ethers";
-import { Presets } from "userop";
+import { V06 } from "userop";
+import {
+  createPublicClient,
+  createWalletClient,
+  getAddress,
+  http,
+  keccak256,
+} from "viem";
+import { toAccount } from "viem/accounts";
+import { mainnet } from "viem/chains";
 
-/**
- * A "signer" that is only capable of computing its address, for use with `Presets.Builder.SimpleAccount`
- */
-class PublicKeyWallet extends AbstractSigner {
-  public constructor(protected publicKey: Secp256k1PublicKey) {
-    super();
-  }
-
-  public async getAddress(): Promise<string> {
-    const u8 = getSec256k1UncompressedPublicKey(this.publicKey);
-    return computeAddress(`0x${Buffer.from(u8).toString("hex")}`);
-  }
-
-  public connect(): Signer {
-    throw new Error("connect not implemented.");
-  }
-
-  public signTransaction(): Promise<string> {
-    throw new Error("signTransaction not implemented.");
-  }
-
-  public signMessage(): Promise<string> {
-    throw new Error("signMessage not implemented.");
-  }
-
-  public signTypedData(): Promise<string> {
-    throw new Error("signTypedData not implemented.");
-  }
+function publicKeyToAddress(publicKey: Secp256k1PublicKey) {
+  const u8 = getSec256k1UncompressedPublicKey(publicKey);
+  const hex = `0x${Buffer.from(u8).toString("hex")}`;
+  const address = keccak256(`0x${hex.substring(4)}`).substring(26);
+  return getAddress(`0x${address}`);
 }
 
 export async function generateEthereumAddresses(publicKey: Secp256k1PublicKey) {
-  const config = getConfig(TargetChain.EthereumMainnet)!;
-  const signer = new PublicKeyWallet(publicKey);
-  const simpleAccount = await Presets.Builder.SimpleAccount.init(
-    signer,
-    config.rpcUrl,
-  );
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  });
+
+  const address = publicKeyToAddress(publicKey);
+  const walletClient = createWalletClient({
+    account: toAccount({
+      address,
+      async signMessage() {
+        throw new Error("signMessage not implemented");
+      },
+      async signTransaction() {
+        throw new Error("signTransaction not implemented");
+      },
+      async signTypedData() {
+        throw new Error("signTypedData not implemented");
+      },
+    }),
+    chain: mainnet,
+    transport: http(),
+  });
+
+  const account = new V06.Account.Instance({
+    ...V06.Account.Common.SimpleAccount.base(publicClient, walletClient),
+  });
+
+  const sender = await account.getSender();
+
   return {
-    evmSigningAddress: await signer.getAddress(),
-    evmSimpleAccountAddress: simpleAccount.getSender(),
+    evmSigningAddress: address,
+    evmSimpleAccountAddress: sender,
   };
 }
 

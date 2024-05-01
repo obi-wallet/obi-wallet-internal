@@ -72,7 +72,8 @@
     "sss-wasm": "^0.4.0",
     "tailwind-merge": "^2.3.0",
     "tiny-invariant": "^1.3.3",
-    "userop": "patch:userop@npm%3A0.3.8#~/.yarn/patches/userop-npm-0.3.8-ebdc1ba00d.patch",
+    "userop": "^0.4.0-beta.5",
+    "viem": "^2.9.29",
     "zod": "^3.23.5"
   },
   "devDependencies": {
