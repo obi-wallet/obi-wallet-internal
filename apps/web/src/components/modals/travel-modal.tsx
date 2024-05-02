@@ -139,24 +139,23 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     }
   };
 
-  const { control, formState, watch, getValues, setValue, trigger } =
-    useForm<FormData>({
-      defaultValues: {
-        fromChain: fromChains[0]?.chainId ?? "",
-        fromAsset: {
-          amount: "",
-          asset: "eth",
-        },
-        toChain: getChainFromAsset(),
-        toAsset: {
-          amount: "",
-          asset: targetAsset,
-        },
-        slippage: 1,
+  const { control, watch, getValues, setValue, trigger } = useForm<FormData>({
+    defaultValues: {
+      fromChain: fromChains[0]?.chainId ?? "",
+      fromAsset: {
+        amount: "",
+        asset: "eth",
       },
-      mode: "all",
-      resolver: zodResolver(schema),
-    });
+      toChain: getChainFromAsset(),
+      toAsset: {
+        amount: "",
+        asset: targetAsset,
+      },
+      slippage: 1,
+    },
+    mode: "all",
+    resolver: zodResolver(schema),
+  });
   const fromAssetValue = watch("fromAsset");
 
   const fromChainValue = watch("fromChain");
@@ -177,7 +176,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   }, [depositAddress]);
 
   const executeTx = async () => {
-    if (!formState.isValid) return;
+    console.log("Executing transaction");
     // get the deposit data
     const from = fromAssets[fromAssetValue?.asset ?? ""];
     setLoading(true);
@@ -315,7 +314,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       if (!simulation) return;
 
       setSimulating(false);
-      setDepositAddress(simulation.deposit_address);
+
       if (
         typeof simulation.skip_simulation !== "string" &&
         simulation.skip_simulation.msgs.length > 0
@@ -335,6 +334,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             .toString(),
           asset: formData.toAsset.asset,
         });
+        setDepositAddress(simulation.deposit_address);
         return;
       }
 
@@ -347,6 +347,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           .toString(),
         asset: formData.toAsset.asset,
       });
+      setDepositAddress(simulation.deposit_address);
     } catch (e) {
       console.error(e);
       setSimulating(false);

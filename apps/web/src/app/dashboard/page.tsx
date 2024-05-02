@@ -5,16 +5,11 @@ import { PendingAssets } from "@/dashboard/pending";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-// import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
-// import { formatEther, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-// import { useEffect, useState } from "react";
 import { FaExclamation } from "react-icons/fa6";
-
-// import { FromAsset, fromAssets, ToAsset } from "./fast-travel/assets";
 
 type TransactionIntent = {
   destination_address: string;

@@ -104,7 +104,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
       <div className="flex flex-col gap-4">
         {askForName ? (
           <Input
-            label="Name"
+            label="Key Name"
             labelClassname="bg-background-secondary"
             className="max-w-96 max-sm:w-full"
             placeholder="Name"
