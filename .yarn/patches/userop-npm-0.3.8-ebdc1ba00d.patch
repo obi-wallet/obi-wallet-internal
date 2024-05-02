@@ -1,0 +1,16 @@
+diff --git a/dist/preset/builder/simpleAccount.js b/dist/preset/builder/simpleAccount.js
+index 1c56f3a3f15810208c0bc23c5a1358c0a388fde0..ea68b3bcdca140667558341ef2e7e505141a40b8 100644
+--- a/dist/preset/builder/simpleAccount.js
++++ b/dist/preset/builder/simpleAccount.js
+@@ -28,7 +28,10 @@ class SimpleAccount extends builder_1.UserOperationBuilder {
+             ctx.op.initCode = code === "0x" ? this.initCode : "0x";
+         });
+         this.signer = signer;
+-        this.provider = new provider_1.BundlerJsonRpcProvider(rpcUrl).setBundlerRpc(opts === null || opts === void 0 ? void 0 : opts.overrideBundlerRpc);
++        this.provider = new provider_1.BundlerJsonRpcProvider({
++            skipFetchSetup: true,
++            url: rpcUrl
++          }).setBundlerRpc(opts === null || opts === void 0 ? void 0 : opts.overrideBundlerRpc);
+         this.entryPoint = typechain_1.EntryPoint__factory.connect((opts === null || opts === void 0 ? void 0 : opts.entryPoint) || constants_1.ERC4337.EntryPoint, this.provider);
+         this.factory = typechain_1.SimpleAccountFactory__factory.connect((opts === null || opts === void 0 ? void 0 : opts.factory) || constants_1.ERC4337.SimpleAccount.Factory, this.provider);
+         this.initCode = "0x";

@@ -14,7 +14,10 @@
     "lint": "turbo lint",
     "prettier": "prettier --check .",
     "setup": "node scripts/setup.mjs",
+    "setup-ci": "turbo setup-ci",
     "storybook": "turbo storybook",
+    "test": "turbo test",
+    "test-next": "turbo test-next",
     "test-storybook": "turbo test-storybook",
     "tsc": "turbo tsc"
   },
