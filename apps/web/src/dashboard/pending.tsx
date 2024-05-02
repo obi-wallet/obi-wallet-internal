@@ -20,10 +20,14 @@ export const PendingAssets = observer(function PendingAssets() {
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
-
+  const onLyPending = pendingTXs.data.filter(
+    (t) =>
+      t.transaction.status.includes("InProgress") ||
+      t.transaction.status.includes("LowBalance"),
+  );
   return (
     <>
-      {pendingTXs.data.map((tx: SimulationEntry) => (
+      {onLyPending.map((tx: SimulationEntry) => (
         <PendingAsset
           key={tx.transaction.deposit_address}
           tx={tx}
