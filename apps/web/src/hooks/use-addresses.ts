@@ -1,10 +1,5 @@
-import { TargetChain } from "@/target-chain";
-import {
-  CosmosSdkChains,
-  isCosmosSdkChainId,
-} from "@/target-chain/cosmos-sdk/chains";
+import { allTargetChainIds, TargetChain } from "@/target-chain";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import invariant from "tiny-invariant";
 
 export function useAddresses({
   publicKey,
@@ -12,16 +7,14 @@ export function useAddresses({
   publicKey: Secp256k1PublicKey | undefined;
 }) {
   if (!publicKey) {
-    return null;
+    return [];
   }
-  const addresses = Object.keys(CosmosSdkChains).map((chainKey) => {
-    invariant(isCosmosSdkChainId(chainKey), `Invalid chain key: ${chainKey}`);
-    const chain = CosmosSdkChains[chainKey];
+
+  return allTargetChainIds.map((targetChainId) => {
+    const chain = TargetChain.chainId(targetChainId);
     return {
-      chain: chain.name,
-      address: TargetChain.chainId(chainKey).computeAddress(publicKey),
+      chain: chain.label,
+      address: chain.computeAddress(publicKey),
     };
   });
-
-  return addresses;
 }

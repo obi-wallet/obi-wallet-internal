@@ -82,6 +82,14 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return this.chainData.name;
   }
 
+  public get image() {
+    return this.chainData.image;
+  }
+
+  public get disabled() {
+    return this.chainData.disabled ?? false;
+  }
+
   public computeAddress(publicKey: Secp256k1PublicKey) {
     return pubkeyToAddress(
       getSec256k1CompressedPublicKey(publicKey),

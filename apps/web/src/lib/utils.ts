@@ -1,4 +1,3 @@
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import clsx, { ClassValue } from "clsx";
 import { ec } from "elliptic";
 import { twMerge } from "tailwind-merge";
@@ -21,17 +20,12 @@ export function decompressPoint(compressedPointHex: string): string {
   return x + y;
 }
 
-// TODO: hide internal details
-export function getToChain(chainId: string) {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return CosmosSdkChains[chainId as keyof typeof CosmosSdkChains];
-}
-
 export function getFromChain(chainId: string) {
   return fromChains.find((c) => {
     return c.chainId === chainId;
   });
 }
+
 export const fromChains = [
   {
     chainId: "42161",

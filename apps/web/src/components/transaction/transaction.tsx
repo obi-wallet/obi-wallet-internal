@@ -3,7 +3,6 @@
 import { Text } from "@/components";
 import { cn } from "@/lib/utils";
 import { TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import Image from "next/image";
 import { ComponentPropsWithoutRef, useState } from "react";
 
@@ -39,7 +38,7 @@ export function Transaction({
     ? TargetChain.chainId(targetChainId).label
     : "";
   const image = targetChainId
-    ? CosmosSdkChains[targetChainId].image
+    ? TargetChain.chainId(targetChainId).image
     : "/assets/icons/transaction-lock.svg";
 
   return (

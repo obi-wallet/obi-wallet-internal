@@ -3,11 +3,8 @@
 import { DropDown, TabUi } from "@/components";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import {
-  CosmosSdkChainId,
-  CosmosSdkChains,
-} from "@/target-chain/cosmos-sdk/chains";
+import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { InputContainer } from "@/ui/container";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
@@ -99,16 +96,16 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId: TargetChainId;
   onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = Object.values(CosmosSdkChains).map(
-    ({ name, id, image, disabled }) => {
-      return {
-        label: name,
-        value: id,
-        image,
-        disabled,
-      };
-    },
-  );
+  const chainOptions = allTargetChainIds.map((chainId) => {
+    const targetChain = TargetChain.chainId(chainId);
+    return {
+      label: targetChain.label,
+      value: chainId,
+      image: targetChain.image,
+      disabled: targetChain.disabled,
+    };
+  });
+
   return (
     <div className="flex w-full flex-row">
       <DropDown

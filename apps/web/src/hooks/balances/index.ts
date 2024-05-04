@@ -1,7 +1,6 @@
 import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { SimulationEntry } from "@/app/dashboard/page";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
@@ -108,25 +107,23 @@ export function useNewBalances({
 }: {
   publicKey?: Secp256k1PublicKey;
 }) {
-  const chains = Object.values(CosmosSdkChains);
-
-  // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chain) => {
+    queries: allTargetChainIds.map((targetChainId) => {
       return {
-        queryKey: ["new-balances", chain.id, publicKey],
+        queryKey: ["new-balances", targetChainId, publicKey],
         enabled: !!publicKey, // Only run query if address is provided
         queryFn: async (): Promise<NewBalance> => {
           invariant(publicKey, "Expected publicKey to be set.");
-          if (chain.disabled) {
+          const targetChain = TargetChain.chainId(targetChainId);
+          if (targetChain.disabled) {
             return {
               balances: [],
-              targetChainId: chain.id,
+              targetChainId,
             };
           }
           return await fetchNewBalances({
-            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-            targetChainId: chain.id,
+            address: targetChain.computeAddress(publicKey),
+            targetChainId,
           });
         },
       };
@@ -139,26 +136,23 @@ export function useBalances({
 }: {
   publicKey: Secp256k1PublicKey | undefined;
 }) {
-  // get an array of all the chain ids from TargetChainId
-  const chains = Object.values(CosmosSdkChains);
-
-  // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chain) => {
+    queries: allTargetChainIds.map((targetChainId) => {
       return {
-        queryKey: ["balances", chain.id, publicKey],
+        queryKey: ["balances", targetChainId, publicKey],
         enabled: !!publicKey, // Only run query if address is provided
         queryFn: async (): Promise<Balance> => {
           invariant(publicKey, "Expected publicKey to be set.");
-          if (chain.disabled) {
+          const targetChain = TargetChain.chainId(targetChainId);
+          if (targetChain.disabled) {
             return {
               balances: [],
-              chainId: chain.id,
+              chainId: targetChainId,
             };
           }
           return await fetchBalances({
-            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-            chainId: chain.id,
+            address: targetChain.computeAddress(publicKey),
+            chainId: targetChainId,
           });
         },
       };
@@ -187,9 +181,7 @@ export function useUSDTotalPrice(): {
 } {
   const publicKey = usePublicKey();
   const balances = useBalances({ publicKey });
-  // if (publicKey === undefined) return { total: 0, loading: false };
 
-  // if all balances are not loaded, return 0
   if (
     balances.every((balance) => {
       return balance.isPending;

@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite";
 export default observer(function BuyCrypto() {
   const publicKey = usePublicKey();
   const addresses = useAddresses({ publicKey });
-  const addressesString = addresses?.reduce((prev, curr, index) => {
+  const addressesString = addresses.reduce((prev, curr, index) => {
     return (
       prev +
       curr.chain +

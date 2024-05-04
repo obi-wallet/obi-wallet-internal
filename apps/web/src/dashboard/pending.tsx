@@ -7,7 +7,8 @@ import {
 } from "@/app/dashboard/page";
 import { usePendingTXs } from "@/hooks/balances";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { cn, getFromChain, getToChain } from "@/lib/utils";
+import { cn, getFromChain } from "@/lib/utils";
+import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -309,13 +310,13 @@ const PendingStepList = observer<{
           return "Not started";
         }
         const fromChain = getFromChain(step.chainId);
-        const toChain = getToChain(step.toChain);
+        const toChain = TargetChain.chainId(step.toChain);
 
-        return `Squid from ${fromChain?.label} to ${toChain?.name}`;
+        return `Squid from ${fromChain?.label} to ${toChain.label}`;
       }
       case "Skip": {
-        const chain = getToChain(step.chainId);
-        return `Skip  (${chain?.name})`;
+        const chain = TargetChain.chainId(step.toChain);
+        return `Skip (${chain.label})`;
       }
       default:
         return `${step.action} ?`;
