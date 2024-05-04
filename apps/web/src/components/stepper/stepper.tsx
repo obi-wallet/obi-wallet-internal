@@ -17,15 +17,17 @@ export function Stepper({
       className={cn("flex flex-row justify-center space-x-1", className)}
       {...rest}
     >
-      {new Array(totalSteps).fill(0).map((_, step) => (
-        <div
-          key={`stepper-${step}`}
-          className={cn(
-            "h-1 w-10 rounded-xl",
-            step + 1 === currentStep ? "bg-blue-600" : "bg-zinc-400",
-          )}
-        />
-      ))}
+      {new Array(totalSteps).fill(0).map((_, step) => {
+        return (
+          <div
+            key={`stepper-${step}`}
+            className={cn(
+              "h-1 w-10 rounded-xl",
+              step + 1 === currentStep ? "bg-blue-600" : "bg-zinc-400",
+            )}
+          />
+        );
+      })}
     </div>
   );
 }

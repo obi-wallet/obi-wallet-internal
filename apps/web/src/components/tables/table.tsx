@@ -28,34 +28,38 @@ export function Table<K extends string>({
               <Text className="justify-center">No</Text>
             </td>
           )}
-          {columns.map((column) => (
-            <th key={column.value}>
-              <Text className="justify-center">{column.label}</Text>
-            </th>
-          ))}
+          {columns.map((column) => {
+            return (
+              <th key={column.value}>
+                <Text className="justify-center">{column.label}</Text>
+              </th>
+            );
+          })}
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, index: number) => (
-          <tr key={`row-${index}`} className="h-16 border-b">
-            {includeIndex && (
-              <td>
-                <Text className="justify-center">{index + 1}</Text>
-              </td>
-            )}
-
-            {columns.map((column) => {
-              const colIndex = column.value;
-              return (
-                <td key={`row-${index}-${column.value}`}>
-                  <Text className={cn("justify-center", column.style)}>
-                    {row[colIndex]}
-                  </Text>
+        {rows.map((row, index: number) => {
+          return (
+            <tr key={`row-${index}`} className="h-16 border-b">
+              {includeIndex && (
+                <td>
+                  <Text className="justify-center">{index + 1}</Text>
                 </td>
-              );
-            })}
-          </tr>
-        ))}
+              )}
+
+              {columns.map((column) => {
+                const colIndex = column.value;
+                return (
+                  <td key={`row-${index}-${column.value}`}>
+                    <Text className={cn("justify-center", column.style)}>
+                      {row[colIndex]}
+                    </Text>
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

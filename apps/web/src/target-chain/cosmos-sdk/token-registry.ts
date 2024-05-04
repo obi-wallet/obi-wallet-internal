@@ -38,7 +38,9 @@ export class CosmosSdkTokenRegistry {
 
     chains.forEach((chain) => {
       const assetList =
-        assets.find((a) => a.chain_name === chain.chain_name)?.assets ?? [];
+        assets.find((a) => {
+          return a.chain_name === chain.chain_name;
+        })?.assets ?? [];
       assetList.forEach((asset) => {
         const key = `${chain.chain_id}:${asset.base}`;
         result[key] = asset;

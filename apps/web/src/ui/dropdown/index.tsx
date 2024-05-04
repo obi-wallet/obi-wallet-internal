@@ -51,7 +51,9 @@ export function CustomDropdown<T extends DropdownItem>({
 }: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  useOutsideClick(ref, () => setIsOpen(false));
+  useOutsideClick(ref, () => {
+    return setIsOpen(false);
+  });
 
   return (
     <div ref={ref} className="flex flex-1">
@@ -61,43 +63,49 @@ export function CustomDropdown<T extends DropdownItem>({
           onItemSelect(selection);
           setIsOpen(false); // Close dropdown after selection
         }}
-        onOuterClick={() => setIsOpen(false)}
+        onOuterClick={() => {
+          return setIsOpen(false);
+        }}
         itemToString={itemToString}
         selectedItem={selectedItem}
       >
-        {({ getItemProps, selectedItem }) => (
-          <div className={cn("relative z-10", className)}>
-            <button
-              id="dropdownDefaultButton"
-              data-dropdown-toggle="dropdown"
-              className={cn(
-                "bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white",
-                selectedItemClassname,
-              )}
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <SelectedItemComponent item={selectedItem} />
+        {({ getItemProps, selectedItem }) => {
+          return (
+            <div className={cn("relative z-10", className)}>
+              <button
+                id="dropdownDefaultButton"
+                data-dropdown-toggle="dropdown"
+                className={cn(
+                  "bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white",
+                  selectedItemClassname,
+                )}
+                onClick={() => {
+                  return setIsOpen(!isOpen);
+                }}
+              >
+                <SelectedItemComponent item={selectedItem} />
 
-              <div className="ml-3">
-                {isOpen ? <FaAngleUp /> : <FaAngleDown />}
-              </div>
-            </button>
-            {isOpen && (
-              <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
-                {items.map((item, index) => {
-                  return (
-                    <ItemComponent
-                      key={getKey ? getKey(item) : index.toString()}
-                      item={item}
-                      getItemProps={getItemProps}
-                      isSelected={selectedItem === item}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                <div className="ml-3">
+                  {isOpen ? <FaAngleUp /> : <FaAngleDown />}
+                </div>
+              </button>
+              {isOpen && (
+                <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
+                  {items.map((item, index) => {
+                    return (
+                      <ItemComponent
+                        key={getKey ? getKey(item) : index.toString()}
+                        item={item}
+                        getItemProps={getItemProps}
+                        isSelected={selectedItem === item}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        }}
       </Downshift>
     </div>
   );

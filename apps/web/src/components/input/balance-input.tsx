@@ -44,7 +44,9 @@ export const BalanceInput = observer<BalanceInputProps>(function BalanceInput({
         className="pr-72 "
         disabled={disabled}
         value={value.amount}
-        onChange={(value) => setAmount(value)}
+        onChange={(value) => {
+          return setAmount(value);
+        }}
         type="number"
         step={0.001}
         labelText={label}

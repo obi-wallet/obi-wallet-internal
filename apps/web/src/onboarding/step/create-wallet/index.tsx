@@ -92,7 +92,9 @@ function LoadingText() {
     const interval = setInterval(() => {
       setMessage(getRandomMessage);
     }, 4000);
-    return () => clearInterval(interval);
+    return () => {
+      return clearInterval(interval);
+    };
   }, []);
 
   return <Text className=" text-center">{message}</Text>;

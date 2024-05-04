@@ -60,13 +60,15 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     setText(defaultValue ?? "");
   }, [defaultValue]);
 
-  useImperativeHandle(parentRef, () => ({
-    // This function exposes the localRef's current value to the parent
-    // You can also expose other methods or values if needed
-    focus: () => {
-      ref.current?.focus();
-    },
-  }));
+  useImperativeHandle(parentRef, () => {
+    return {
+      // This function exposes the localRef's current value to the parent
+      // You can also expose other methods or values if needed
+      focus: () => {
+        ref.current?.focus();
+      },
+    };
+  });
 
   useEffect(() => {
     if (value !== text) {

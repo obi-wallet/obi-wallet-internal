@@ -41,9 +41,11 @@ export const WithChildrenAndLabel: Story = {
     labelClassname: "bg-violet-600",
   },
 
-  render: (args) => (
-    <InputContainer {...args}>
-      <div>InputContainer</div>
-    </InputContainer>
-  ),
+  render: (args) => {
+    return (
+      <InputContainer {...args}>
+        <div>InputContainer</div>
+      </InputContainer>
+    );
+  },
 };

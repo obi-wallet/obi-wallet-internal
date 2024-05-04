@@ -85,7 +85,9 @@ export function tokenGivenBalances({
     }, "No token selected")
     .refine((token) => {
       if (token.id === "") return true;
-      const balance = balances?.find((balance) => balance.id === token.id) ?? {
+      const balance = balances?.find((balance) => {
+        return balance.id === token.id;
+      }) ?? {
         id: token.id,
         rawAmount: "0",
       };

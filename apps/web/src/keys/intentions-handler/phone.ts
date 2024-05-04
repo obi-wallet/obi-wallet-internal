@@ -116,9 +116,9 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
       via: this.via,
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
-      signHashes: this.payload.signHashes.map((hash) =>
-        Buffer.from(hash).toString("base64"),
-      ),
+      signHashes: this.payload.signHashes.map((hash) => {
+        return Buffer.from(hash).toString("base64");
+      }),
     });
     await client.requestMagicCode();
   }
@@ -129,9 +129,9 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
       via: this.via,
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
-      signHashes: this.payload.signHashes.map((hash) =>
-        Buffer.from(hash).toString("base64"),
-      ),
+      signHashes: this.payload.signHashes.map((hash) => {
+        return Buffer.from(hash).toString("base64");
+      }),
     });
     const response = await client.confirmMagicCode(code);
 

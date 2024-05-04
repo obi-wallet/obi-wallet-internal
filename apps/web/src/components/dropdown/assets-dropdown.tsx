@@ -56,7 +56,9 @@ export function AssetsDropDown({
         data-dropdown-toggle="dropdown"
         className="flex h-16 w-full items-center justify-between rounded-xl bg-slate-950 p-3 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          return setIsOpen(!isOpen);
+        }}
       >
         <div className="flex items-center space-x-3">
           {selectedOption && (
@@ -86,28 +88,32 @@ export function AssetsDropDown({
           className="z-50 cursor-pointer py-2 text-sm text-gray-700 dark:text-gray-200"
           aria-labelledby="dropdownDefaultButton"
         >
-          {options.map((option) => (
-            <li
-              key={`dropdown-${option.label}`}
-              onClick={() => handleClickOption(option)}
-              className={cn(
-                " px-4 py-2 hover:bg-gray-600 ",
-                option.label === selectedOption?.label && "bg-gray-600 ",
-              )}
-            >
-              <div className="flex items-center space-x-3">
-                <Image
-                  alt={option.label}
-                  src={option.image}
-                  width={24}
-                  height={24}
-                />
-                <div className="flex flex-col space-y-2">
-                  <Text>{option.label}</Text>
+          {options.map((option) => {
+            return (
+              <li
+                key={`dropdown-${option.label}`}
+                onClick={() => {
+                  return handleClickOption(option);
+                }}
+                className={cn(
+                  " px-4 py-2 hover:bg-gray-600 ",
+                  option.label === selectedOption?.label && "bg-gray-600 ",
+                )}
+              >
+                <div className="flex items-center space-x-3">
+                  <Image
+                    alt={option.label}
+                    src={option.image}
+                    width={24}
+                    height={24}
+                  />
+                  <div className="flex flex-col space-y-2">
+                    <Text>{option.label}</Text>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

@@ -173,9 +173,9 @@ function keygen(params: Parameters): any[] {
     // Check if result[1] is an empty array
     // If so, then we are done. Do not proceed to next round.
     if (
-      !Object.values(partyToOutgoingRoundMsgs).every(
-        (msgs) => msgs.length === 0,
-      )
+      !Object.values(partyToOutgoingRoundMsgs).every((msgs) => {
+        return msgs.length === 0;
+      })
     ) {
       handleRound();
     }
@@ -301,9 +301,9 @@ function createSignersAndPresign(
     // Check if result[1] is an empty array
     // If so, then we are done. Do not proceed to next round.
     if (
-      !Object.values(partyToOutgoingRoundMsgs).every(
-        (msgs) => msgs.length === 0,
-      )
+      !Object.values(partyToOutgoingRoundMsgs).every((msgs) => {
+        return msgs.length === 0;
+      })
     ) {
       handleRound();
     }

@@ -74,7 +74,9 @@ export class CosmosSdkMpcSigner
           .filter((signedHash): signedHash is Uint8Array => {
             return !!signedHash;
           })
-          .map((signedHash) => Buffer.from(signedHash).toString("hex")),
+          .map((signedHash) => {
+            return Buffer.from(signedHash).toString("hex");
+          }),
       );
     });
   }

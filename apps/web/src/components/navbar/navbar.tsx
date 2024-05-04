@@ -94,35 +94,39 @@ export function Navbar() {
         <div className="mt-7 grow">
           <ul role="list" className="flex flex-col space-y-3">
             {navMenu
-              .filter((item) => item.showOnDesktop)
-              .map((navItem, index) => (
-                <li key={`navmenu-${index}`}>
-                  <PrimaryLink
-                    href={navItem.href}
-                    className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
-                      mainURISegment === navItem.module
-                        ? "bg-background-select rounded-md font-bold"
-                        : ""
-                    }`}
-                    target={navItem.target || "_self"}
-                  >
-                    <Image
-                      src={navItem.icon}
-                      width={30}
-                      height={30}
-                      alt={navItem.text}
-                    />
-                    <Text
-                      className="ml-7"
-                      fontWeight={
-                        mainURISegment === navItem.module ? "bold" : "normal"
-                      }
+              .filter((item) => {
+                return item.showOnDesktop;
+              })
+              .map((navItem, index) => {
+                return (
+                  <li key={`navmenu-${index}`}>
+                    <PrimaryLink
+                      href={navItem.href}
+                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
+                        mainURISegment === navItem.module
+                          ? "bg-background-select rounded-md font-bold"
+                          : ""
+                      }`}
+                      target={navItem.target || "_self"}
                     >
-                      {navItem.text}
-                    </Text>
-                  </PrimaryLink>
-                </li>
-              ))}
+                      <Image
+                        src={navItem.icon}
+                        width={30}
+                        height={30}
+                        alt={navItem.text}
+                      />
+                      <Text
+                        className="ml-7"
+                        fontWeight={
+                          mainURISegment === navItem.module ? "bold" : "normal"
+                        }
+                      >
+                        {navItem.text}
+                      </Text>
+                    </PrimaryLink>
+                  </li>
+                );
+              })}
           </ul>
         </div>
         <Footer className="!px-0" />
@@ -131,32 +135,36 @@ export function Navbar() {
         <div className="flex w-full flex-row items-center justify-center px-4 ">
           <ul role="list" className="flex w-full flex-row justify-between p-3 ">
             {navMenu
-              .filter((item) => item.showOnMobile)
-              .sort((itemX, itemY) =>
-                itemX.mobileOrder - itemY.mobileOrder > 0 ? 1 : -1,
-              )
-              .map((navItem, index) => (
-                <li key={`navmenu-${index}`}>
-                  <PrimaryLink
-                    href={navItem.href}
-                    className={cn(
-                      "flex flex-col items-center justify-center space-y-3",
-                      mainURISegment !== navItem.module && "opacity-60",
-                    )}
-                  >
-                    <Image
-                      src={navItem.icon}
-                      height={30}
-                      width={30}
-                      alt={navItem.text}
-                      className="!h-[30px] !w-[30px]"
-                    />
-                    <Text className="text-center">
-                      {navItem.mobileText ?? navItem.text}
-                    </Text>
-                  </PrimaryLink>
-                </li>
-              ))}
+              .filter((item) => {
+                return item.showOnMobile;
+              })
+              .sort((itemX, itemY) => {
+                return itemX.mobileOrder - itemY.mobileOrder > 0 ? 1 : -1;
+              })
+              .map((navItem, index) => {
+                return (
+                  <li key={`navmenu-${index}`}>
+                    <PrimaryLink
+                      href={navItem.href}
+                      className={cn(
+                        "flex flex-col items-center justify-center space-y-3",
+                        mainURISegment !== navItem.module && "opacity-60",
+                      )}
+                    >
+                      <Image
+                        src={navItem.icon}
+                        height={30}
+                        width={30}
+                        alt={navItem.text}
+                        className="!h-[30px] !w-[30px]"
+                      />
+                      <Text className="text-center">
+                        {navItem.mobileText ?? navItem.text}
+                      </Text>
+                    </PrimaryLink>
+                  </li>
+                );
+              })}
           </ul>
         </div>
       </div>

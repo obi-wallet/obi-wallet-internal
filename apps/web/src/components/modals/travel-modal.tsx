@@ -251,12 +251,14 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   };
 
   const getFromChainOptions = () => {
-    return fromChains.map((chain) => ({
-      label: chain.label,
-      value: chain.chainId,
-      image: chain.image,
-      disabled: chain.disabled,
-    }));
+    return fromChains.map((chain) => {
+      return {
+        label: chain.label,
+        value: chain.chainId,
+        image: chain.image,
+        disabled: chain.disabled,
+      };
+    });
   };
   const getToChainOptions = () => {
     return toChains.map((chain) => {
@@ -274,10 +276,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (assets === undefined) return [];
 
     const chainAssets = Object.entries(assets)
-      .filter(
-        ([_, asset]) =>
-          asset.chainId === toChainValue || asset.denom.includes("ibc/"),
-      )
+      .filter(([_, asset]) => {
+        return asset.chainId === toChainValue || asset.denom.includes("ibc/");
+      })
       .reduce<Record<string, ToAsset>>((acc, [key, asset]) => {
         return {
           ...acc,
@@ -286,12 +287,14 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       }, {});
 
     return Object.entries(chainAssets).map(
-      ([key, asset]: [string, ToAsset]): IAssetOption => ({
-        label: asset?.label ?? "",
-        image: asset?.image ?? "",
-        value: key,
-        disabled: asset.disabled,
-      }),
+      ([key, asset]: [string, ToAsset]): IAssetOption => {
+        return {
+          label: asset?.label ?? "",
+          image: asset?.image ?? "",
+          value: key,
+          disabled: asset.disabled,
+        };
+      },
     );
   };
 
@@ -388,80 +391,88 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             <Controller
               name="fromChain"
               control={control}
-              render={({ field }) => (
-                <Dropdown
-                  itemToString={(item) => {
-                    return item?.label ?? "";
-                  }}
-                  items={fromChainOptions}
-                  selectedItem={
-                    fromChainOptions.find(
-                      (item) => item.value === fromChainValue,
-                    ) || fromChainOptions[0]
-                  }
-                  getKey={(item) => item.label}
-                  className="h-full w-full"
-                  itemComponent={({ getItemProps, item, isSelected }) => {
-                    const { onClick, onMouseDown, onMouseMove, ...itemProps } =
-                      getItemProps({ item });
-
-                    return (
-                      <div
-                        {...itemProps}
-                        {...(!item.disabled && {
-                          onClick,
-                          onMouseDown,
-                          onMouseMove,
-                        })}
-                        className={cn(
-                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                          isSelected && "bg-gray-600 ",
-                          item.disabled &&
-                            "cursor-not-allowed opacity-50 hover:bg-gray-600",
-                        )}
-                      >
-                        <div className="flex items-center justify-center ">
-                          <img
-                            src={item.image}
-                            alt={item.label}
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                        <div className="text-white">
-                          <div className=" uppercase">{item.label}</div>
-                        </div>
-                      </div>
-                    );
-                  }}
-                  onItemSelect={(item) => {
-                    field.onChange(item.value);
-                    void handleAssetChange();
-                  }}
-                  selectedItemClassname="bg-black/30 h-full"
-                  selectedItemComponent={(selected) => {
-                    if (!selected.item) {
-                      return <div>Select</div>;
+              render={({ field }) => {
+                return (
+                  <Dropdown
+                    itemToString={(item) => {
+                      return item?.label ?? "";
+                    }}
+                    items={fromChainOptions}
+                    selectedItem={
+                      fromChainOptions.find((item) => {
+                        return item.value === fromChainValue;
+                      }) || fromChainOptions[0]
                     }
-                    return (
-                      <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                        <div className="flex items-center   justify-center ">
-                          <img
-                            src={selected.item.image}
-                            alt={selected.item.label}
-                            className="h-8 w-8"
-                          />
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
-                          <div className=" uppercase">
-                            {selected.item.label}
+                    getKey={(item) => {
+                      return item.label;
+                    }}
+                    className="h-full w-full"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  }}
-                />
-              )}
+                      );
+                    }}
+                    onItemSelect={(item) => {
+                      field.onChange(item.value);
+                      void handleAssetChange();
+                    }}
+                    selectedItemClassname="bg-black/30 h-full"
+                    selectedItemComponent={(selected) => {
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center   justify-center ">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-8 w-8"
+                            />
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                );
+              }}
             />
             <div className=" flex items-center justify-center p-2  sm:p-5">
               <FaArrowRight className="m-auto  text-white" />
@@ -469,78 +480,89 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             <Controller
               name="toChain"
               control={control}
-              render={({ field }) => (
-                <Dropdown
-                  itemToString={(item) => item?.label ?? ""}
-                  items={toChainOptions}
-                  selectedItem={
-                    toChainOptions.find((item) => item.value === field.value) ||
-                    toChainOptions[0]
-                  }
-                  getKey={(item) => item.label}
-                  className="w-full"
-                  itemComponent={({ getItemProps, item, isSelected }) => {
-                    const { onClick, onMouseDown, onMouseMove, ...itemProps } =
-                      getItemProps({ item });
-
-                    return (
-                      <div
-                        {...itemProps}
-                        {...(!item.disabled && {
-                          onClick,
-                          onMouseDown,
-                          onMouseMove,
-                        })}
-                        className={cn(
-                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                          isSelected && "bg-gray-600 ",
-                          item.disabled &&
-                            "cursor-not-allowed opacity-50 hover:bg-gray-600",
-                        )}
-                      >
-                        <div className="flex items-center justify-center ">
-                          <img
-                            src={item.image}
-                            alt={item.label}
-                            width={24}
-                            height={24}
-                          />
-                        </div>
-                        <div className="text-white">
-                          <div className=" uppercase">{item.label}</div>
-                        </div>
-                      </div>
-                    );
-                  }}
-                  onItemSelect={(item) => {
-                    setValue("toAsset", { amount: "", asset: "" });
-                    field.onChange(item.value);
-                    void handleAssetChange();
-                  }}
-                  selectedItemClassname="bg-black/30 h-full"
-                  selectedItemComponent={(selected) => {
-                    if (!selected.item) {
-                      return <div>Select</div>;
+              render={({ field }) => {
+                return (
+                  <Dropdown
+                    itemToString={(item) => {
+                      return item?.label ?? "";
+                    }}
+                    items={toChainOptions}
+                    selectedItem={
+                      toChainOptions.find((item) => {
+                        return item.value === field.value;
+                      }) || toChainOptions[0]
                     }
-                    return (
-                      <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                        <div className="flex items-center   justify-center ">
-                          <img
-                            src={selected.item.image}
-                            alt={selected.item.label}
-                            className="h-8 w-8"
-                          />
-                        </div>
-                        <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
-                          <div className=" uppercase">
-                            {selected.item.label}
+                    getKey={(item) => {
+                      return item.label;
+                    }}
+                    className="w-full"
+                    itemComponent={({ getItemProps, item, isSelected }) => {
+                      const {
+                        onClick,
+                        onMouseDown,
+                        onMouseMove,
+                        ...itemProps
+                      } = getItemProps({ item });
+
+                      return (
+                        <div
+                          {...itemProps}
+                          {...(!item.disabled && {
+                            onClick,
+                            onMouseDown,
+                            onMouseMove,
+                          })}
+                          className={cn(
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
+                            item.disabled &&
+                              "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                          )}
+                        >
+                          <div className="flex items-center justify-center ">
+                            <img
+                              src={item.image}
+                              alt={item.label}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
+                          <div className="text-white">
+                            <div className=" uppercase">{item.label}</div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  }}
-                />
-              )}
+                      );
+                    }}
+                    onItemSelect={(item) => {
+                      setValue("toAsset", { amount: "", asset: "" });
+                      field.onChange(item.value);
+                      void handleAssetChange();
+                    }}
+                    selectedItemClassname="bg-black/30 h-full"
+                    selectedItemComponent={(selected) => {
+                      if (!selected.item) {
+                        return <div>Select</div>;
+                      }
+                      return (
+                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center   justify-center ">
+                            <img
+                              src={selected.item.image}
+                              alt={selected.item.label}
+                              className="h-8 w-8"
+                            />
+                          </div>
+                          <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
+                            <div className=" uppercase">
+                              {selected.item.label}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }}
+                  />
+                );
+              }}
             />
           </div>
 
@@ -631,12 +653,14 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       items={options}
                       selectedItem={
                         field.value.asset !== ""
-                          ? options.find(
-                              (item) => item.value === field.value.asset,
-                            )
+                          ? options.find((item) => {
+                              return item.value === field.value.asset;
+                            })
                           : null
                       }
-                      getKey={(item) => item.label}
+                      getKey={(item) => {
+                        return item.label;
+                      }}
                       className="w-full"
                       itemComponent={({ getItemProps, item, isSelected }) => {
                         const {
@@ -715,17 +739,19 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           <Controller
             name="slippage"
             control={control}
-            render={({ field, fieldState }) => (
-              <ToleranceSetting
-                value={field.value}
-                onChange={(attr) => {
-                  field.onChange(attr);
-                  void handleAssetChange();
-                }}
-                onBlur={field.onBlur}
-                errorMessage={fieldState.error?.message}
-              />
-            )}
+            render={({ field, fieldState }) => {
+              return (
+                <ToleranceSetting
+                  value={field.value}
+                  onChange={(attr) => {
+                    field.onChange(attr);
+                    void handleAssetChange();
+                  }}
+                  onBlur={field.onBlur}
+                  errorMessage={fieldState.error?.message}
+                />
+              );
+            }}
           />
 
           <Divider />
@@ -835,19 +861,23 @@ function ToleranceSetting({
         Slippage Tolerance
       </Text>
       <div className="mb-10  flex flex-row space-x-3">
-        {tolerances.map((tolerance) => (
-          <Box
-            key={`asset-${tolerance}%`}
-            className={cn(
-              "w-17 flex h-9 flex-row items-center space-x-3 text-center",
-              "cursor-pointer",
-              value === tolerance ? "bg-background-primary" : "bg-gray-700",
-            )}
-            onClick={() => setText(tolerance.toString())}
-          >
-            <Text>{tolerance}%</Text>
-          </Box>
-        ))}
+        {tolerances.map((tolerance) => {
+          return (
+            <Box
+              key={`asset-${tolerance}%`}
+              className={cn(
+                "w-17 flex h-9 flex-row items-center space-x-3 text-center",
+                "cursor-pointer",
+                value === tolerance ? "bg-background-primary" : "bg-gray-700",
+              )}
+              onClick={() => {
+                return setText(tolerance.toString());
+              }}
+            >
+              <Text>{tolerance}%</Text>
+            </Box>
+          );
+        })}
         <Box
           key="asset-custom%"
           className={cn(

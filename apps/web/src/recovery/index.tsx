@@ -12,7 +12,11 @@ export const Recovery = observer(function Recovery() {
   const { chainStore, mpcWalletsStore, keyMetaDataStore } = useStore();
 
   const [key, setKey] = useState(0);
-  const increaseKey = () => setKey((key) => key + 1);
+  const increaseKey = () => {
+    return setKey((key) => {
+      return key + 1;
+    });
+  };
 
   return (
     <WalletDataFlow

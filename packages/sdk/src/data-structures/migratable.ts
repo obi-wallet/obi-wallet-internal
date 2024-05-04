@@ -15,7 +15,9 @@ export function migratable<T extends z.ZodTypeAny>(
   return createMigratableSchema({
     anyVersion: schema,
     currentVersion: schema,
-    migrate: (data) => data,
+    migrate: (data) => {
+      return data;
+    },
   });
 }
 

@@ -40,18 +40,20 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             account.
           </Box>
         ) : null}
-        {keyList.map((sigKey) => (
-          <KeyListItem
-            key={sigKey.type}
-            keyData={sigKey}
-            onClick={() => {
-              pushPage({
-                type: "key-type",
-                payload: sigKey.type,
-              });
-            }}
-          />
-        ))}
+        {keyList.map((sigKey) => {
+          return (
+            <KeyListItem
+              key={sigKey.type}
+              keyData={sigKey}
+              onClick={() => {
+                pushPage({
+                  type: "key-type",
+                  payload: sigKey.type,
+                });
+              }}
+            />
+          );
+        })}
       </div>
       <div className="mt-40 grid grid-cols-2 gap-8">
         <Button

@@ -112,7 +112,11 @@ export const SyncWalletData = observer(function SyncWalletData() {
   const router = useRouter();
 
   const [key, setKey] = useState(0);
-  const increaseKey = () => setKey((key) => key + 1);
+  const increaseKey = () => {
+    return setKey((key) => {
+      return key + 1;
+    });
+  };
 
   const walletDataState = useWalletDataStateQuery();
 

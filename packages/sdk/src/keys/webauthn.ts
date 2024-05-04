@@ -145,14 +145,18 @@ async function combineKeys(
 ): Promise<string> {
   const combinedString = demoKey + credentialKey;
   const combinedUint8Array = new Uint8Array(
-    combinedString.split("").map((char) => char.charCodeAt(0)),
+    combinedString.split("").map((char) => {
+      return char.charCodeAt(0);
+    }),
   );
 
   // Hash the combined Uint8Array
   const hashBuffer = await crypto.subtle.digest("SHA-256", combinedUint8Array);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   const hashHex = hashArray
-    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .map((byte) => {
+      return byte.toString(16).padStart(2, "0");
+    })
     .join("");
 
   // Convert the hash to a BigInt and ensure it's in the valid range
@@ -176,7 +180,9 @@ async function combineKeys(
 // Helper function to convert hex to base64
 function hexToBase64(hex: string) {
   const byteArray = new Uint8Array(
-    hex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)),
+    hex.match(/.{1,2}/g)!.map((byte) => {
+      return parseInt(byte, 16);
+    }),
   );
   return btoa(String.fromCharCode(...byteArray));
 }

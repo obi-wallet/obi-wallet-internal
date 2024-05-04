@@ -86,7 +86,9 @@ export const Primary: Story<Book> = {
   args: {
     items: books,
     itemComponent: BookComponent,
-    itemToString: (item) => (item ? item.title : ""),
+    itemToString: (item) => {
+      return item ? item.title : "";
+    },
     selectedItemComponent: SelectedBook,
     onItemSelect: (item) => {
       console.log(item);
@@ -100,7 +102,9 @@ export const Primary: Story<Book> = {
           className="w-full"
           itemComponent={args.itemComponent}
           itemToString={args.itemToString}
-          onItemSelect={(item) => console.log(item)}
+          onItemSelect={(item) => {
+            return console.log(item);
+          }}
           selectedItemComponent={args.selectedItemComponent}
         />
       </div>

@@ -19,27 +19,30 @@ export const PendingAssets = observer(function PendingAssets() {
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
-  const onlyPending = pendingTXs.data.filter(
-    (t) =>
+  const onlyPending = pendingTXs.data.filter((t) => {
+    return (
       t.transaction.status.includes("InProgress") ||
-      t.transaction.status.includes("LowBalance"),
-  );
+      t.transaction.status.includes("LowBalance")
+    );
+  });
   return (
     <>
-      {onlyPending.map((tx) => (
-        <PendingAsset
-          key={tx.transaction.deposit_address}
-          tx={tx}
-          onOpen={(addr) => {
-            if (addr === openedAsset) {
-              setOpenedAsset(null);
-              return;
-            }
-            setOpenedAsset(addr);
-          }}
-          opened={openedAsset === tx.transaction.deposit_address}
-        />
-      ))}
+      {onlyPending.map((tx) => {
+        return (
+          <PendingAsset
+            key={tx.transaction.deposit_address}
+            tx={tx}
+            onOpen={(addr) => {
+              if (addr === openedAsset) {
+                setOpenedAsset(null);
+                return;
+              }
+              setOpenedAsset(addr);
+            }}
+            opened={openedAsset === tx.transaction.deposit_address}
+          />
+        );
+      })}
     </>
   );
 });
@@ -51,10 +54,9 @@ const PendingAsset = observer<{
 }>(function PendingAsset({ tx, opened, onOpen }) {
   const asset =
     toAssets[
-      Object.keys(toAssets).find(
-        (key) =>
-          toAssets[key]?.denom === tx.transaction.intent.destination_asset,
-      ) ?? ""
+      Object.keys(toAssets).find((key) => {
+        return toAssets[key]?.denom === tx.transaction.intent.destination_asset;
+      }) ?? ""
     ];
 
   return (
@@ -344,7 +346,9 @@ const PendingStepList = observer<{
   return (
     <div className="flex: flex-1 p-4 pt-1">
       <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
-        {data.map((step) => renderStep(step))}
+        {data.map((step) => {
+          return renderStep(step);
+        })}
       </ol>
       <Status status={txStatus} />
     </div>

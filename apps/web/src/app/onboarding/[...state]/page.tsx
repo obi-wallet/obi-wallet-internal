@@ -9,9 +9,9 @@ import { notFound, redirect } from "next/navigation";
 import { flatten, fromPairs, keys, times } from "ramda";
 
 function getExternalFlows(): Record<string, OnboardingStep[]> {
-  const targetAssets = Object.keys(toAssets).filter(
-    (key) => !toAssets[key]?.disabled,
-  );
+  const targetAssets = Object.keys(toAssets).filter((key) => {
+    return !toAssets[key]?.disabled;
+  });
   return fromPairs(
     targetAssets.map((targetAsset) => {
       return [`external-${targetAsset}`, getExternalFlow(targetAsset)];
