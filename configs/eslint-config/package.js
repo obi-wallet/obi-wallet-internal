@@ -37,6 +37,7 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/no-useless-template-literals": "error",
     "@typescript-eslint/prefer-as-const": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-reduce-type-parameter": "error",
