@@ -12,7 +12,7 @@ module.exports = {
     "eslint-config-turbo",
     "prettier",
   ],
-  plugins: ["mobx", "import", "react", "react-hooks", "unicorn"],
+  plugins: ["mobx", "etc", "import", "react", "react-hooks", "unicorn"],
   rules: {
     "@typescript-eslint/consistent-indexed-object-style": "error",
     "@typescript-eslint/consistent-generic-constructors": "error",
@@ -53,6 +53,8 @@ module.exports = {
       },
     ],
     "@typescript-eslint/return-await": ["error", "always"],
+
+    "etc/prefer-interface": "error",
 
     "import/no-default-export": "error",
     "import/no-extraneous-dependencies": [

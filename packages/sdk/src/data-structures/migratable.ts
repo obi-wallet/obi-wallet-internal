@@ -19,10 +19,10 @@ export function migratable<T extends z.ZodTypeAny>(
   });
 }
 
-export type AbstractMigratableSchema<
+export interface AbstractMigratableSchema<
   Any extends z.ZodTypeAny,
   Current extends z.ZodTypeAny,
-> = {
+> {
   currentSchema: Current;
   migratableSchema: z.ZodEffects<Any, z.TypeOf<Current>, z.input<Any>>;
   addMigration: <Next extends z.ZodTypeAny>({
@@ -32,7 +32,7 @@ export type AbstractMigratableSchema<
     nextSchema: Next;
     migrate: (data: z.infer<Current>) => z.infer<Next>;
   }) => AbstractMigratableSchema<z.ZodUnion<[Next, Any]>, Next>;
-};
+}
 
 function createMigratableSchema<
   Any extends z.ZodTypeAny,

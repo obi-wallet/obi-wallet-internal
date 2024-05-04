@@ -32,15 +32,15 @@ import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
-export type PriceData = {
+export interface PriceData {
   mainVsPrice: BigNumber;
   mainUsd: BigNumber;
   vsUsd: BigNumber;
-};
-export type AssetAmmount = {
+}
+export interface AssetAmmount {
   amount: string | undefined;
   asset: string | undefined;
-};
+}
 interface IToleranceProps {
   onChange: (value: number | undefined) => void;
   value: number | undefined;
@@ -67,7 +67,7 @@ interface FormData {
   slippage: number;
 }
 type ErrorsObject = Record<string, { message: string; type: string }>;
-type SingleError = { message: string; type: string };
+interface SingleError { message: string; type: string }
 type Errors = ErrorsObject | SingleError;
 
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
