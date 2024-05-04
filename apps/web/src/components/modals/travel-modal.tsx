@@ -3,7 +3,7 @@
 import { ToAsset, fromAssets, toAssets } from "@/dashboard/assets";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { cn, fromChains, getToChain, toChains } from "@/lib/utils";
+import { cn, fromChains, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
@@ -244,12 +244,12 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   };
   const getToChainOptions = () => {
     return toChains.map((chain) => {
-      const chainData = getToChain(chain);
+      const targetChain = TargetChain.chainId(chain);
       return {
-        label: chainData?.name ?? "",
+        label: targetChain.label ?? "",
         value: chain,
-        image: chainData?.image ?? "",
-        disabled: false,
+        image: targetChain.image ?? "",
+        disabled: targetChain.disabled,
       };
     });
   };

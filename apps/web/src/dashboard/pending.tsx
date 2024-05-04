@@ -1,7 +1,8 @@
 import { toAssets } from "@/dashboard/assets";
 import { getTokenPrice, usePendingTXs } from "@/hooks/balances";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { cn, getFromChain, getToChain } from "@/lib/utils";
+import { cn, getFromChain } from "@/lib/utils";
+import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,18 +10,18 @@ import { toPairs } from "ramda";
 import { useEffect, useState } from "react";
 
 import {
-  Transaction,
+  EmptyObject,
+  NullStepSimulation,
+  OnlySquidStepSimulation,
   SimulationEntryObject,
   SkipStatus,
-  SquidStatus,
-  StepStatus,
-  EmptyObject,
-  StepSimulations,
   SquidRouteFromChain,
   SquidRouteToChain,
-  OnlySquidStepSimulation,
-  NullStepSimulation,
+  SquidStatus,
   SquidStepSimulation,
+  StepSimulations,
+  StepStatus,
+  Transaction,
 } from "./schema";
 
 type StepAndTx = StepStatus & {
@@ -206,7 +207,7 @@ function PendingStepItem({
         }
         const fromChain = getFromChain(step.chainId);
         const chainId = step.transaction.intent.destination_chain_id;
-        const chain = getToChain(chainId);
+        const chain = TargetChain.chainId(chainId);
         if (chainId === "neutron-1") {
           return `Swap to USDC on ${fromChain?.label} (Squid)`;
         }
@@ -216,16 +217,16 @@ function PendingStepItem({
           return v.denom === denom;
         })?.[1];
 
-        return `Swap to ${asset?.label} on ${chain.name} (Squid)`;
+        return `Swap to ${asset?.label} on ${chain.label} (Squid)`;
       }
       case "Skip": {
         const chainId = step.transaction.intent.destination_chain_id;
-        const chain = getToChain(chainId);
+        const chain = TargetChain.chainId(chainId);
         const denom = step.transaction.intent.destination_asset;
         const asset = toPairs(toAssets).find(([, v]) => {
           return v.denom === denom;
         })?.[1];
-        return `Swap to ${asset?.label} on ${chain.name} (Skip)`;
+        return `Swap to ${asset?.label} on ${chain.label} (Skip)`;
       }
       default:
         return `Not implemented`;
