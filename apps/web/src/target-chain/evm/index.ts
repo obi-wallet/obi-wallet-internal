@@ -1,34 +1,39 @@
-import { EvmChainId } from "@/target-chain/evm/chains";
+import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import {
+  getSec256k1UncompressedPublicKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
+import { getAddress, isAddress, keccak256 } from "viem";
 
 export class EvmTargetChain extends AbstractTargetChain {
-  public constructor(_chainId: EvmChainId) {
+  protected readonly chainData: EvmChainData;
+
+  public constructor(chainId: EvmChainId) {
     super();
+    this.chainData = EvmChains[chainId];
   }
 
-  // TODO:
   public get label(): string {
-    return "";
+    return this.chainData.chain.name;
   }
 
-  // TODO:
   public get image(): string {
-    return "";
+    return this.chainData.image;
   }
 
-  // TODO:
   public get disabled(): boolean {
-    return true;
+    return this.chainData.disabled ?? false;
   }
 
-  // TODO:
-  public computeAddress(_publicKey: Secp256k1PublicKey) {
-    return "";
+  public computeAddress(publicKey: Secp256k1PublicKey) {
+    const u8 = getSec256k1UncompressedPublicKey(publicKey);
+    const hex = `0x${Buffer.from(u8).toString("hex")}`;
+    const address = keccak256(`0x${hex.substring(4)}`).substring(26);
+    return getAddress(`0x${address}`);
   }
 
-  // TODO:
-  public validateAddress(_address: string) {
-    return false;
+  public validateAddress(address: string) {
+    return isAddress(address);
   }
 }
