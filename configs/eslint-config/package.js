@@ -28,6 +28,7 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/return-await": ["error", "always"],
 
     "import/no-default-export": "error",
     "import/no-extraneous-dependencies": [

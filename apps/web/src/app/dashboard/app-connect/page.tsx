@@ -19,7 +19,7 @@ export default observer(function AppConnect() {
   const sessions = useQuery({
     queryKey: ["wallet-connect", "sessions"],
     queryFn: async () => {
-      return walletConnectStore.getActiveSessions();
+      return await walletConnectStore.getActiveSessions();
     },
     staleTime: 0,
     refetchInterval: 1000,

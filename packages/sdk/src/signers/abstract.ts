@@ -42,7 +42,7 @@ export class AsyncKeySigner<T extends KeyType> extends Signer {
   }
 
   public async signHash(hash: Uint8Array) {
-    return new Promise<Uint8Array>((resolve, reject) => {
+    return await new Promise<Uint8Array>((resolve, reject) => {
       this.pendingSignature = {
         hash,
         resolve,

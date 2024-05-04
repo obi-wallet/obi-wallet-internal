@@ -64,6 +64,6 @@ export class MultisigKeyDecryption {
       true,
       ["encrypt", "decrypt"],
     );
-    return new AesGcmDecryption(key).decrypt(encrypted);
+    return await new AesGcmDecryption(key).decrypt(encrypted);
   }
 }

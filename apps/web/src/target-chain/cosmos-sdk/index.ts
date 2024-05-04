@@ -89,7 +89,9 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     );
   }
 
-  public async withStargateClient<T>(f: (client: StargateClient) => T) {
+  public async withStargateClient<T>(
+    f: (client: StargateClient) => Promise<T>,
+  ) {
     const client = await this.createStargateClient();
     try {
       return await f(client);
@@ -100,7 +102,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public async withSigningStargateClient<T>(
     signer: OfflineSigner,
-    f: (client: SigningStargateClient) => T,
+    f: (client: SigningStargateClient) => Promise<T>,
   ) {
     const client = await this.createSigningStargateClient(signer);
     try {
@@ -110,7 +112,9 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     }
   }
 
-  public async withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
+  public async withCosmWasmClient<T>(
+    f: (client: CosmWasmClient) => Promise<T>,
+  ) {
     const client = await this.createCosmWasmClient();
     try {
       return await f(client);
@@ -121,7 +125,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public async withSigningCosmWasmClient<T>(
     signer: OfflineSigner,
-    f: (client: SigningCosmWasmClient) => T,
+    f: (client: SigningCosmWasmClient) => Promise<T>,
   ) {
     const client = await this.createSigningCosmWasmClient(signer);
     try {
