@@ -171,7 +171,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
   useEffect(() => {
     if (depositAddress) {
-      trigger();
+      void trigger();
     }
   }, [depositAddress]);
 
@@ -433,7 +433,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   }}
                   onItemSelect={function (item: IAssetOption): void {
                     field.onChange(item.value);
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   selectedItemClassname="bg-black/30 h-full"
                   selectedItemComponent={(selected) => {
@@ -514,7 +514,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   onItemSelect={function (item: IAssetOption): void {
                     setValue("toAsset", { amount: "", asset: "" });
                     field.onChange(item.value);
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   selectedItemClassname="bg-black/30 h-full"
                   selectedItemComponent={(selected) => {
@@ -562,7 +562,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       amount: value,
                     });
 
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   className={cn(
                     "z-20",
@@ -679,7 +679,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                           asset: item.value,
                           amount: field.value.amount,
                         });
-                        handleAssetChange();
+                        void handleAssetChange();
                       }}
                       selectedItemComponent={(selected) => {
                         if (!selected.item) {
@@ -719,7 +719,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 value={field.value}
                 onChange={(attr) => {
                   field.onChange(attr);
-                  handleAssetChange();
+                  void handleAssetChange();
                 }}
                 onBlur={field.onBlur}
                 errorMessage={fieldState.error?.message}
