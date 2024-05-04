@@ -21,6 +21,7 @@ module.exports = {
       },
     ],
     "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-inferrable-types": "error",
     "@typescript-eslint/no-misused-promises": [
       "error",
       {
