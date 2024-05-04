@@ -1,7 +1,6 @@
 import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import {
   SimulationEntry,
-  SquidRouteType,
   SquidSimulationType,
   StepType,
   TokenStatusType,
@@ -27,7 +26,7 @@ export const PendingAssets = observer(function PendingAssets() {
   );
   return (
     <>
-      {onlyPending.map((tx: SimulationEntry) => (
+      {onlyPending.map((tx) => (
         <PendingAsset
           key={tx.transaction.deposit_address}
           tx={tx}
@@ -45,15 +44,11 @@ export const PendingAssets = observer(function PendingAssets() {
   );
 });
 
-const PendingAsset = observer(function PendingAsset({
-  tx,
-  opened,
-  onOpen,
-}: {
+const PendingAsset = observer<{
   tx: SimulationEntry;
   opened: boolean;
   onOpen: (addr: string) => void;
-}) {
+}>(function PendingAsset({ tx, opened, onOpen }) {
   const asset =
     toAssets[
       Object.keys(toAssets).find(
@@ -108,15 +103,11 @@ const PendingAsset = observer(function PendingAsset({
   );
 });
 
-const PendingStepList = observer(function PendingStepList({
-  data,
-  txStatus,
-  simulations,
-}: {
+const PendingStepList = observer<{
   txStatus: string;
   data: StepType[];
   simulations: SimulationEntry["step_simulations"];
-}) {
+}>(function PendingStepList({ data, txStatus, simulations }) {
   console.log({ simulations });
 
   const renderSVG = (status: string) => {
@@ -225,7 +216,7 @@ const PendingStepList = observer(function PendingStepList({
         }
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const squidSimulation = simulations[1] as SquidSimulationType;
-        const routes: SquidRouteType[] = [
+        const routes = [
           ...squidSimulation.estimate.route.fromChain,
           ...squidSimulation.estimate.route.toChain,
         ];
@@ -347,15 +338,11 @@ const PendingStepList = observer(function PendingStepList({
       </li>
     );
   };
-  const renderItems = () => {
-    if (!data ?? data.length === 0) return null;
-    return data.map((step) => renderStep(step));
-  };
   if (!data || data.length === 0) return null;
   return (
     <div className="flex: flex-1 p-4 pt-1">
       <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
-        {renderItems()}
+        {data.map((step) => renderStep(step))}
       </ol>
       <Status status={txStatus} />
     </div>
