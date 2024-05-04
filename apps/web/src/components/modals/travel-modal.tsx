@@ -66,7 +66,7 @@ interface FormData {
   };
   slippage: number;
 }
-type ErrorsObject = { [key: string]: { message: string; type: string } };
+type ErrorsObject = Record<string, { message: string; type: string }>;
 type SingleError = { message: string; type: string };
 type Errors = ErrorsObject | SingleError;
 
@@ -266,9 +266,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     });
   };
 
-  const getAssetOptions = (assets: {
-    [key: string]: ToAsset;
-  }): IAssetOption[] => {
+  const getAssetOptions = (assets: Record<string, ToAsset>): IAssetOption[] => {
     if (assets === undefined) return [];
 
     const chainAssets = Object.entries(assets)
@@ -276,7 +274,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         ([_, asset]) =>
           asset.chainId === toChainValue || asset.denom.includes("ibc/"),
       )
-      .reduce<{ [key: string]: ToAsset }>((acc, [key, asset]) => {
+      .reduce<Record<string, ToAsset>>((acc, [key, asset]) => {
         return {
           ...acc,
           [key]: asset,
