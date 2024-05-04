@@ -67,7 +67,10 @@ interface FormData {
   slippage: number;
 }
 type ErrorsObject = Record<string, { message: string; type: string }>;
-interface SingleError { message: string; type: string }
+interface SingleError {
+  message: string;
+  type: string;
+}
 type Errors = ErrorsObject | SingleError;
 
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
@@ -173,6 +176,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     if (depositAddress) {
       void trigger();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositAddress]);
 
   const executeTx = async () => {
@@ -809,6 +813,7 @@ function ToleranceSetting({
   // so we need to trigger the validation manually
   useEffect(() => {
     onChange(Number(text));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
   useEffect(() => {
     if (value && !isNaN(Number(value))) {
@@ -816,6 +821,7 @@ function ToleranceSetting({
     }
 
     onBlur();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   const renderErrorMessage = (message: string) => {
     if (message.includes("Expected number")) {

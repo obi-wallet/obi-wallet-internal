@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import { useEffectOnceWhen } from "rooks";
 
 import { Text } from "../text";
 
@@ -40,9 +41,10 @@ export const BalanceDropDown = observer<{
         setSelectedOption(selectedOptionProp);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOptionProp]);
 
-  useEffect(() => {
+  useEffectOnceWhen(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -55,7 +57,7 @@ export const BalanceDropDown = observer<{
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  });
 
   const handleClickOption = (option: IBalanceOption) => {
     setSelectedOption(option);
