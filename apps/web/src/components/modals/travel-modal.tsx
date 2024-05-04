@@ -389,9 +389,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               control={control}
               render={({ field }) => (
                 <Dropdown
-                  itemToString={(item: IAssetOption | null) =>
-                    item?.label ?? ""
-                  }
+                  itemToString={(item) => {
+                    return item?.label ?? "";
+                  }}
                   items={fromChainOptions}
                   selectedItem={
                     fromChainOptions.find(
@@ -433,7 +433,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       </div>
                     );
                   }}
-                  onItemSelect={function (item: IAssetOption): void {
+                  onItemSelect={(item) => {
                     field.onChange(item.value);
                     void handleAssetChange();
                   }}
@@ -470,9 +470,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               control={control}
               render={({ field }) => (
                 <Dropdown
-                  itemToString={(item: IAssetOption | null) =>
-                    item?.label ?? ""
-                  }
+                  itemToString={(item) => item?.label ?? ""}
                   items={toChainOptions}
                   selectedItem={
                     toChainOptions.find((item) => item.value === field.value) ||
@@ -513,7 +511,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       </div>
                     );
                   }}
-                  onItemSelect={function (item: IAssetOption): void {
+                  onItemSelect={(item) => {
                     setValue("toAsset", { amount: "", asset: "" });
                     field.onChange(item.value);
                     void handleAssetChange();
@@ -626,9 +624,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
                   rightComponent={
                     <Dropdown
-                      itemToString={(item: IAssetOption | null) =>
-                        item?.label ?? ""
-                      }
+                      itemToString={(item) => {
+                        return item?.label ?? "";
+                      }}
                       items={options}
                       selectedItem={
                         field.value.asset !== ""
@@ -676,7 +674,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                           </div>
                         );
                       }}
-                      onItemSelect={function (item: IAssetOption): void {
+                      onItemSelect={(item) => {
                         field.onChange({
                           asset: item.value,
                           amount: field.value.amount,
