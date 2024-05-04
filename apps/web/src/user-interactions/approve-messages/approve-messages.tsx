@@ -329,13 +329,9 @@ function prettyPrintCoin({
       denom: coin.denom,
     };
   }
-
-  const denomUnit = asset.denom_units.find((value) => {
-    return value.denom === asset.display;
-  });
   return {
     amount: new BigNumber(coin.amount)
-      .dividedBy(10 ** (denomUnit?.exponent ?? 0))
+      .dividedBy(10 ** asset.decimals)
       .toString(),
     denom: asset.symbol,
   };
