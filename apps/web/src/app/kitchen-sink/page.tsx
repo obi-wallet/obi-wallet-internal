@@ -11,7 +11,7 @@ import {
   IconButton,
   Input,
   DropDown,
-  IDropDownOption,
+  DropDownOption,
 } from "@/components";
 import { observer } from "mobx-react-lite";
 import { FaGoogle } from "react-icons/fa";
@@ -43,7 +43,7 @@ const rows: IRow[] = [
   },
 ];
 
-const options: IDropDownOption<string>[] = [
+const options: DropDownOption<string>[] = [
   {
     value: "a",
     label: "Option A",
