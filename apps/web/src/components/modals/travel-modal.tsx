@@ -79,7 +79,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   modal,
   cancelLabel = "Accept",
 }) {
-  const publicKey: Secp256k1PublicKey | undefined = usePublicKey();
+  const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
   const [simulating, setSimulating] = useState<boolean>(false);
 
