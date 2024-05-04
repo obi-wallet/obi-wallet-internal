@@ -174,6 +174,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   const balanceOptions = withChainId
     .map((b) => {
+      if (!isCosmosSdkChainId(b.chainId)) return null;
+
       const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
       if (!assetData) return null;
 

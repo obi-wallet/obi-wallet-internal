@@ -3,6 +3,10 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import {
+  CosmosSdkChainId,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
+import {
   ApproveIntentions,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
@@ -59,6 +63,8 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       queryKey: ["simulate", { walletMeta, targetChainId, messages }],
       queryFn: async () => {
         invariant(wallet, "Wallet not found");
+        invariant(isCosmosSdkChainId(targetChainId), "Invalid chainId");
+
         const targetChain = TargetChain.chainId(targetChainId);
 
         const fee = await targetChain.calculateFee({
@@ -187,6 +193,10 @@ const PrettyPrint = observer(function PrettyPrint({
   fee: unknown;
   memo: string;
 }) {
+  if (!isCosmosSdkChainId(targetChainId)) {
+    return null;
+  }
+
   return (
     <PrettyPrintCosmosSdk
       messages={messages}
@@ -207,7 +217,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
 }: {
   messages: unknown[];
   rawData: unknown;
-  targetChainId: TargetChainId;
+  targetChainId: CosmosSdkChainId;
   fee: unknown | undefined;
   memo: string;
 }) {
@@ -273,7 +283,7 @@ function messageToDescription({
   targetChainId,
 }: {
   message: EncodeObject;
-  targetChainId: TargetChainId;
+  targetChainId: CosmosSdkChainId;
 }) {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
@@ -298,7 +308,7 @@ function prettyPrintCoin({
   targetChainId,
 }: {
   coin: Coin;
-  targetChainId: TargetChainId;
+  targetChainId: CosmosSdkChainId;
 }): {
   amount: string;
   denom: string;
