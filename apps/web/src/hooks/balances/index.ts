@@ -153,7 +153,7 @@ export function useBalances({
             chainId: chain.id,
           };
         }
-        return fetchBalances({
+        return await fetchBalances({
           address: TargetChain.chainId(chain.id).computeAddress(publicKey),
           chainId: chain.id,
         });
@@ -246,7 +246,7 @@ export const usePendingTXs = (pubKey: string) => {
   return useQuery({
     queryKey: ["pending-txs", pubKey],
     queryFn: async () => {
-      return fetchPendingTX(pubKey);
+      return await fetchPendingTX(pubKey);
     },
   });
 };

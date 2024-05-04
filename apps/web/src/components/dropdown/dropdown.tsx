@@ -51,6 +51,7 @@ export function DropDown<
 
   useEffect(() => {
     setSelectedOption(getOptionFromValue(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   const getOptionFromValue = (value: string | number | undefined) => {
     if (!value) return undefined;

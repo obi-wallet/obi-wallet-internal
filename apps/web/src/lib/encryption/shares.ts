@@ -34,7 +34,7 @@ export class EasyShareEncryption {
   }
 
   public async encrypt(share: EasyShare) {
-    return this.primaryKeyEncryption.encrypt(JSON.stringify(share));
+    return await this.primaryKeyEncryption.encrypt(JSON.stringify(share));
   }
 }
 
@@ -96,6 +96,6 @@ export class SharesBackupEncryption {
   }
 
   public async encryptEasyShare(share: EasyShare) {
-    return this.easyEncryption.encrypt(JSON.stringify(share));
+    return await this.easyEncryption.encrypt(JSON.stringify(share));
   }
 }

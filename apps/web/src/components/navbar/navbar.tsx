@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 
 import { Account, Divider, Footer, PrimaryLink, Text } from "..";
 
-type NavMenu = {
+interface NavMenu {
   href: string;
   text: string;
   mobileText?: string;
@@ -17,7 +17,7 @@ type NavMenu = {
   showOnDesktop?: boolean;
   target?: string;
   mobileOrder: number;
-};
+}
 const navMenu: NavMenu[] = [
   {
     href: "/dashboard/transaction/send",

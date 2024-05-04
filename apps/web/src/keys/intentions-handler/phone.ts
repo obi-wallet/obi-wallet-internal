@@ -55,7 +55,7 @@ export class PhoneKeyWorkerClient {
     if (!response.ok) {
       throw new Error("Failed to handle magic code");
     }
-    return response.json();
+    return await response.json();
   }
 
   protected async genericRequest(code?: string) {

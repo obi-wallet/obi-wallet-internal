@@ -121,7 +121,7 @@ export class CosmosSdkMpcSigner
   ): Promise<StdSignature> {
     this.lastHash = hash;
     if (this.wallet.encryptedEasyShare) {
-      return this.signHashWithEasyShare(address, hash);
+      return await this.signHashWithEasyShare(address, hash);
     }
 
     throw new Error("No encrypted easy share found");

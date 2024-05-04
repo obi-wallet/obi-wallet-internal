@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+import { useEffectOnceWhen } from "rooks";
 
 import { Text } from "../text";
 
@@ -40,9 +41,10 @@ export const BalanceDropDown = observer<{
         setSelectedOption(selectedOptionProp);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOptionProp]);
 
-  useEffect(() => {
+  useEffectOnceWhen(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -55,7 +57,7 @@ export const BalanceDropDown = observer<{
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  });
 
   const handleClickOption = (option: IBalanceOption) => {
     setSelectedOption(option);
@@ -86,7 +88,7 @@ export const BalanceDropDown = observer<{
             {selectedOption ? (
               <>
                 <Text size="xs">{selectedOption?.network}</Text>
-                <Text size="xs">{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
+                <Text size="xs">{`${selectedOption?.balance.toString(10)} ${selectedOption?.assetUnit}`}</Text>
               </>
             ) : (
               <Text size="md" className="  ml-7 mr-7">
@@ -127,7 +129,7 @@ export const BalanceDropDown = observer<{
                 />
                 <div className="flex flex-col space-y-2">
                   <Text size="xs">{option.network}</Text>
-                  <Text size="xs">{`${option.balance} ${option.assetUnit}`}</Text>
+                  <Text size="xs">{`${option.balance.toString(10)} ${option.assetUnit}`}</Text>
                 </div>
               </div>
             </li>

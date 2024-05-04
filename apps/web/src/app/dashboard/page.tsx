@@ -11,13 +11,13 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { FaExclamation } from "react-icons/fa6";
 
-type TransactionIntent = {
+interface TransactionIntent {
   destination_address: string;
   destination_asset: string;
   destination_chain_id: string;
   max_slippage: string;
-};
-export type TokenStatusType = {
+}
+export interface TokenStatusType {
   address: string;
   decimals: number;
   logoURI: string;
@@ -25,7 +25,7 @@ export type TokenStatusType = {
   name: string;
   symbol: string;
   coingeckoId?: string;
-};
+}
 type StepStatusType =
   | string
   | {
@@ -40,7 +40,7 @@ type StepStatusType =
         txHash?: string;
       }[];
     };
-export type StepType = {
+export interface StepType {
   action: string;
   chainId: string;
   status: StepStatusType;
@@ -53,25 +53,25 @@ export type StepType = {
   type: string;
   fromChain: string;
   toChain: string;
-};
-type SkipSimulationMessage = {
+}
+interface SkipSimulationMessage {
   multi_chain_msg: {
     chain_id: string;
     msg: string;
     msg_type_url: string;
     path: string[];
   };
-};
-type SkipSimulation = {
+}
+interface SkipSimulation {
   msgs: SkipSimulationMessage[];
-};
-type Transaction = {
+}
+interface Transaction {
   deposit_address: string;
   fast_travel_time: number;
   intent: TransactionIntent;
   pubkey: string;
   status: "AwaitingDeposit" | "Done" | "Failed" | `InProgress[${number}]`;
-};
+}
 interface SquidRouteToken {
   address: string;
   chainId: string;
@@ -107,7 +107,7 @@ export interface SquidRouteType {
   type: string;
   status: string;
 }
-export type SquidSimulationType = {
+export interface SquidSimulationType {
   estimate: {
     route: {
       fromChain: SquidRouteType[];
@@ -121,15 +121,15 @@ export type SquidSimulationType = {
     toToken: SquidRouteToken;
   };
   transaction: unknown;
-};
+}
 
 export type SkipSimulationType = unknown;
-export type SimulationEntry = {
+export interface SimulationEntry {
   skip_simulation_body: SkipSimulation | null;
   step_simulations: (null | SquidSimulationType | SkipSimulationType)[]; // Adjust this if you have specific types for simulation steps
   step_statuses: StepType[];
   transaction: Transaction;
-};
+}
 
 export default observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });

@@ -9,14 +9,14 @@ export class WasmStore {
     if (!this._mpcEcdsaWasmPromise) {
       this._mpcEcdsaWasmPromise = this._getMpcEcdsaWasm();
     }
-    return this._mpcEcdsaWasmPromise;
+    return await this._mpcEcdsaWasmPromise;
   }
 
   public async getEciesWasm(): Promise<EciesWasm> {
     if (!this._eciesWasmPromise) {
       this._eciesWasmPromise = this._getEciesWasm();
     }
-    return this._eciesWasmPromise;
+    return await this._eciesWasmPromise;
   }
 
   protected async _getMpcEcdsaWasm() {

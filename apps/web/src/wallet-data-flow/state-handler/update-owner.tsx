@@ -290,7 +290,7 @@ ${JSON.stringify(previousOwner.toJSON(), null, 2)}
 
           {nextHash.data ? (
             <ApproveIntentions
-              key={`${proposedUpdate}-${nextHash.data}`}
+              key={`${proposedUpdate}-${nextHash.data.toString("hex")}`}
               multisigKey={proposedUpdate ? newOwner : previousOwner}
               keyMetaData={keyMetaData}
               intentions={{

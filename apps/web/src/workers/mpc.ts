@@ -86,7 +86,7 @@ function keygen(params: Parameters): any[] {
   }
   // This is from MPC wasm
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  const partyToOutgoingRoundMsgs: Record<number, any[]> = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {
@@ -214,7 +214,7 @@ function createSignersAndPresign(
     signers.push(signer);
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  const partyToOutgoingRoundMsgs: Record<number, any[]> = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {

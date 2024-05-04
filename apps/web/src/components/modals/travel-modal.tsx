@@ -32,15 +32,15 @@ import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
-export type PriceData = {
+export interface PriceData {
   mainVsPrice: BigNumber;
   mainUsd: BigNumber;
   vsUsd: BigNumber;
-};
-export type AssetAmmount = {
+}
+export interface AssetAmmount {
   amount: string | undefined;
   asset: string | undefined;
-};
+}
 interface IToleranceProps {
   onChange: (value: number | undefined) => void;
   value: number | undefined;
@@ -66,8 +66,11 @@ interface FormData {
   };
   slippage: number;
 }
-type ErrorsObject = { [key: string]: { message: string; type: string } };
-type SingleError = { message: string; type: string };
+type ErrorsObject = Record<string, { message: string; type: string }>;
+interface SingleError {
+  message: string;
+  type: string;
+}
 type Errors = ErrorsObject | SingleError;
 
 export const TravelModal = observer<ITravelModalProps>(function TravelModal({
@@ -171,8 +174,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
   useEffect(() => {
     if (depositAddress) {
-      trigger();
+      void trigger();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [depositAddress]);
 
   const executeTx = async () => {
@@ -266,9 +270,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     });
   };
 
-  const getAssetOptions = (assets: {
-    [key: string]: ToAsset;
-  }): IAssetOption[] => {
+  const getAssetOptions = (assets: Record<string, ToAsset>): IAssetOption[] => {
     if (assets === undefined) return [];
 
     const chainAssets = Object.entries(assets)
@@ -276,7 +278,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         ([_, asset]) =>
           asset.chainId === toChainValue || asset.denom.includes("ibc/"),
       )
-      .reduce<{ [key: string]: ToAsset }>((acc, [key, asset]) => {
+      .reduce<Record<string, ToAsset>>((acc, [key, asset]) => {
         return {
           ...acc,
           [key]: asset,
@@ -433,7 +435,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   }}
                   onItemSelect={function (item: IAssetOption): void {
                     field.onChange(item.value);
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   selectedItemClassname="bg-black/30 h-full"
                   selectedItemComponent={(selected) => {
@@ -514,7 +516,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   onItemSelect={function (item: IAssetOption): void {
                     setValue("toAsset", { amount: "", asset: "" });
                     field.onChange(item.value);
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   selectedItemClassname="bg-black/30 h-full"
                   selectedItemComponent={(selected) => {
@@ -562,7 +564,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       amount: value,
                     });
 
-                    handleAssetChange();
+                    void handleAssetChange();
                   }}
                   className={cn(
                     "z-20",
@@ -679,7 +681,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                           asset: item.value,
                           amount: field.value.amount,
                         });
-                        handleAssetChange();
+                        void handleAssetChange();
                       }}
                       selectedItemComponent={(selected) => {
                         if (!selected.item) {
@@ -719,7 +721,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                 value={field.value}
                 onChange={(attr) => {
                   field.onChange(attr);
-                  handleAssetChange();
+                  void handleAssetChange();
                 }}
                 onBlur={field.onBlur}
                 errorMessage={fieldState.error?.message}
@@ -811,6 +813,7 @@ function ToleranceSetting({
   // so we need to trigger the validation manually
   useEffect(() => {
     onChange(Number(text));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
   useEffect(() => {
     if (value && !isNaN(Number(value))) {
@@ -818,6 +821,7 @@ function ToleranceSetting({
     }
 
     onBlur();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   const renderErrorMessage = (message: string) => {
     if (message.includes("Expected number")) {

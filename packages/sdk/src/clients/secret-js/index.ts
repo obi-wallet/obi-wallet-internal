@@ -32,7 +32,7 @@ import { Message, SignedTransaction } from "../../transactions";
 
 export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
-  f: (client: SecretNetworkClient) => T,
+  f: (client: SecretNetworkClient) => Promise<T>,
 ) {
   const chain = SecretJsChains[chainId];
   const url = chain.urls[0];
@@ -52,7 +52,7 @@ export async function withSigningSecretNetworkClient<T>(
     chainId: SecretJsChainId;
     signer: AminoSignerWithAddress;
   },
-  f: (client: SecretNetworkClient) => T,
+  f: (client: SecretNetworkClient) => Promise<T>,
 ) {
   const chain = SecretJsChains[chainId];
   const url = chain.urls[0];
@@ -69,13 +69,15 @@ export async function withSigningSecretNetworkClient<T>(
 export class SecretJsClient {
   public constructor(protected chainId: SecretJsChainId) {}
 
-  public withSecretNetworkClient<T>(f: (client: SecretNetworkClient) => T) {
+  public withSecretNetworkClient<T>(
+    f: (client: SecretNetworkClient) => Promise<T>,
+  ) {
     return withSecretNetworkClient(this.chainId, f);
   }
 
   public withSigningSecretNetworkClient<T>(
     signer: AminoSignerWithAddress,
-    f: (client: SecretNetworkClient) => T,
+    f: (client: SecretNetworkClient) => Promise<T>,
   ) {
     return withSigningSecretNetworkClient({ chainId: this.chainId, signer }, f);
   }
@@ -105,7 +107,7 @@ export class SecretJsClient {
       schema: T;
     }[],
   ): Promise<z.infer<T>[]> {
-    return this.withSecretNetworkClient(async (client) => {
+    return await this.withSecretNetworkClient(async (client) => {
       return await Promise.all(
         queries.map(async ({ contract, codeHash, query, schema }) => {
           const response = await client.query.compute.queryContract({
@@ -154,7 +156,7 @@ export class SecretJsClient {
   }): Promise<BroadcastTransactionResult> {
     if (process.env.NODE_ENV === "test") {
       const rawResult = await this.withSecretNetworkClient(async (client) => {
-        return client.query.getTx(hash);
+        return await client.query.getTx(hash);
       });
       invariant(rawResult, "no tx response");
       return this.wrapTxResponse(rawResult);
