@@ -15,6 +15,7 @@ module.exports = {
   plugins: ["mobx", "import", "react", "react-hooks", "unicorn"],
   rules: {
     "@typescript-eslint/consistent-indexed-object-style": "error",
+    "@typescript-eslint/consistent-generic-constructors": "error",
     "@typescript-eslint/consistent-type-assertions": [
       "error",
       {
