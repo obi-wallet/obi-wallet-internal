@@ -208,8 +208,9 @@ const PendingStepList = observer<{
         if (
           typeof step.status === "string" ||
           Object.keys(step.status).length === 0
-        )
+        ) {
           return;
+        }
 
         if (!step.status.routeStatus) {
           return <div className=" text-md">Not started</div>;
@@ -319,8 +320,9 @@ const PendingStepList = observer<{
     }
   };
   const renderStep = (step: StepType) => {
-    if (step.status === "" || Object.keys(step.status).length === 0)
+    if (step.status === "" || Object.keys(step.status).length === 0) {
       return null;
+    }
     const stepStatus =
       typeof step.status === "string" ? step.status : step.status.status;
     return (

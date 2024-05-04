@@ -121,6 +121,7 @@ module.exports = {
       },
     ],
 
+    curly: ["error", "multi-line"],
     "no-restricted-imports": [
       "error",
       {

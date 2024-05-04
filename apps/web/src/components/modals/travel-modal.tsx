@@ -305,8 +305,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       !formData.toChain ||
       !formData.fromChain ||
       !publicKey
-    )
+    ) {
       return;
+    }
     setValue("toAsset", { amount: "", asset: formData.toAsset.asset });
     setDepositAddress(undefined);
 
