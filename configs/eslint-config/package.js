@@ -20,7 +20,6 @@ module.exports = {
         assertionStyle: "never",
       },
     ],
-
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
