@@ -1,6 +1,10 @@
 import { toAssets } from "@/app/dashboard/fast-travel/assets";
 import { SimulationEntry } from "@/app/dashboard/page";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import {
+  CosmosSdkChainId,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
@@ -20,7 +24,7 @@ export interface Balance {
 }
 
 export interface NewCoin {
-  targetChainId: TargetChainId;
+  targetChainId: CosmosSdkChainId;
   denom: string;
   amount: string;
   price: string;
@@ -38,7 +42,7 @@ async function fetchNewBalances({
   address?: string;
   targetChainId: TargetChainId;
 }): Promise<NewBalance> {
-  if (!address) {
+  if (!address || !isCosmosSdkChainId(targetChainId)) {
     return { balances: [], targetChainId };
   }
 
@@ -71,7 +75,7 @@ async function fetchBalances({
   address?: string;
   chainId: TargetChainId;
 }): Promise<Balance> {
-  if (!address) {
+  if (!address || !isCosmosSdkChainId(chainId)) {
     return { balances: [], chainId };
   }
 
