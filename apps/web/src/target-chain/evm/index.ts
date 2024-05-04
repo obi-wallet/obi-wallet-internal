@@ -4,7 +4,7 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { getAddress, isAddress, keccak256 } from "viem";
+import { Address, getAddress, isAddress, keccak256 } from "viem";
 
 export class EvmTargetChain extends AbstractTargetChain {
   protected readonly chainData: EvmChainData;
@@ -33,7 +33,25 @@ export class EvmTargetChain extends AbstractTargetChain {
     return getAddress(`0x${address}`);
   }
 
-  public validateAddress(address: string) {
+  public getAsset(denom: string) {
+    if (denom === this.nativeCurrency.symbol) {
+      return {
+        name: this.nativeCurrency.name,
+        symbol: this.nativeCurrency.symbol,
+        decimals: this.nativeCurrency.decimals,
+        // TODO:
+        image: null,
+      };
+    }
+
+    return null;
+  }
+
+  public validateAddress(address: string): address is Address {
     return isAddress(address);
+  }
+
+  public get nativeCurrency() {
+    return this.chainData.chain.nativeCurrency;
   }
 }

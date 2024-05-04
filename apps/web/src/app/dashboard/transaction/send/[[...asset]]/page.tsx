@@ -10,8 +10,8 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { isEvmChainId } from "@/target-chain/evm/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
@@ -45,7 +45,6 @@ const schema = z
   .refine(
     (data) => {
       if (!data.coin.asset) return true;
-      if (!isCosmosSdkChainId(data.coin.asset.targetChainId)) return true;
 
       try {
         return TargetChain.chainId(
@@ -89,18 +88,20 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
       const asset = coin.asset;
       const chainId = asset.targetChainId;
-      const denomUnit = asset.asset.denom_units.find((value) => {
-        return value.denom === asset.asset.display;
-      });
 
       const tokens: Coin[] = [
         {
           amount: new BigNumber(coin.amount)
-            .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
+            .multipliedBy(10 ** asset.asset.decimals)
             .toFixed(0, BigNumber.ROUND_DOWN),
           denom: asset.denom,
         },
       ];
+
+      if (isEvmChainId(chainId)) {
+        window.alert("EVM chain not supported yet");
+        return;
+      }
 
       const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
 
@@ -130,7 +131,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       return response;
     },
     onSuccess(response) {
-      if (response.approved) {
+      if (response?.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
           window.alert("TX broadcast successfully");
@@ -174,19 +175,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   const balanceOptions = withChainId
     .map((b) => {
-      if (!isCosmosSdkChainId(b.chainId)) return null;
-
       const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
       if (!assetData) return null;
 
       const amount = new BigNumber(b.amount);
-      const denomUnit = assetData.denom_units.find((value) => {
-        return value.denom === assetData.display;
-      });
-      const decimalAmount = amount.dividedBy(10 ** (denomUnit?.exponent ?? 0));
+      const decimalAmount = amount.dividedBy(10 ** assetData.decimals);
 
       const result: IBalanceOption = {
-        image: assetData.images?.[0]?.svg ?? assetData.images?.[0]?.png,
+        image: assetData.image ?? undefined,
         targetChainId: b.chainId,
         denom: b.denom,
         network: TargetChain.chainId(b.chainId).label,
@@ -297,7 +293,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 >
                   {coin.asset
                     ? `${coin.asset.balance.toString()} ${
-                        coin.asset.asset.display
+                        coin.asset.asset.symbol
                       }`
                     : ""}
                 </div>
@@ -314,6 +310,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   }}
                   className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
+                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}
@@ -334,14 +331,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-white">
                           <div>
-                            {`${item.asset.display.toUpperCase()} (on ${item.network})`}
+                            {`${item.asset.symbol.toUpperCase()} (on ${item.network})`}
                           </div>
                           <div>{item.balance.toString()}</div>
                         </div>
                       </div>
                     );
                   }}
-                  onItemSelect={function (item: IBalanceOption): void {
+                  onItemSelect={function (item) {
                     setCoin({
                       amount: coin.amount,
                       asset: item,
@@ -363,7 +360,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
                           <div>
-                            {`${selected.item.asset.display.toUpperCase()} (on ${selected.item.network})`}
+                            {`${selected.item.asset.symbol.toUpperCase()} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>
@@ -372,7 +369,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 />
               }
             >
-              <div className="flex gap-3  text-slate-500">
+              <div className="flex gap-3 text-slate-500">
                 <span
                   className=" cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {

@@ -1,16 +1,15 @@
 import { toAssets } from "@/dashboard/assets";
 import { SimulationEntry } from "@/dashboard/schema";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
-import {
-  CosmosSdkChainId,
-  isCosmosSdkChainId,
-} from "@/target-chain/cosmos-sdk/chains";
+import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { toPairs } from "ramda";
 import invariant from "tiny-invariant";
+import { createPublicClient, http } from "viem";
+import { arbitrum } from "viem/chains";
 import { z } from "zod";
 
 import { usePublicKey } from "../use-public-key";
@@ -27,7 +26,7 @@ export interface Balance {
 }
 
 export interface NewCoin {
-  targetChainId: CosmosSdkChainId;
+  targetChainId: TargetChainId;
   denom: string;
   amount: string;
   price: string;
@@ -45,30 +44,57 @@ async function fetchNewBalances({
   address?: string;
   targetChainId: TargetChainId;
 }): Promise<NewBalance> {
-  if (!address || !isCosmosSdkChainId(targetChainId)) {
+  if (!address) {
     return { balances: [], targetChainId };
   }
 
-  return await TargetChain.chainId(targetChainId).withStargateClient(
-    async (client) => {
-      const coins = await client.getAllBalances(address);
-      const balances = await Promise.all(
-        coins.map(async (balance) => {
-          const price = await getTokenPrice(targetChainId, balance.denom);
-          return {
-            targetChainId,
-            denom: balance.denom,
-            amount: balance.amount,
-            price: price.toString(),
-          };
-        }),
-      );
-      return {
-        balances,
-        targetChainId,
-      };
-    },
-  );
+  if (isCosmosSdkChainId(targetChainId)) {
+    return await TargetChain.chainId(targetChainId).withStargateClient(
+      async (client) => {
+        const coins = await client.getAllBalances(address);
+        const balances = await Promise.all(
+          coins.map(async (balance) => {
+            const price = await getTokenPrice(targetChainId, balance.denom);
+            return {
+              targetChainId,
+              denom: balance.denom,
+              amount: balance.amount,
+              price: price.toString(),
+            };
+          }),
+        );
+        return {
+          balances,
+          targetChainId,
+        };
+      },
+    );
+  } else {
+    const targetChain = TargetChain.chainId(targetChainId);
+    const client = createPublicClient({
+      transport: http(),
+      chain: arbitrum,
+    });
+    if (targetChain.validateAddress(address)) {
+      const balance = await client.getBalance({
+        address,
+      });
+      if (balance > 0) {
+        return {
+          balances: [
+            {
+              targetChainId,
+              denom: targetChain.nativeCurrency.symbol,
+              amount: balance.toString(10),
+              price: "0",
+            },
+          ],
+          targetChainId,
+        };
+      }
+    }
+    return { balances: [], targetChainId };
+  }
 }
 
 async function fetchBalances({

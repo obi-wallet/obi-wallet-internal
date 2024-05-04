@@ -317,10 +317,23 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }
 
   public getAsset(denom: string) {
-    return this.tokenRegistry.getAsset({
+    const asset = this.tokenRegistry.getAsset({
       chainId: this.chainData.id,
       denom,
     });
+
+    if (!asset) return null;
+
+    const denomUnit = asset.denom_units.find((value) => {
+      return value.denom === asset.display;
+    });
+
+    return {
+      name: asset.name,
+      symbol: asset.symbol,
+      decimals: denomUnit?.exponent ?? 0,
+      image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
+    };
   }
 
   public validateAddress(address: string): boolean {
