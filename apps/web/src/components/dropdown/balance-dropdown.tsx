@@ -86,7 +86,7 @@ export const BalanceDropDown = observer<{
             {selectedOption ? (
               <>
                 <Text size="xs">{selectedOption?.network}</Text>
-                <Text size="xs">{`${selectedOption?.balance} ${selectedOption?.assetUnit}`}</Text>
+                <Text size="xs">{`${selectedOption?.balance.toString(10)} ${selectedOption?.assetUnit}`}</Text>
               </>
             ) : (
               <Text size="md" className="  ml-7 mr-7">
@@ -127,7 +127,7 @@ export const BalanceDropDown = observer<{
                 />
                 <div className="flex flex-col space-y-2">
                   <Text size="xs">{option.network}</Text>
-                  <Text size="xs">{`${option.balance} ${option.assetUnit}`}</Text>
+                  <Text size="xs">{`${option.balance.toString(10)} ${option.assetUnit}`}</Text>
                 </div>
               </div>
             </li>

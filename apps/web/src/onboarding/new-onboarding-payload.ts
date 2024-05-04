@@ -198,7 +198,9 @@ export class NewOnboardingPayload implements Draftable {
 
     const result = UnclaimedHomeAccount.safeParse(await response.json());
     if (!result.success) {
-      throw new Error(`Failed to parse magic account: ${result.error}`);
+      throw new Error(
+        `Failed to parse magic account: ${JSON.stringify(result.error)}`,
+      );
     }
 
     this._unclaimedHomeAccount = result.data;

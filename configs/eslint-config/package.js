@@ -41,6 +41,13 @@ module.exports = {
     "@typescript-eslint/prefer-as-const": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-reduce-type-parameter": "error",
+    "@typescript-eslint/restrict-template-expressions": [
+      "error",
+      {
+        allowNever: true,
+        allowNumber: true,
+      },
+    ],
     "@typescript-eslint/return-await": ["error", "always"],
 
     "import/no-default-export": "error",

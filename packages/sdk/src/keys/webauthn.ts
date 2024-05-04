@@ -157,12 +157,15 @@ async function combineKeys(
 
   // Convert the hash to a BigInt and ensure it's in the valid range
   let privateKeyBigInt = BigInt(`0x${hashHex}`);
+
   while (privateKeyBigInt >= SECP256K1_MAX) {
     privateKeyBigInt = BigInt(
-      `0x${await crypto.subtle.digest(
-        "SHA-256",
-        new TextEncoder().encode(privateKeyBigInt.toString(16)),
-      )}`,
+      `0x${Buffer.from(
+        await crypto.subtle.digest(
+          "SHA-256",
+          new TextEncoder().encode(privateKeyBigInt.toString(16)),
+        ),
+      ).toString("hex")}`,
     );
   }
 

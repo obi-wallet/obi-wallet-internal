@@ -248,7 +248,9 @@ export class SecretJsHomeChain {
     const schema = z.array(LegacyWalletData);
     const result = schema.safeParse(await response.json());
     if (!result.success) {
-      throw new Error(`Failed to parse proxy wallets: ${result.error}`);
+      throw new Error(
+        `Failed to parse proxy wallets: ${JSON.stringify(result.error)}`,
+      );
     }
     return result.data;
   }
