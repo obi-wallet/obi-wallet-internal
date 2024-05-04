@@ -29,6 +29,7 @@ module.exports = {
         checksSpreads: true,
       },
     ],
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

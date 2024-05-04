@@ -144,7 +144,7 @@ export abstract class NewIntentionsHandler {
       encryptedShares: fromPairs(
         encryptedShares.map((share, index) => {
           return [this.owner.keys[index]!.publicKey.value, share];
-        })!,
+        }),
       ),
     };
   }
