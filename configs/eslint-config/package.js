@@ -21,6 +21,14 @@ module.exports = {
       },
     ],
     "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        checksConditionals: true,
+        checksVoidReturn: false,
+        checksSpreads: true,
+      },
+    ],
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
