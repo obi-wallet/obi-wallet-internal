@@ -37,6 +37,7 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/prefer-reduce-type-parameter": "error",
     "@typescript-eslint/return-await": ["error", "always"],
 
     "import/no-default-export": "error",
