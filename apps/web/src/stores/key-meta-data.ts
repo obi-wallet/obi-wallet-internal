@@ -25,6 +25,8 @@ export const PhoneSingleKeyMetaData = z.intersection(
   }),
 );
 
+export type PhoneSingleKeyMetaData = z.TypeOf<typeof PhoneSingleKeyMetaData>;
+
 export const TelegramSingleKeyMetaData = z.intersection(
   SingleKeyMetaData,
   z.object({
@@ -34,6 +36,10 @@ export const TelegramSingleKeyMetaData = z.intersection(
     }),
   }),
 );
+
+export type TelegramSingleKeyMetaData = z.TypeOf<
+  typeof TelegramSingleKeyMetaData
+>;
 
 export const KeyMetaDataPerWallet = z.record(KeyMetaData);
 

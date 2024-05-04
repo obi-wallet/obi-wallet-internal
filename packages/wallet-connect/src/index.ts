@@ -5,6 +5,7 @@ import {
 import { Core } from "@walletconnect/core";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
 import { Web3Wallet } from "@walletconnect/web3wallet";
+import invariant from "tiny-invariant";
 
 import {
   CosmosSignAminoUserInteraction,
@@ -56,7 +57,9 @@ export async function setupWalletConnect({
 
     const { topic, params, id } = event;
     const { request } = params;
-    const [namespace, chainId] = params.chainId.split(":") as [string, string];
+    const [namespace, chainId] = params.chainId.split(":");
+    invariant(typeof namespace === "string", "namespace must be a string");
+    invariant(typeof chainId === "string", "chainId must be a string");
 
     switch (request.method) {
       case "cosmos_getAccounts": {
@@ -184,7 +187,6 @@ export async function setupWalletConnect({
           },
         },
       });
-      console.log(approvedNamespaces);
       const _session = await web3wallet.approveSession({
         id: params.id,
         namespaces: approvedNamespaces,

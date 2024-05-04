@@ -21,6 +21,7 @@ export const THEME_CONFIGS = {
   },
 };
 
-const themeId: THEMES = (process.env.NEXT_PUBLIC_THEME || "obi") as THEMES;
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+const themeId = (process.env.NEXT_PUBLIC_THEME || "obi") as THEMES;
 
 export const CURRENT_THEME = THEME_CONFIGS[themeId];

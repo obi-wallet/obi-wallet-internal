@@ -34,11 +34,13 @@ export async function runTests(fn: (context: TestContext) => void) {
         success: true,
       };
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const error = e as Error;
       console.error("Test failed:", name);
       console.error(e);
       testResults[testIndex] = {
         success: false,
-        error: (e as Error).message,
+        error: error.message,
       };
     }
   };

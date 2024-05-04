@@ -1,3 +1,3 @@
-export function* toGenerator<R>(p: Promise<R>) {
-  return (yield p) as R;
+export function* toGenerator<R>(p: Promise<R>): Generator<Promise<R>, R, R> {
+  return yield p;
 }

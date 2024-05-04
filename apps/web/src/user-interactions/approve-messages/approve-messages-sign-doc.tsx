@@ -40,6 +40,7 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
     // Combining those two gives us what we actually want
     const encodeObjects = decodedBodyWithDecodedMessageValues.messages.map(
       (value, index) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const { typeUrl } = decodedBodyWithMessageTypeUrls.messages[
           index
         ] as DecodeObject;

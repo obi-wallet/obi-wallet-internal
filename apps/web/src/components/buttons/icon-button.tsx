@@ -16,7 +16,6 @@ type IconButtonProps = {
 } & ComponentPropsWithRef<"button">;
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function IconButton(
     {
       className,

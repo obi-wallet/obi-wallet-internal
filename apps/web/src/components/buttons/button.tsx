@@ -31,7 +31,6 @@ type ButtonProps = {
   ComponentPropsWithRef<"a">;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function Button(
     {
       children,

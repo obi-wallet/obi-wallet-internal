@@ -45,6 +45,7 @@ export class WalletsStore {
         await this.kvStore.set("mpc-wallets", data);
       });
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = e as Error;
       runInAction(() => {
         this.state = WalletState.INVALID;

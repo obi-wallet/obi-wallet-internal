@@ -45,6 +45,7 @@ export class MultisigKeyDecryption {
   public constructor(protected readonly input: (string | null)[]) {}
 
   public async decrypt(data: string): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const [encrypted, ..._encryptedShares] = JSON.parse(data) as [
       string,
       ...string[],

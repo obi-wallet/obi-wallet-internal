@@ -83,6 +83,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const asset = coin.asset as IBalanceOption;
 
       const chainId = asset.targetChainId;

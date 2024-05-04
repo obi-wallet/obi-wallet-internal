@@ -14,6 +14,13 @@ module.exports = {
   ],
   plugins: ["mobx", "import", "react", "react-hooks", "unicorn"],
   rules: {
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        assertionStyle: "never",
+      },
+    ],
+
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

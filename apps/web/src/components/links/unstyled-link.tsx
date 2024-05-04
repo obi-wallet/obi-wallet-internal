@@ -11,7 +11,6 @@ export type UnstyledLinkProps = {
 } & ComponentPropsWithRef<"a">;
 
 export const UnstyledLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function UnstyledLink(
     { children, href, openNewTab, className, nextLinkProps, ...rest },
     ref,

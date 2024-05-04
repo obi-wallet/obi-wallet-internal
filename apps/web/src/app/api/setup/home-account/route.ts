@@ -71,6 +71,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const txResult = broadcastTransactionResult.rawResult as TxResponse;
     invariant(txResult.arrayLog, "No log found");
     const matchingLogs = txResult.arrayLog.filter((log) => {

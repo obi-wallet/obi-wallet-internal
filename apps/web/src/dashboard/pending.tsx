@@ -20,14 +20,14 @@ export const PendingAssets = observer(function PendingAssets() {
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
-  const onLyPending = pendingTXs.data.filter(
+  const onlyPending = pendingTXs.data.filter(
     (t) =>
       t.transaction.status.includes("InProgress") ||
       t.transaction.status.includes("LowBalance"),
   );
   return (
     <>
-      {onLyPending.map((tx: SimulationEntry) => (
+      {onlyPending.map((tx: SimulationEntry) => (
         <PendingAsset
           key={tx.transaction.deposit_address}
           tx={tx}
@@ -93,6 +93,7 @@ const PendingAsset = observer(function PendingAsset({
         </div>
         <Status status={tx.transaction.status} />
         <PendingAmount
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           simulation={tx.step_simulations[1] as SquidSimulationType}
         />
       </div>
@@ -222,6 +223,7 @@ const PendingStepList = observer(function PendingStepList({
         if (!step.status.routeStatus) {
           return <div className=" text-md">Not started</div>;
         }
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const squidSimulation = simulations[1] as SquidSimulationType;
         const routes: SquidRouteType[] = [
           ...squidSimulation.estimate.route.fromChain,

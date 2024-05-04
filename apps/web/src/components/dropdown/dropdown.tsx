@@ -59,6 +59,7 @@ export function DropDown<
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
         setIsOpen(false);
       }

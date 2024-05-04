@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Dexie, { Table } from "dexie";
 import * as R from "ramda";
 

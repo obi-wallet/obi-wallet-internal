@@ -145,13 +145,13 @@ export function useBalances({
     queries: chains.map((chain) => ({
       queryKey: ["balances", chain.id, publicKey],
       enabled: !!publicKey, // Only run query if address is provided
-      queryFn: (): Promise<Balance> => {
+      queryFn: async (): Promise<Balance> => {
         invariant(publicKey, "Expected publicKey to be set.");
         if (chain.disabled) {
-          return Promise.resolve({
+          return {
             balances: [],
             chainId: chain.id,
-          } as Balance);
+          };
         }
         return fetchBalances({
           address: TargetChain.chainId(chain.id).computeAddress(publicKey),
@@ -172,12 +172,13 @@ const getTokenPrice = async (
     return 0;
   }
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const json = (await res.json()) as { price: number };
   return json.price;
 };
 
 export function useUSDTotalPrice(): {
-  total: number;
+  total: string;
   loading: boolean;
 } {
   const publicKey = usePublicKey();
@@ -187,7 +188,7 @@ export function useUSDTotalPrice(): {
   // if all balances are not loaded, return 0
   if (balances.every((balance) => balance.isPending)) {
     return {
-      total: 0,
+      total: "0",
       loading: true,
     };
   }
@@ -197,11 +198,12 @@ export function useUSDTotalPrice(): {
   );
   const flatBalances = filteredSuccessBalances
     .map((balance) => balance.data?.balances)
+    .filter((balance): balance is Coin[] => balance !== undefined)
     .flat();
 
   const total = flatBalances
     .reduce((acc, balance) => {
-      const price = balance?.price as number;
+      const price = balance.price;
 
       const asset =
         toAssets[
@@ -218,7 +220,7 @@ export function useUSDTotalPrice(): {
       const decimalAmount = amount / Math.pow(10, decimals);
       return acc + price * decimalAmount;
     }, 0)
-    .toFixed(2) as unknown as number;
+    .toFixed(2);
 
   return {
     total,
@@ -236,6 +238,7 @@ const fetchPendingTX = async (pubKey: string) => {
   const res = await fetch(url);
   const data = await res.json();
 
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return data as SimulationEntry[];
 };
 

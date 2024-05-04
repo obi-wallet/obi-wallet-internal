@@ -238,8 +238,10 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         router.push("/dashboard");
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const error = e as Error;
       setLoading(false);
-      alert((e as { message: string }).message);
+      alert(error.message);
       console.error(e);
     }
   };
@@ -274,21 +276,21 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         ([_, asset]) =>
           asset.chainId === toChainValue || asset.denom.includes("ibc/"),
       )
-      .reduce((acc, [key, asset]) => {
+      .reduce<{ [key: string]: ToAsset }>((acc, [key, asset]) => {
         return {
           ...acc,
           [key]: asset,
         };
-      }, {}) as { [key: string]: ToAsset };
+      }, {});
 
     return Object.entries(chainAssets).map(
-      ([key, asset]: [string, ToAsset]) => ({
+      ([key, asset]: [string, ToAsset]): IAssetOption => ({
         label: asset?.label ?? "",
         image: asset?.image ?? "",
         value: key,
         disabled: asset.disabled,
       }),
-    ) as IAssetOption[];
+    );
   };
 
   const handleAssetChange = async () => {
@@ -545,6 +547,8 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             name="fromAsset"
             control={control}
             render={({ field, fieldState }) => {
+              // TODO: Here's something wrong with the types, according to react-hook-form this should always be a single message, review
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               const errors = fieldState.error as Errors | undefined;
 
               return (
@@ -597,6 +601,8 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             name="toAsset"
             control={control}
             render={({ field, fieldState }) => {
+              // TODO: Here's something wrong with the types, according to react-hook-form this should always be a single message, review
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               const errors = fieldState.error as Errors | undefined;
               const options = getAssetOptions(toAssets);
 
@@ -936,14 +942,13 @@ function AddressComponent({
 function ErrorsComponent({ errors }: { errors: Errors }) {
   const renderErrorMessage = () => {
     function isSingle(e: SingleError | ErrorsObject): e is SingleError {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return (e as SingleError).message !== undefined;
     }
 
     if (!errors) return;
-    // I need to know if errors is of type SingleError or ErrorsObject
-    const error = errors as SingleError;
     if (isSingle(errors)) {
-      return error.message;
+      return errors.message;
     } else {
       if (errors?.amount?.message) {
         if (errors?.amount?.message === "Required") return "Amount is required";

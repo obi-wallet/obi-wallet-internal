@@ -18,7 +18,8 @@
     "@walletconnect/core": "^2.12.2",
     "@walletconnect/utils": "^2.12.2",
     "@walletconnect/web3wallet": "^1.11.2",
-    "cosmjs-types": "^0.9.0"
+    "cosmjs-types": "^0.9.0",
+    "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

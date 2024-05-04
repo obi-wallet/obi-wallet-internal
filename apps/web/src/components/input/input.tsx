@@ -5,6 +5,8 @@ import {
   ChangeEvent,
   ComponentPropsWithoutRef,
   forwardRef,
+  Ref,
+  RefObject,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -18,14 +20,15 @@ interface InputProps
   endIcon?: IconType;
   labelBgColor?: string;
   labelText?: string;
-  value?: string | number;
+  value?: string;
   errorMessage?: string;
   classNames?: {
     startIcon?: string;
     endIcon?: string;
   };
   onChange?: (value: string) => void;
-  InputRef?: React.RefObject<HTMLInputElement>;
+  InputRef?: RefObject<HTMLInputElement>;
+  defaultValue?: string;
 }
 interface ParentRef {
   focus: () => void;
@@ -49,12 +52,12 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     defaultValue,
     ...rest
   }: InputProps,
-  parentRef: React.Ref<ParentRef>,
+  parentRef: Ref<ParentRef>,
 ) {
   const [text, setText] = useState<string>("");
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    setText(defaultValue as string);
+    setText(defaultValue ?? "");
   }, [defaultValue]);
 
   useImperativeHandle(parentRef, () => ({
@@ -68,7 +71,7 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
   useEffect(() => {
     if (value !== text) {
       if (type === "number" && isNaN(Number(value))) return;
-      setText(value as string);
+      setText(value ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
