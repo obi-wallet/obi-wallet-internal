@@ -28,9 +28,18 @@ export const Onboarding = observer(function Onboarding({
   if (!currentStep) return null;
 
   console.log({ currentStep });
-  const back = step > 0 ? () => router.push(`${step - 1}`) : undefined;
+  const back =
+    step > 0
+      ? () => {
+          return router.push(`${step - 1}`);
+        }
+      : undefined;
   const next =
-    step + 1 < steps.length ? () => router.push(`${step + 1}`) : undefined;
+    step + 1 < steps.length
+      ? () => {
+          return router.push(`${step + 1}`);
+        }
+      : undefined;
 
   return (
     <section className="flex flex-col items-center space-y-7">

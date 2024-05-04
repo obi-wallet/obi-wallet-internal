@@ -49,7 +49,9 @@ export function NextImage({
         width={width}
         height={height}
         alt={alt}
-        onLoadingComplete={() => setStatus("complete")}
+        onLoadingComplete={() => {
+          return setStatus("complete");
+        }}
         {...rest}
       />
     </figure>

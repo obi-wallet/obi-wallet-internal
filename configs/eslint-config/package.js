@@ -121,6 +121,8 @@ module.exports = {
       },
     ],
 
+    "arrow-body-style": ["error", "always"],
+    curly: ["error", "multi-line"],
     "no-restricted-imports": [
       "error",
       {

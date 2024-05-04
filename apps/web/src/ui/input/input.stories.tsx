@@ -41,12 +41,14 @@ export const WithRightComponent: Story = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
-    <Input
-      {...args}
-      rightComponent={<FaSearch className="ml-1 text-white" />}
-    />
-  ),
+  render: (args) => {
+    return (
+      <Input
+        {...args}
+        rightComponent={<FaSearch className="ml-1 text-white" />}
+      />
+    );
+  },
 };
 export const WithLeftComponent: Story = {
   args: {
@@ -54,9 +56,14 @@ export const WithLeftComponent: Story = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
-    <Input {...args} leftComponent={<FaPhone className="mr-2 text-white" />} />
-  ),
+  render: (args) => {
+    return (
+      <Input
+        {...args}
+        leftComponent={<FaPhone className="mr-2 text-white" />}
+      />
+    );
+  },
 };
 
 export const WithLeftIconAndRightButton: Story = {
@@ -65,19 +72,26 @@ export const WithLeftIconAndRightButton: Story = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
-    <div className=" w-96">
-      <Input
-        {...args}
-        leftComponent={<FaPhone className="mr-2 text-white" />}
-        rightComponent={
-          <Button onClick={() => alert("clicked!")} className="ml-2">
-            save
-          </Button>
-        }
-      />
-    </div>
-  ),
+  render: (args) => {
+    return (
+      <div className=" w-96">
+        <Input
+          {...args}
+          leftComponent={<FaPhone className="mr-2 text-white" />}
+          rightComponent={
+            <Button
+              onClick={() => {
+                return alert("clicked!");
+              }}
+              className="ml-2"
+            >
+              save
+            </Button>
+          }
+        />
+      </div>
+    );
+  },
 };
 export const WithChildren: Story = {
   args: {
@@ -85,11 +99,13 @@ export const WithChildren: Story = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
-    <Input {...args}>
-      <div className="text-white">you can add children here</div>
-    </Input>
-  ),
+  render: (args) => {
+    return (
+      <Input {...args}>
+        <div className="text-white">you can add children here</div>
+      </Input>
+    );
+  },
 };
 export const WithTopComponent: Story = {
   args: {
@@ -97,29 +113,31 @@ export const WithTopComponent: Story = {
     labelClassname: "bg-black",
     placeholder: "Placeholder",
   },
-  render: (args) => (
-    <div>
-      <Input
-        {...args}
-        topComponent={
-          <div className="absolute right-2 top-2 text-red-700">required</div>
-        }
-      />
-      <Input
-        {...args}
-        topComponent={
-          <div className="  w-full  text-left text-xs">
-            <span className=" text-gray-500">100 SAT</span>
-          </div>
-        }
-        rightComponent={
-          <div className="w-32">
-            <Button>Some Asset</Button>
-          </div>
-        }
-        value="10"
-        className="mt-4"
-      />
-    </div>
-  ),
+  render: (args) => {
+    return (
+      <div>
+        <Input
+          {...args}
+          topComponent={
+            <div className="absolute right-2 top-2 text-red-700">required</div>
+          }
+        />
+        <Input
+          {...args}
+          topComponent={
+            <div className="  w-full  text-left text-xs">
+              <span className=" text-gray-500">100 SAT</span>
+            </div>
+          }
+          rightComponent={
+            <div className="w-32">
+              <Button>Some Asset</Button>
+            </div>
+          }
+          value="10"
+          className="mt-4"
+        />
+      </div>
+    );
+  },
 };

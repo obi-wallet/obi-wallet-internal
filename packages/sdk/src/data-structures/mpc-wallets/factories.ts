@@ -22,7 +22,9 @@ export function createMpcWallets(
     }),
   });
   return new MpcWallets(
-    serialized.wallets.map((wallet) => factory.create(wallet)),
+    serialized.wallets.map((wallet) => {
+      return factory.create(wallet);
+    }),
     serialized.currentWalletIndex,
     factory,
     serialize,

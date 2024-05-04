@@ -68,7 +68,9 @@ export function Transaction({
           </Text>
           <Text size="2xl" className="mt-1">
             {amountInfo
-              .map((info) => `${info.amount} ${info.denom}`)
+              .map((info) => {
+                return `${info.amount} ${info.denom}`;
+              })
               .join("\n")}
           </Text>
         </>
@@ -96,7 +98,9 @@ export function Transaction({
               <Text color="gray">Fee</Text>
               <Text color="gray">
                 {feeInfo
-                  .map((info) => `${info.amount} ${info.denom}`)
+                  .map((info) => {
+                    return `${info.amount} ${info.denom}`;
+                  })
                   .join("\n")}
               </Text>
             </div>

@@ -21,7 +21,9 @@ export function createMultisigKey(
     MultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
-    keysMapped = keys.map((key) => factories.Key.create(key));
+    keysMapped = keys.map((key) => {
+      return factories.Key.create(key);
+    });
   } catch (e) {
     keysMapped = [];
   }

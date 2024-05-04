@@ -1,9 +1,14 @@
 "use client";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-const ReactApexChart = dynamic(() => import("react-apexcharts"), {
-  ssr: false,
-});
+const ReactApexChart = dynamic(
+  () => {
+    return import("react-apexcharts");
+  },
+  {
+    ssr: false,
+  },
+);
 
 const options: ApexOptions = {
   legend: {

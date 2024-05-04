@@ -44,87 +44,66 @@ export default observer(function FastTravel() {
             <Text size="xl">Assets</Text>
             <Divider />
             <div className="space-evenly grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {Object.keys(toAssets)?.map((assetKey) => (
-                <Box
-                  key={assetKey}
-                  className={cn(
-                    " hover:bg-background-primary-hover col-span-1 flex w-full cursor-pointer flex-row bg-gray-700",
-                    toAssets[assetKey]?.disabled &&
-                      "cursor-not-allowed opacity-50 hover:bg-gray-700",
-                  )}
-                  onClick={() => {
-                    if (toAssets[assetKey]?.disabled) return;
-                    setTargetAsset(assetKey);
-                  }}
-                >
-                  {toAssets[assetKey]?.image && (
-                    <Image
-                      alt={toAssets[assetKey]?.label ?? ""}
-                      src={toAssets[assetKey]?.image ?? ""}
-                      width={24}
-                      height={24}
-                      className="mr-2"
-                    />
-                  )}
+              {Object.keys(toAssets)?.map((assetKey) => {
+                return (
+                  <Box
+                    key={assetKey}
+                    className={cn(
+                      " hover:bg-background-primary-hover col-span-1 flex w-full cursor-pointer flex-row bg-gray-700",
+                      toAssets[assetKey]?.disabled &&
+                        "cursor-not-allowed opacity-50 hover:bg-gray-700",
+                    )}
+                    onClick={() => {
+                      if (toAssets[assetKey]?.disabled) return;
+                      setTargetAsset(assetKey);
+                    }}
+                  >
+                    {toAssets[assetKey]?.image && (
+                      <Image
+                        alt={toAssets[assetKey]?.label ?? ""}
+                        src={toAssets[assetKey]?.image ?? ""}
+                        width={24}
+                        height={24}
+                        className="mr-2"
+                      />
+                    )}
 
-                  <Text>
-                    {toAssets[assetKey]?.label}{" "}
-                    {toAssets[assetKey]?.disabled && "(soon)"}
-                  </Text>
-                </Box>
-              ))}
+                    <Text>
+                      {toAssets[assetKey]?.label}{" "}
+                      {toAssets[assetKey]?.disabled && "(soon)"}
+                    </Text>
+                  </Box>
+                );
+              })}
             </div>
           </div>
           <div className="space-y-4">
             <Text size="xl">NFTs</Text>
             <Divider />
             <div className="flex flex-row space-x-3">
-              {nfts.map((asset) => (
-                <Box
-                  key={`nft-${asset.label}`}
-                  className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
-                >
-                  <Text>{asset.label} (soon)</Text>
-                </Box>
-              ))}
+              {nfts.map((asset) => {
+                return (
+                  <Box
+                    key={`nft-${asset.label}`}
+                    className="flex cursor-not-allowed flex-row space-x-3 bg-gray-700 opacity-50"
+                  >
+                    <Text>{asset.label} (soon)</Text>
+                  </Box>
+                );
+              })}
             </div>
           </div>
           <div className="space-y-4">
             <Text size="xl">Vaults</Text>
             <Divider />
             <div className="flex flex-col gap-3 ">
-              {vaults.map((asset) => (
-                <Box
-                  key={`vault-${asset.label}`}
-                  className="flex cursor-not-allowed flex-row bg-gray-700 opacity-50 max-lg:space-x-3  "
-                >
-                  <div className="relative mr-3 aspect-square w-full max-w-[35px] ">
-                    <Image
-                      alt={asset.label}
-                      src={asset.image ?? ""}
-                      layout="fill"
-                      objectFit="contain"
-                    />
-                  </div>
-                  <Text>{asset.label} (soon)</Text>
-                </Box>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-4">
-            <Text size="xl">Airdrop Farming</Text>
-            <Divider />
-            <div className="flex flex-row space-x-3">
-              {farms.map((asset) => (
-                <Box
-                  key={`farm-${asset.label}`}
-                  className={cn(
-                    "flex flex-row space-x-3 bg-gray-700",
-                    "cursor-not-allowed opacity-50 ",
-                  )}
-                >
-                  {asset.image && (
-                    <div className="relative aspect-square w-full max-w-[35px] ">
+              {vaults.map((asset) => {
+                return (
+                  <Box
+                    key={`vault-${asset.label}`}
+                    className="flex cursor-not-allowed flex-row bg-gray-700 opacity-50 max-lg:space-x-3  "
+                  >
+                    <div className="relative mr-3 aspect-square w-full max-w-[35px] ">
                       <Image
                         alt={asset.label}
                         src={asset.image ?? ""}
@@ -132,10 +111,39 @@ export default observer(function FastTravel() {
                         objectFit="contain"
                       />
                     </div>
-                  )}
-                  <Text className="leading-4">{asset.label} (soon)</Text>
-                </Box>
-              ))}
+                    <Text>{asset.label} (soon)</Text>
+                  </Box>
+                );
+              })}
+            </div>
+          </div>
+          <div className="space-y-4">
+            <Text size="xl">Airdrop Farming</Text>
+            <Divider />
+            <div className="flex flex-row space-x-3">
+              {farms.map((asset) => {
+                return (
+                  <Box
+                    key={`farm-${asset.label}`}
+                    className={cn(
+                      "flex flex-row space-x-3 bg-gray-700",
+                      "cursor-not-allowed opacity-50 ",
+                    )}
+                  >
+                    {asset.image && (
+                      <div className="relative aspect-square w-full max-w-[35px] ">
+                        <Image
+                          alt={asset.label}
+                          src={asset.image ?? ""}
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                    )}
+                    <Text className="leading-4">{asset.label} (soon)</Text>
+                  </Box>
+                );
+              })}
             </div>
           </div>
         </div>

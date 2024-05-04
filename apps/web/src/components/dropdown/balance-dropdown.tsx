@@ -73,7 +73,9 @@ export const BalanceDropDown = observer<{
         data-dropdown-toggle="dropdown"
         className="bg-background-primary hover:bg-background-primary-hover flex h-16 w-full items-center justify-between rounded-xl p-3 text-center font-medium text-white focus:outline-none "
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          return setIsOpen(!isOpen);
+        }}
       >
         <div className="flex min-w-[50px] items-center space-x-3">
           {selectedOption && (
@@ -111,29 +113,33 @@ export const BalanceDropDown = observer<{
           className="z-50 cursor-pointer py-2 text-sm text-gray-700 dark:text-gray-200"
           aria-labelledby="dropdownDefaultButton"
         >
-          {options.map((option) => (
-            <li
-              key={`dropdown-${option.network}-${option.asset.base}`}
-              onClick={() => handleClickOption(option)}
-              className={cn(
-                " px-4 py-2 hover:bg-gray-600 ",
-                option.network === selectedOption?.network && "bg-gray-600 ",
-              )}
-            >
-              <div className="flex items-center space-x-3">
-                <Image
-                  src={option.image ?? "  "}
-                  alt={option.network}
-                  width={24}
-                  height={24}
-                />
-                <div className="flex flex-col space-y-2">
-                  <Text size="xs">{option.network}</Text>
-                  <Text size="xs">{`${option.balance.toString(10)} ${option.assetUnit}`}</Text>
+          {options.map((option) => {
+            return (
+              <li
+                key={`dropdown-${option.network}-${option.asset.base}`}
+                onClick={() => {
+                  return handleClickOption(option);
+                }}
+                className={cn(
+                  " px-4 py-2 hover:bg-gray-600 ",
+                  option.network === selectedOption?.network && "bg-gray-600 ",
+                )}
+              >
+                <div className="flex items-center space-x-3">
+                  <Image
+                    src={option.image ?? "  "}
+                    alt={option.network}
+                    width={24}
+                    height={24}
+                  />
+                  <div className="flex flex-col space-y-2">
+                    <Text size="xs">{option.network}</Text>
+                    <Text size="xs">{`${option.balance.toString(10)} ${option.assetUnit}`}</Text>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

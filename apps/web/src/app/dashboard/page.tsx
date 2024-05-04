@@ -183,20 +183,28 @@ const AssetBalance = observer(function AssetBalance() {
   const balances = useNewBalances({
     publicKey,
   });
-  if (balances.every((b) => b.isLoading)) {
+  if (
+    balances.every((b) => {
+      return b.isLoading;
+    })
+  ) {
     return <span className="font-extrabold  text-white"> loading </span>;
   }
-  const balance = balances.filter((b) => b.data && b.data.balances?.length > 0);
+  const balance = balances.filter((b) => {
+    return b.data && b.data.balances?.length > 0;
+  });
 
   if (balance.length === 0) return null;
 
   return balance.map((b) => {
-    return b.data?.balances.map((chainBalance) => (
-      <NewAssetItem
-        key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
-        coin={chainBalance}
-      />
-    ));
+    return b.data?.balances.map((chainBalance) => {
+      return (
+        <NewAssetItem
+          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
+          coin={chainBalance}
+        />
+      );
+    });
   });
 });
 

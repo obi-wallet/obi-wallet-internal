@@ -54,7 +54,9 @@ export class MultisigKeyDecryption {
       return share ? new Uint8Array(Buffer.from(share, "base64")) : null;
     });
     const sssSecret = await sss.combineShares(
-      decryptedShares.filter((v): v is Uint8Array => !!v),
+      decryptedShares.filter((v): v is Uint8Array => {
+        return !!v;
+      }),
     );
     const raw = SHA256.hash(new Word32Array(sssSecret)).toUint8Array();
     const key = await window.crypto.subtle.importKey(

@@ -7,9 +7,14 @@ import { ReactNode } from "react";
 
 import "./globals.css";
 
-const Provider = dynamic(() => import("@/components/provider"), {
-  ssr: false,
-});
+const Provider = dynamic(
+  () => {
+    return import("@/components/provider");
+  },
+  {
+    ssr: false,
+  },
+);
 export const metadata: Metadata = {
   title: "Obi - Anything In Two Clicks",
   description: "Anything In Two Clicks",

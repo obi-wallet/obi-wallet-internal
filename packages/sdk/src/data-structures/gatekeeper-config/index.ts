@@ -32,8 +32,12 @@ export class GatekeeperConfig {
 
   public toJSON(): AbstractSerialized<typeof GatekeeperConfigSchema> {
     return {
-      beneficiaries: this._beneficiaries.map((b) => b.toJSON()),
-      flexAccounts: this._flexAccounts.map((f) => f.toJSON()),
+      beneficiaries: this._beneficiaries.map((b) => {
+        return b.toJSON();
+      }),
+      flexAccounts: this._flexAccounts.map((f) => {
+        return f.toJSON();
+      }),
     };
   }
 
@@ -61,9 +65,9 @@ export class GatekeeperConfig {
   }
 
   public removeBeneficiary(beneficiary: Beneficiary) {
-    this._beneficiaries = this._beneficiaries.filter(
-      (b) => b.address !== beneficiary.address,
-    );
+    this._beneficiaries = this._beneficiaries.filter((b) => {
+      return b.address !== beneficiary.address;
+    });
   }
 
   public upsertFlexAccount(flexAccount: FlexAccount) {
@@ -71,9 +75,9 @@ export class GatekeeperConfig {
   }
 
   public removeFlexAccount(flexAccount: FlexAccount) {
-    this._flexAccounts = this._flexAccounts.filter(
-      (f) => f.address !== flexAccount.address,
-    );
+    this._flexAccounts = this._flexAccounts.filter((f) => {
+      return f.address !== flexAccount.address;
+    });
   }
 
   protected upsertArrayItem<T extends { address: string }>(
@@ -81,7 +85,9 @@ export class GatekeeperConfig {
     item: T,
   ) {
     const result = [...array];
-    const index = result.findIndex((b) => b.address === item.address);
+    const index = result.findIndex((b) => {
+      return b.address === item.address;
+    });
     if (index === -1) {
       result.push(item);
     } else {
@@ -105,8 +111,12 @@ export function createGatekeeperConfig(
   const { beneficiaries, flexAccounts } =
     GatekeeperConfigSchema.migratableSchema.parse(serialized);
   return new GatekeeperConfig(
-    beneficiaries.map((b) => factories.Beneficiary.create(b)),
-    flexAccounts.map((b) => factories.FlexAccount.create(b)),
+    beneficiaries.map((b) => {
+      return factories.Beneficiary.create(b);
+    }),
+    flexAccounts.map((b) => {
+      return factories.FlexAccount.create(b);
+    }),
     factories.createGatekeeperConfig,
   );
 }

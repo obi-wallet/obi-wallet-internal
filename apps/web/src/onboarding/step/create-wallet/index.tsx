@@ -56,7 +56,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
   if (!step.waitUntilDone) return null;
 
-  if (createWalletMutation.isPending)
+  if (createWalletMutation.isPending) {
     return (
       <div className="flex flex-col items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,6 +71,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
         <LoadingText />
       </div>
     );
+  }
 
   return null;
 });
@@ -91,7 +92,9 @@ function LoadingText() {
     const interval = setInterval(() => {
       setMessage(getRandomMessage);
     }, 4000);
-    return () => clearInterval(interval);
+    return () => {
+      return clearInterval(interval);
+    };
   }, []);
 
   return <Text className=" text-center">{message}</Text>;

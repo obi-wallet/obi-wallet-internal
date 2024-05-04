@@ -49,7 +49,9 @@ export class MultisigKey {
       return;
     }
     return {
-      keys: this._keys.map((key: Key) => key.toJSON()),
+      keys: this._keys.map((key: Key) => {
+        return key.toJSON();
+      }),
       primaryKeyIndex: this.primaryKeyIndex,
       threshold: this._threshold,
     };
@@ -79,7 +81,9 @@ export class MultisigKey {
     return {
       type: "tendermint/PubKeyMultisigThreshold",
       value: {
-        pubkeys: this._keys.map((key) => key.publicKey),
+        pubkeys: this._keys.map((key) => {
+          return key.publicKey;
+        }),
         threshold: this._threshold.toString(),
       },
     };
@@ -157,12 +161,18 @@ export class MultisigKey {
 
   public removeKeyByPublicKey(publicKey: Secp256k1PublicKey) {
     this.setKeys(
-      this._keys.filter((key) => key.publicKey.value !== publicKey.value),
+      this._keys.filter((key) => {
+        return key.publicKey.value !== publicKey.value;
+      }),
     );
   }
 
   public removeKey(key: Key) {
-    this.setKeys(this._keys.filter((k) => k !== key));
+    this.setKeys(
+      this._keys.filter((k) => {
+        return k !== key;
+      }),
+    );
   }
 
   protected get primaryKeyIndex() {
@@ -184,7 +194,9 @@ export class MultisigKey {
   protected sortKeys(keys: Key[]) {
     return R.sortWith<Key>([
       R.ascend(R.prop("type")),
-      R.ascend((key) => key.publicKey.value),
+      R.ascend((key) => {
+        return key.publicKey.value;
+      }),
     ])(keys);
   }
 

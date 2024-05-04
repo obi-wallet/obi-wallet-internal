@@ -143,9 +143,15 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const balance = balances
-    .filter((b) => b.isSuccess)
-    .map((b) => b.data)
-    .filter((b): b is NewBalance => !!b?.balances);
+    .filter((b) => {
+      return b.isSuccess;
+    })
+    .map((b) => {
+      return b.data;
+    })
+    .filter((b): b is NewBalance => {
+      return !!b?.balances;
+    });
 
   // add chainId to balance.balances
   const withChainId = balance
@@ -159,7 +165,9 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         }),
       };
     })
-    .map((b) => b.balances)
+    .map((b) => {
+      return b.balances;
+    })
     .flat();
 
   const balanceOptions = withChainId
@@ -184,7 +192,9 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       };
       return result;
     })
-    .filter((option): option is IBalanceOption => !!option);
+    .filter((option): option is IBalanceOption => {
+      return !!option;
+    });
 
   useEffect(() => {
     const coin = form.getValues().coin;
@@ -287,8 +297,12 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 <Dropdown
                   items={balanceOptions}
                   selectedItem={coin.asset}
-                  getKey={(item) => item.denom}
-                  itemToString={(item) => (item ? item.denom : "")}
+                  getKey={(item) => {
+                    return item.denom;
+                  }}
+                  itemToString={(item) => {
+                    return item ? item.denom : "";
+                  }}
                   className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
                     return (

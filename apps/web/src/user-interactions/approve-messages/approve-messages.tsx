@@ -225,7 +225,9 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
 
   const feeInfo =
     fee && targetChain.validateFee(fee)
-      ? fee.amount.map((coin) => prettyPrintCoin({ coin, targetChainId }))
+      ? fee.amount.map((coin) => {
+          return prettyPrintCoin({ coin, targetChainId });
+        })
       : [
           {
             amount: "",
@@ -233,11 +235,17 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
           },
         ];
   const amounts = messages
-    .map((message) => messageToAmount({ message, targetChainId }))
+    .map((message) => {
+      return messageToAmount({ message, targetChainId });
+    })
     .flat()
-    .map((coin) => prettyPrintCoin({ coin, targetChainId }));
+    .map((coin) => {
+      return prettyPrintCoin({ coin, targetChainId });
+    });
   const descriptions = messages
-    .map((message) => messageToDescription({ message, targetChainId }))
+    .map((message) => {
+      return messageToDescription({ message, targetChainId });
+    })
     .flat();
 
   return (

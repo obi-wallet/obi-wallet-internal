@@ -28,7 +28,9 @@ export function getToChain(chainId: string) {
 }
 
 export function getFromChain(chainId: string) {
-  return fromChains.find((c) => c.chainId === chainId);
+  return fromChains.find((c) => {
+    return c.chainId === chainId;
+  });
 }
 export const fromChains = [
   {

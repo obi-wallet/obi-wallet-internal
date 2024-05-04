@@ -55,7 +55,9 @@ export function DropDown<
   }, [value]);
   const getOptionFromValue = (value: string | number | undefined) => {
     if (!value) return undefined;
-    return options.find((option) => option.value === value);
+    return options.find((option) => {
+      return option.value === value;
+    });
   };
 
   useEffect(() => {
@@ -89,7 +91,9 @@ export function DropDown<
         className="bg-background-primary hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
         type="button"
         disabled={disabled}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          return setIsOpen(!isOpen);
+        }}
       >
         {(customSelectedItemComponent &&
           customSelectedItemComponent(selectedOption)) ||
@@ -110,15 +114,17 @@ export function DropDown<
             className="  py-2 text-sm text-gray-700 dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton"
           >
-            {options.map((option) =>
-              customItemComponent ? (
-                customItemComponent(option, selectedOption, () =>
-                  handleClickOption(option),
-                )
+            {options.map((option) => {
+              return customItemComponent ? (
+                customItemComponent(option, selectedOption, () => {
+                  return handleClickOption(option);
+                })
               ) : (
                 <li
                   key={`dropdown-${option.value}`}
-                  onClick={() => handleClickOption(option)}
+                  onClick={() => {
+                    return handleClickOption(option);
+                  }}
                   className={cn(
                     "block cursor-pointer px-4 py-2 hover:bg-gray-600",
                     option.value === selectedOption?.value && "bg-gray-600 ",
@@ -127,8 +133,8 @@ export function DropDown<
                 >
                   {option.label}
                 </li>
-              ),
-            )}
+              );
+            })}
           </ul>
         </div>
       )}

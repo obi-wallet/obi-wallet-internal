@@ -112,23 +112,25 @@ export function useNewBalances({
 
   // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chain) => ({
-      queryKey: ["new-balances", chain.id, publicKey],
-      enabled: !!publicKey, // Only run query if address is provided
-      queryFn: async (): Promise<NewBalance> => {
-        invariant(publicKey, "Expected publicKey to be set.");
-        if (chain.disabled) {
-          return {
-            balances: [],
+    queries: chains.map((chain) => {
+      return {
+        queryKey: ["new-balances", chain.id, publicKey],
+        enabled: !!publicKey, // Only run query if address is provided
+        queryFn: async (): Promise<NewBalance> => {
+          invariant(publicKey, "Expected publicKey to be set.");
+          if (chain.disabled) {
+            return {
+              balances: [],
+              targetChainId: chain.id,
+            };
+          }
+          return await fetchNewBalances({
+            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
             targetChainId: chain.id,
-          };
-        }
-        return await fetchNewBalances({
-          address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-          targetChainId: chain.id,
-        });
-      },
-    })),
+          });
+        },
+      };
+    }),
   });
 }
 
@@ -142,23 +144,25 @@ export function useBalances({
 
   // useQueries to fetch balances for each chain
   return useQueries({
-    queries: chains.map((chain) => ({
-      queryKey: ["balances", chain.id, publicKey],
-      enabled: !!publicKey, // Only run query if address is provided
-      queryFn: async (): Promise<Balance> => {
-        invariant(publicKey, "Expected publicKey to be set.");
-        if (chain.disabled) {
-          return {
-            balances: [],
+    queries: chains.map((chain) => {
+      return {
+        queryKey: ["balances", chain.id, publicKey],
+        enabled: !!publicKey, // Only run query if address is provided
+        queryFn: async (): Promise<Balance> => {
+          invariant(publicKey, "Expected publicKey to be set.");
+          if (chain.disabled) {
+            return {
+              balances: [],
+              chainId: chain.id,
+            };
+          }
+          return await fetchBalances({
+            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
             chainId: chain.id,
-          };
-        }
-        return await fetchBalances({
-          address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-          chainId: chain.id,
-        });
-      },
-    })),
+          });
+        },
+      };
+    }),
   });
 }
 
@@ -186,19 +190,27 @@ export function useUSDTotalPrice(): {
   // if (publicKey === undefined) return { total: 0, loading: false };
 
   // if all balances are not loaded, return 0
-  if (balances.every((balance) => balance.isPending)) {
+  if (
+    balances.every((balance) => {
+      return balance.isPending;
+    })
+  ) {
     return {
       total: "0",
       loading: true,
     };
   }
 
-  const filteredSuccessBalances = balances.filter(
-    (bal) => bal.status === "success",
-  );
+  const filteredSuccessBalances = balances.filter((bal) => {
+    return bal.status === "success";
+  });
   const flatBalances = filteredSuccessBalances
-    .map((balance) => balance.data?.balances)
-    .filter((balance): balance is Coin[] => balance !== undefined)
+    .map((balance) => {
+      return balance.data?.balances;
+    })
+    .filter((balance): balance is Coin[] => {
+      return balance !== undefined;
+    })
     .flat();
 
   const total = flatBalances
@@ -207,9 +219,9 @@ export function useUSDTotalPrice(): {
 
       const asset =
         toAssets[
-          Object.keys(toAssets).find(
-            (key) => toAssets[key]?.denom === balance?.denom,
-          ) ?? ""
+          Object.keys(toAssets).find((key) => {
+            return toAssets[key]?.denom === balance?.denom;
+          }) ?? ""
         ];
       if (!asset) {
         return acc;

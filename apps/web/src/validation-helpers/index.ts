@@ -2,7 +2,9 @@ import { TargetChain, TargetChainId } from "@/target-chain";
 import z from "zod";
 
 export function trim<T extends z.ZodTypeAny>(schema: T) {
-  return z.preprocess((val) => String(val).trim(), schema);
+  return z.preprocess((val) => {
+    return String(val).trim();
+  }, schema);
 }
 
 export function nonEmptyString(key: string) {

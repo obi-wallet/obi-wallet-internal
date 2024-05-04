@@ -8,7 +8,9 @@ import { KeyTypePage, useSecuritySettingsContext } from "../context";
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
     const { draft, keyList, pushPage, popPage } = useSecuritySettingsContext();
-    const keyData = keyList.find((item) => item.type === page.payload);
+    const keyData = keyList.find((item) => {
+      return item.type === page.payload;
+    });
 
     if (!keyData) return null;
 
