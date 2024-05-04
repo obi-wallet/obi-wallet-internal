@@ -10,7 +10,7 @@ export enum CosmosSdkChainId {
 export function isCosmosSdkChainId(
   chainId: string,
 ): chainId is CosmosSdkChainId {
-  return Object.values(CosmosSdkChainId).includes(chainId as CosmosSdkChainId);
+  return Object.values<string>(CosmosSdkChainId).includes(chainId);
 }
 
 export interface CosmosSdkChainData {

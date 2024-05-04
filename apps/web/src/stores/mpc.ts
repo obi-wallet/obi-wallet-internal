@@ -91,11 +91,9 @@ export class MpcStore {
   }
 
   protected async getUnclaimedShares(): Promise<UnclaimedShares | undefined> {
-    const data = await this.unclaimedSharesKVStore.get<unknown>(
+    return await this.unclaimedSharesKVStore.get<UnclaimedShares>(
       unclaimedSharesKvStoreEntry,
     );
-    if (!data) return undefined;
-    return data as UnclaimedShares;
   }
 
   protected async setUnclaimedShares(shares: UnclaimedShares) {

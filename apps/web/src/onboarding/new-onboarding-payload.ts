@@ -327,6 +327,7 @@ export class NewOnboardingPayload implements Draftable {
     clone._distributedShares = this._distributedShares;
     clone._unclaimedHomeAccount = this._unclaimedHomeAccount;
     clone._homeAccountClaimed = this._homeAccountClaimed;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return clone as this;
   }
 

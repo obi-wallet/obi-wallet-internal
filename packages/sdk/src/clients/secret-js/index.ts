@@ -136,6 +136,7 @@ export class SecretJsClient {
     return await this.withSigningSecretNetworkClient(
       SecretJsAminoSigner.fromSigner({ signer, prefix: this.chain.prefix }),
       async (client) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return await client.tx.signTx(messages as Msg[], {
           ...this.defaultTxOptions,
           gasLimit: gasLimit ?? this.defaultTxOptions.gasLimit,

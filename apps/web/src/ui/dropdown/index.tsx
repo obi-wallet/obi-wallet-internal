@@ -1,8 +1,16 @@
-"use client";
 import { cn } from "@/lib/utils";
 import Downshift from "downshift";
-import { RefObject, useRef, useState, useEffect } from "react";
+import {
+  RefObject,
+  useRef,
+  useState,
+  useEffect,
+  FC,
+  CSSProperties,
+  HTMLAttributes,
+} from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+
 export interface DropdownItem {
   disabled?: boolean;
 }
@@ -10,9 +18,9 @@ export interface DropdownItem {
 export interface CustomDropdownProps<T extends DropdownItem> {
   items: T[];
   itemToString: (item: T | null) => string;
-  itemComponent: React.FC<ItemComponentProps<T>>;
+  itemComponent: FC<ItemComponentProps<T>>;
   onItemSelect: (item: T) => void;
-  selectedItemComponent: React.FC<{ item: T | null }>;
+  selectedItemComponent: FC<{ item: T | null }>;
   getKey?: (item: T) => string;
   className?: string;
   selectedItem?: T | null | undefined;
@@ -25,8 +33,8 @@ export interface ItemComponentProps<T extends DropdownItem> {
     item: T;
     index?: number;
     disabled?: boolean;
-    style?: React.CSSProperties;
-  }) => React.HTMLAttributes<HTMLDivElement>;
+    style?: CSSProperties;
+  }) => HTMLAttributes<HTMLDivElement>;
   isSelected: boolean;
 }
 
@@ -49,7 +57,8 @@ export function CustomDropdown<T extends DropdownItem>({
     <div ref={ref} className="flex flex-1">
       <Downshift
         onChange={(selection) => {
-          onItemSelect(selection as T);
+          if (!selection) return;
+          onItemSelect(selection);
           setIsOpen(false); // Close dropdown after selection
         }}
         onOuterClick={() => setIsOpen(false)}
@@ -67,7 +76,7 @@ export function CustomDropdown<T extends DropdownItem>({
               )}
               onClick={() => setIsOpen(!isOpen)}
             >
-              <SelectedItemComponent item={selectedItem as T | null} />
+              <SelectedItemComponent item={selectedItem} />
 
               <div className="ml-3">
                 {isOpen ? <FaAngleUp /> : <FaAngleDown />}
@@ -97,6 +106,7 @@ export function CustomDropdown<T extends DropdownItem>({
 function useOutsideClick(ref: RefObject<HTMLElement>, callback: () => void) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
         callback();
       }

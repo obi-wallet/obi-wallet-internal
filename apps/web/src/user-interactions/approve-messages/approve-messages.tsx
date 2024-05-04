@@ -8,7 +8,7 @@ import {
 } from "@/user-interactions/approve-intentions";
 import { Coin } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { MsgSendEncodeObject, StdFee } from "@cosmjs/stargate";
+import { StdFee } from "@cosmjs/stargate";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -260,7 +260,7 @@ function messageToAmount({
 }): Coin[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
-      const { value } = message as MsgSendEncodeObject;
+      const { value } = message;
       return value.amount ?? [];
     }
     default:
@@ -278,7 +278,7 @@ function messageToDescription({
 }) {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
-      const { value } = message as MsgSendEncodeObject;
+      const { value } = message;
       const amount = messageToAmount({ message, targetChainId });
       return amount.map((amount) => {
         const prettyAmount = prettyPrintCoin({

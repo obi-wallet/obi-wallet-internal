@@ -27,7 +27,6 @@ type ButtonLinkProps = {
 } & UnstyledLinkProps;
 
 export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function ButtonLink(
     {
       children,

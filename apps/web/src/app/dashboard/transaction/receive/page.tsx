@@ -15,13 +15,6 @@ import { useQRCode } from "next-qrcode";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-export interface IChainOption {
-  label: string;
-  value: string;
-  image: string;
-  disabled?: boolean;
-}
-
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
   const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
@@ -135,7 +128,7 @@ const ChainDropdown = observer(function ChainDropdown({
                 <>
                   <img
                     className="h-6 w-6"
-                    src={(option as IChainOption).image}
+                    src={option.image}
                     alt={option?.label}
                   />
                   <span>{option?.label}</span>
@@ -155,11 +148,7 @@ const ChainDropdown = observer(function ChainDropdown({
             onClick={handleOption}
             key={option.value}
           >
-            <img
-              src={(option as IChainOption).image}
-              alt="asset"
-              className="h-6 w-6 "
-            />
+            <img src={option.image} alt="asset" className="h-6 w-6 " />
             <span>{option.label}</span>
           </li>
         )}

@@ -11,10 +11,14 @@ import {
   IconButton,
   Input,
   DropDown,
-  IDropDownOption,
+  DropDownOption,
+  IColumn,
+  IRow,
 } from "@/components";
 import { observer } from "mobx-react-lite";
 import { FaGoogle } from "react-icons/fa";
+
+type ColumnKey = "asset" | "meta" | "price";
 
 const POSITION_COLUMNS = [
   { value: "asset", label: "Asset", style: "justify-start" },
@@ -26,15 +30,9 @@ const POSITION_COLUMNS = [
     value: "price",
     label: "Price",
   },
-];
+] satisfies IColumn<ColumnKey>[];
 
-interface IRow {
-  asset: string;
-  meta: string;
-  price: string;
-}
-
-const rows: IRow[] = [
+const rows: IRow<ColumnKey>[] = [
   { asset: "ETH", meta: "Up", price: "$99.98" },
   {
     asset: "Sommelier Finance: Real Yield ETH - 14.42% ",
@@ -43,7 +41,7 @@ const rows: IRow[] = [
   },
 ];
 
-const options: IDropDownOption<string>[] = [
+const options: DropDownOption<string>[] = [
   {
     value: "a",
     label: "Option A",

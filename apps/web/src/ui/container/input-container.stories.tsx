@@ -21,7 +21,7 @@ const meta = {
       control: { type: "select" },
     },
   },
-} as Meta<typeof InputContainer>;
+} satisfies Meta<typeof InputContainer>;
 
 export default meta;
 
@@ -30,6 +30,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     children: <div>InputContainer</div>,
+    labelClassname: "",
   },
 };
 

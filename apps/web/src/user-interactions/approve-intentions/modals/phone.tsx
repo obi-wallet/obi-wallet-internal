@@ -14,6 +14,7 @@ import { KeyType } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import invariant from "tiny-invariant";
 
 export interface PhoneKeyModalProps {
   keyItem: KeyItem;
@@ -31,13 +32,12 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
     const [code, setCode] = useState("");
     const [to, setTo] = useState("");
 
+    const result = PhoneSingleKeyMetaData.safeParse(keyItem.keyMetaData);
+    invariant(result.success, "Invalid key metadata");
+
     const securityQuestionIndex =
       securityQuestions.findIndex((question) => {
-        return (
-          question.value ===
-          (keyItem.keyMetaData.payload as { securityQuestion: string })
-            .securityQuestion
-        );
+        return question.value === result.data.payload.securityQuestion;
       }) ?? 0;
     const securityQuestion = securityQuestions[securityQuestionIndex]!;
     const needsTo = !keyItem.keyMetaData.payload;

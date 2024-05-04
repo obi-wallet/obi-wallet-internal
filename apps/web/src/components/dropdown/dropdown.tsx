@@ -1,15 +1,38 @@
 "use client";
+
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
-export interface IDropDownOption<T extends string | number> {
+export interface DropDownOption<T extends string | number> {
   value: T;
   label: string;
   disabled?: boolean;
 }
 
-export function DropDown<T extends string | number>({
+export interface DropDownProps<
+  T extends string | number,
+  O extends DropDownOption<T>,
+> {
+  description: string;
+  options: O[];
+  onSelectOption?: (option: O) => void;
+  value?: T;
+  customSelectedItemComponent?: (option?: O) => JSX.Element;
+  customItemComponent?: (
+    option: O,
+    selectedOption: O | undefined,
+    handleOptionClick: () => void,
+  ) => ReactNode;
+  className?: string;
+  contentContainerClassname?: string;
+  disabled?: boolean;
+}
+
+export function DropDown<
+  T extends string | number,
+  O extends DropDownOption<T>,
+>({
   description,
   options,
   onSelectOption,
@@ -19,26 +42,12 @@ export function DropDown<T extends string | number>({
   className,
   contentContainerClassname,
   disabled,
-}: {
-  description: string;
-  options: IDropDownOption<T>[];
-  onSelectOption?: (option: IDropDownOption<T>) => void;
-  value?: T;
-  customSelectedItemComponent?: (option?: IDropDownOption<T>) => JSX.Element;
-  customItemComponent?: (
-    option: IDropDownOption<T>,
-    selectedOption: IDropDownOption<T> | undefined,
-    handleOptionClick: () => void,
-  ) => JSX.Element;
-  className?: string;
-  contentContainerClassname?: string;
-  disabled?: boolean;
-}) {
+}: DropDownProps<T, O>) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<
-    IDropDownOption<T> | undefined
-  >(options?.[0]);
+  const [selectedOption, setSelectedOption] = useState<O | undefined>(
+    options?.[0],
+  );
 
   useEffect(() => {
     setSelectedOption(getOptionFromValue(value));
@@ -50,6 +59,7 @@ export function DropDown<T extends string | number>({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -62,7 +72,7 @@ export function DropDown<T extends string | number>({
     };
   }, []);
 
-  const handleClickOption = (option: IDropDownOption<T>) => {
+  const handleClickOption = (option: O) => {
     if (option.disabled) return;
     setSelectedOption(option);
     setIsOpen(false);

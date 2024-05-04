@@ -8,7 +8,6 @@ type TextButtonProps = {
 } & ComponentPropsWithRef<"button">;
 
 export const TextButton = forwardRef<HTMLButtonElement, TextButtonProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function TextButton(
     {
       children,

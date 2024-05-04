@@ -11,7 +11,6 @@ type PrimaryLinkProps = {
 } & UnstyledLinkProps;
 
 export const PrimaryLink = forwardRef<HTMLAnchorElement, PrimaryLinkProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function PrimaryLink(
     { className, children, variant = "primary", ...rest },
     ref,

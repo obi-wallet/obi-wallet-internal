@@ -108,11 +108,11 @@ function keygen(params: Parameters): any[] {
               partyToOutgoingRoundMsgs[party_signer_idx][party_round_msg_idx]
                 .receiver != null
             ) {
-              const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
-                party_signer_idx
-                // This should be fine
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ]?.[party_round_msg_idx] as any;
+              const outgoingRoundMsgWithRecipient =
+                partyToOutgoingRoundMsgs[
+                  party_signer_idx
+                  // This should be fine
+                ]?.[party_round_msg_idx];
               const keygenIndex =
                 Number(outgoingRoundMsgWithRecipient.receiver) - 1;
               console.log(
@@ -123,11 +123,11 @@ function keygen(params: Parameters): any[] {
                 outgoingRoundMsgWithRecipient,
               );
             } else {
-              const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
-                party_signer_idx
-                // This should be fine
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ]?.[0] as any;
+              const roundMsgWithoutRecipient =
+                partyToOutgoingRoundMsgs[
+                  party_signer_idx
+                  // This should be fine
+                ]?.[0];
               for (
                 let receiving_party_keygen_idx = 0;
                 receiving_party_keygen_idx < params.parties;
@@ -232,10 +232,8 @@ function createSignersAndPresign(
             partyToOutgoingRoundMsgs[selectedPartyId][party_round_msg_idx]
               .receiver != null
           ) {
-            const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
-              selectedPartyId
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ]?.[party_round_msg_idx] as any;
+            const outgoingRoundMsgWithRecipient =
+              partyToOutgoingRoundMsgs[selectedPartyId]?.[party_round_msg_idx];
             const keygenIndex =
               Number(outgoingRoundMsgWithRecipient.receiver) - 1;
             console.log(
@@ -245,10 +243,8 @@ function createSignersAndPresign(
 
             signers[keygenIndex].handleIncoming(outgoingRoundMsgWithRecipient);
           } else {
-            const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
-              selectedPartyId
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ]?.[0] as any;
+            const roundMsgWithoutRecipient =
+              partyToOutgoingRoundMsgs[selectedPartyId]?.[0];
             for (
               let receiving_party_keygen_idx = 0;
               receiving_party_keygen_idx < selectedPartyIds.length;

@@ -1,36 +1,11 @@
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
-import { EthUserOp, RustEthUserOp } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import clsx, { ClassValue } from "clsx";
 import { ec } from "elliptic";
-import { ethers } from "ethers";
-import { PubKey } from "secretjs";
 import { twMerge } from "tailwind-merge";
 
 /** Merge classes with tailwind-merge with clsx full feature */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function arrayBufferToBase64(buffer: ArrayBuffer) {
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i] as number);
-  }
-  return window.btoa(binary);
-}
-
-export function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes) return "0 Bytes";
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
 export function decompressPoint(compressedPointHex: string): string {
@@ -46,100 +21,12 @@ export function decompressPoint(compressedPointHex: string): string {
   return x + y;
 }
 
-export function createUserOperationHash(
-  ethUserOp: EthUserOp,
-  entryPointAddr: string,
-  chainId: string,
-): string {
-  const getUserOpHash = (): string => {
-    const packed = ethers.AbiCoder.defaultAbiCoder().encode(
-      [
-        "address",
-        "uint256",
-        "bytes32",
-        "bytes32",
-        "uint256",
-        "uint256",
-        "uint256",
-        "uint256",
-        "uint256",
-        "bytes32",
-      ],
-      [
-        ethUserOp.sender,
-        ethUserOp.nonce,
-        ethers.keccak256(ethUserOp.initCode),
-        ethers.keccak256(ethUserOp.callData),
-        ethUserOp.callGasLimit,
-        ethUserOp.verificationGasLimit,
-        ethUserOp.preVerificationGas,
-        ethUserOp.maxFeePerGas,
-        ethUserOp.maxPriorityFeePerGas,
-        ethers.keccak256(ethUserOp.paymasterAndData),
-      ],
-    );
-
-    const enc = ethers.AbiCoder.defaultAbiCoder().encode(
-      ["bytes32", "address", "uint256"],
-      [ethers.keccak256(packed), entryPointAddr, chainId],
-    );
-
-    return ethers.keccak256(enc);
-  };
-
-  return getUserOpHash();
-}
-
-export function transformEthUserOp(ethUserOp: EthUserOp): RustEthUserOp {
-  function hexToNumberArray(hexString: string): number[] {
-    return Array.from(new Uint8Array(Buffer.from(hexString.slice(2), "hex")));
-  }
-
-  return {
-    sender: ethUserOp.sender.toLowerCase().startsWith("0x")
-      ? ethUserOp.sender.slice(2)
-      : ethUserOp.sender,
-    nonce: parseInt(ethUserOp.nonce, 16).toString(10),
-    init_code: hexToNumberArray(ethUserOp.initCode),
-    call_data: hexToNumberArray(ethUserOp.callData),
-    call_gas_limit: parseInt(ethUserOp.callGasLimit, 16).toString(10),
-    verification_gas_limit: parseInt(
-      ethUserOp.verificationGasLimit,
-      16,
-    ).toString(10),
-    pre_verification_gas: parseInt(ethUserOp.preVerificationGas, 16).toString(
-      10,
-    ),
-    max_fee_per_gas: parseInt(ethUserOp.maxFeePerGas, 16).toString(10),
-    max_priority_fee_per_gas: parseInt(
-      ethUserOp.maxPriorityFeePerGas,
-      16,
-    ).toString(10), // Fixed this line
-    paymaster_and_data: hexToNumberArray(ethUserOp.paymasterAndData),
-    signature: [],
-  };
-}
-
-export function encodeSecp256k1Pubkey(pubkey: Uint8Array): PubKey {
-  if (pubkey.length !== 33 || (pubkey[0] !== 0x02 && pubkey[0] !== 0x03)) {
-    throw new Error(
-      "Public key must be compressed secp256k1, i.e. 33 bytes starting with 0x02 or 0x03",
-    );
-  }
-  return {
-    type: "tendermint/PubKeySecp256k1",
-    value: Buffer.from(pubkey).toString("base64"),
-  };
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function utf8ArrayToObject(data: Uint8Array): any {
-  const decoder = new TextDecoder();
-  return JSON.parse(decoder.decode(data));
-}
+// TODO: hide internal details
 export function getToChain(chainId: string) {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return CosmosSdkChains[chainId as keyof typeof CosmosSdkChains];
 }
+
 export function getFromChain(chainId: string) {
   return fromChains.find((c) => c.chainId === chainId);
 }

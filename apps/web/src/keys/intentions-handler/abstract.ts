@@ -76,6 +76,7 @@ export abstract class IntentionsHandler {
   protected stringToMultisigKeyEncryptedMessage(
     message: string,
   ): MultisigKeyEncryptedMessage {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
       string,
       ...string[],
@@ -132,6 +133,7 @@ export abstract class NewIntentionsHandler {
   protected stringToMultisigKeyEncryptedMessage(
     message: string,
   ): NewMultisigKeyEncryptedMessage {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
       string,
       ...string[],
