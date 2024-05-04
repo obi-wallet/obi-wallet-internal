@@ -3,16 +3,7 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { V06 } from "userop";
-import {
-  createPublicClient,
-  createWalletClient,
-  getAddress,
-  http,
-  keccak256,
-} from "viem";
-import { toAccount } from "viem/accounts";
-import { mainnet } from "viem/chains";
+import { getAddress, keccak256 } from "viem";
 
 function publicKeyToAddress(publicKey: Secp256k1PublicKey) {
   const u8 = getSec256k1UncompressedPublicKey(publicKey);
@@ -21,40 +12,8 @@ function publicKeyToAddress(publicKey: Secp256k1PublicKey) {
   return getAddress(`0x${address}`);
 }
 
-export async function generateEthereumAddresses(publicKey: Secp256k1PublicKey) {
-  const publicClient = createPublicClient({
-    chain: mainnet,
-    transport: http(),
-  });
-
-  const address = publicKeyToAddress(publicKey);
-  const walletClient = createWalletClient({
-    account: toAccount({
-      address,
-      async signMessage() {
-        throw new Error("signMessage not implemented");
-      },
-      async signTransaction() {
-        throw new Error("signTransaction not implemented");
-      },
-      async signTypedData() {
-        throw new Error("signTypedData not implemented");
-      },
-    }),
-    chain: mainnet,
-    transport: http(),
-  });
-
-  const account = new V06.Account.Instance({
-    ...V06.Account.Common.SimpleAccount.base(publicClient, walletClient),
-  });
-
-  const sender = await account.getSender();
-
-  return {
-    evmSigningAddress: address,
-    evmSimpleAccountAddress: sender,
-  };
+export function computeEthereumAddress(publicKey: Secp256k1PublicKey) {
+  return publicKeyToAddress(publicKey);
 }
 
 export function getConfig(chainId: TargetChainId) {
