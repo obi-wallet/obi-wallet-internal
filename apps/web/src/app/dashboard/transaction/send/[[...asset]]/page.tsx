@@ -303,6 +303,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   }}
                   className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
+                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}

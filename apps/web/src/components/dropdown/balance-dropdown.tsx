@@ -127,7 +127,7 @@ export const BalanceDropDown = observer<{
               >
                 <div className="flex items-center space-x-3">
                   <Image
-                    src={option.image ?? "  "}
+                    src={option.image ?? ""}
                     alt={option.network}
                     width={24}
                     height={24}
