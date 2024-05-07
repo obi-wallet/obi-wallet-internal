@@ -1,9 +1,6 @@
 "use client";
-import {
-  fromAssets,
-  ToAsset,
-  toAssets,
-} from "@/app/dashboard/fast-travel/assets";
+
+import { ToAsset, fromAssets, toAssets } from "@/dashboard/assets";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, getToChain, toChains } from "@/lib/utils";
@@ -64,6 +61,7 @@ interface FormData {
     amount: string;
     asset: string;
   };
+  depositAddress: string | undefined;
   slippage: number;
 }
 type ErrorsObject = Record<string, { message: string; type: string }>;
@@ -84,8 +82,8 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
   const [simulating, setSimulating] = useState<boolean>(false);
 
   const schema = z.object({
-    fromChain: z.string().refine(nonEmptyString, "From chain is required"),
-    toChain: z.string().refine(nonEmptyString, "To chain is required"),
+    fromChain: nonEmptyString("FromChain"),
+    toChain: nonEmptyString("ToChain"),
     fromAsset: z
       .object({
         // amount should be undefined or number
@@ -142,45 +140,37 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     }
   };
 
-  const { control, watch, getValues, setValue, trigger } = useForm<FormData>({
-    defaultValues: {
-      fromChain: fromChains[0]?.chainId ?? "",
-      fromAsset: {
-        amount: "",
-        asset: "eth",
+  const { control, watch, getValues, setValue, trigger, formState } =
+    useForm<FormData>({
+      defaultValues: {
+        fromChain: fromChains[0]?.chainId ?? "",
+        fromAsset: {
+          amount: "",
+          asset: "eth",
+        },
+        toChain: getChainFromAsset(),
+        toAsset: {
+          amount: "",
+          asset: targetAsset,
+        },
+        slippage: 1,
       },
-      toChain: getChainFromAsset(),
-      toAsset: {
-        amount: "",
-        asset: targetAsset,
-      },
-      slippage: 1,
-    },
-    mode: "all",
-    resolver: zodResolver(schema),
-  });
+      mode: "onTouched",
+      resolver: zodResolver(schema),
+    });
   const fromAssetValue = watch("fromAsset");
 
   const fromChainValue = watch("fromChain");
   const toChainValue = watch("toChain");
+  const depositAddress = watch("depositAddress");
 
   const [loading, setLoading] = useState<boolean>(false);
-  // const [txHash, setTxHash] = useState<string | undefined>(undefined);
+
   const router = useRouter();
 
-  const [depositAddress, setDepositAddress] = useState<string | undefined>(
-    undefined,
-  );
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
-  useEffect(() => {
-    if (depositAddress) {
-      void trigger();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositAddress]);
 
   const executeTx = async () => {
-    console.log("Executing transaction");
     // get the deposit data
     const from = fromAssets[fromAssetValue?.asset ?? ""];
     setLoading(true);
@@ -311,8 +301,20 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     ) {
       return;
     }
-    setValue("toAsset", { amount: "", asset: formData.toAsset.asset });
-    setDepositAddress(undefined);
+    setValue(
+      "toAsset",
+      { amount: "", asset: formData.toAsset.asset },
+      {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      },
+    );
+    setValue("depositAddress", undefined, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
 
     if (BigNumber(formData.fromAsset.amount).lt(0.005)) return;
 
@@ -335,27 +337,53 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
         const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
 
-        setValue("toAsset", {
-          // amount in human readable format using bignumber
-          amount: new BigNumber(skipAmount)
-            .dividedBy(10 ** toAssetDecimals)
-            .toString(),
-          asset: formData.toAsset.asset,
+        setValue(
+          "toAsset",
+          {
+            // amount in human readable format using bignumber
+            amount: new BigNumber(skipAmount)
+              .dividedBy(10 ** toAssetDecimals)
+              .toString(),
+            asset: formData.toAsset.asset,
+          },
+          {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+          },
+        );
+        setValue("depositAddress", simulation.deposit_address, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
         });
-        setDepositAddress(simulation.deposit_address);
+        await trigger();
         return;
       }
 
       const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
-      setValue("toAsset", {
-        amount: new BigNumber(
-          simulation.squid_simulation.route.estimate.toAmount,
-        )
-          .dividedBy(10 ** toAssetDecimals)
-          .toString(),
-        asset: formData.toAsset.asset,
+      setValue(
+        "toAsset",
+        {
+          amount: new BigNumber(
+            simulation.squid_simulation.route.estimate.toAmount,
+          )
+            .dividedBy(10 ** toAssetDecimals)
+            .toString(),
+          asset: formData.toAsset.asset,
+        },
+        {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        },
+      );
+      setValue("depositAddress", simulation.deposit_address, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
       });
-      setDepositAddress(simulation.deposit_address);
+      await trigger();
     } catch (e) {
       console.error(e);
       setSimulating(false);
@@ -534,7 +562,15 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       );
                     }}
                     onItemSelect={(item) => {
-                      setValue("toAsset", { amount: "", asset: "" });
+                      setValue(
+                        "toAsset",
+                        { amount: "", asset: "" },
+                        {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        },
+                      );
                       field.onChange(item.value);
                       void handleAssetChange();
                     }}
@@ -626,7 +662,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             render={({ field, fieldState }) => {
               // TODO: Here's something wrong with the types, according to react-hook-form this should always be a single message, review
               // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-              const errors = fieldState.error as Errors | undefined;
               const options = getAssetOptions(toAssets);
 
               return (
@@ -729,9 +764,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       }}
                     />
                   }
-                >
-                  {errors && <ErrorsComponent errors={errors} />}
-                </Input>
+                />
               );
             }}
           />
@@ -780,7 +813,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               </div>
             </>
           )}
-          {depositAddress && (
+          {formState.isValid && (
             <AddressComponent
               address={depositAddress ?? ""}
               onCopy={() => {
@@ -798,19 +831,13 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               {cancelLabel}
             </Button>
 
-            {depositAddress && window.ethereum && (
+            {formState.isValid && window.ethereum && (
               <Button className="block w-44" onClick={executeTx}>
                 Use Metamask
               </Button>
             )}
           </div>
         </div>
-        {/* {simulating && (
-          <div className="absolute left-0 top-0 z-30 m-0 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
-            <FaSpinner className=" animate-spin text-2xl" />
-            Simulating...
-          </div>
-        )} */}
       </Box>
       {/* add a loader spinner */}
       {loading ||

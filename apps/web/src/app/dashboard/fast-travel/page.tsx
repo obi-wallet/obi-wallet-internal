@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
 
-import { toAssets } from "./assets";
+import { toAssets } from "../../../dashboard/assets";
 
 export default observer(function FastTravel() {
   const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);

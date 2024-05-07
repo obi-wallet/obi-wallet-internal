@@ -1,11 +1,14 @@
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
-import { SimulationEntry } from "@/app/dashboard/page";
+import { toAssets } from "@/dashboard/assets";
+import { simulationEntrySchema } from "@/dashboard/schema";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
+import { toPairs } from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { usePublicKey } from "../use-public-key";
 
@@ -166,10 +169,46 @@ export function useBalances({
   });
 }
 
-const getTokenPrice = async (
+export const getTokenPrice = async (
   chainId: string,
   denom: string,
 ): Promise<number> => {
+  if (chainId === "neutron-1" && denom !== "untrn") {
+    const url = "https://api.skip.money/v2/fungible/route";
+
+    const toAsset = toPairs(toAssets).find(([_, value]) => {
+      return value.denom === denom;
+    });
+
+    // amount_in should be 1 considering the decimals of the token for example 1 * 10^6 for STARS
+    const amount_in = BigNumber(1).multipliedBy(
+      BigNumber(10).pow(toAsset?.[1].decimals ?? 0),
+    );
+    const data = {
+      source_asset_chain_id: "neutron-1",
+      amount_in: amount_in.toString(),
+      source_asset_denom: denom,
+      dest_asset_denom:
+        "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
+      dest_asset_chain_id: "neutron-1",
+      allow_unsafe: true,
+    };
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+
+      return Number(json.usd_amount_out);
+    } catch (e) {
+      console.log("SKIP ERROR", e);
+    }
+  }
+
   const url = `https://api.0xsquid.com/v1/token-price?chainId=${chainId}&tokenAddress=${denom}`;
   const res = await fetch(url);
   if (res.status !== 200) {
@@ -178,6 +217,7 @@ const getTokenPrice = async (
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const json = (await res.json()) as { price: number };
+
   return json.price;
 };
 
@@ -240,7 +280,9 @@ export function useUSDTotalPrice(): {
   };
 }
 
-const fetchPendingTX = async (pubKey: string) => {
+const fetchPendingTX = async (
+  pubKey: string,
+): Promise<z.infer<typeof simulationEntrySchema>> => {
   if (!pubKey) return [];
 
   const url = `${
@@ -250,8 +292,7 @@ const fetchPendingTX = async (pubKey: string) => {
   const res = await fetch(url);
   const data = await res.json();
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return data as SimulationEntry[];
+  return simulationEntrySchema.parse(data);
 };
 
 export const usePendingTXs = (pubKey: string) => {
