@@ -6,6 +6,8 @@ import { useCreateRootStore } from "@/hooks/use-create-root-store";
 import { obiModalConfig } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
 import { QueryClientProvider } from "@tanstack/react-query";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef } from "react";
 
@@ -46,6 +48,7 @@ const Provider = observer<ProviderProps>(function Provider({
           <MultiThemeProvider>{children}</MultiThemeProvider>
         </StoreContext.Provider>
       </EnvContext.Provider>
+      <ReactQueryDevtools />
     </SdkProvider>
   );
 });
