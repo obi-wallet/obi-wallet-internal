@@ -89,8 +89,13 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             onClick={() => {
               telegramKeyFlow.mutate();
             }}
+            disabled={
+              sentMagicCode
+                ? !code
+                : !name || !chatId || !securityQuestion.securityAnswer
+            }
           >
-            Save
+            Next
           </Button>
         </div>
       </>
@@ -103,7 +108,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             <Input
               label="Name"
               labelClassname="bg-background-secondary"
-              className="max-w-96 max-sm:w-full"
+              className="w-full"
               placeholder="Name"
               value={name}
               onChange={(value) => {
@@ -122,7 +127,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
           <Input
             label="Chat ID"
             labelClassname="bg-background-secondary"
-            className="max-w-96 max-sm:w-full"
+            className="w-full"
             placeholder="123456789"
             value={chatId}
             onChange={(value) => {
@@ -130,8 +135,8 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             }}
           />
           <DropDown
-            className="max-w-96 max-sm:w-full"
-            contentContainerClassname="max-w-96 max-sm:w-full"
+            className="w-full"
+            contentContainerClassname="w-full"
             description="Security Question"
             options={securityQuestions}
             value={securityQuestion.securityQuestion}
@@ -142,7 +147,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
           <Input
             label="Security Answer"
             labelClassname="bg-background-secondary"
-            className="max-w-96 max-sm:w-full"
+            className="w-full"
             placeholder="Security Answer"
             value={securityQuestion.securityAnswer}
             onChange={(value) => {
