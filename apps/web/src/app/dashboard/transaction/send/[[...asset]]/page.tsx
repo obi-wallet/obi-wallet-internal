@@ -36,7 +36,7 @@ const schema = z
           // TODO: this should be more precise
           return true;
         })
-        .optional(),
+        .nullable(),
     }),
     recipient: nonEmptyString("Address"),
     memo: z.string(),
@@ -67,7 +67,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     defaultValues: {
       coin: {
         amount: "",
-        asset: undefined,
+        asset: null,
       },
       recipient: "",
       memo: "",

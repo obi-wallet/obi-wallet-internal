@@ -1,17 +1,17 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { DropdownItem } from "@/ui/dropdown";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 import { Text } from "../text";
 
-export interface IAssetOption {
+export interface IAssetOption extends DropdownItem {
   image: string;
   label: string;
   value: string;
-  disabled?: boolean;
 }
 
 export function AssetsDropDown({
