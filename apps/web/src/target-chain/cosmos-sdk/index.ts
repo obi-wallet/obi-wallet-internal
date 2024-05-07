@@ -97,6 +97,10 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     );
   }
 
+  public async obiAccountAddress(publicKey: Secp256k1PublicKey) {
+    return this.computeAddress(publicKey);
+  }
+
   public async withStargateClient<T>(
     f: (client: StargateClient) => Promise<T>,
   ) {

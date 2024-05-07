@@ -13,6 +13,10 @@ export abstract class AbstractTargetChain {
   public abstract get disabled(): boolean;
 
   public abstract computeAddress(publicKey: Secp256k1PublicKey): string;
+  public abstract obiAccountAddress(
+    publicKey: Secp256k1PublicKey,
+  ): Promise<string>;
+
   public abstract validateAddress(address: string): boolean;
 
   public abstract getAsset(denom: string): Asset | null;
