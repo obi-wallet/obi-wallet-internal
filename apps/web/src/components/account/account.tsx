@@ -2,7 +2,7 @@
 
 import { Text } from "@/components/text/text";
 import { useStore } from "@/contexts";
-import { useUSDTotalPrice } from "@/hooks/balances";
+import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -11,7 +11,7 @@ import { FaCircleUser } from "react-icons/fa6";
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
   const currentWallet = useCurrentWallet({});
-  const totalData = useUSDTotalPrice();
+  const totalData = useUsdTotalValue();
 
   if (!currentWallet) return null;
 
@@ -38,7 +38,7 @@ export const Account = observer(function Account() {
           {name}
         </Text>
         <Text size="3xl" color="white" fontWeight="bold">
-          ${totalData.loading ? 0 : totalData.total}
+          $ {totalData.total}
         </Text>
       </div>
     </div>

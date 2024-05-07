@@ -2,28 +2,17 @@ import { SimulationEntry } from "@/app/dashboard/page";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
 import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
-
-export interface Coin {
-  denom: string;
-  amount: string;
-  price: number;
-}
-
-export interface Balance {
-  balances: Coin[];
-  chainId: TargetChainId;
-}
 
 export interface AssetWithPrice extends Asset<TargetChainId> {
   price: string;
 }
 
-async function fetchNewBalances({
+async function fetchBalances({
   address,
   targetChainId,
 }: {
@@ -47,34 +36,6 @@ async function fetchNewBalances({
   );
 }
 
-async function fetchBalances({
-  address,
-  chainId,
-}: {
-  address?: string;
-  chainId: TargetChainId;
-}): Promise<Balance> {
-  if (!address) {
-    return { balances: [], chainId };
-  }
-
-  const targetChain = TargetChain.chainId(chainId);
-  const balances = await targetChain.balances(address);
-
-  return {
-    chainId,
-    balances: await Promise.all(
-      balances.map(async (asset): Promise<Coin> => {
-        return {
-          denom: asset.assetId,
-          amount: asset.rawAmount,
-          price: parseFloat((await targetChain.price(asset.assetId)).usdValue),
-        };
-      }),
-    ),
-  };
-}
-
 export function useInvalidateBalancesQueries() {
   const queryClient = useQueryClient();
   return async (chainId: TargetChainId) => {
@@ -82,12 +43,12 @@ export function useInvalidateBalancesQueries() {
   };
 }
 
-export function useNewBalances() {
+export function useBalances() {
   const publicKey = usePublicKey();
   return useQueries({
     queries: allTargetChainIds.map((targetChainId) => {
       return {
-        queryKey: ["new-balances", targetChainId, publicKey],
+        queryKey: ["balances", targetChainId, publicKey],
         enabled: !!publicKey, // Only run query if address is provided
         queryFn: async (): Promise<AssetWithPrice[]> => {
           invariant(publicKey, "Expected publicKey to be set.");
@@ -95,7 +56,7 @@ export function useNewBalances() {
           if (targetChain.disabled) {
             return [];
           }
-          return await fetchNewBalances({
+          return await fetchBalances({
             address: targetChain.computeAddress(publicKey),
             targetChainId,
           });
@@ -105,41 +66,11 @@ export function useNewBalances() {
   });
 }
 
-export function useBalances({
-  publicKey,
-}: {
-  publicKey: Secp256k1PublicKey | undefined;
-}) {
-  return useQueries({
-    queries: allTargetChainIds.map((targetChainId) => {
-      return {
-        queryKey: ["balances", targetChainId, publicKey],
-        enabled: !!publicKey, // Only run query if address is provided
-        queryFn: async (): Promise<Balance> => {
-          invariant(publicKey, "Expected publicKey to be set.");
-          const targetChain = TargetChain.chainId(targetChainId);
-          if (targetChain.disabled) {
-            return {
-              balances: [],
-              chainId: targetChainId,
-            };
-          }
-          return await fetchBalances({
-            address: targetChain.computeAddress(publicKey),
-            chainId: targetChainId,
-          });
-        },
-      };
-    }),
-  });
-}
-
-export function useUSDTotalPrice(): {
+export function useUsdTotalValue(): {
   total: string;
   loading: boolean;
 } {
-  const publicKey = usePublicKey();
-  const balances = useBalances({ publicKey });
+  const balances = useBalances();
 
   if (
     balances.every((balance) => {
@@ -147,45 +78,33 @@ export function useUSDTotalPrice(): {
     })
   ) {
     return {
-      total: "0",
+      total: (0).toFixed(2),
       loading: true,
     };
   }
 
-  const filteredSuccessBalances = balances.filter((bal) => {
-    return bal.status === "success";
-  });
-  const flatBalances = filteredSuccessBalances
+  const flatBalances = balances
     .map((balance) => {
-      return balance.data?.balances?.map((coin) => {
-        return {
-          targetChainId: balance.data.chainId,
-          coin,
-        };
-      });
+      return balance.data;
     })
-    .filter(
-      (balance): balance is { targetChainId: TargetChainId; coin: Coin }[] => {
-        return balance !== undefined;
-      },
-    )
+    .filter((balance): balance is AssetWithPrice[] => {
+      return !!balance;
+    })
     .flat();
 
   const total = flatBalances
     .reduce((acc, balance) => {
-      const targetChain = TargetChain.chainId(balance.targetChainId);
-      const price = balance.coin.price;
-      const asset = targetChain.assetInfo(balance.coin.denom);
+      const targetChain = TargetChain.chainId(balance.chainId);
+      const asset = targetChain.assetInfo(balance.assetId);
 
       if (!asset) {
         return acc;
       }
-      const amount = Number(balance?.coin.amount);
-      const decimals = asset?.decimals ?? 0;
-      // get amount using the asset's decimals
-      const decimalAmount = amount / Math.pow(10, decimals);
-      return acc + price * decimalAmount;
-    }, 0)
+      const amount = new BigNumber(balance.rawAmount);
+      const decimalAmount = amount.dividedBy(10 ** asset.decimals);
+      const price = new BigNumber(balance.price);
+      return acc.plus(price.times(decimalAmount));
+    }, new BigNumber(0))
     .toFixed(2);
 
   return {
