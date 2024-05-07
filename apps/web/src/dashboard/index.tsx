@@ -3,8 +3,8 @@
 import { Account, Box, Divider, Text } from "@/components";
 import {
   AssetWithPrice,
-  useNewBalances,
-  useUSDTotalPrice,
+  useBalances,
+  useUsdTotalValue,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
@@ -51,17 +51,12 @@ const Assets = observer(function Assets() {
   );
 });
 const Total = observer(function Total() {
-  const totalPrice = useUSDTotalPrice();
-
-  if (totalPrice.loading) {
-    return <Text>loading</Text>;
-  }
-
+  const totalPrice = useUsdTotalValue();
   return <Text>$ {totalPrice.total}</Text>;
 });
 
 const AssetBalance = observer(function AssetBalance() {
-  const balances = useNewBalances();
+  const balances = useBalances();
 
   if (
     balances.every((b) => {

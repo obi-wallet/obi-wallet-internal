@@ -4,7 +4,7 @@ import { Button, IBalanceOption, Text } from "@/components";
 import {
   AssetWithPrice,
   useInvalidateBalancesQueries,
-  useNewBalances,
+  useBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -76,7 +76,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const balances = useNewBalances();
+  const balances = useBalances();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const send = useMutation({
