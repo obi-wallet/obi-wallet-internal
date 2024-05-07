@@ -3220,6 +3220,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain"
   dependencies:
+    "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"

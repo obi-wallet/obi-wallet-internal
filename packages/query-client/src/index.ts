@@ -1,10 +1,10 @@
 import {
   FetchQueryOptions,
   QueryClient,
+  skipToken,
   WithRequired,
 } from "@tanstack/query-core";
 import { Duration, DurationLikeObject } from "luxon";
-import { has } from "ramda";
 
 export function queryClientDuration(duration: DurationLikeObject) {
   return Duration.fromObject(duration).toMillis();
@@ -18,6 +18,27 @@ export const queryClient = new QueryClient({
   },
 });
 
+// eslint-disable-next-line etc/prefer-interface
+export type NamespacedQuery<TFnParams, TFnReturn> = (
+  params: TFnParams,
+) => Pick<
+  WithRequired<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn">,
+  "queryKey" | "queryFn" | "staleTime"
+>;
+
+export function makeNamespacedQueryParamsOptional<TFnParams, TFnReturn>(
+  query: NamespacedQuery<TFnParams, TFnReturn>,
+): NamespacedQuery<TFnParams | undefined, TFnReturn | undefined> {
+  return (params: TFnParams | undefined) => {
+    // This type assertion is safe since we only call queryFn if params is defined.
+    const queryResult = query(params!);
+    return {
+      ...queryResult,
+      queryFn: params === undefined ? skipToken : queryResult.queryFn,
+    };
+  };
+}
+
 export class QueryClientNamespace<
   TNamespace extends string = string,
   TNamespaceParams extends Record<string, unknown> = Record<string, unknown>,
@@ -27,85 +48,30 @@ export class QueryClientNamespace<
     protected namespaceParams: TNamespaceParams,
   ) {}
 
-  public createQuery<TFnParams, TFnReturn>(
-    params: {
-      name: string;
-      staleTime?: DurationLikeObject;
-    } & (
-      | {
-          fn: () => Promise<TFnReturn>;
-        }
-      | {
-          fn: (args: TFnParams) => Promise<TFnReturn>;
-          params: TFnParams;
-        }
-    ),
-  ) {
-    if (has("params", params)) {
-      return this.createQueryWithParams(params);
-    }
-
-    return this.createQueryWithoutParams(params);
-  }
-
-  protected createQueryWithoutParams<TFnReturn>({
-    name,
-    fn,
-    staleTime,
-  }: {
+  public createQuery<TFnParams, TFnReturn>(queryInfo: {
     name: string;
-    fn: () => Promise<TFnReturn>;
     staleTime?: DurationLikeObject;
-  }): Pick<
-    WithRequired<FetchQueryOptions<TFnReturn>, "queryKey">,
-    "queryKey" | "queryFn" | "staleTime"
-  > {
-    return {
-      queryKey: [
-        {
-          namespace: this.namespace,
-          params: this.namespaceParams,
-        },
-        {
-          fn: name,
-        },
-      ],
-      queryFn: (): Promise<TFnReturn> => {
-        return fn();
-      },
-      staleTime: staleTime ? queryClientDuration(staleTime) : undefined,
-    };
-  }
-
-  protected createQueryWithParams<TFnParams, TFnReturn>({
-    name,
-    fn,
-    params,
-    staleTime,
-  }: {
-    name: string;
     fn: (args: TFnParams) => Promise<TFnReturn>;
-    params: TFnParams;
-    staleTime?: DurationLikeObject;
-  }): Pick<
-    WithRequired<FetchQueryOptions<TFnReturn>, "queryKey">,
-    "queryKey" | "queryFn" | "staleTime"
-  > {
-    return {
-      queryKey: [
-        {
-          namespace: this.namespace,
-          params: this.namespaceParams,
+  }): NamespacedQuery<TFnParams, TFnReturn> {
+    return (params: TFnParams) => {
+      return {
+        queryKey: [
+          {
+            namespace: this.namespace,
+            params: this.namespaceParams,
+          },
+          {
+            fn: queryInfo.name,
+            params,
+          },
+        ],
+        queryFn: (): Promise<TFnReturn> => {
+          return queryInfo.fn(params);
         },
-        {
-          fn: name,
-          params,
-        },
-      ],
-      queryFn: (): Promise<TFnReturn> => {
-        return fn(params);
-      },
-      staleTime: staleTime ? queryClientDuration(staleTime) : undefined,
+        staleTime: queryInfo.staleTime
+          ? queryClientDuration(queryInfo.staleTime)
+          : undefined,
+      };
     };
   }
 }

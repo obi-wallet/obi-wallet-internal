@@ -24,10 +24,10 @@ export abstract class AbstractStakingSdk {
    * @see {@link validatorsQuery} for usage with TanStack Query.
    */
   public validators() {
-    return queryClient.fetchQuery(this.validatorsQuery());
+    return queryClient.fetchQuery(this.validatorsQuery(undefined));
   }
 
-  public validatorsQuery() {
+  public get validatorsQuery() {
     return this.queryNamespace.createQuery({
       name: "validators",
       fn: this.validatorsQueryFn.bind(this),
@@ -46,11 +46,10 @@ export abstract class AbstractStakingSdk {
     return queryClient.fetchQuery(this.delegationsQuery(address));
   }
 
-  public delegationsQuery(address: string) {
+  public get delegationsQuery() {
     return this.queryNamespace.createQuery({
       name: "delegations",
       fn: this.delegationsQueryFn.bind(this),
-      params: address,
     });
   }
 
@@ -65,11 +64,10 @@ export abstract class AbstractStakingSdk {
     return queryClient.fetchQuery(this.unbondingDelegationsQuery(address));
   }
 
-  public unbondingDelegationsQuery(address: string) {
+  public get unbondingDelegationsQuery() {
     return this.queryNamespace.createQuery({
       name: "unbondingDelegations",
       fn: this.unbondingDelegationsQueryFn.bind(this),
-      params: address,
     });
   }
 
@@ -86,11 +84,10 @@ export abstract class AbstractStakingSdk {
     return queryClient.fetchQuery(this.rewardsQuery(address));
   }
 
-  public rewardsQuery(address: string) {
+  public get rewardsQuery() {
     return this.queryNamespace.createQuery({
       name: "rewards",
       fn: this.rewardsQueryFn.bind(this),
-      params: address,
     });
   }
 
