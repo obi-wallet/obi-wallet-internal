@@ -3292,6 +3292,7 @@ __metadata:
     "@obi-wallet/headless-ui": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*"
+    "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
@@ -3310,6 +3311,7 @@ __metadata:
     "@storybook/test": "npm:^8.0.9"
     "@storybook/test-runner": "npm:^0.17.0"
     "@tanstack/react-query": "npm:^5.32.1"
+    "@tanstack/react-query-devtools": "npm:^5.35.1"
     "@types/crypto-js": "npm:^4.2.2"
     "@types/elliptic": "npm:^6.4.18"
     "@types/eslint": "npm:^8.56.10"
@@ -5122,12 +5124,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-devtools@npm:5.32.1":
+  version: 5.32.1
+  resolution: "@tanstack/query-devtools@npm:5.32.1"
+  checksum: 10c0/ad13f04641cae4c6ac70094d4979a5b1cbf3dc7a4795fce6847eb645ba06bd9e0e7057af3204c5ee9170c011290504d0edf26a8cdb920a65c4b1bb97bcbe037a
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-persist-client-core@npm:5.32.1":
   version: 5.32.1
   resolution: "@tanstack/query-persist-client-core@npm:5.32.1"
   dependencies:
     "@tanstack/query-core": "npm:5.32.1"
   checksum: 10c0/fedcbde86c03c979c8d6ed6fcdc100b9aaf9d454f8a3861b6e257e8b300c5100292ac7fac27a5f342cdf5acb1f69c219248ced0f19d63d08a2911fb2c6487fe2
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^5.35.1":
+  version: 5.35.1
+  resolution: "@tanstack/react-query-devtools@npm:5.35.1"
+  dependencies:
+    "@tanstack/query-devtools": "npm:5.32.1"
+  peerDependencies:
+    "@tanstack/react-query": ^5.35.1
+    react: ^18.0.0
+  checksum: 10c0/030ed59d06824fa08d676855c1d008ded16bbc76ad4cf0fb375cacc36da4dfd3bc72b315a74f3570db7795a84601a7059d97520e1247d0084df0e1677dde198d
   languageName: node
   linkType: hard
 
