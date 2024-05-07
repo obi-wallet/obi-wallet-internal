@@ -37,7 +37,7 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
         <Input
           label="Name"
           labelClassname="bg-background-secondary"
-          className="max-w-96 max-sm:w-full"
+          className="w-full"
           placeholder="Name"
           value={name}
           onChange={(value) => {
@@ -61,8 +61,9 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
           onClick={() => {
             passkeyFlow.mutate();
           }}
+          disabled={!name}
         >
-          Save
+          Next
         </Button>
       </div>
     </Box>

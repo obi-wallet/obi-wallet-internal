@@ -86,8 +86,9 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
             onClick={() => {
               popPage();
             }}
+            disabled={!draft.isDirty}
           >
-            Save
+            Next
           </Button>
         </div>
       </Box>

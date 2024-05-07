@@ -92,8 +92,13 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           onClick={() => {
             phoneKeyFlow.mutate();
           }}
+          disabled={
+            sentMagicCode
+              ? !code
+              : !name || !number || !securityQuestion.securityAnswer
+          }
         >
-          Save
+          Next
         </Button>
       </div>
     </>
@@ -106,7 +111,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           <Input
             label="Key Name"
             labelClassname="bg-background-secondary"
-            className="max-w-96 max-sm:w-full"
+            className="w-full"
             placeholder="Name"
             value={name}
             onChange={(value) => {
@@ -117,7 +122,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
         <Input
           label="Phone Number"
           labelClassname="bg-background-secondary"
-          className="max-w-96 max-sm:w-full"
+          className="w-full"
           placeholder="+491234567"
           value={number}
           onChange={(value) => {
@@ -125,8 +130,8 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           }}
         />
         <DropDown
-          className="max-w-96 max-sm:w-full"
-          contentContainerClassname="max-w-96 max-sm:w-full"
+          className="w-full"
+          contentContainerClassname="w-full"
           description="Security Question"
           options={securityQuestions}
           value={securityQuestion.securityQuestion}
@@ -137,7 +142,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
         <Input
           label="Security Answer"
           labelClassname="bg-background-secondary"
-          className="max-w-96 max-sm:w-full"
+          className="w-full"
           placeholder="Security Answer"
           value={securityQuestion.securityAnswer}
           onChange={(value) => {
@@ -154,7 +159,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
         <Input
           label="Magic Code"
           labelClassname="bg-background-secondary"
-          className="max-w-96 max-sm:w-full"
+          className="w-full"
           placeholder="12345678"
           value={code}
           onChange={(value) => {

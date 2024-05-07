@@ -263,28 +263,19 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             fontWeight="bold"
             className="mb-8 mt-4"
           >
-            Complete Transaction
+            {proposedUpdate ? "Step 2 of 2" : "Step 1 of 2"}
           </Text>
 
           <Transaction
             amountInfo={[]}
             feeInfo={[]}
             descriptions={[
-              proposedUpdate ? `Confirm new owner` : `Propose new owner`,
+              proposedUpdate
+                ? `Confirm new key schema`
+                : `Propose new key schema`,
             ]}
             memo=""
-            rawData={`
-Changes:
-                
-${diffString(previousOwner.toJSON(), newOwner.toJSON())}
-              
-Proposed Owner:
-                
-${JSON.stringify(newOwner.toJSON(), null, 2)}
-
-Current Owner:
-                
-${JSON.stringify(previousOwner.toJSON(), null, 2)}
+            rawData={`Changes:\n\n${diffString(previousOwner.toJSON(), newOwner.toJSON())}\n\nProposed Owner:\n\n${JSON.stringify(newOwner.toJSON(), null, 2)}\n\nCurrent Owner:\n\n${JSON.stringify(previousOwner.toJSON(), null, 2)}
               `}
           />
 
