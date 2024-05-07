@@ -3113,6 +3113,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/headless-ui@workspace:packages/headless-ui"
   dependencies:
+    "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@react-native-async-storage/async-storage": "npm:^1.23.1"
@@ -3154,6 +3155,22 @@ __metadata:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     eslint: "npm:^8.57.0"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
+
+"@obi-wallet/query-client@workspace:*, @obi-wallet/query-client@workspace:packages/query-client":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/query-client@workspace:packages/query-client"
+  dependencies:
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@tanstack/query-core": "npm:^5.32.1"
+    "@types/luxon": "npm:^3.4.2"
+    "@types/ramda": "npm:^0.29.12"
+    eslint: "npm:^8.57.0"
+    luxon: "npm:^3.4.4"
+    ramda: "npm:^0.30.0"
     typescript: "npm:^5.4.5"
   languageName: unknown
   linkType: soft
@@ -3207,6 +3224,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:^0.32.3"
     "@cosmjs/stargate": "npm:^0.32.3"
     "@github/webauthn-json": "npm:^2.1.1"
+    "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"

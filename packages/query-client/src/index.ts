@@ -4,7 +4,7 @@ import {
   WithRequired,
 } from "@tanstack/query-core";
 import { Duration, DurationLikeObject } from "luxon";
-import * as R from "ramda";
+import { has } from "ramda";
 
 export function queryClientDuration(duration: DurationLikeObject) {
   return Duration.fromObject(duration).toMillis();
@@ -41,7 +41,7 @@ export class QueryClientNamespace<
         }
     ),
   ) {
-    if (R.has("params", params)) {
+    if (has("params", params)) {
       return this.createQueryWithParams(params);
     }
 

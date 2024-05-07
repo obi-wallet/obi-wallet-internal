@@ -1,5 +1,6 @@
+import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
+
 import { ChainId } from "../../chains";
-import { queryClient, QueryClientNamespace } from "../../query-client";
 
 export abstract class AbstractContractsSdk {
   protected queryNamespace: QueryClientNamespace<

@@ -28,6 +28,7 @@
     "@obi-wallet/headless-ui": "workspace:*",
     "@obi-wallet/mpc-ecdsa-wasm": "workspace:*",
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*",
+    "@obi-wallet/query-client": "workspace:*",
     "@obi-wallet/sdk": "workspace:*",
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
