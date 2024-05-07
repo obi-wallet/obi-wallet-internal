@@ -1012,7 +1012,7 @@ const simulateTravel = async (
     fromAsset?.decimals,
   ).toString();
   const targetChain = TargetChain.chainId(data.toChain);
-  const toAddress = targetChain.computeAddress(publicKey);
+  const toAddress = await targetChain.obiAccountAddress(publicKey);
   const requestData = {
     slippage: data.slippage.toString(),
     from: {
