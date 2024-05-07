@@ -313,7 +313,7 @@ function prettyPrintCoin({
   amount: string;
   denom: string;
 } {
-  const asset = TargetChain.chainId(targetChainId).getAsset(coin.denom);
+  const asset = TargetChain.chainId(targetChainId).assetInfo(coin.denom);
   if (!asset) {
     return {
       amount: coin.amount,

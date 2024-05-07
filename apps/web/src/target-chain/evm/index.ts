@@ -1,5 +1,8 @@
 import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
-import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import {
+  AbstractTargetChain,
+  AssetId,
+} from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
@@ -15,6 +18,7 @@ import {
   keccak256,
 } from "viem";
 import { toAccount } from "viem/accounts";
+import { z } from "zod";
 
 export class EvmTargetChain extends AbstractTargetChain {
   protected readonly chainData: EvmChainData;
@@ -70,8 +74,49 @@ export class EvmTargetChain extends AbstractTargetChain {
     return kernelAccount.address;
   }
 
-  public getAsset(denom: string) {
-    if (denom === this.nativeCurrency.symbol) {
+  public async balancesQueryFn(address: string) {
+    const client = createPublicClient({
+      transport: http(),
+      chain: this.chainData.chain,
+    });
+    if (this.validateAddress(address)) {
+      const balance = await client.getBalance({
+        address,
+      });
+      if (balance > 0) {
+        return [
+          {
+            chainId: this.chainId,
+            assetId: this.nativeCurrency.symbol,
+            rawAmount: balance.toString(10),
+          },
+        ];
+      }
+    }
+    return [];
+  }
+
+  public async priceQueryFn(id: AssetId) {
+    if (id !== "ETH") {
+      return { usdValue: "0" };
+    }
+
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
+    }
+  }
+
+  public assetInfo(id: AssetId) {
+    if (id === this.nativeCurrency.symbol) {
       return {
         name: this.nativeCurrency.name,
         symbol: this.nativeCurrency.symbol,

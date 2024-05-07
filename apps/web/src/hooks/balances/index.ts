@@ -1,15 +1,9 @@
-import { toAssets } from "@/dashboard/assets";
 import { SimulationEntry } from "@/dashboard/schema";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
-import BigNumber from "bignumber.js";
-import { toPairs } from "ramda";
 import invariant from "tiny-invariant";
-import { createPublicClient, http } from "viem";
-import { arbitrum } from "viem/chains";
 import { z } from "zod";
 
 import { usePublicKey } from "../use-public-key";
@@ -48,53 +42,22 @@ async function fetchNewBalances({
     return { balances: [], targetChainId };
   }
 
-  if (isCosmosSdkChainId(targetChainId)) {
-    return await TargetChain.chainId(targetChainId).withStargateClient(
-      async (client) => {
-        const coins = await client.getAllBalances(address);
-        const balances = await Promise.all(
-          coins.map(async (balance) => {
-            const price = await getTokenPrice(targetChainId, balance.denom);
-            return {
-              targetChainId,
-              denom: balance.denom,
-              amount: balance.amount,
-              price: price.toString(),
-            };
-          }),
-        );
+  const targetChain = TargetChain.chainId(targetChainId);
+  const balances = await targetChain.balances(address);
+
+  return {
+    targetChainId,
+    balances: await Promise.all(
+      balances.map(async (asset): Promise<NewCoin> => {
         return {
-          balances,
           targetChainId,
+          denom: asset.assetId,
+          amount: asset.rawAmount,
+          price: (await targetChain.price(asset.assetId)).usdValue,
         };
-      },
-    );
-  } else {
-    const targetChain = TargetChain.chainId(targetChainId);
-    const client = createPublicClient({
-      transport: http(),
-      chain: arbitrum,
-    });
-    if (targetChain.validateAddress(address)) {
-      const balance = await client.getBalance({
-        address,
-      });
-      if (balance > 0) {
-        return {
-          balances: [
-            {
-              targetChainId,
-              denom: targetChain.nativeCurrency.symbol,
-              amount: balance.toString(10),
-              price: "0",
-            },
-          ],
-          targetChainId,
-        };
-      }
-    }
-    return { balances: [], targetChainId };
-  }
+      }),
+    ),
+  };
 }
 
 async function fetchBalances({
@@ -104,28 +67,25 @@ async function fetchBalances({
   address?: string;
   chainId: TargetChainId;
 }): Promise<Balance> {
-  if (!address || !isCosmosSdkChainId(chainId)) {
+  if (!address) {
     return { balances: [], chainId };
   }
 
-  return await TargetChain.chainId(chainId).withStargateClient(
-    async (client) => {
-      const coins = await client.getAllBalances(address);
-      const balances = await Promise.all(
-        coins.map(async (balance) => {
-          const price = await getTokenPrice(chainId, balance.denom);
-          return {
-            ...balance,
-            price,
-          };
-        }),
-      );
-      return {
-        balances,
-        chainId,
-      };
-    },
-  );
+  const targetChain = TargetChain.chainId(chainId);
+  const balances = await targetChain.balances(address);
+
+  return {
+    chainId,
+    balances: await Promise.all(
+      balances.map(async (asset): Promise<Coin> => {
+        return {
+          denom: asset.assetId,
+          amount: asset.rawAmount,
+          price: parseFloat((await targetChain.price(asset.assetId)).usdValue),
+        };
+      }),
+    ),
+  };
 }
 
 export function useInvalidateBalancesQueries() {
@@ -193,58 +153,6 @@ export function useBalances({
   });
 }
 
-export const getTokenPrice = async (
-  chainId: string,
-  denom: string,
-): Promise<number> => {
-  if (chainId === "neutron-1" && denom !== "untrn") {
-    const url = "https://api.skip.money/v2/fungible/route";
-
-    const toAsset = toPairs(toAssets).find(([_, value]) => {
-      return value.denom === denom;
-    });
-
-    // amount_in should be 1 considering the decimals of the token for example 1 * 10^6 for STARS
-    const amount_in = BigNumber(1).multipliedBy(
-      BigNumber(10).pow(toAsset?.[1].decimals ?? 0),
-    );
-    const data = {
-      source_asset_chain_id: "neutron-1",
-      amount_in: amount_in.toString(),
-      source_asset_denom: denom,
-      dest_asset_denom:
-        "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-      dest_asset_chain_id: "neutron-1",
-      allow_unsafe: true,
-    };
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-
-      return Number(json.usd_amount_out);
-    } catch (e) {
-      console.log("SKIP ERROR", e);
-    }
-  }
-
-  const url = `https://api.0xsquid.com/v1/token-price?chainId=${chainId}&tokenAddress=${denom}`;
-  const res = await fetch(url);
-  if (res.status !== 200) {
-    return 0;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const json = (await res.json()) as { price: number };
-
-  return json.price;
-};
-
 export function useUSDTotalPrice(): {
   total: string;
   loading: boolean;
@@ -268,27 +176,30 @@ export function useUSDTotalPrice(): {
   });
   const flatBalances = filteredSuccessBalances
     .map((balance) => {
-      return balance.data?.balances;
+      return balance.data?.balances?.map((coin) => {
+        return {
+          targetChainId: balance.data.chainId,
+          coin,
+        };
+      });
     })
-    .filter((balance): balance is Coin[] => {
-      return balance !== undefined;
-    })
+    .filter(
+      (balance): balance is { targetChainId: TargetChainId; coin: Coin }[] => {
+        return balance !== undefined;
+      },
+    )
     .flat();
 
   const total = flatBalances
     .reduce((acc, balance) => {
-      const price = balance.price;
+      const targetChain = TargetChain.chainId(balance.targetChainId);
+      const price = balance.coin.price;
+      const asset = targetChain.assetInfo(balance.coin.denom);
 
-      const asset =
-        toAssets[
-          Object.keys(toAssets).find((key) => {
-            return toAssets[key]?.denom === balance?.denom;
-          }) ?? ""
-        ];
       if (!asset) {
         return acc;
       }
-      const amount = Number(balance?.amount);
+      const amount = Number(balance?.coin.amount);
       const decimals = asset?.decimals ?? 0;
       // get amount using the asset's decimals
       const decimalAmount = amount / Math.pow(10, decimals);
