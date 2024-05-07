@@ -31,8 +31,11 @@ const schema = z
   .object({
     coin: z.object({
       amount: z.string(),
-      // TODO: This should be more precise
-      asset: z.any().optional(),
+      asset: z
+        .custom<IBalanceOption>(() => {
+          return true;
+        })
+        .optional(),
     }),
     recipient: nonEmptyString("Address"),
     memo: z.string(),
@@ -82,9 +85,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const asset = coin.asset as IBalanceOption;
-
+      const asset = coin.asset;
       const chainId = asset.targetChainId;
 
       const tokens: Coin[] = [
@@ -172,14 +173,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .flat();
 
   const balanceOptions = withChainId
-    .map((b) => {
+    .map((b): IBalanceOption | null => {
       const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
       if (!assetData) return null;
 
       const amount = new BigNumber(b.amount);
       const decimalAmount = amount.dividedBy(10 ** assetData.decimals);
 
-      const result: IBalanceOption = {
+      return {
         image: assetData.image ?? undefined,
         targetChainId: b.chainId,
         denom: b.denom,
@@ -188,7 +189,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         balance: decimalAmount,
         asset: assetData,
       };
-      return result;
     })
     .filter((option): option is IBalanceOption => {
       return !!option;
@@ -286,13 +286,13 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 >
                   {coin.asset
                     ? `${coin.asset.balance.toString()} ${
-                        coin.asset.asset.display
+                        coin.asset.asset.symbol
                       }`
                     : ""}
                 </div>
               }
               rightComponent={
-                <Dropdown
+                <Dropdown<IBalanceOption>
                   items={balanceOptions}
                   selectedItem={coin.asset}
                   getKey={(item) => {
@@ -303,7 +303,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   }}
                   className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
-                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}
@@ -323,7 +322,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-white">
-                          <div className=" uppercase">{item.asset.display}</div>
+                          <div className=" uppercase">{item.asset.symbol}</div>
                           <div>{item.balance.toString()}</div>
                         </div>
                       </div>
@@ -351,7 +350,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
                           <div className=" uppercase">
-                            {selected.item.asset.display}
+                            {selected.item.asset.symbol}
                           </div>
                         </div>
                       </div>
