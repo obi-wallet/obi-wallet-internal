@@ -1,4 +1,4 @@
-import { queryClient } from "@obi-wallet/sdk";
+import { queryClient } from "@obi-wallet/query-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClientProviderProps as OriginalQueryClientProviderProps } from "@tanstack/react-query";

@@ -9,12 +9,11 @@ import {
   getOwnerData,
   lookupPublicKey,
 } from "@/wallet-data-backup/worker-client";
+import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import {
   HomeChainId,
   MpcWallet,
   PendingRecoveryKeySchema,
-  queryClient,
-  QueryClientNamespace,
   Secp256k1PublicKey,
   SecretJsClient,
   Serialized,

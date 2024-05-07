@@ -1,0 +1,26 @@
+{
+  "name": "@obi-wallet/query-client",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/query-core": "^5.36.0",
+    "luxon": "^3.4.4",
+    "ramda": "^0.30.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/luxon": "^3.4.2",
+    "@types/ramda": "^0.30.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  }
+}
