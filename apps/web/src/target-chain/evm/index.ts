@@ -4,7 +4,17 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { Address, getAddress, isAddress, keccak256 } from "viem";
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import {
+  Address,
+  createPublicClient,
+  getAddress,
+  http,
+  isAddress,
+  keccak256,
+} from "viem";
+import { toAccount } from "viem/accounts";
 
 export class EvmTargetChain extends AbstractTargetChain {
   protected readonly chainData: EvmChainData;
@@ -31,6 +41,33 @@ export class EvmTargetChain extends AbstractTargetChain {
     const hex = `0x${Buffer.from(u8).toString("hex")}`;
     const address = keccak256(`0x${hex.substring(4)}`).substring(26);
     return getAddress(`0x${address}`);
+  }
+
+  public async obiAccountAddress(publicKey: Secp256k1PublicKey) {
+    const publicClient = createPublicClient({
+      chain: this.chainData.chain,
+      transport: http(),
+    });
+
+    const account = toAccount({
+      address: this.computeAddress(publicKey),
+      async signMessage() {
+        throw new Error("signMessage not implemented");
+      },
+      async signTransaction() {
+        throw new Error("signTransaction not implemented");
+      },
+      async signTypedData() {
+        throw new Error("signTypedData not implemented");
+      },
+    });
+
+    const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
+      entryPoint: ENTRYPOINT_ADDRESS_V07,
+      signer: account,
+    });
+
+    return kernelAccount.address;
   }
 
   public getAsset(denom: string) {
