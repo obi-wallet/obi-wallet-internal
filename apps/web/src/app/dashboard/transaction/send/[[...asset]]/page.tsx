@@ -2,12 +2,11 @@
 
 import { Button, IBalanceOption, Text } from "@/components";
 import {
-  NewBalance,
+  AssetWithPrice,
   useInvalidateBalancesQueries,
   useNewBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
@@ -77,8 +76,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const publicKey = usePublicKey();
-  const balances = useNewBalances({ publicKey });
+  const balances = useNewBalances();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const send = useMutation({
@@ -152,39 +150,24 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .map((b) => {
       return b.data;
     })
-    .filter((b): b is NewBalance => {
-      return !!b?.balances;
+    .filter((b): b is AssetWithPrice[] => {
+      return Array.isArray(b);
     });
 
-  // add chainId to balance.balances
-  const withChainId = balance
-    .map((b) => {
-      return {
-        balances: b?.balances.map((balance) => {
-          return {
-            ...balance,
-            chainId: b.targetChainId,
-          };
-        }),
-      };
-    })
-    .map((b) => {
-      return b.balances;
-    })
-    .flat();
+  const withChainId = balance.flat();
 
   const balanceOptions = withChainId
     .map((b) => {
-      const assetData = TargetChain.chainId(b.chainId).assetInfo(b.denom);
+      const assetData = TargetChain.chainId(b.chainId).assetInfo(b.assetId);
       if (!assetData) return null;
 
-      const amount = new BigNumber(b.amount);
+      const amount = new BigNumber(b.rawAmount);
       const decimalAmount = amount.dividedBy(10 ** assetData.decimals);
 
       const result: IBalanceOption = {
         image: assetData.image ?? undefined,
         targetChainId: b.chainId,
-        denom: b.denom,
+        denom: assetData.symbol,
         network: TargetChain.chainId(b.chainId).label,
         assetUnit: assetData?.symbol,
         balance: decimalAmount,

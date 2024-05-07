@@ -10,8 +10,8 @@ export interface AssetInfo {
 
 export type AssetId = string;
 
-export interface Asset {
-  chainId: string;
+export interface Asset<T extends string = string> {
+  chainId: T;
   assetId: AssetId;
   rawAmount: string;
 }
@@ -20,13 +20,13 @@ export interface PriceInfo {
   usdValue: string;
 }
 
-export abstract class AbstractTargetChain {
+export abstract class AbstractTargetChain<T extends string = string> {
   protected queryNamespace: QueryClientNamespace<
     "target-chain",
-    { chainId: string }
+    { chainId: T }
   >;
 
-  protected constructor(protected chainId: string) {
+  protected constructor(protected chainId: T) {
     this.queryNamespace = new QueryClientNamespace("target-chain", {
       chainId,
     });
@@ -64,7 +64,7 @@ export abstract class AbstractTargetChain {
       staleTime: { seconds: 5 },
     });
   }
-  public abstract balancesQueryFn(address: string): Promise<Asset[]>;
+  public abstract balancesQueryFn(address: string): Promise<Asset<T>[]>;
 
   public price(id: AssetId) {
     return queryClient.fetchQuery(this.priceQuery(id));
