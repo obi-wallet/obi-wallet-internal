@@ -32,27 +32,20 @@ import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
-export interface PriceData {
-  mainVsPrice: BigNumber;
-  mainUsd: BigNumber;
-  vsUsd: BigNumber;
-}
-export interface AssetAmmount {
-  amount: string | undefined;
-  asset: string | undefined;
-}
-interface IToleranceProps {
+interface ToleranceProps {
   onChange: (value: number | undefined) => void;
   value: number | undefined;
   onBlur: () => void;
   errorMessage?: string;
 }
-interface ITravelModalProps {
+
+interface TravelModalProps {
   targetAsset: string;
   onDismiss?: () => void;
   modal?: boolean;
   cancelLabel?: string;
 }
+
 interface FormData {
   fromChain: string;
   toChain: string;
@@ -66,14 +59,17 @@ interface FormData {
   };
   slippage: number;
 }
+
 type ErrorsObject = Record<string, { message: string; type: string }>;
+
 interface SingleError {
   message: string;
   type: string;
 }
+
 type Errors = ErrorsObject | SingleError;
 
-export const TravelModal = observer<ITravelModalProps>(function TravelModal({
+export const TravelModal = observer<TravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
   modal,
@@ -401,7 +397,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                     selectedItem={
                       fromChainOptions.find((item) => {
                         return item.value === fromChainValue;
-                      }) || fromChainOptions[0]
+                      }) ??
+                      fromChainOptions[0] ??
+                      null
                     }
                     getKey={(item) => {
                       return item.label;
@@ -482,7 +480,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
               control={control}
               render={({ field }) => {
                 return (
-                  <Dropdown
+                  <Dropdown<IAssetOption>
                     itemToString={(item) => {
                       return item?.label ?? "";
                     }}
@@ -490,7 +488,9 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                     selectedItem={
                       toChainOptions.find((item) => {
                         return item.value === field.value;
-                      }) || toChainOptions[0]
+                      }) ??
+                      toChainOptions[0] ??
+                      null
                     }
                     getKey={(item) => {
                       return item.label;
@@ -646,17 +646,17 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                   inputClassName="flex-4 md:flex-1 sm:flex-6 "
                   rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
                   rightComponent={
-                    <Dropdown
+                    <Dropdown<IAssetOption>
                       itemToString={(item) => {
                         return item?.label ?? "";
                       }}
                       items={options}
                       selectedItem={
-                        field.value.asset !== ""
+                        (field.value.asset !== ""
                           ? options.find((item) => {
                               return item.value === field.value.asset;
                             })
-                          : null
+                          : null) ?? null
                       }
                       getKey={(item) => {
                         return item.label;
@@ -829,7 +829,7 @@ function ToleranceSetting({
   onBlur,
   onChange,
   errorMessage,
-}: IToleranceProps) {
+}: ToleranceProps) {
   const tolerances = [1, 2];
   const [text, setText] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);

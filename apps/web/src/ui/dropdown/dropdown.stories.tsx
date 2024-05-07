@@ -1,5 +1,6 @@
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 
@@ -95,6 +96,8 @@ export const Primary: Story<Book> = {
     },
   },
   render: (args) => {
+    const [item, setItem] = useState<Book | null>(null);
+
     return (
       <div className="min-w-screen flex min-h-screen flex-1 items-center justify-center">
         <Dropdown<Book>
@@ -102,7 +105,9 @@ export const Primary: Story<Book> = {
           className="w-full"
           itemComponent={args.itemComponent}
           itemToString={args.itemToString}
+          selectedItem={item}
           onItemSelect={(item) => {
+            setItem(item);
             return console.log(item);
           }}
           selectedItemComponent={args.selectedItemComponent}
