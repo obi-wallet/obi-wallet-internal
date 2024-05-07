@@ -174,7 +174,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   const balanceOptions = withChainId
     .map((b): IBalanceOption | null => {
-      const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
+      const assetData = TargetChain.chainId(b.chainId).assetInfo(b.denom);
       if (!assetData) return null;
 
       const amount = new BigNumber(b.amount);

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { TargetChainId } from "@/target-chain";
-import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -19,7 +19,7 @@ export interface IBalanceOption {
   network: string;
   assetUnit: string;
   balance: BigNumber;
-  asset: Asset;
+  asset: AssetInfo;
   disabled?: boolean;
 }
 

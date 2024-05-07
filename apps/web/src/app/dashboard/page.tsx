@@ -212,7 +212,7 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
   const router = useRouter();
 
   const targetChain = TargetChain.chainId(coin.targetChainId);
-  const assetData = targetChain.getAsset(coin.denom);
+  const assetData = targetChain.assetInfo(coin.denom);
   const amount = new BigNumber(coin.amount).dividedBy(
     10 ** (assetData?.decimals ?? 0),
   );

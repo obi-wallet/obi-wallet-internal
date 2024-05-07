@@ -33,7 +33,10 @@ import {
   StdFee,
 } from "@cosmjs/stargate";
 import { MpcWallet } from "@obi-wallet/sdk";
-import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import {
+  AbstractTargetChain,
+  AssetId,
+} from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -109,6 +112,34 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       return await f(client);
     } finally {
       client.disconnect();
+    }
+  }
+
+  public async balancesQueryFn(address: string) {
+    return await this.withStargateClient(async (client) => {
+      const balances = await client.getAllBalances(address);
+      return balances.map((balance) => {
+        return {
+          chainId: this.chainId,
+          assetId: balance.denom,
+          rawAmount: balance.amount,
+        };
+      });
+    });
+  }
+
+  public async priceQueryFn(id: AssetId) {
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
     }
   }
 
@@ -320,7 +351,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return isStdFee(fee);
   }
 
-  public getAsset(denom: string) {
+  public assetInfo(denom: string) {
     const asset = this.tokenRegistry.getAsset({
       chainId: this.chainData.id,
       denom,

@@ -1,11 +1,23 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 
-export interface Asset {
+export interface AssetInfo {
   name: string;
   symbol: string;
   decimals: number;
   image: string | null;
+}
+
+export type AssetId = string;
+
+export interface Asset {
+  chainId: string;
+  assetId: AssetId;
+  rawAmount: string;
+}
+
+export interface PriceInfo {
+  usdValue: string;
 }
 
 export abstract class AbstractTargetChain {
@@ -42,5 +54,29 @@ export abstract class AbstractTargetChain {
 
   public abstract validateAddress(address: string): boolean;
 
-  public abstract getAsset(denom: string): Asset | null;
+  public balances(address: string) {
+    return queryClient.fetchQuery(this.balancesQuery(address));
+  }
+  public get balancesQuery() {
+    return this.queryNamespace.createQuery({
+      name: "balances",
+      fn: this.balancesQueryFn.bind(this),
+      staleTime: { seconds: 5 },
+    });
+  }
+  public abstract balancesQueryFn(address: string): Promise<Asset[]>;
+
+  public price(id: AssetId) {
+    return queryClient.fetchQuery(this.priceQuery(id));
+  }
+  public get priceQuery() {
+    return this.queryNamespace.createQuery({
+      name: "prices",
+      fn: this.priceQueryFn.bind(this),
+      staleTime: { minute: 1 },
+    });
+  }
+  public abstract priceQueryFn(id: AssetId): Promise<PriceInfo>;
+
+  public abstract assetInfo(id: AssetId): AssetInfo | null;
 }
