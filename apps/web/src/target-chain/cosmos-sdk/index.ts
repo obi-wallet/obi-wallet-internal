@@ -68,7 +68,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   protected readonly tokenRegistry: CosmosSdkTokenRegistry;
 
   public constructor(chainId: CosmosSdkChainId) {
-    super();
+    super(chainId);
     this.chainData = CosmosSdkChains[chainId];
     const chain = chains.find((c) => {
       return c.chain_id === chainId;
@@ -97,7 +97,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     );
   }
 
-  public async obiAccountAddress(publicKey: Secp256k1PublicKey) {
+  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
     return this.computeAddress(publicKey);
   }
 

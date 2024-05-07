@@ -22,11 +22,10 @@ export abstract class AbstractBankSdk {
     return queryClient.fetchQuery(this.balancesQuery(address));
   }
 
-  public balancesQuery(address: string) {
+  public get balancesQuery() {
     return this.queryNamespace.createQuery({
       name: "balances",
       fn: this.balancesQueryFn.bind(this),
-      params: address,
     });
   }
 
@@ -38,10 +37,10 @@ export abstract class AbstractBankSdk {
    * @see {@link pricesQuery} for usage with TanStack Query.
    */
   public prices() {
-    return queryClient.fetchQuery(this.pricesQuery());
+    return queryClient.fetchQuery(this.pricesQuery(undefined));
   }
 
-  public pricesQuery() {
+  public get pricesQuery() {
     return this.queryNamespace.createQuery({
       name: "prices",
       fn: this.pricesQueryFn.bind(this),

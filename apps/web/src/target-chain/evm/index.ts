@@ -20,7 +20,7 @@ export class EvmTargetChain extends AbstractTargetChain {
   protected readonly chainData: EvmChainData;
 
   public constructor(chainId: EvmChainId) {
-    super();
+    super(chainId);
     this.chainData = EvmChains[chainId];
   }
 
@@ -43,7 +43,7 @@ export class EvmTargetChain extends AbstractTargetChain {
     return getAddress(`0x${address}`);
   }
 
-  public async obiAccountAddress(publicKey: Secp256k1PublicKey) {
+  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
     const publicClient = createPublicClient({
       chain: this.chainData.chain,
       transport: http(),

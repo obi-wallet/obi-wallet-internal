@@ -25,11 +25,10 @@ export abstract class AbstractGatekeeperSdk {
     return queryClient.fetchQuery(this.contractAddressesQuery(proxyAddress));
   }
 
-  public contractAddressesQuery(proxyAddress: string) {
+  public get contractAddressesQuery() {
     return this.queryNamespace.createQuery({
       name: "contractAddresses",
       fn: this.contractAddressesQueryFn.bind(this),
-      params: proxyAddress,
     });
   }
 
@@ -49,11 +48,10 @@ export abstract class AbstractGatekeeperSdk {
     );
   }
 
-  public permissionedAddressesQuery(proxyAddress: string) {
+  public get permissionedAddressesQuery() {
     return this.queryNamespace.createQuery({
       name: "permissionedAddresses",
       fn: this.permissionedAddressesQueryFn.bind(this),
-      params: proxyAddress,
     });
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { DropDown, TabUi } from "@/components";
-import { usePublicKey } from "@/hooks/use-public-key";
+import { useAddressQuery } from "@/hooks/address";
 import { cn } from "@/lib/utils";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
@@ -16,10 +16,7 @@ export default observer(function Receive() {
   const { Canvas } = useQRCode();
   const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
-  const publicKey = usePublicKey();
-
-  if (publicKey === undefined) return null;
-  const address = TargetChain.chainId(chainId).computeAddress(publicKey);
+  const { data: address } = useAddressQuery(chainId);
 
   const handleClickQRCode = () => {
     if (!address) return;

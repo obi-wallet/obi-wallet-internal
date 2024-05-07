@@ -23,11 +23,10 @@ export abstract class AbstractContractsSdk {
     return queryClient.fetchQuery(this.codeIdQuery(contract));
   }
 
-  public codeIdQuery(contract: string) {
+  public get codeIdQuery() {
     return this.queryNamespace.createQuery({
       name: "codeId",
       fn: this.codeIdQueryFn.bind(this),
-      params: contract,
     });
   }
 
