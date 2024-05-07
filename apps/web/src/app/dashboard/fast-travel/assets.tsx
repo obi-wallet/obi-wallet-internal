@@ -1,3 +1,5 @@
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+
 export interface ToAsset {
   chainId: string;
   decimals: number;
@@ -28,7 +30,7 @@ export const fromAssets: Record<string, FromAsset> = {
 
 export const toAssets: Record<string, ToAsset> = {
   stars: {
-    chainId: "stargaze-1",
+    chainId: CosmosSdkChainId.Stargaze,
     decimals: 6,
     label: "STARS",
     denom: "ustars",
@@ -38,7 +40,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "stars",
   },
   sei: {
-    chainId: "pacific-1",
+    chainId: CosmosSdkChainId.Sei,
     decimals: 6,
     label: "SEI",
     denom: "usei",
@@ -48,7 +50,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "sei",
   },
   osmosis: {
-    chainId: "osmosis-1",
+    chainId: CosmosSdkChainId.Osmosis,
     decimals: 6,
     label: "OSMO",
     denom: "uosmo",
@@ -57,7 +59,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "osmo",
   },
   neutron: {
-    chainId: "neutron-1",
+    chainId: CosmosSdkChainId.Neutron,
     decimals: 6,
     label: "NTRN",
     denom: "untrn",
@@ -67,7 +69,7 @@ export const toAssets: Record<string, ToAsset> = {
   },
 
   newt: {
-    chainId: "neutron-1",
+    chainId: CosmosSdkChainId.Neutron,
     decimals: 6,
     label: "NEWT",
     denom: "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
@@ -75,7 +77,7 @@ export const toAssets: Record<string, ToAsset> = {
   },
 
   apollo: {
-    chainId: "neutron-1",
+    chainId: CosmosSdkChainId.Neutron,
     decimals: 6,
     label: "Apollo",
     denom:
@@ -95,7 +97,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: false,
   },
   celestia: {
-    chainId: "tia-4",
+    chainId: CosmosSdkChainId.Tia,
     decimals: 6,
     label: "Celestia (TIA)",
     denom: "utia",
@@ -104,7 +106,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: true,
   },
   autism: {
-    chainId: "inj-4",
+    chainId: CosmosSdkChainId.Inj,
     decimals: 6,
     label: "AUTISM",
     denom: "uautism",

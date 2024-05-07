@@ -2,9 +2,12 @@
 
 import { AccountAndCTA, Box, Divider, Text } from "@/components";
 import { PendingAssets } from "@/dashboard/pending";
-import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
+import {
+  AssetWithPrice,
+  useNewBalances,
+  useUSDTotalPrice,
+} from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { usePublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -179,10 +182,7 @@ const Total = observer(function Total() {
 });
 
 const AssetBalance = observer(function AssetBalance() {
-  const publicKey = usePublicKey();
-  const balances = useNewBalances({
-    publicKey,
-  });
+  const balances = useNewBalances();
   if (
     balances.every((b) => {
       return b.isLoading;
@@ -190,30 +190,27 @@ const AssetBalance = observer(function AssetBalance() {
   ) {
     return <span className="font-extrabold  text-white"> loading </span>;
   }
-  const balance = balances.filter((b) => {
-    return b.data && b.data.balances?.length > 0;
-  });
 
-  if (balance.length === 0) return null;
+  return balances.map((balance) => {
+    if (!balance.data || balance.data.length === 0) return null;
 
-  return balance.map((b) => {
-    return b.data?.balances.map((chainBalance) => {
+    return balance.data.map((assetWithPrice) => {
       return (
         <NewAssetItem
-          key={`${chainBalance.targetChainId}:${chainBalance.denom}`}
-          coin={chainBalance}
+          key={`${assetWithPrice.chainId}:${assetWithPrice.assetId}`}
+          coin={assetWithPrice}
         />
       );
     });
   });
 });
 
-function NewAssetItem({ coin }: { coin: NewCoin }) {
+function NewAssetItem({ coin }: { coin: AssetWithPrice }) {
   const router = useRouter();
 
-  const targetChain = TargetChain.chainId(coin.targetChainId);
-  const assetData = targetChain.assetInfo(coin.denom);
-  const amount = new BigNumber(coin.amount).dividedBy(
+  const targetChain = TargetChain.chainId(coin.chainId);
+  const assetData = targetChain.assetInfo(coin.assetId);
+  const amount = new BigNumber(coin.rawAmount).dividedBy(
     10 ** (assetData?.decimals ?? 0),
   );
 
@@ -223,7 +220,7 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
       onClick={() => {
         router.push(
           `/dashboard/transaction/send/${encodeURIComponent(
-            `${coin.targetChainId}:${coin.denom}`,
+            `${coin.chainId}:${coin.assetId}`,
           )}`,
         );
       }}

@@ -65,7 +65,7 @@ function isStdFee(fee: unknown): fee is StdFee {
   return StdFeeSchema.safeParse(fee).success;
 }
 
-export class CosmosSdkTargetChain extends AbstractTargetChain {
+export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
   protected readonly tokenRegistry: CosmosSdkTokenRegistry;

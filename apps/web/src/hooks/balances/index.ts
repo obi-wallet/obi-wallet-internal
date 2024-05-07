@@ -1,6 +1,7 @@
 import { SimulationEntry } from "@/app/dashboard/page";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import invariant from "tiny-invariant";
@@ -18,16 +19,8 @@ export interface Balance {
   chainId: TargetChainId;
 }
 
-export interface NewCoin {
-  targetChainId: TargetChainId;
-  denom: string;
-  amount: string;
+export interface AssetWithPrice extends Asset<TargetChainId> {
   price: string;
-}
-
-export interface NewBalance {
-  balances: NewCoin[];
-  targetChainId: TargetChainId;
 }
 
 async function fetchNewBalances({
@@ -36,27 +29,22 @@ async function fetchNewBalances({
 }: {
   address?: string;
   targetChainId: TargetChainId;
-}): Promise<NewBalance> {
+}): Promise<AssetWithPrice[]> {
   if (!address) {
-    return { balances: [], targetChainId };
+    return [];
   }
 
   const targetChain = TargetChain.chainId(targetChainId);
   const balances = await targetChain.balances(address);
 
-  return {
-    targetChainId,
-    balances: await Promise.all(
-      balances.map(async (asset): Promise<NewCoin> => {
-        return {
-          targetChainId,
-          denom: asset.assetId,
-          amount: asset.rawAmount,
-          price: (await targetChain.price(asset.assetId)).usdValue,
-        };
-      }),
-    ),
-  };
+  return await Promise.all(
+    balances.map(async (asset): Promise<AssetWithPrice> => {
+      return {
+        ...asset,
+        price: (await targetChain.price(asset.assetId)).usdValue,
+      };
+    }),
+  );
 }
 
 async function fetchBalances({
@@ -94,24 +82,18 @@ export function useInvalidateBalancesQueries() {
   };
 }
 
-export function useNewBalances({
-  publicKey,
-}: {
-  publicKey?: Secp256k1PublicKey;
-}) {
+export function useNewBalances() {
+  const publicKey = usePublicKey();
   return useQueries({
     queries: allTargetChainIds.map((targetChainId) => {
       return {
         queryKey: ["new-balances", targetChainId, publicKey],
         enabled: !!publicKey, // Only run query if address is provided
-        queryFn: async (): Promise<NewBalance> => {
+        queryFn: async (): Promise<AssetWithPrice[]> => {
           invariant(publicKey, "Expected publicKey to be set.");
           const targetChain = TargetChain.chainId(targetChainId);
           if (targetChain.disabled) {
-            return {
-              balances: [],
-              targetChainId,
-            };
+            return [];
           }
           return await fetchNewBalances({
             address: targetChain.computeAddress(publicKey),

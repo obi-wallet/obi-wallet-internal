@@ -8,6 +8,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
@@ -132,7 +133,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 
   const getChainFromAsset = () => {
     if (targetAsset === "usdc") {
-      return "neutron-1";
+      return CosmosSdkChainId.Neutron;
     } else {
       return toAssets[targetAsset]?.chainId ?? "";
     }
