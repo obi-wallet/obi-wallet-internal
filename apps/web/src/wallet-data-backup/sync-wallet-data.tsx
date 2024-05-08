@@ -14,6 +14,7 @@ import {
   Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { skipToken } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -50,60 +51,60 @@ export function useWalletDataStateQuery() {
       wallet?.userEntryAddress,
       wallet?.previousWalletData,
     ],
-    queryFn: async (): Promise<WalletDataState> => {
-      invariant(wallet, "Expected wallet to be set.");
-      const primaryKey = wallet.owner.primaryKey;
-      invariant(primaryKey, "Expected wallet to have a primary key");
-      const homeChain = HomeChain.chainId(wallet.homeChainId);
-      const walletData = await homeChain.lookupWalletBackup({
-        homeChainId: wallet.homeChainId,
-        publicKey: wallet.owner.primaryKey.publicKey,
-      });
+    queryFn: wallet
+      ? async (): Promise<WalletDataState> => {
+          const primaryKey = wallet.owner.primaryKey;
+          invariant(primaryKey, "Expected wallet to have a primary key");
+          const homeChain = HomeChain.chainId(wallet.homeChainId);
+          const walletData = await homeChain.lookupWalletBackup({
+            homeChainId: wallet.homeChainId,
+            publicKey: wallet.owner.primaryKey.publicKey,
+          });
 
-      if (!walletData) {
-        return {
-          type: WalletDataStateType.NotAvailable,
-        };
-      }
+          if (!walletData) {
+            return {
+              type: WalletDataStateType.NotAvailable,
+            };
+          }
 
-      const backupRevision = walletData.revision;
-      const previousRevision = wallet.previousWalletData?.revision ?? 0;
+          const backupRevision = walletData.revision;
+          const previousRevision = wallet.previousWalletData?.revision ?? 0;
 
-      if (previousRevision >= backupRevision) {
-        return {
-          type: WalletDataStateType.UpToDate,
-          payload: walletData,
-        };
-      }
+          if (previousRevision >= backupRevision) {
+            return {
+              type: WalletDataStateType.UpToDate,
+              payload: walletData,
+            };
+          }
 
-      const owner = walletDataToMultisigKey({
-        homeChainId: wallet.homeChainId,
-        wallet: walletData,
-      });
+          const owner = walletDataToMultisigKey({
+            homeChainId: wallet.homeChainId,
+            wallet: walletData,
+          });
 
-      const containsPrimaryKey = owner.keys.find((key) => {
-        return key.publicKey.value === primaryKey.publicKey.value;
-      });
+          const containsPrimaryKey = owner.keys.find((key) => {
+            return key.publicKey.value === primaryKey.publicKey.value;
+          });
 
-      if (!containsPrimaryKey) {
-        return {
-          type: WalletDataStateType.NotAvailable,
-        };
-      }
+          if (!containsPrimaryKey) {
+            return {
+              type: WalletDataStateType.NotAvailable,
+            };
+          }
 
-      owner.removeKeyByPublicKey(primaryKey.publicKey);
-      const passkey = owner.addPasskeyKey(primaryKey.payload);
-      owner.setPrimaryKey(passkey);
+          owner.removeKeyByPublicKey(primaryKey.publicKey);
+          const passkey = owner.addPasskeyKey(primaryKey.payload);
+          owner.setPrimaryKey(passkey);
 
-      return {
-        type: WalletDataStateType.Outdated,
-        payload: {
-          walletData,
-          owner: owner.toJSON()!,
-        },
-      };
-    },
-    enabled: !!wallet,
+          return {
+            type: WalletDataStateType.Outdated,
+            payload: {
+              walletData,
+              owner: owner.toJSON()!,
+            },
+          };
+        }
+      : skipToken,
   });
 }
 

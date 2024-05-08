@@ -4,7 +4,6 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
-import invariant from "tiny-invariant";
 
 import { usePublicKey } from "../use-public-key";
 
@@ -46,23 +45,23 @@ export function useInvalidateBalancesQueries() {
 export function useBalances() {
   const publicKey = usePublicKey();
   return useQueries({
-    queries: allTargetChainIds.map((targetChainId) => {
-      return {
-        queryKey: ["balances", targetChainId, publicKey],
-        enabled: !!publicKey, // Only run query if address is provided
-        queryFn: async (): Promise<AssetWithPrice[]> => {
-          invariant(publicKey, "Expected publicKey to be set.");
-          const targetChain = TargetChain.chainId(targetChainId);
-          if (targetChain.disabled) {
-            return [];
-          }
-          return await fetchBalances({
-            address: targetChain.computeAddress(publicKey),
-            targetChainId,
-          });
-        },
-      };
-    }),
+    queries: publicKey
+      ? allTargetChainIds.map((targetChainId) => {
+          return {
+            queryKey: ["balances", targetChainId, publicKey],
+            queryFn: async (): Promise<AssetWithPrice[]> => {
+              const targetChain = TargetChain.chainId(targetChainId);
+              if (targetChain.disabled) {
+                return [];
+              }
+              return await fetchBalances({
+                address: targetChain.computeAddress(publicKey),
+                targetChainId,
+              });
+            },
+          };
+        })
+      : [],
   });
 }
 
