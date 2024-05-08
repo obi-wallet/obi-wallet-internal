@@ -29,8 +29,8 @@ export const TextButton = forwardRef<HTMLButtonElement, TextButtonProps>(
           "transition duration-100",
           //#region  //*=========== Variant ===========
           variant === "primary" && [
-            "text-primary-500 hover:text-primary-600 active:text-primary-700",
-            "disabled:text-primary-200",
+            "text-white hover:text-blue-300 active:text-blue-700",
+            "disabled:text-white disabled:opacity-40",
           ],
           variant === "basic" && [
             "text-black hover:text-gray-600 active:text-gray-800",
