@@ -84,12 +84,16 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className={cn("bg-background-secondary")}>
+    <nav
+      style={{
+        backgroundImage:
+          "linear-gradient(180deg, #0F0F26, #1A1A42,#262661,#0F0F26)",
+      }}
+    >
       <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden md:overflow-y-auto">
         <div className="hidden   w-full flex-col md:flex">
-          <AccountAndCTA />
+          <Account />
         </div>
-        <Divider />
 
         <div className="mt-7 grow">
           <ul role="list" className="flex flex-col space-y-3">
@@ -102,9 +106,9 @@ export function Navbar() {
                   <li key={`navmenu-${index}`}>
                     <PrimaryLink
                       href={navItem.href}
-                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
+                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
                         mainURISegment === navItem.module
-                          ? "bg-background-select rounded-md font-bold"
+                          ? "font-bold opacity-100"
                           : ""
                       }`}
                       target={navItem.target || "_self"}
