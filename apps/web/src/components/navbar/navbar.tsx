@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Account, Divider, Footer, PrimaryLink, Text } from "..";
+import { Account, Footer, PrimaryLink, Text } from "..";
 
 interface NavMenu {
   href: string;

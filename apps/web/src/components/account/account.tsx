@@ -7,9 +7,8 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FaCircleUser, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+
 import { PrimaryLink } from "../links";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
@@ -67,12 +66,12 @@ export const Account = observer(function Account() {
             {userData.balanceHidden ? (
               <FaRegEye
                 className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => handleHideBalance(false)}
+                onClick={() => {return handleHideBalance(false)}}
               />
             ) : (
               <FaRegEyeSlash
                 className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => handleHideBalance(true)}
+                onClick={() => {return handleHideBalance(true)}}
               />
             )}
           </div>

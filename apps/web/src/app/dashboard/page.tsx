@@ -1,6 +1,6 @@
 "use client";
 
-import { Account, AccountAndCTA, Box, Divider, Text } from "@/components";
+import { Account, Box, Divider, Text } from "@/components";
 import { PendingAssets } from "@/dashboard/pending";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
