@@ -21,7 +21,7 @@ export const Header = observer(function Header() {
       <header className={cn("h-16 w-full", "md:h-20")}>
         <div
           className={cn(
-            "flex h-full w-full  items-center justify-between bg-gradient-to-r from-blue-600 to-blue-900 px-3 shadow md:px-8",
+            "flex h-full w-full  items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>

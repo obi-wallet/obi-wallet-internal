@@ -21,63 +21,87 @@ export const Account = observer(function Account() {
   const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
   const name = userData.name || "My Account";
 
-  return (
-    <div className="relative flex w-full flex-col gap-4 rounded-xl bg-gradient-to-r from-[#333333] to-[#1B1B1B] px-4 py-3">
-      <div className="flex flex-row gap-3">
-        <div className="h-[70px] w-[70px] rounded-full bg-sky-500 ">
-          {userData.avatar ? (
-            <Image
-              width={70}
-              height={70}
-              className="h-[70px] w-[70px] rounded-full object-cover"
-              src={userData.avatar}
-              alt={name}
-            />
-          ) : (
-            <FaCircleUser className="h-[70px] w-[70px] text-white" />
-          )}
-        </div>
-        <div className="flex flex-col justify-center gap-1">
-          <Text size="xl" color="white" fontWeight="bold">
-            {name}
-          </Text>
+  const handleHideBalance = (hide: boolean) => {
+    userDataStore.setUserData(currentWallet.userEntryAddress, {
+      ...userData,
+      balanceHidden: hide,
+    });
+  };
 
-          <PrimaryLink
-            href="/dashboard/settings/account"
-            className="text-indigo-300"
-          >
-            Edit Profile
-          </PrimaryLink>
+  return (
+    <>
+      <div className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] bg-gradient-to-r from-[#333333] to-[#1B1B1B]">
+        <div className="flex flex-row gap-3 px-4 py-3.5">
+          <div className="h-[70px] w-[70px] rounded-full bg-sky-500 ">
+            {userData.avatar ? (
+              <Image
+                width={70}
+                height={70}
+                className="h-[70px] w-[70px] rounded-full object-cover"
+                src={userData.avatar}
+                alt={name}
+              />
+            ) : (
+              <FaCircleUser className="h-[70px] w-[70px] text-white" />
+            )}
+          </div>
+          <div className="flex flex-col justify-center gap-1">
+            <Text size="xl" color="white" fontWeight="bold">
+              {name}
+            </Text>
+
+            <PrimaryLink
+              href="/dashboard/settings/account"
+              className="text-indigo-300"
+            >
+              Edit Profile
+            </PrimaryLink>
+          </div>
         </div>
       </div>
-      <div className="rounded">
-        <div className="gap-1 rounded-tl rounded-tr bg-slate-900 px-3 py-2">
+
+      <div className="">
+        <div className="gap-1 bg-slate-900 px-4 pb-3.5 pt-2.5">
           <div className="flex justify-between">
             <Text fontWeight="normal">Balance</Text>
-            <FaRegEye className="h-4 w-4" color="white" />
+            {userData.balanceHidden ? (
+              <FaRegEye
+                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
+                onClick={() => handleHideBalance(false)}
+              />
+            ) : (
+              <FaRegEyeSlash
+                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
+                onClick={() => handleHideBalance(true)}
+              />
+            )}
           </div>
           <div className="flex items-start gap-1">
             <Text>$</Text>
             <Text size="3xl" color="white" fontWeight="bold">
-              {totalData.loading ? 0 : totalData.total}
+              {userData.balanceHidden
+                ? "******"
+                : totalData.loading
+                  ? 0
+                  : totalData.total}
             </Text>
           </div>
         </div>
         <div className="mb-4 mt-0.5 flex gap-1 text-white">
           <Button
             href="/dashboard/transaction/send"
-            className="flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-blue-600 to-blue-800 p-3 text-center hover:from-blue-700 hover:to-blue-900"
+            className="flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-blue-500 to-indigo-500 p-2 text-center hover:from-blue-700 hover:to-blue-900"
           >
             Send
           </Button>
           <Button
             href="/dashboard/transaction/receive"
-            className="hover:to-blue flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-blue-800 to-blue-900 p-3 hover:from-blue-900"
+            className="flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-indigo-500 to-blue-700 p-2 hover:from-blue-900 hover:to-blue-900"
           >
             Receive
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 });

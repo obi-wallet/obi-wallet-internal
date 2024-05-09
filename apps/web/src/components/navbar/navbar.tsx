@@ -37,7 +37,16 @@ const navMenu: NavMenu[] = [
     showOnDesktop: true,
     mobileOrder: 3,
   },
-
+  {
+    href: "/dashboard/fast-travel",
+    text: "Fast Travel",
+    mobileText: "FT",
+    module: "fast-travel",
+    icon: "/assets/icons/nav-fast-travel.svg",
+    showOnDesktop: true,
+    showOnMobile: true,
+    mobileOrder: 1,
+  },
   {
     href: "/dashboard/buy-crypto",
     mobileText: "Buy",
@@ -49,14 +58,13 @@ const navMenu: NavMenu[] = [
     mobileOrder: 2,
   },
   {
-    href: "/dashboard/fast-travel",
-    text: "Fast Travel",
-    mobileText: "FT",
-    module: "fast-travel",
-    icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
+    href: "/dashboard/settings/security",
+    text: "Security",
+    module: "settings",
+    icon: "/assets/icons/nav-settings.svg",
     showOnMobile: true,
-    mobileOrder: 1,
+    showOnDesktop: true,
+    mobileOrder: 5,
   },
   {
     href: "/dashboard/app-connect",
@@ -69,11 +77,11 @@ const navMenu: NavMenu[] = [
     mobileOrder: 4,
   },
   {
-    href: "/dashboard/settings",
-    text: "Settings",
-    module: "settings",
-    icon: "/assets/icons/nav-settings.svg",
-    showOnMobile: true,
+    href: "",
+    text: "Extra Life (soon)",
+    module: "extra-life",
+    icon: "/assets/icons/nav-extra-life.svg",
+    showOnMobile: false,
     showOnDesktop: true,
     mobileOrder: 5,
   },
@@ -85,13 +93,14 @@ export function Navbar() {
 
   return (
     <nav
-      style={{
-        backgroundImage:
-          "linear-gradient(180deg, #0F0F26, #1A1A42,#262661,#0F0F26)",
-      }}
+      // style={{
+      //   backgroundImage:
+      //     "linear-gradient(180deg, #0F0F26, #1A1A42,#262661,#0F0F26)",
+      // }}
+      className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950"
     >
-      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden md:overflow-y-auto">
-        <div className="hidden   w-full flex-col md:flex">
+      <div className="flex h-full w-[330px] flex-col px-3 pt-6 max-md:hidden md:overflow-y-auto">
+        <div className="hidden w-full flex-col md:flex">
           <Account />
         </div>
 
