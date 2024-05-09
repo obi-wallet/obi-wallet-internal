@@ -66,12 +66,16 @@ export const Account = observer(function Account() {
             {userData.balanceHidden ? (
               <FaRegEye
                 className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {return handleHideBalance(false)}}
+                onClick={() => {
+                  return handleHideBalance(false);
+                }}
               />
             ) : (
               <FaRegEyeSlash
                 className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {return handleHideBalance(true)}}
+                onClick={() => {
+                  return handleHideBalance(true);
+                }}
               />
             )}
           </div>
