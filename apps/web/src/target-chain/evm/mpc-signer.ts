@@ -1,7 +1,7 @@
 import { fetchPublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
-import { MpcSigner } from "@/target-chain/abstract-mpc-signer";
 import { EvmChainId } from "@/target-chain/evm/chains";
+import { MpcSigner } from "@/target-chain/mpc-signer";
 import { MpcWallet, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import {
   CustomSource,

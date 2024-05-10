@@ -31,16 +31,11 @@ export const testSuite = createTestSuite(({ test }) => {
       signer: account,
     });
 
-    try {
-      // This will fail, but we are able to retrieve the hash that needs to be signed
+    const hash = await signer.mpcSigner.calculateHashToSign(async () => {
       await kernelAccount.signMessage({
         message,
       });
-    } catch (e) {
-      // Ignoring errors
-    }
-
-    const hash = signer.mpcSigner.lastHash;
+    });
     invariant(hash, "Expected hash to be set");
 
     const intentionsPayload = {

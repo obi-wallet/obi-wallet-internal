@@ -14,7 +14,7 @@ export const MpcSignature = z.object({
 
 export class MpcSigner {
   protected bytesSignedBySignersPerHash = new Map<string, string[]>();
-  public lastHash: Uint8Array | undefined;
+  protected lastHash: Uint8Array | undefined;
 
   public constructor(protected wallet: MpcWallet) {}
 
@@ -49,6 +49,16 @@ export class MpcSigner {
     }
 
     throw new Error("No encrypted easy share found");
+  }
+
+  public async calculateHashToSign(f: () => Promise<void>) {
+    try {
+      // This will fail, but we are able to retrieve the hash that needs to be signed
+      await f();
+    } catch (e) {
+      // Ignoring errors
+    }
+    return this.lastHash;
   }
 
   protected async signHashWithEasyShare(hash: Uint8Array) {
