@@ -40,7 +40,7 @@ export const testSuite = createTestSuite(({ test }) => {
       // Ignoring errors
     }
 
-    const hash = signer.lastHash;
+    const hash = signer.mpcSigner.lastHash;
     invariant(hash, "Expected hash to be set");
 
     const intentionsPayload = {
@@ -60,7 +60,7 @@ export const testSuite = createTestSuite(({ test }) => {
       decryptedShares: [],
     });
 
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

@@ -272,7 +272,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
       } catch (e) {
         // Ignoring errors
       }
-      return signer.lastHash;
+      return signer.mpcSigner.lastHash;
     });
   }
 
@@ -294,7 +294,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -321,7 +321,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

@@ -61,7 +61,7 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
           intentionsResults,
         }) => {
           const signer = await targetChain.getSigner(wallet);
-          signer.addIntentionsResults({
+          signer.mpcSigner.addIntentionsResults({
             payload: intentionsPayload,
             results: intentionsResults,
           });

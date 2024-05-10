@@ -1,10 +1,8 @@
-import { fetchPublicKey } from "@/hooks/use-public-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
-import { StdSignature } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
 import {
   createHash,
@@ -15,28 +13,11 @@ import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
 
 export const testSuite = createTestSuite(({ test }) => {
-  test("signHashWithEasyShare", async () => {
-    class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
-      public static override async fromWallet(
-        wallet: MpcWallet,
-        targetChainId: CosmosSdkChainId,
-      ): Promise<TestCosmosSdkMpcSigner> {
-        const publicKey = await fetchPublicKey(wallet);
-        return new TestCosmosSdkMpcSigner(wallet, publicKey, targetChainId);
-      }
-
-      public override async signHashWithEasyShare(
-        address: string,
-        hash: Uint8Array,
-      ): Promise<StdSignature> {
-        return await super.signHashWithEasyShare(address, hash);
-      }
-    }
-
+  test("signHash", async () => {
     const wallet = MpcWallet.create(MOCK_WALLET_DATA);
     invariant(wallet.owner.primaryKey, "Expected primary key to be set");
 
-    const signer = await TestCosmosSdkMpcSigner.fromWallet(
+    const signer = await CosmosSdkMpcSigner.fromWallet(
       wallet,
       CosmosSdkChainId.Sei,
     );
@@ -64,12 +45,12 @@ export const testSuite = createTestSuite(({ test }) => {
       decryptedShares: [],
     });
 
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
 
-    const signature = await signer.signHashWithEasyShare(account.address, hash);
+    const signature = await signer.signHash(account.address, hash);
 
     expect(
       secp256k1.ecdsaVerify(
