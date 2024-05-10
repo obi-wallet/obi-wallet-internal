@@ -13,6 +13,7 @@ import {
   Address,
   createPublicClient,
   getAddress,
+  Hex,
   http,
   isAddress,
   keccak256,
@@ -20,7 +21,7 @@ import {
 import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
-export class EvmTargetChain extends AbstractTargetChain<EvmChainId> {
+export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
   protected readonly chainData: EvmChainData;
 
   public constructor(chainId: EvmChainId) {

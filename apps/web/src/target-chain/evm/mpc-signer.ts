@@ -3,63 +3,39 @@ import { fetchPublicKey } from "@/hooks/use-public-key";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { EasyShareDecryption } from "@/lib/encryption";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { EvmChainId } from "@/target-chain/evm/chains";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
-import {
-  AminoSignResponse,
-  encodeSecp256k1Signature,
-  OfflineAminoSigner,
-  serializeSignDoc,
-  StdSignature,
-  StdSignDoc,
-} from "@cosmjs/amino";
-import { sha256 } from "@cosmjs/crypto";
-import {
-  AccountData,
-  DirectSignResponse,
-  makeSignBytes,
-  OfflineDirectSigner,
-} from "@cosmjs/proto-signing";
-import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
-import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
-import {
-  getSec256k1CompressedPublicKey,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
-import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { MpcWallet, Secp256k1PublicKey, SecretJsClient } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
+import {
+  CustomSource,
+  hashMessage,
+  hashTypedData,
+  keccak256,
+  serializeSignature,
+  serializeTransaction,
+  Signature,
+  TransactionSerializable,
+} from "viem";
 import { z } from "zod";
 
-export class CosmosSdkMpcSigner
-  implements OfflineDirectSigner, OfflineAminoSigner
-{
-  protected bytesSignedBySignersPerHash = new Map<
-    HexEncodedString,
-    HexEncodedString[]
-  >();
+export class EvmMpcSigner {
+  protected bytesSignedBySignersPerHash = new Map<string, string[]>();
   public lastHash: Uint8Array | undefined;
-
-  public get address(): string {
-    return this.targetChain.computeAddress(this.publicKey);
-  }
-
-  protected get targetChain() {
-    return TargetChain.chainId(this.targetChainId);
-  }
 
   protected constructor(
     protected wallet: MpcWallet,
     protected publicKey: Secp256k1PublicKey,
-    protected targetChainId: CosmosSdkChainId,
+    protected targetChainId: EvmChainId,
   ) {}
 
   public static async fromWallet(
     wallet: MpcWallet,
-    targetChainId: CosmosSdkChainId,
-  ): Promise<CosmosSdkMpcSigner> {
+    targetChainId: EvmChainId,
+  ): Promise<EvmMpcSigner> {
     const publicKey = await fetchPublicKey(wallet);
 
-    return new CosmosSdkMpcSigner(wallet, publicKey, targetChainId);
+    return new EvmMpcSigner(wallet, publicKey, targetChainId);
   }
 
   public addIntentionsResults({
@@ -71,7 +47,7 @@ export class CosmosSdkMpcSigner
   }) {
     payload.signHashes.forEach((hash, index) => {
       this.bytesSignedBySignersPerHash.set(
-        Encoding.fromBytes(hash).toHex(),
+        Buffer.from(hash).toString("hex"),
         [...results.values()]
           .map((result) => {
             return result.signedHashes[index];
@@ -80,67 +56,71 @@ export class CosmosSdkMpcSigner
             return !!signedHash;
           })
           .map((signedHash) => {
-            return Encoding.fromBytes(signedHash).toHex();
+            return Buffer.from(signedHash).toString("hex");
           }),
       );
     });
   }
 
-  public async getAccounts(): Promise<readonly AccountData[]> {
-    return [
-      {
-        algo: "secp256k1",
-        address: this.address,
-        pubkey: getSec256k1CompressedPublicKey(this.publicKey),
+  public get accountSource(): CustomSource {
+    return {
+      address: TargetChain.chainId(this.targetChainId).computeAddress(
+        this.publicKey,
+      ),
+      signMessage: async ({ message }) => {
+        // see https://github.com/wevm/viem/blob/0fa08e113a890e6672fdc64fa7a2206a840611ab/src/accounts/utils/signMessage.ts#L35
+        const hash = hashMessage(message);
+        const signature = await this.signHash(
+          Buffer.from(hash.slice(2), "hex"),
+        );
+        return serializeSignature(signature);
       },
-    ];
-  }
+      signTransaction: async (transaction, args) => {
+        const serializer = args?.serializer ?? serializeTransaction;
 
-  public async signDirect(
-    address: string,
-    signDoc: SignDoc,
-  ): Promise<DirectSignResponse> {
-    const signBytes = makeSignBytes(signDoc);
-    const stdSignature = await this.signHash(address, sha256(signBytes));
+        // see https://github.com/wevm/viem/blob/0fa08e113a890e6672fdc64fa7a2206a840611ab/src/accounts/utils/signTransaction.ts#L40
+        const signableTransaction = ((): TransactionSerializable => {
+          // For EIP-4844 Transactions, we want to sign the transaction payload body (tx_payload_body) without the sidecars (ie. without the network wrapper).
+          // See: https://github.com/ethereum/EIPs/blob/e00f4daa66bd56e2dbd5f1d36d09fd613811a48b/EIPS/eip-4844.md#networking
+          if (transaction.type === "eip4844") {
+            return {
+              ...transaction,
+              sidecars: false,
+            };
+          }
+          return transaction;
+        })();
 
-    return {
-      signed: signDoc,
-      signature: stdSignature,
+        const hash = keccak256(serializer(signableTransaction));
+
+        const signature = await this.signHash(
+          Buffer.from(hash.slice(2), "hex"),
+        );
+        return serializer(transaction, signature);
+      },
+      signTypedData: async (typedData) => {
+        // see https://github.com/wevm/viem/blob/0fa08e113a890e6672fdc64fa7a2206a840611ab/src/accounts/utils/signTypedData.ts#L39
+        const signature = await this.signHash(
+          Buffer.from(hashTypedData(typedData).slice(2), "hex"),
+        );
+        return serializeSignature(signature);
+      },
     };
   }
 
-  public async signAmino(
-    address: string,
-    signDoc: StdSignDoc,
-  ): Promise<AminoSignResponse> {
-    const signBytes = serializeSignDoc(signDoc);
-    const stdSignature = await this.signHash(address, sha256(signBytes));
-
-    return {
-      signed: signDoc,
-      signature: stdSignature,
-    };
-  }
-
-  protected async signHash(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
+  protected async signHash(hash: Uint8Array): Promise<Signature> {
     this.lastHash = hash;
     if (this.wallet.encryptedEasyShare) {
-      return await this.signHashWithEasyShare(address, hash);
+      return await this.signHashWithEasyShare(hash);
     }
 
     throw new Error("No encrypted easy share found");
   }
 
-  protected async signHashWithEasyShare(
-    address: string,
-    hash: Uint8Array,
-  ): Promise<StdSignature> {
+  protected async signHashWithEasyShare(hash: Uint8Array): Promise<Signature> {
     invariant(rootStore.current, "Root store is not initialized");
 
-    const bytes = Encoding.fromBytes(hash).toHex();
+    const bytes = Buffer.from(hash).toString("hex");
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
     invariant(bytesSignedBySigners, "Hash has not been signed");
 
@@ -156,10 +136,6 @@ export class CosmosSdkMpcSigner
     const signers = mpcPackage.createSigners([
       easyShare.preSignForNetworkShare,
     ]);
-
-    if (address !== this.address) {
-      throw new Error(`Address ${address} not found in wallet`);
-    }
 
     const partialSignatures = signers.map((signer) => {
       return signer.partial(hash).scalar;
@@ -183,6 +159,7 @@ export class CosmosSdkMpcSigner
     const schema = z.object({
       r: z.string(),
       s: z.string(),
+      recid: z.literal(0).or(z.literal(1)),
     });
     const response = await client.queryContract({
       contract: this.wallet.homeChain.secretSigner.address,
@@ -201,19 +178,10 @@ export class CosmosSdkMpcSigner
       },
       schema,
     });
-    return this.encodeSignature(response);
-  }
-
-  protected encodeSignature(response: { r: string; s: string }) {
-    const r = HexEncodedString.parse(response.r.padStart(64, "0"));
-    const s = HexEncodedString.parse(response.s.padStart(64, "0"));
-    const signature = Encoding.concat(
-      Encoding.fromHex(r),
-      Encoding.fromHex(s),
-    ).toBytes();
-    return encodeSecp256k1Signature(
-      getSec256k1CompressedPublicKey(this.publicKey),
-      signature,
-    );
+    return {
+      r: `0x${response.r}`,
+      s: `0x${response.s}`,
+      yParity: response.recid,
+    };
   }
 }
