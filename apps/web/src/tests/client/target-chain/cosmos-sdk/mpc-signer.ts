@@ -1,6 +1,5 @@
 import { fetchPublicKey } from "@/hooks/use-public-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
-import { TargetChainId } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
@@ -20,7 +19,7 @@ export const testSuite = createTestSuite(({ test }) => {
     class TestCosmosSdkMpcSigner extends CosmosSdkMpcSigner {
       public static override async fromWallet(
         wallet: MpcWallet,
-        targetChainId: TargetChainId,
+        targetChainId: CosmosSdkChainId,
       ): Promise<TestCosmosSdkMpcSigner> {
         const publicKey = await fetchPublicKey(wallet);
         return new TestCosmosSdkMpcSigner(wallet, publicKey, targetChainId);

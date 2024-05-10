@@ -2,7 +2,8 @@
 
 import { Text } from "@/components";
 import { hasSucceeded, runTests, TestResults } from "@/tests";
-import { testSuite as mpcSignerTestSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
+import { testSuite as cosmosMpcSignerTestSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
+import { testSuite as evmMpcSignerTestSuite } from "@/tests/client/target-chain/evm/mpc-signer";
 import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
@@ -16,7 +17,8 @@ export function ClientSideTests({
 
   useEffectOnceWhen(async () => {
     const clientResults = await runTests((context) => {
-      mpcSignerTestSuite(context);
+      cosmosMpcSignerTestSuite(context);
+      evmMpcSignerTestSuite(context);
       stackupTestSuite(context);
     });
     setClientResults(clientResults);

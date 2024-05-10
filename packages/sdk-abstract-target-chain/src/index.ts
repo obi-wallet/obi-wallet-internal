@@ -20,13 +20,16 @@ export interface PriceInfo {
   usdValue: string;
 }
 
-export abstract class AbstractTargetChain<T extends string = string> {
+export abstract class AbstractTargetChain<
+  TChainId extends string = string,
+  TAddress extends string = string,
+> {
   protected queryNamespace: QueryClientNamespace<
     "target-chain",
-    { chainId: T }
+    { chainId: TChainId }
   >;
 
-  protected constructor(protected chainId: T) {
+  protected constructor(protected chainId: TChainId) {
     this.queryNamespace = new QueryClientNamespace("target-chain", {
       chainId,
     });
@@ -50,7 +53,7 @@ export abstract class AbstractTargetChain<T extends string = string> {
   }
   protected abstract obiAccountAddressQueryFn(
     publicKey: Secp256k1PublicKey,
-  ): Promise<string>;
+  ): Promise<TAddress>;
 
   public abstract validateAddress(address: string): boolean;
 
@@ -64,7 +67,7 @@ export abstract class AbstractTargetChain<T extends string = string> {
       staleTime: { seconds: 5 },
     });
   }
-  public abstract balancesQueryFn(address: string): Promise<Asset<T>[]>;
+  public abstract balancesQueryFn(address: string): Promise<Asset<TChainId>[]>;
 
   public price(id: AssetId) {
     return queryClient.fetchQuery(this.priceQuery(id));
