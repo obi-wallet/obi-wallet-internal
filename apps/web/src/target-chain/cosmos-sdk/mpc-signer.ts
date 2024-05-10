@@ -1,7 +1,7 @@
 import { fetchPublicKey } from "@/hooks/use-public-key";
 import { TargetChain } from "@/target-chain";
-import { MpcSigner } from "@/target-chain/abstract-mpc-signer";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { MpcSigner } from "@/target-chain/mpc-signer";
 import {
   AminoSignResponse,
   encodeSecp256k1Signature,

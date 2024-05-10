@@ -300,14 +300,10 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
   }): Promise<Uint8Array | undefined> {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
-    return await this.withSigningStargateClient(signer, async (client) => {
-      try {
-        // This will fail, but we are able to retrieve the hash that needs to be signed
+    return await signer.mpcSigner.calculateHashToSign(async () => {
+      await this.withSigningStargateClient(signer, async (client) => {
         await client.sign(signer.address, messages, fee, memo);
-      } catch (e) {
-        // Ignoring errors
-      }
-      return signer.mpcSigner.lastHash;
+      });
     });
   }
 
