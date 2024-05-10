@@ -43,13 +43,12 @@ export type HexEncodedString = z.infer<typeof HexEncodedString>;
 
 export const HexEncodedStringWithPrefix = z
   .string()
-  .refine((str): str is `0x${string}` => {
+  .refine((str): str is `0x${HexEncodedString}` => {
     return (
       str.startsWith("0x") &&
       HexEncodedString.safeParse(str.substring(2)).success
     );
-  })
-  .brand("HexEncodedStringWithPrefix");
+  });
 export type HexEncodedStringWithPrefix = z.infer<
   typeof HexEncodedStringWithPrefix
 >;

@@ -1,12 +1,9 @@
-import { rootStore } from "@/hooks/use-create-root-store";
 import { fetchPublicKey } from "@/hooks/use-public-key";
-import { IntentionsPayload } from "@/keys/intentions-handler";
-import { EasyShareDecryption } from "@/lib/encryption";
 import { TargetChain } from "@/target-chain";
+import { MpcSigner } from "@/target-chain/abstract-mpc-signer";
 import { EvmChainId } from "@/target-chain/evm/chains";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
-import { MpcWallet, Secp256k1PublicKey, SecretJsClient } from "@obi-wallet/sdk";
-import invariant from "tiny-invariant";
+import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { MpcWallet, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import {
   CustomSource,
   hashMessage,
@@ -17,17 +14,17 @@ import {
   Signature,
   TransactionSerializable,
 } from "viem";
-import { z } from "zod";
 
 export class EvmMpcSigner {
-  protected bytesSignedBySignersPerHash = new Map<string, string[]>();
-  public lastHash: Uint8Array | undefined;
+  public readonly mpcSigner: MpcSigner;
 
   protected constructor(
     protected wallet: MpcWallet,
     protected publicKey: Secp256k1PublicKey,
     protected targetChainId: EvmChainId,
-  ) {}
+  ) {
+    this.mpcSigner = new MpcSigner(wallet);
+  }
 
   public static async fromWallet(
     wallet: MpcWallet,
@@ -38,30 +35,6 @@ export class EvmMpcSigner {
     return new EvmMpcSigner(wallet, publicKey, targetChainId);
   }
 
-  public addIntentionsResults({
-    payload,
-    results,
-  }: {
-    payload: IntentionsPayload;
-    results: IntentionsResults;
-  }) {
-    payload.signHashes.forEach((hash, index) => {
-      this.bytesSignedBySignersPerHash.set(
-        Buffer.from(hash).toString("hex"),
-        [...results.values()]
-          .map((result) => {
-            return result.signedHashes[index];
-          })
-          .filter((signedHash): signedHash is Uint8Array => {
-            return !!signedHash;
-          })
-          .map((signedHash) => {
-            return Buffer.from(signedHash).toString("hex");
-          }),
-      );
-    });
-  }
-
   public get accountSource(): CustomSource {
     return {
       address: TargetChain.chainId(this.targetChainId).computeAddress(
@@ -69,9 +42,8 @@ export class EvmMpcSigner {
       ),
       signMessage: async ({ message }) => {
         // see https://github.com/wevm/viem/blob/0fa08e113a890e6672fdc64fa7a2206a840611ab/src/accounts/utils/signMessage.ts#L35
-        const hash = hashMessage(message);
         const signature = await this.signHash(
-          Buffer.from(hash.slice(2), "hex"),
+          HexEncodedStringWithPrefix.parse(hashMessage(message)),
         );
         return serializeSignature(signature);
       },
@@ -91,97 +63,32 @@ export class EvmMpcSigner {
           return transaction;
         })();
 
-        const hash = keccak256(serializer(signableTransaction));
-
         const signature = await this.signHash(
-          Buffer.from(hash.slice(2), "hex"),
+          HexEncodedStringWithPrefix.parse(
+            keccak256(serializer(signableTransaction)),
+          ),
         );
         return serializer(transaction, signature);
       },
       signTypedData: async (typedData) => {
         // see https://github.com/wevm/viem/blob/0fa08e113a890e6672fdc64fa7a2206a840611ab/src/accounts/utils/signTypedData.ts#L39
         const signature = await this.signHash(
-          Buffer.from(hashTypedData(typedData).slice(2), "hex"),
+          HexEncodedStringWithPrefix.parse(hashTypedData(typedData)),
         );
         return serializeSignature(signature);
       },
     };
   }
 
-  protected async signHash(hash: Uint8Array): Promise<Signature> {
-    this.lastHash = hash;
-    if (this.wallet.encryptedEasyShare) {
-      return await this.signHashWithEasyShare(hash);
-    }
-
-    throw new Error("No encrypted easy share found");
-  }
-
-  protected async signHashWithEasyShare(hash: Uint8Array): Promise<Signature> {
-    invariant(rootStore.current, "Root store is not initialized");
-
-    const bytes = Buffer.from(hash).toString("hex");
-    const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
-    invariant(bytesSignedBySigners, "Hash has not been signed");
-
-    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
-
-    const primaryKey = this.wallet.owner.primaryKey;
-    invariant(primaryKey, "No primary key found");
-
-    const easyShare = await new EasyShareDecryption(this.wallet.owner).decrypt(
-      this.wallet.encryptedEasyShare,
-    );
-
-    const signers = mpcPackage.createSigners([
-      easyShare.preSignForNetworkShare,
-    ]);
-
-    const partialSignatures = signers.map((signer) => {
-      return signer.partial(hash).scalar;
-    });
-
-    const client = new SecretJsClient(this.wallet.homeChainId);
-
-    const userEntryCodeHash = await client.withSecretNetworkClient(
-      async (secretNetworkClient) => {
-        const info = await secretNetworkClient.query.compute.contractInfo({
-          contract_address: this.wallet.userEntryAddress,
-        });
-        const response =
-          await secretNetworkClient.query.compute.codeHashByCodeId({
-            code_id: info.contract_info?.code_id,
-          });
-        return response.code_hash;
-      },
-    );
-
-    const schema = z.object({
-      r: z.string(),
-      s: z.string(),
-      recid: z.literal(0).or(z.literal(1)),
-    });
-    const response = await client.queryContract({
-      contract: this.wallet.homeChain.secretSigner.address,
-      codeHash: this.wallet.homeChain.secretSigner.codeHash,
-      query: {
-        sign_bytes: {
-          participants: [1, 3],
-          user_entry_address: this.wallet.userEntryAddress,
-          user_entry_code_hash: userEntryCodeHash,
-          other_partial_sigs: partialSignatures,
-          prepend: false,
-          is_already_hashed: true,
-          bytes,
-          bytes_signed_by_signers: bytesSignedBySigners,
-        },
-      },
-      schema,
-    });
+  protected async signHash(
+    hash: HexEncodedStringWithPrefix,
+  ): Promise<Signature> {
+    const hashU8 = Encoding.fromPrefixedHex(hash).toBytes();
+    const signature = await this.mpcSigner.signHash(hashU8);
     return {
-      r: `0x${response.r}`,
-      s: `0x${response.s}`,
-      yParity: response.recid,
+      r: Encoding.fromHex(signature.r).toPrefixedHex(),
+      s: Encoding.fromHex(signature.s).toPrefixedHex(),
+      yParity: signature.recid,
     };
   }
 }
