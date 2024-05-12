@@ -28,7 +28,7 @@ export const Hex = z
   .refine((str) => {
     return str === Buffer.from(str, "hex").toString("hex");
   })
-  .brand("HexWithoutPrefix");
+  .brand("Hex");
 
 export type Hex = z.infer<typeof Hex>;
 
@@ -46,7 +46,7 @@ export const PrefixedHex = z
   .refine((str): str is `0x${string}` => {
     return str === `0x${Buffer.from(str.substring(2), "hex").toString("hex")}`;
   })
-  .brand("HexWithPrefix");
+  .brand("PrefixedHex");
 
 export type PrefixedHex = z.infer<typeof PrefixedHex>;
 
