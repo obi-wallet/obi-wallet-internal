@@ -7,6 +7,7 @@ import {
   SingleKeyMetaData,
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
+import { Base64 } from "@obi-wallet/encoding";
 import { Key, KeyType } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -47,7 +48,7 @@ export class PhoneKeyWorkerClient {
   }
 
   public async confirmMagicCode(code: string): Promise<{
-    publicKey: string;
+    publicKey: Base64;
     decryptedMessages: string[];
     signedHashes: string[];
   }> {

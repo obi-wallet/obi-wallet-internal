@@ -1,5 +1,6 @@
 import { computeEthereumAddress } from "@/lib/stackup";
 import { createTestSuite, expect } from "@/tests";
+import { Base64 } from "@obi-wallet/encoding";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 
 export const testSuite = createTestSuite(({ test }) => {
@@ -8,7 +9,7 @@ export const testSuite = createTestSuite(({ test }) => {
       privateKey: "cM3ziz/IfwzE+uje6dW+UBUW7j6jlTjfvBGTQzoeV6M=",
       publicKey: {
         type: "tendermint/PubKeySecp256k1",
-        value: "AgVK56wekxPMnZJWcAIakU+oplFHOdrATkTZyZ3Bg3SC",
+        value: Base64.parse("AgVK56wekxPMnZJWcAIakU+oplFHOdrATkTZyZ3Bg3SC"),
       },
     };
     expect(computeEthereumAddress(keyPair.publicKey)).to.equal(

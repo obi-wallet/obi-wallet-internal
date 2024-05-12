@@ -25,6 +25,7 @@
     "@cosmjs/stargate": "^0.32.3",
     "@hookform/resolvers": "^3.3.4",
     "@obi-wallet/config": "workspace:*",
+    "@obi-wallet/encoding": "workspace:*",
     "@obi-wallet/headless-ui": "workspace:*",
     "@obi-wallet/mpc-ecdsa-wasm": "workspace:*",
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*",

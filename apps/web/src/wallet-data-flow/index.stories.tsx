@@ -1,5 +1,6 @@
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
+import { Base64 } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -79,7 +80,7 @@ const ownerWithoutPrimaryKey = walletDataToMultisigKey({
 const primaryKeyKeyPair: Secp256k1KeyPair = {
   publicKey: {
     type: "tendermint/PubKeySecp256k1",
-    value: "AxwynrUMzv9ehWiOH7xLsV5EZgayPV5IhVGoYTidWLpZ",
+    value: Base64.parse("AxwynrUMzv9ehWiOH7xLsV5EZgayPV5IhVGoYTidWLpZ"),
   },
   privateKey: "Ga1edcOIzBqBdTvrQZ4c0EKNo2DJez9AmjdbYjH5M9Y=",
 };
@@ -93,7 +94,7 @@ const newPrimaryKey: Secp256k1KeyPair = {
   privateKey: "IKy51ST9m8Hy01i6JYs3rarJMODJ+kza+wxhcHjrVuU=",
   publicKey: {
     type: "tendermint/PubKeySecp256k1",
-    value: "AmsdSHonHoMizMlDNidWoXvbosr8L5JrjoWSoJatSXqF",
+    value: Base64.parse("AmsdSHonHoMizMlDNidWoXvbosr8L5JrjoWSoJatSXqF"),
   },
 };
 const newOwner = ownerWithPrimaryKey.clone();

@@ -3138,6 +3138,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@obi-wallet/encoding@workspace:packages/encoding":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/encoding@workspace:packages/encoding"
+  dependencies:
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    eslint: "npm:^8.57.0"
+    typescript: "npm:^5.4.5"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@obi-wallet/headless-ui@workspace:*, @obi-wallet/headless-ui@workspace:packages/headless-ui":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/headless-ui@workspace:packages/headless-ui"

@@ -18,6 +18,7 @@
     "@cosmjs/proto-signing": "^0.32.3",
     "@cosmjs/stargate": "^0.32.3",
     "@github/webauthn-json": "^2.1.1",
+    "@obi-wallet/encoding": "workspace:*",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@simplewebauthn/typescript-types": "^8.3.4",
