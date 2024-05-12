@@ -59,12 +59,6 @@ const prefixedHexEncoding: AbstractEncoding<PrefixedHex> = {
   },
 };
 
-export function concat(...args: Base64[]): Base64;
-export function concat(...args: Hex[]): Hex;
-export function concat(...args: string[]): string {
-  return args.join("");
-}
-
 export class Encoding {
   protected constructor(protected bytes: Uint8Array) {}
 
@@ -98,5 +92,21 @@ export class Encoding {
 
   public static fromPrefixedHex(hex: PrefixedHex) {
     return new Encoding(prefixedHexEncoding.toBytes(hex));
+  }
+
+  public static concat(...args: Encoding[]): Encoding {
+    let combinedLength = 0;
+    args.forEach((item) => {
+      combinedLength += item.toBytes().length;
+    });
+
+    const bytes = new Uint8Array(combinedLength);
+    let offset = 0;
+    args.forEach((item) => {
+      bytes.set(item.toBytes(), offset);
+      offset += item.toBytes().length;
+    });
+
+    return new Encoding(bytes);
   }
 }
