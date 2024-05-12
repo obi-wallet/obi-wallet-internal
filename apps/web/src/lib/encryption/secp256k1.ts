@@ -1,4 +1,5 @@
 import { rootStore } from "@/hooks/use-create-root-store";
+import { Base64, Encoding } from "@obi-wallet/encoding";
 import {
   Sec256k1PrivateKey,
   Secp256k1PublicKey,
@@ -8,14 +9,14 @@ import invariant from "tiny-invariant";
 export class Secp256k1Encryption {
   public constructor(protected readonly publicKey: Secp256k1PublicKey) {}
 
-  public async encrypt(data: string): Promise<string> {
+  public async encrypt(data: string): Promise<Base64> {
     const u8Data = Buffer.from(data, "utf8");
     const ecies = await this.getEciesWasm();
     const encrypted = ecies.encrypt(
-      Buffer.from(this.publicKey.value, "base64"),
+      Encoding.fromBase64(this.publicKey.value).toBytes(),
       u8Data,
     );
-    return Buffer.from(encrypted).toString("base64");
+    return Encoding.fromBytes(encrypted).toBase64();
   }
 
   protected async getEciesWasm() {
@@ -28,11 +29,11 @@ export class Secp256k1Encryption {
 export class Secp256k1Decryption {
   public constructor(protected readonly privateKey: Sec256k1PrivateKey) {}
 
-  public async decrypt(data: string): Promise<string> {
-    const u8Data = Buffer.from(data, "base64");
+  public async decrypt(data: Base64): Promise<string> {
+    const u8Data = Encoding.fromBase64(data).toBytes();
     const ecies = await this.getEciesWasm();
     const decrypted = ecies.decrypt(
-      Buffer.from(this.privateKey, "base64"),
+      Encoding.fromBase64(this.privateKey).toBytes(),
       u8Data,
     );
     return Buffer.from(decrypted).toString("utf8");

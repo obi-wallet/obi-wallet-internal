@@ -1,3 +1,4 @@
+import { Encoding } from "@obi-wallet/encoding";
 import { TargetChainId } from "@obi-wallet/sdk";
 import {
   getSec256k1UncompressedPublicKey,
@@ -7,7 +8,7 @@ import { getAddress, keccak256 } from "viem";
 
 export function computeEthereumAddress(publicKey: Secp256k1PublicKey) {
   const u8 = getSec256k1UncompressedPublicKey(publicKey);
-  const hex = `0x${Buffer.from(u8).toString("hex")}`;
+  const hex = Encoding.fromBytes(u8).toPrefixedHex();
   const address = keccak256(`0x${hex.substring(4)}`).substring(26);
   return getAddress(`0x${address}`);
 }

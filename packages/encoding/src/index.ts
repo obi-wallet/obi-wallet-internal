@@ -23,44 +23,44 @@ const base64Encoding: AbstractEncoding<Base64> = {
   },
 };
 
-export const HexWithoutPrefix = z
+export const Hex = z
   .string()
   .refine((str) => {
     return str === Buffer.from(str, "hex").toString("hex");
   })
   .brand("HexWithoutPrefix");
 
-export type HexWithoutPrefix = z.infer<typeof HexWithoutPrefix>;
+export type Hex = z.infer<typeof Hex>;
 
-const hexWithoutPrefixEncoding: AbstractEncoding<HexWithoutPrefix> = {
+const hexEncoding: AbstractEncoding<Hex> = {
   fromBytes(bytes: Uint8Array) {
-    return HexWithoutPrefix.parse(Buffer.from(bytes).toString("hex"));
+    return Hex.parse(Buffer.from(bytes).toString("hex"));
   },
-  toBytes(hex: HexWithoutPrefix) {
+  toBytes(hex: Hex) {
     return Uint8Array.from(Buffer.from(hex, "hex"));
   },
 };
 
-export const HexWithPrefix = z
+export const PrefixedHex = z
   .string()
   .refine((str): str is `0x${string}` => {
     return str === `0x${Buffer.from(str.substring(2), "hex").toString("hex")}`;
   })
   .brand("HexWithPrefix");
 
-export type HexWithPrefix = z.infer<typeof HexWithPrefix>;
+export type PrefixedHex = z.infer<typeof PrefixedHex>;
 
-const hexWithPrefixEncoding: AbstractEncoding<HexWithPrefix> = {
+const prefixedHexEncoding: AbstractEncoding<PrefixedHex> = {
   fromBytes(bytes: Uint8Array) {
-    return HexWithPrefix.parse(`0x${Buffer.from(bytes).toString("hex")}`);
+    return PrefixedHex.parse(`0x${Buffer.from(bytes).toString("hex")}`);
   },
-  toBytes(hex: HexWithPrefix) {
+  toBytes(hex: PrefixedHex) {
     return Uint8Array.from(Buffer.from(hex.substring(2), "hex"));
   },
 };
 
 export function concat(...args: Base64[]): Base64;
-export function concat(...args: HexWithoutPrefix[]): HexWithoutPrefix;
+export function concat(...args: Hex[]): Hex;
 export function concat(...args: string[]): string {
   return args.join("");
 }
@@ -76,12 +76,12 @@ export class Encoding {
     return base64Encoding.fromBytes(this.bytes);
   }
 
-  public toHexWithoutPrefix() {
-    return hexWithoutPrefixEncoding.fromBytes(this.bytes);
+  public toHex() {
+    return hexEncoding.fromBytes(this.bytes);
   }
 
-  public toHexWithPrefix() {
-    return hexWithPrefixEncoding.fromBytes(this.bytes);
+  public toPrefixedHex() {
+    return prefixedHexEncoding.fromBytes(this.bytes);
   }
 
   public static fromBytes(bytes: Uint8Array) {
@@ -92,11 +92,11 @@ export class Encoding {
     return new Encoding(base64Encoding.toBytes(base64));
   }
 
-  public static fromHexWithoutPrefix(hex: HexWithoutPrefix) {
-    return new Encoding(hexWithoutPrefixEncoding.toBytes(hex));
+  public static fromHex(hex: Hex) {
+    return new Encoding(hexEncoding.toBytes(hex));
   }
 
-  public static fromHexWithPrefix(hex: HexWithPrefix) {
-    return new Encoding(hexWithPrefixEncoding.toBytes(hex));
+  public static fromPrefixedHex(hex: PrefixedHex) {
+    return new Encoding(prefixedHexEncoding.toBytes(hex));
   }
 }

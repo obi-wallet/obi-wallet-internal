@@ -1,5 +1,6 @@
 import { getFeeLender } from "@/lib/fee-lender";
 import { isTest } from "@/lib/testing";
+import { Encoding } from "@obi-wallet/encoding";
 import {
   ChainIdSchema,
   SecretJsClient,
@@ -41,14 +42,14 @@ export async function POST(request: Request) {
             {
               address: wallet.address,
               ty: "creator",
-              pubkey_base_64: Buffer.from(wallet.publicKey).toString("base64"),
+              pubkey_base_64: Encoding.fromBytes(wallet.publicKey).toBase64(),
             },
           ],
         },
         fee_debt: 0,
         update_delay: 0,
         // next_hash_seed is some randomness and doesn't need to be stored at all
-        next_hash_seed: Buffer.from(randomBytes(32)).toString("hex"),
+        next_hash_seed: Encoding.fromBytes(randomBytes(32)).toHex(),
       },
     },
   });

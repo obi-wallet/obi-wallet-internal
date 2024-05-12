@@ -13,6 +13,7 @@
   "dependencies": {
     "@cosmjs/amino": "^0.32.3",
     "@cosmjs/proto-signing": "^0.32.3",
+    "@obi-wallet/encoding": "workspace:*",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@walletconnect/core": "^2.13.0",

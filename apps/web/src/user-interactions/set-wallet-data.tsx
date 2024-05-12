@@ -8,6 +8,7 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
+import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { createHash, MultisigKey, WalletData } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -74,14 +75,14 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
           return !!signature;
         })
         .map((signature) => {
-          return Buffer.from(signature).toString("hex");
+          return Encoding.fromBytes(signature).toHex();
         });
 
       const response = await fetch("/api/set-wallet-data", {
         method: "POST",
         body: JSON.stringify({
           serializedWalletData: interaction.payload.serializedWalletData,
-          signatures: signatures,
+          signatures,
           userAccountAddress: userAccount.data.userAccountAddress,
           userAccountCodeHash: userAccount.data.userAccountCodeHash,
         }),
@@ -132,10 +133,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             intentions={{
               signHashes: [
                 createHash(
-                  Buffer.from(
-                    interaction.payload.serializedWalletData,
-                    "utf-8",
-                  ),
+                  Buffer.from(interaction.payload.serializedWalletData, "utf8"),
                 ),
               ],
               decryptMessages: [],

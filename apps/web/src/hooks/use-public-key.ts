@@ -1,6 +1,6 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { staleTime } from "@/lib/stale-time";
-import { concat, Encoding, HexWithoutPrefix } from "@obi-wallet/encoding";
+import { concat, Encoding, Hex } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   HomeChainId,
@@ -23,14 +23,14 @@ export async function fetchPublicKey(wallet: {
     query: {
       passport_pubkey: { user_entry_address: wallet.userEntryAddress },
     },
-    schema: HexWithoutPrefix,
+    schema: Hex,
   });
 
   return {
     type: "tendermint/PubKeySecp256k1",
-    value: Encoding.fromHexWithoutPrefix(
+    value: Encoding.fromHex(
       // Append missing first byte
-      concat(HexWithoutPrefix.parse("04"), response),
+      concat(Hex.parse("04"), response),
     ).toBase64(),
   };
 }

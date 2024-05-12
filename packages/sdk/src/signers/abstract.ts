@@ -12,7 +12,6 @@ export abstract class Signer {
   public abstract signHash(hash: Uint8Array): Promise<Uint8Array>;
 
   public async sign(payload: Buffer): Promise<Buffer> {
-    console.log("calling signer sign()");
     return Buffer.from(await this.signHash(this.createHash(payload)));
   }
 

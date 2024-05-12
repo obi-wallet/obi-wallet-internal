@@ -46,7 +46,7 @@ export const testSuite = createTestSuite(({ test }) => {
     invariant(account, "Expected account to be set");
 
     const message = "hello world";
-    const hash = createHash(Buffer.from(message, "utf-8"));
+    const hash = createHash(Buffer.from(message, "utf8"));
 
     const intentionsPayload = {
       signHashes: [hash],

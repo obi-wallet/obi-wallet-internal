@@ -1,27 +1,28 @@
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
+import { Base64 } from "@obi-wallet/encoding";
 import { Key, MultisigKey } from "@obi-wallet/sdk";
 import { fromPairs, splitAt } from "ramda";
 
 interface MultisigKeyEncryptedMessage {
-  encryptedMessage: string;
-  encryptedShares: string[];
+  encryptedMessage: Base64;
+  encryptedShares: Base64[];
 }
 
 interface NewMultisigKeyEncryptedMessage {
-  encryptedMessage: string;
-  encryptedShares: Record<string, string>;
+  encryptedMessage: Base64;
+  encryptedShares: Record<string, Base64>;
 }
 
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
-  decryptMessages: string[];
+  decryptMessages: Base64[];
   decryptMultisigKeyEncryptedMessages: string[];
 }
 
 export interface IntentionsResult {
   signedHashes: Uint8Array[];
   decryptedMessages: string[];
-  decryptedShares: string[];
+  decryptedShares: Base64[];
 }
 
 export abstract class IntentionsHandler {
@@ -30,7 +31,7 @@ export abstract class IntentionsHandler {
   protected index: number;
   protected payload: IntentionsPayload;
 
-  public constructor({
+  protected constructor({
     key,
     keyMetaData,
     index,
@@ -58,7 +59,9 @@ export abstract class IntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedShares,
+      decryptedShares: decryptedShares.map((share) => {
+        return Base64.parse(share);
+      }),
     };
   }
 
@@ -78,8 +81,8 @@ export abstract class IntentionsHandler {
   ): MultisigKeyEncryptedMessage {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
-      string,
-      ...string[],
+      Base64,
+      ...Base64[],
     ];
 
     return {
@@ -115,7 +118,9 @@ export abstract class NewIntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedShares,
+      decryptedShares: decryptedShares.map((share) => {
+        return Base64.parse(share);
+      }),
     };
   }
 
@@ -135,8 +140,8 @@ export abstract class NewIntentionsHandler {
   ): NewMultisigKeyEncryptedMessage {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
-      string,
-      ...string[],
+      Base64,
+      ...Base64[],
     ];
 
     return {

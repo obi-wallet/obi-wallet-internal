@@ -1,3 +1,4 @@
+import { Encoding } from "@obi-wallet/encoding";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -74,9 +75,9 @@ export async function setupWalletConnect({
             return {
               algo: "secp256k1",
               address: account.address,
-              pubkey: Buffer.from(
+              pubkey: Encoding.fromBytes(
                 getSec256k1CompressedPublicKey(account.publicKey),
-              ).toString("base64"),
+              ).toBase64(),
             };
           });
 

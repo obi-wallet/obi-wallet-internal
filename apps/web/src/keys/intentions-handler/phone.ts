@@ -7,7 +7,7 @@ import {
   SingleKeyMetaData,
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
-import { Base64 } from "@obi-wallet/encoding";
+import { Base64, Encoding } from "@obi-wallet/encoding";
 import { Key, KeyType } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -31,7 +31,7 @@ export class PhoneKeyWorkerClient {
     via: PhoneKeyWorkerVia;
     to: string;
     decryptMessages: string[];
-    signHashes: string[];
+    signHashes: Base64[];
   }) {
     this.answer = answer;
     this.via = via;
@@ -50,7 +50,7 @@ export class PhoneKeyWorkerClient {
   public async confirmMagicCode(code: string): Promise<{
     publicKey: Base64;
     decryptedMessages: string[];
-    signedHashes: string[];
+    signedHashes: Base64[];
   }> {
     const response = await this.genericRequest(code);
     if (!response.ok) {
@@ -118,7 +118,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
       signHashes: this.payload.signHashes.map((hash) => {
-        return Buffer.from(hash).toString("base64");
+        return Encoding.fromBytes(hash).toBase64();
       }),
     });
     await client.requestMagicCode();
@@ -131,7 +131,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
       signHashes: this.payload.signHashes.map((hash) => {
-        return Buffer.from(hash).toString("base64");
+        return Encoding.fromBytes(hash).toBase64();
       }),
     });
     const response = await client.confirmMagicCode(code);
@@ -142,7 +142,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     );
     return this.toIntentionsResult({
       signedHashes: response.signedHashes.map((hash) => {
-        return Buffer.from(hash, "base64");
+        return Encoding.fromBase64(hash).toBytes();
       }),
       decryptedMessages: response.decryptedMessages,
     });

@@ -1,4 +1,5 @@
 import { setWalletData } from "@/wallet-data-backup/worker-client";
+import { Encoding, Hex } from "@obi-wallet/encoding";
 import {
   createHash,
   MultisigPublicKey,
@@ -14,7 +15,7 @@ const schema = z.object({
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
   serializedWalletData: z.string(),
-  signatures: z.array(z.string()),
+  signatures: z.array(Hex),
 });
 
 export async function POST(request: Request) {
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const hash = createHash(Buffer.from(serializedWalletData, "utf-8"));
+  const hash = createHash(Buffer.from(serializedWalletData, "utf8"));
   const keyIndicesWithValidSignature = new Set();
 
   signatures.forEach((signature) => {
@@ -93,9 +94,9 @@ export async function POST(request: Request) {
           return false;
         }
         return secp256k1.ecdsaVerify(
-          Buffer.from(signature, "hex"),
+          Encoding.fromHex(signature).toBytes(),
           hash,
-          Buffer.from(publicKey.value, "base64"),
+          Encoding.fromBase64(publicKey.value).toBytes(),
         );
       },
     );

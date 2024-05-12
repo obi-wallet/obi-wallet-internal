@@ -1,5 +1,9 @@
 import { create, get } from "@github/webauthn-json";
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { Encoding } from "@obi-wallet/encoding";
+import {
+  Sec256k1PrivateKey,
+  Secp256k1KeyPair,
+} from "@obi-wallet/sdk-secp256k1";
 import type { CredentialDeviceType } from "@simplewebauthn/typescript-types";
 
 import { Secp256k1PrivateKeySigner } from "../signers/sec256k1-private-key";
@@ -129,7 +133,7 @@ export async function credentialToKeyPair(credential: {
 }): Promise<Secp256k1KeyPair> {
   const privateKey = await combineKeys(
     DEMO_PRIVATE_KEY,
-    Buffer.from(credential.id).toString("hex"),
+    Encoding.fromBytes(Buffer.from(credential.id)).toHex(),
   );
   const webauthnSigner = new Secp256k1PrivateKeySigner(privateKey);
   return {
@@ -142,7 +146,7 @@ export async function credentialToKeyPair(credential: {
 async function combineKeys(
   demoKey: string,
   credentialKey: string,
-): Promise<string> {
+): Promise<Sec256k1PrivateKey> {
   const combinedString = demoKey + credentialKey;
   const combinedUint8Array = new Uint8Array(
     combinedString.split("").map((char) => {
@@ -174,7 +178,7 @@ async function combineKeys(
   }
 
   // Convert the hex to base64
-  return hexToBase64(privateKeyBigInt.toString(16));
+  return Sec256k1PrivateKey.parse(hexToBase64(privateKeyBigInt.toString(16)));
 }
 
 // Helper function to convert hex to base64
