@@ -329,8 +329,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-white">
-                          <div className=" uppercase">
-                            {`${item.asset.display} (on ${item.network})`}
+                          <div>
+                            {`${String(item.asset.display).toUpperCase()} (on ${item.network})`}
                           </div>
                           <div>{item.balance.toString()}</div>
                         </div>
@@ -358,8 +358,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
-                          <div className=" uppercase">
-                            {`${selected.item.asset.display} (on ${selected.item.network})`}
+                          <div>
+                            {`${String(selected.item.asset.display).toUpperCase()} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>

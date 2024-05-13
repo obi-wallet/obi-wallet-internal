@@ -264,9 +264,7 @@ export const StepSimulations = z.union([
 export type StepSimulations = z.infer<typeof StepSimulations>;
 
 export const SimulationEntryObject = z.object({
-  //   skip_simulation_body: z.union([skipSimulationBodySchema, z.null()]),
   step_simulations: StepSimulations,
-
   step_statuses: z.array(StepStatus),
   transaction: Transaction,
 });

@@ -399,11 +399,6 @@ function StepDetailsItem({
                 <span
                   className={cn(
                     "bg-green absolute -start-3  flex h-6 w-6 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
-                    getBackgroundColor(
-                      routeStatus?.status ||
-                        stepStatus.squidTransactionStatus ||
-                        "",
-                    ),
                   )}
                 >
                   {renderSVG(
