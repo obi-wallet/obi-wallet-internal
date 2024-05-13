@@ -259,7 +259,16 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 
     const chainAssets = Object.entries(assets)
       .filter(([_, asset]) => {
-        return asset.chainId === toChainValue || asset.denom.includes("ibc/");
+        if (asset.chainId === toChainValue) {
+          return true;
+        }
+        if (
+          asset.denom.includes("ibc/") &&
+          !["osmosis-1", "stargaze-1"].includes(toChainValue)
+        ) {
+          return true;
+        }
+        return false;
       })
       .reduce<Record<string, ToAsset>>((acc, [key, asset]) => {
         return {
