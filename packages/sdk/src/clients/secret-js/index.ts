@@ -29,13 +29,21 @@ export async function withSecretNetworkClient<T>(
   f: (client: SecretNetworkClient) => T,
 ) {
   const chain = SecretJsChains[chainId];
-  const url = chain.urls[0];
-  invariant(url, "chain has no urls");
-  const client = new SecretNetworkClient({
-    url,
-    chainId,
-  });
-  return await f(client);
+
+  let lastError = null;
+  for (const url of chain.urls) {
+    try {
+      const client = new SecretNetworkClient({
+        url,
+        chainId,
+      });
+      return await f(client);
+    } catch (e) {
+      lastError = e;
+      console.error(e);
+    }
+  }
+  throw lastError;
 }
 
 export async function withSigningSecretNetworkClient<T>(
@@ -49,15 +57,23 @@ export async function withSigningSecretNetworkClient<T>(
   f: (client: SecretNetworkClient) => T,
 ) {
   const chain = SecretJsChains[chainId];
-  const url = chain.urls[0];
-  invariant(url, "chain has no urls");
-  const client = new SecretNetworkClient({
-    url,
-    chainId,
-    wallet: signer,
-    walletAddress: signer.address,
-  });
-  return await f(client);
+
+  let lastError = null;
+  for (const url of chain.urls) {
+    try {
+      const client = new SecretNetworkClient({
+        url,
+        chainId,
+        wallet: signer,
+        walletAddress: signer.address,
+      });
+      return await f(client);
+    } catch (e) {
+      lastError = e;
+      console.error(e);
+    }
+  }
+  throw lastError;
 }
 
 export class SecretJsClient {
