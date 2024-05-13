@@ -28,6 +28,11 @@ export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
     label: "Telegram Key",
     mandatory: false,
   },
+  [KeyType.Authenticator]: {
+    type: KeyType.Authenticator,
+    label: "Authenticator",
+    mandatory: false,
+  },
 };
 
 export function useKeyList() {
@@ -79,6 +84,10 @@ export function useKeyListForMultisigKey({
     {
       ...keyTypeMeta[KeyType.Telegram],
       keys: getKeysOfType(KeyType.Telegram),
+    },
+    {
+      ...keyTypeMeta[KeyType.Authenticator],
+      keys: getKeysOfType(KeyType.Authenticator),
     },
   ];
 }
