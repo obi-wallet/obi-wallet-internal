@@ -235,7 +235,8 @@ function PendingStepItem({
     <li className="mb-10 ms-6">
       <span
         className={cn(
-          "bg-green absolute -start-4 flex h-8 w-8 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
+          "absolute -start-4 flex h-8 w-8 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
+          " bg-blue-950",
         )}
       >
         {renderSTEPIcon()}
@@ -254,6 +255,7 @@ function StepDetailsList({
   simulations: StepSimulations;
 }) {
   if (!step.action || step.action === "EthDeposit") return null;
+
   const renderStatus = () => {
     switch (step.action) {
       case "Squid": {
@@ -266,7 +268,7 @@ function StepDetailsList({
         if (squidStatus.success) {
           return (
             <>
-              <div className=" text-md">
+              <div className=" text-md uppercase">
                 {squidStatus.data.squidTransactionStatus}
               </div>
               <div className="text-ellipsis  text-sm">
@@ -283,7 +285,7 @@ function StepDetailsList({
             </>
           );
         } else {
-          console.log("Error parsing squid status", squidStatus.error);
+          console.log("Error parsing squid status", squidStatus.error, step);
           return null;
         }
       }
@@ -320,7 +322,7 @@ function SkipDetailsItem({ step }: { step: StepAndTx }) {
         return skipStatus.state;
     }
   };
-  console.log({ skipStatus });
+
   return <div className=" text-md"> {getSkipStatus()}</div>;
 }
 
@@ -349,8 +351,6 @@ function StepDetailsItem({
     console.error("Error parsing squid status", squidStatus.error);
     return null;
   } else {
-    console.log({ squidStatus });
-    console.log({ routes });
     const stepStatus = squidStatus.data;
 
     const getContent = (route: SquidRouteFromChain | SquidRouteToChain) => {
@@ -363,13 +363,13 @@ function StepDetailsItem({
         const toAmount = BigNumber(fromChainRoute.toAmount)
           .dividedBy(10 ** fromChainRoute.toToken.decimals)
           .decimalPlaces(8);
-        return `${fromChainRoute.type} ${fromAmount} ${fromChainRoute.fromToken.name} to ${toAmount.toString()} ${fromChainRoute.toToken.name}`;
+        return `${fromChainRoute.type.toUpperCase()} ${fromAmount} ${fromChainRoute.fromToken.name} to ${toAmount.toString()} ${fromChainRoute.toToken.name}`;
       }
       const isToChainRoute = SquidRouteToChain.safeParse(route);
       if (isToChainRoute.success) {
         switch (isToChainRoute.data.type) {
           case "Transfer": {
-            return `Transfer ${isToChainRoute.data.fromToken.name} from ${isToChainRoute.data.fromChain} to ${isToChainRoute.data.toChain}`;
+            return `TRANSFER ${isToChainRoute.data.fromToken.name} from ${isToChainRoute.data.fromChain} to ${isToChainRoute.data.toChain}`;
           }
           case "Swap": {
             const fromAmount = BigNumber(isToChainRoute.data.fromAmount)
@@ -378,7 +378,7 @@ function StepDetailsItem({
             const toAmount = BigNumber(isToChainRoute.data.toAmount)
               .dividedBy(10 ** isToChainRoute.data.toToken.decimals)
               .decimalPlaces(8);
-            return `Swap ${fromAmount.toString()} ${isToChainRoute.data.fromToken.name} to ${toAmount.toString()} ${isToChainRoute.data.toToken.name}`;
+            return `SWAP ${fromAmount.toString()} ${isToChainRoute.data.fromToken.name} to ${toAmount.toString()} ${isToChainRoute.data.toToken.name}`;
           }
           default: {
             return `not implemented `;
@@ -391,14 +391,14 @@ function StepDetailsItem({
       <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
         {routes.map((route, index) => {
           const routeStatus = stepStatus.routeStatus[index];
-          console.log({ route, routeStatus, simulations });
 
           return (
             <div key={index + "-" + route.type}>
               <li className="mb-7 ms-6">
                 <span
                   className={cn(
-                    "bg-green absolute -start-3  flex h-6 w-6 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
+                    " absolute -start-3 flex  h-6 w-6 items-center justify-center rounded-full bg-blue-950 ring-4  ring-white  dark:ring-gray-900",
+                    routeStatus?.status === "success" && " bg-green-800",
                   )}
                 >
                   {renderSVG(
@@ -543,7 +543,6 @@ function PendingAmount({ tx }: { tx: SimulationEntryObject }) {
   const onlySquid = OnlySquidStepSimulation.safeParse(stepSimulations);
   if (onlySquid.success) {
     const squidSimulation = onlySquid.data[1];
-    // console.log({ squidSimulation, tx });
 
     const amount = new BigNumber(squidSimulation.estimate.toAmount);
     const decimals = Math.min(squidSimulation.params.toToken.decimals, 8);

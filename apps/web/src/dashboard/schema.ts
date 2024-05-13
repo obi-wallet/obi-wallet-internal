@@ -29,13 +29,8 @@ export const SquidStatus = z.object({
   axelarTransactionUrl: z.string(),
   error: z.union([z.unknown(), z.null()]),
   gasStatus: z.string(),
-  isGMPTransaction: z.boolean(),
   routeStatus: z.array(RouteStatus),
   squidTransactionStatus: z.string(),
-  timeSpent: z.object({
-    call_confirm: z.number(),
-    total: z.number(),
-  }),
 });
 
 export const OnlyStatus = z.object({
