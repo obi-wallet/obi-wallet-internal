@@ -1,4 +1,4 @@
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
+import { toAssets } from "@/dashboard/assets";
 import { Onboarding } from "@/onboarding";
 import {
   OnboardingFromType,

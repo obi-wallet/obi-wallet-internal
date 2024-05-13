@@ -13,12 +13,11 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
-import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
-import SendingAnimation from "./sending-animation.json";
+import { SendingAnimation } from "./sending-animation";
 
 export interface ApproveMessagesProps {
   walletMeta: {
@@ -168,16 +167,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
           </div>
         </div>
 
-        {approve.isPending && (
-          <div className="absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-50">
-            <div className="w-60 rounded-xl bg-blue-600 p-5">
-              <Lottie animationData={SendingAnimation} />
-              <Text size="xl" className="justify-center text-white">
-                Sending
-              </Text>
-            </div>
-          </div>
-        )}
+        {approve.isPending && <SendingAnimation />}
       </div>
     );
   },
