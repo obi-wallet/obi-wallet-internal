@@ -7,6 +7,7 @@ import { cn, fromChains, getToChain, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
+import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
@@ -170,31 +171,31 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       console.error("Ethereum provider not found");
       return;
     }
-    await ethereum.request({ method: "eth_requestAccounts" });
-    const walletChainId = await ethereum.request({ method: "eth_chainId" });
-    const chainId = fromChainValue;
-
-    // cast chainId number to hex
-    const hexChainId = "0x" + Number(chainId).toString(16);
-
-    // check if the account is connected to the desired
-    if (walletChainId !== chainId) {
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: hexChainId }],
-      });
-    }
-    const provider = new BrowserProvider(ethereum);
-    const signer = await provider.getSigner();
-
-    const roundedAmount = Number(
-      Number(fromAssetValue?.amount).toFixed(from?.decimals) ?? 0,
-    );
-
-    const amount = parseUnits(roundedAmount.toString(), from?.decimals);
-    const fromAddress = from?.address;
-
     try {
+      await ethereum.request({ method: "eth_requestAccounts" });
+      const walletChainId = await ethereum.request({ method: "eth_chainId" });
+      const chainId = fromChainValue;
+
+      // cast chainId number to hex
+      const hexChainId = "0x" + Number(chainId).toString(16);
+
+      // check if the account is connected to the desired
+      if (walletChainId !== chainId) {
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: hexChainId }],
+        });
+      }
+      const provider = new BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
+
+      const roundedAmount = Number(
+        Number(fromAssetValue?.amount).toFixed(from?.decimals) ?? 0,
+      );
+
+      const amount = parseUnits(roundedAmount.toString(), from?.decimals);
+      const fromAddress = from?.address;
+
       if (fromAddress === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
         //transfer the asset to the deposit address using native transfer
         const tx = {
@@ -827,15 +828,18 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             )}
           </div>
         </div>
+        {loading && (
+          <SendingAnimation className="z-30 -ml-4" text="Check extension" />
+        )}
       </Box>
+
       {/* add a loader spinner */}
-      {loading ||
-        (!currentWallet && (
-          <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
-            <FaSpinner className=" animate-spin text-2xl" />
-            Loading
-          </div>
-        ))}
+      {!currentWallet && (
+        <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
+          <FaSpinner className=" animate-spin text-2xl" />
+          Loading
+        </div>
+      )}
     </div>
   );
 });

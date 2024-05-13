@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, IBalanceOption } from "@/components";
+import { Button, IBalanceOption, Text } from "@/components";
 import {
   NewBalance,
   useInvalidateBalancesQueries,
@@ -229,7 +229,12 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       </div>
     );
   }
-
+  const validation = schema.safeParse(form.getValues());
+  const issue = validation.error?.issues[0];
+  const invalidAddress =
+    issue?.message === "Invalid address" &&
+    issue.path.length === 0 &&
+    issue.code === "custom";
   return (
     <div className="space-y-7 py-4">
       <Controller
@@ -324,7 +329,9 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-white">
-                          <div className=" uppercase">{item.asset.display}</div>
+                          <div className=" uppercase">
+                            {`${item.asset.display} (on ${item.network})`}
+                          </div>
                           <div>{item.balance.toString()}</div>
                         </div>
                       </div>
@@ -352,7 +359,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
                           <div className=" uppercase">
-                            {selected.item.asset.display}
+                            {`${selected.item.asset.display} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>
@@ -433,7 +440,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           );
         }}
       />
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        {invalidAddress ? (
+          <Text className="ml-2 text-red-600">
+            Assets can only be sent to the same chain
+          </Text>
+        ) : (
+          <div />
+        )}
         <Button
           className="block w-44"
           disabled={!form.formState.isValid || send.isPending}

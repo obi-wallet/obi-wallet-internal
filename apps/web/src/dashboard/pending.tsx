@@ -35,7 +35,6 @@ export const PendingAssets = observer(function PendingAssets() {
 
   if (!pendingTXs.data) return null;
   const onlyPending = pendingTXs.data.filter((t) => {
-    return t;
     return (
       t.transaction.status.includes("InProgress") ||
       t.transaction.status.includes("LowBalance")
@@ -124,18 +123,7 @@ const renderSVG = (status: string) => {
       return <OnGoingSVG />;
   }
 };
-const getBackgroundColor = (status: string) => {
-  switch (status) {
-    case "success":
-      return "bg-green-900 ";
-    case "ongoing":
-      return "bg-yellow-900 ";
-    case "failed":
-      return "bg-red-900 ";
-    default:
-      return " bg-blue-900";
-  }
-};
+
 const PendingStepList = observer<{
   tx: SimulationEntryObject;
 }>(function PendingStepList({ tx }) {
@@ -248,7 +236,6 @@ function PendingStepItem({
       <span
         className={cn(
           "bg-green absolute -start-4 flex h-8 w-8 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
-          // getBackgroundColor(stepStatus ?? ""),
         )}
       >
         {renderSTEPIcon()}
