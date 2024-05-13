@@ -62,10 +62,10 @@ function Form({
           }}
         />
       </div>
-      <div className="mt-10 grid grid-cols-2 gap-8">
-        <Button variant="secondary" block href="/dashboard/settings">
+      <div className="mt-10 flex justify-center">
+        {/* <Button variant="secondary" block href="/dashboard/settings">
           Back
-        </Button>
+        </Button> */}
         <Button
           variant="primary"
           block
