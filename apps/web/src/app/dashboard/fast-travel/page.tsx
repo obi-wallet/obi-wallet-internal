@@ -1,12 +1,11 @@
 "use client";
 
 import { Box, Divider, Text, TravelModal } from "@/components";
+import { toAssets } from "@/dashboard/assets";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useState } from "react";
-
-import { toAssets } from "../../../dashboard/assets";
 
 export default observer(function FastTravel() {
   const [targetAsset, setTargetAsset] = useState<string | undefined>(undefined);

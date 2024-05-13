@@ -1,5 +1,5 @@
 import { toAssets } from "@/dashboard/assets";
-import { simulationEntrySchema } from "@/dashboard/schema";
+import { SimulationEntry } from "@/dashboard/schema";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -282,7 +282,7 @@ export function useUSDTotalPrice(): {
 
 const fetchPendingTX = async (
   pubKey: string,
-): Promise<z.infer<typeof simulationEntrySchema>> => {
+): Promise<z.infer<typeof SimulationEntry>> => {
   if (!pubKey) return [];
 
   const url = `${
@@ -292,7 +292,7 @@ const fetchPendingTX = async (
   const res = await fetch(url);
   const data = await res.json();
 
-  return simulationEntrySchema.parse(data);
+  return SimulationEntry.parse(data);
 };
 
 export const usePendingTXs = (pubKey: string) => {

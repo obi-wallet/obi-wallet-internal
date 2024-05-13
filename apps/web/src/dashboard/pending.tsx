@@ -7,24 +7,24 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { toPairs } from "ramda";
 import { useEffect, useState } from "react";
-import { z } from "zod";
 
 import {
-  TransactionSchema,
-  simulationEntrySchemaObject,
-  skipStatusSchema,
-  squidStatusSchema,
-  stepStatusSchema,
-  emptySchema,
-  stepSimulationsSchema,
-  squidRouteFromChainSchema,
-  squidRouteToChainSchema,
-  onlySquidStepSimulationSchema,
-  nullStepSimulationSchema,
-  squidStepSimulationSchema,
+  Transaction,
+  SimulationEntryObject,
+  SkipStatus,
+  SquidStatus,
+  StepStatus,
+  EmptyObject,
+  StepSimulations,
+  SquidRouteFromChain,
+  SquidRouteToChain,
+  OnlySquidStepSimulation,
+  NullStepSimulation,
+  SquidStepSimulation,
 } from "./schema";
-type StepAndTx = z.infer<typeof stepStatusSchema> & {
-  transaction: z.infer<typeof TransactionSchema>;
+
+type StepAndTx = StepStatus & {
+  transaction: Transaction;
 };
 
 export const PendingAssets = observer(function PendingAssets() {
@@ -64,7 +64,7 @@ export const PendingAssets = observer(function PendingAssets() {
 });
 
 const PendingAsset = observer<{
-  tx: z.infer<typeof simulationEntrySchemaObject>;
+  tx: SimulationEntryObject;
   opened: boolean;
   onOpen: (addr: string) => void;
 }>(function PendingAsset({ tx, opened, onOpen }) {
@@ -137,7 +137,7 @@ const getBackgroundColor = (status: string) => {
   }
 };
 const PendingStepList = observer<{
-  tx: z.infer<typeof simulationEntrySchemaObject>;
+  tx: SimulationEntryObject;
 }>(function PendingStepList({ tx }) {
   return (
     <div className="flex: flex-1 p-4 pt-1">
@@ -163,7 +163,7 @@ function PendingStepItem({
   simulations,
 }: {
   step: StepAndTx;
-  simulations: z.infer<typeof stepSimulationsSchema>;
+  simulations: StepSimulations;
 }) {
   const renderSTEPIcon = () => {
     switch (step.action) {
@@ -264,18 +264,18 @@ function StepDetailsList({
   simulations,
 }: {
   step: StepAndTx;
-  simulations: z.infer<typeof stepSimulationsSchema>;
+  simulations: StepSimulations;
 }) {
   if (!step.action || step.action === "EthDeposit") return null;
   const renderStatus = () => {
     switch (step.action) {
       case "Squid": {
-        const isEmpty = emptySchema.safeParse(step.status);
+        const isEmpty = EmptyObject.safeParse(step.status);
         if (isEmpty.success) {
           return <div className=" text-md">Not started</div>;
         }
 
-        const squidStatus = squidStatusSchema.safeParse(step.status);
+        const squidStatus = SquidStatus.safeParse(step.status);
         if (squidStatus.success) {
           return (
             <>
@@ -320,7 +320,7 @@ function StepDetailsList({
 }
 
 function SkipDetailsItem({ step }: { step: StepAndTx }) {
-  const skipStatus = skipStatusSchema.parse(step.status);
+  const skipStatus = SkipStatus.parse(step.status);
   const getSkipStatus = () => {
     switch (skipStatus.state) {
       case "STATE_COMPLETED":
@@ -342,22 +342,22 @@ function StepDetailsItem({
   simulations,
 }: {
   step: StepAndTx;
-  simulations: z.infer<typeof stepSimulationsSchema>;
+  simulations: StepSimulations;
 }) {
-  const isSkip = skipStatusSchema.safeParse(step.status);
+  const isSkip = SkipStatus.safeParse(step.status);
   if (isSkip.success) return null;
-  const squidSimulation = squidStepSimulationSchema.safeParse(simulations[1]);
+  const squidSimulation = SquidStepSimulation.safeParse(simulations[1]);
   if (!squidSimulation.success) return null;
   const simulationData = squidSimulation.data;
   const squidRoutes = simulationData.estimate.route;
   if (!simulationData.estimate.route) return null;
 
   const routes = [...squidRoutes.fromChain, ...squidRoutes.toChain];
-  const isEmpty = emptySchema.safeParse(step.status);
+  const isEmpty = EmptyObject.safeParse(step.status);
 
   if (isEmpty.success) return null;
 
-  const squidStatus = squidStatusSchema.safeParse(step.status);
+  const squidStatus = SquidStatus.safeParse(step.status);
   if (!squidStatus.success) {
     console.error("Error parsing squid status", squidStatus.error);
     return null;
@@ -366,12 +366,8 @@ function StepDetailsItem({
     console.log({ routes });
     const stepStatus = squidStatus.data;
 
-    const getContent = (
-      route:
-        | z.infer<typeof squidRouteFromChainSchema>
-        | z.infer<typeof squidRouteToChainSchema>,
-    ) => {
-      const isFromChainRoute = squidRouteFromChainSchema.safeParse(route);
+    const getContent = (route: SquidRouteFromChain | SquidRouteToChain) => {
+      const isFromChainRoute = SquidRouteFromChain.safeParse(route);
       if (isFromChainRoute.success) {
         const fromChainRoute = isFromChainRoute.data;
         const fromAmount = BigNumber(fromChainRoute.fromAmount)
@@ -382,7 +378,7 @@ function StepDetailsItem({
           .decimalPlaces(8);
         return `${fromChainRoute.type} ${fromAmount} ${fromChainRoute.fromToken.name} to ${toAmount.toString()} ${fromChainRoute.toToken.name}`;
       }
-      const isToChainRoute = squidRouteToChainSchema.safeParse(route);
+      const isToChainRoute = SquidRouteToChain.safeParse(route);
       if (isToChainRoute.success) {
         switch (isToChainRoute.data.type) {
           case "Transfer": {
@@ -513,11 +509,7 @@ function AmountEstimate({
     </div>
   );
 }
-function SkipEstimate({
-  tx,
-}: {
-  tx: z.infer<typeof simulationEntrySchemaObject>;
-}) {
+function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ amount: string; estimate: string } | null>(
     null,
@@ -527,7 +519,7 @@ function SkipEstimate({
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => {
       setLoading(true);
-      const squidSimulation = squidStepSimulationSchema.safeParse(
+      const squidSimulation = SquidStepSimulation.safeParse(
         tx.step_simulations[1],
       );
       if (!squidSimulation.success) {
@@ -560,17 +552,13 @@ function SkipEstimate({
   );
 }
 
-function PendingAmount({
-  tx,
-}: {
-  tx: z.infer<typeof simulationEntrySchemaObject>;
-}) {
+function PendingAmount({ tx }: { tx: SimulationEntryObject }) {
   const stepSimulations = tx.step_simulations;
-  const nulled = nullStepSimulationSchema.safeParse(stepSimulations);
+  const nulled = NullStepSimulation.safeParse(stepSimulations);
   if (nulled.success) {
     return null;
   }
-  const onlySquid = onlySquidStepSimulationSchema.safeParse(stepSimulations);
+  const onlySquid = OnlySquidStepSimulation.safeParse(stepSimulations);
   if (onlySquid.success) {
     const squidSimulation = onlySquid.data[1];
     // console.log({ squidSimulation, tx });
@@ -586,7 +574,7 @@ function PendingAmount({
       />
     );
   }
-  const fullSimulation = stepSimulationsSchema.safeParse(stepSimulations);
+  const fullSimulation = StepSimulations.safeParse(stepSimulations);
   if (fullSimulation.success) {
     return <SkipEstimate tx={tx} />;
   }

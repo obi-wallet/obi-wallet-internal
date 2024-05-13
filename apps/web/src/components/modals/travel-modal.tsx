@@ -29,15 +29,6 @@ import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
-export interface PriceData {
-  mainVsPrice: BigNumber;
-  mainUsd: BigNumber;
-  vsUsd: BigNumber;
-}
-export interface AssetAmmount {
-  amount: string | undefined;
-  asset: string | undefined;
-}
 interface IToleranceProps {
   onChange: (value: number | undefined) => void;
   value: number | undefined;
@@ -660,8 +651,6 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
             name="toAsset"
             control={control}
             render={({ field, fieldState }) => {
-              // TODO: Here's something wrong with the types, according to react-hook-form this should always be a single message, review
-              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
               const options = getAssetOptions(toAssets);
 
               return (

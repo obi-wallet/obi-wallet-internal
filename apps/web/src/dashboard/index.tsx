@@ -12,15 +12,11 @@ import { FaExclamation } from "react-icons/fa6";
 
 import { PendingAssets } from "./pending";
 
-export type SkipSimulationType = unknown;
-
 export const DashboardPage = observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
   return (
     <div className="flex  w-full flex-col space-y-4 text-white">
       <Assets />
-      {/* <Box title="Chart" /> */}
-      {/* <Box title="Top Positions" /> */}
     </div>
   );
 });
