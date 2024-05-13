@@ -31,8 +31,12 @@ const schema = z
   .object({
     coin: z.object({
       amount: z.string(),
-      // TODO: This should be more precise
-      asset: z.any().optional(),
+      asset: z
+        .custom<IBalanceOption>(() => {
+          // TODO: this should be more precise
+          return true;
+        })
+        .optional(),
     }),
     recipient: nonEmptyString("Address"),
     memo: z.string(),
@@ -83,9 +87,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const asset = coin.asset as IBalanceOption;
-
+      const asset = coin.asset;
       const chainId = asset.targetChainId;
       const denomUnit = asset.asset.denom_units.find((value) => {
         return value.denom === asset.asset.display;
@@ -330,7 +332,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-white">
                           <div>
-                            {`${String(item.asset.display).toUpperCase()} (on ${item.network})`}
+                            {`${item.asset.display.toUpperCase()} (on ${item.network})`}
                           </div>
                           <div>{item.balance.toString()}</div>
                         </div>
@@ -359,7 +361,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
                           <div>
-                            {`${String(selected.item.asset.display).toUpperCase()} (on ${selected.item.network})`}
+                            {`${selected.item.asset.display.toUpperCase()} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>
