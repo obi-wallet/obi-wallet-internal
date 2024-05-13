@@ -1,4 +1,4 @@
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
+import { toAssets } from "@/dashboard/assets";
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {

@@ -106,7 +106,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
         <div className="flex flex-col gap-4">
           {askForName ? (
             <Input
-              label="Name"
+              label="Key Name"
               labelClassname="bg-background-secondary"
               className="w-full"
               placeholder="Name"
