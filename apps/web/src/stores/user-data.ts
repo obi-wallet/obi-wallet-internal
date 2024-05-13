@@ -5,6 +5,7 @@ import { z } from "zod";
 const userDataSchema = z.object({
   name: z.string().optional(),
   avatar: z.string().optional(),
+  balanceHidden: z.boolean().optional(),
 });
 
 export type UserData = z.TypeOf<typeof userDataSchema>;

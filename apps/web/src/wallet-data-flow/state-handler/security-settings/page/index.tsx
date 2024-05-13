@@ -55,8 +55,8 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           );
         })}
       </div>
-      <div className="mt-40 grid grid-cols-2 gap-8">
-        <Button
+      <div className="mt-40 flex justify-center gap-8">
+        {/* <Button
           variant="secondary"
           block
           onClick={() => {
@@ -64,7 +64,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           }}
         >
           Back
-        </Button>
+        </Button> */}
         <Button
           variant="primary"
           block

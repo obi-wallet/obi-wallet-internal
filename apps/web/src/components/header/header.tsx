@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, renderModal } from "@/components";
+import { Button, Modal, TextButton, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
 import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
@@ -21,7 +21,7 @@ export const Header = observer(function Header() {
       <header className={cn("h-16 w-full", "md:h-20")}>
         <div
           className={cn(
-            "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
+            "flex h-full w-full  items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
           )}
         >
           <PrimaryLink href={primaryLinkHref}>
@@ -39,14 +39,14 @@ const LogOut = observer(function LogOut() {
   const router = useRouter();
 
   return (
-    <Button
+    <TextButton
       onClick={() => {
         mpcWalletsStore.logout();
         router.push("/");
       }}
     >
       Log out
-    </Button>
+    </TextButton>
   );
 });
 
@@ -57,7 +57,7 @@ const LogIn = observer(function LogIn() {
 
   return (
     <>
-      <Button
+      <TextButton
         onClick={() => {
           if (mpcWalletsStore.wallets.length > 0) {
             setModalOpen(true);
@@ -67,7 +67,7 @@ const LogIn = observer(function LogIn() {
         }}
       >
         Log in
-      </Button>
+      </TextButton>
       {modalOpen
         ? renderModal(
             <Modal

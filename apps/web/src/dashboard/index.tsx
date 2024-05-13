@@ -1,6 +1,6 @@
 "use client";
 
-import { AccountAndCTA, Box, Divider, Text } from "@/components";
+import { Account, Box, Divider, Text } from "@/components";
 import { NewCoin, useNewBalances, useUSDTotalPrice } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -25,7 +25,7 @@ const Assets = observer(function Assets() {
   return (
     <Box className="h-full rounded-md text-xl">
       <div className="hidden  w-full flex-1 flex-col max-md:flex">
-        <AccountAndCTA />
+        <Account />
       </div>
       <div className="hidden flex-row justify-between md:flex ">
         <Text>Assets</Text>
