@@ -22,5 +22,6 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     id: EvmChainId.Arbitrum,
     image: "/assets/images/arbitrum-logo.png",
     chain: arbitrum,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
 };
