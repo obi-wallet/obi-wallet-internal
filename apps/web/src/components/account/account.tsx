@@ -29,7 +29,13 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] bg-gradient-to-r from-[#333333] to-[#1B1B1B]">
+      <div
+        className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]"
+        style={{
+          backgroundImage:
+            "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+        }}
+      >
         <div className="flex flex-row gap-3 px-4 py-3.5">
           <div className="h-[70px] w-[70px] rounded-full bg-sky-500 ">
             {userData.avatar ? (

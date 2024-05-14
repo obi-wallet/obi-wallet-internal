@@ -99,7 +99,7 @@ export function Navbar() {
       // }}
       className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950"
     >
-      <div className="flex h-full w-[330px] flex-col px-3 pt-6 max-md:hidden md:overflow-y-auto">
+      <div className="flex h-full w-[330px] flex-col px-3 pt-4 max-md:hidden md:overflow-y-auto">
         <div className="hidden w-full flex-col md:flex">
           <Account />
         </div>
