@@ -92,11 +92,8 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
 
   const targetChain = TargetChain.chainId(coin.targetChainId);
   const assetData = targetChain.getAsset(coin.denom);
-  const denomUnit = assetData?.denom_units.find((value) => {
-    return value.denom === assetData.display;
-  });
   const amount = new BigNumber(coin.amount).dividedBy(
-    10 ** (denomUnit?.exponent ?? 0),
+    10 ** (assetData?.decimals ?? 0),
   );
 
   return (
@@ -112,10 +109,10 @@ function NewAssetItem({ coin }: { coin: NewCoin }) {
     >
       <div className="flex flex-row items-center">
         <div className="mr-3">
-          {assetData?.images ? (
+          {assetData?.image ? (
             <img
-              src={assetData?.images[0]?.svg ?? assetData?.images[0]?.png ?? ""}
-              alt={assetData?.symbol}
+              src={assetData.image}
+              alt={assetData.symbol}
               className="h-8 w-8"
             />
           ) : (
@@ -146,7 +143,7 @@ function NewPriceComponent({
 
   return (
     <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount.toFixed(2)}</div>
+      <div className="text-md font-bold">{amount.toString(10)}</div>
       <div className="text-xs">${total.toFixed(2)}</div>
     </div>
   );

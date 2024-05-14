@@ -23,7 +23,7 @@ export interface CustomDropdownProps<T extends DropdownItem> {
   selectedItemComponent: FC<{ item: T | null }>;
   getKey?: (item: T) => string;
   className?: string;
-  selectedItem?: T | null | undefined;
+  selectedItem: T | null;
   selectedItemClassname?: string;
 }
 

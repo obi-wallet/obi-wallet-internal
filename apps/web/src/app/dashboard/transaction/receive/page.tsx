@@ -96,15 +96,19 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId: TargetChainId;
   onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = allTargetChainIds.map((chainId) => {
-    const targetChain = TargetChain.chainId(chainId);
-    return {
-      label: targetChain.label,
-      value: chainId,
-      image: targetChain.image,
-      disabled: targetChain.disabled,
-    };
-  });
+  const chainOptions = allTargetChainIds
+    .map((chainId) => {
+      const targetChain = TargetChain.chainId(chainId);
+      return {
+        label: targetChain.label,
+        value: chainId,
+        image: targetChain.image,
+        disabled: targetChain.disabled,
+      };
+    })
+    .filter((chain) => {
+      return !chain.disabled;
+    });
 
   return (
     <div className="flex w-full flex-row">

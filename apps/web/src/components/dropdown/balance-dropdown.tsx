@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { TargetChainId } from "@/target-chain";
-import { Asset } from "@chain-registry/types";
+import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -116,7 +116,7 @@ export const BalanceDropDown = observer<{
           {options.map((option) => {
             return (
               <li
-                key={`dropdown-${option.network}-${option.asset.base}`}
+                key={`dropdown-${option.network}-${option.asset.symbol}`}
                 onClick={() => {
                   return handleClickOption(option);
                 }}
@@ -127,7 +127,7 @@ export const BalanceDropDown = observer<{
               >
                 <div className="flex items-center space-x-3">
                   <Image
-                    src={option.image ?? "  "}
+                    src={option.image ?? ""}
                     alt={option.network}
                     width={24}
                     height={24}
