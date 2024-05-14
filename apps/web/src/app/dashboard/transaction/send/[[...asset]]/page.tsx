@@ -167,7 +167,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const result: IBalanceOption = {
         image: assetData.image ?? undefined,
         targetChainId: b.chainId,
-        denom: assetData.symbol,
+        denom: b.assetId,
         network: TargetChain.chainId(b.chainId).label,
         assetUnit: assetData?.symbol,
         balance: decimalAmount,
