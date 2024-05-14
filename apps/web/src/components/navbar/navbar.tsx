@@ -115,11 +115,14 @@ export function Navbar() {
                   <li key={navItem.href}>
                     <PrimaryLink
                       href={navItem.href}
-                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
-                        mainURISegment === navItem.module
-                          ? "font-bold opacity-100"
-                          : ""
-                      }`}
+                      className={cn(
+                        `flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
+                          mainURISegment === navItem.module
+                            ? "font-bold opacity-100"
+                            : ""
+                        }`,
+                        "hover:font-bold  hover:opacity-100",
+                      )}
                       target={navItem.target || "_self"}
                     >
                       <Image
