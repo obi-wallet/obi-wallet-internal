@@ -1043,7 +1043,7 @@ const simulateTravel = async (
   publicKey: Secp256k1PublicKey,
 ) => {
   const requestURL =
-    "https://fast-travel-playground-git-staging-obi-money.vercel.app/api/swap/simulate.rs";
+    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL! + "/api/swap/simulate";
   const toAsset = toAssets[data.toAsset.asset];
   const fromAsset = fromAssets[data.fromAsset.asset];
   const fromAmount = parseUnits(
