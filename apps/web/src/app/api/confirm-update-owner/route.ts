@@ -1,6 +1,6 @@
 import { getFeeLender } from "@/lib/fee-lender";
 import { updateOwner } from "@/wallet-data-backup/worker-client";
-import { Hex } from "@obi-wallet/encoding";
+import { HexEncodedString } from "@obi-wallet/encoding";
 import {
   HomeChainIdSchema,
   Messages,
@@ -16,7 +16,7 @@ const schema = z.object({
   homeChainId: HomeChainIdSchema,
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
-  signatures: z.array(Hex),
+  signatures: z.array(HexEncodedString),
   previousOwner: MultisigKey.schema.migratableSchema,
   walletData: WalletData,
 });

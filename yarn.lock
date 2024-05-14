@@ -3138,7 +3138,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/encoding@workspace:packages/encoding":
+"@obi-wallet/encoding@workspace:*, @obi-wallet/encoding@workspace:packages/encoding":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/encoding@workspace:packages/encoding"
   dependencies:
@@ -3228,6 +3228,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1"
   dependencies:
+    "@obi-wallet/encoding": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     eslint: "npm:^8.57.0"
@@ -3248,6 +3249,7 @@ __metadata:
     "@cosmjs/proto-signing": "npm:^0.32.3"
     "@cosmjs/stargate": "npm:^0.32.3"
     "@github/webauthn-json": "npm:^2.1.1"
+    "@obi-wallet/encoding": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -3281,6 +3283,7 @@ __metadata:
   dependencies:
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/proto-signing": "npm:^0.32.3"
+    "@obi-wallet/encoding": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -3311,6 +3314,7 @@ __metadata:
     "@hookform/resolvers": "npm:^3.3.4"
     "@next/eslint-plugin-next": "npm:^14.2.3"
     "@obi-wallet/config": "workspace:*"
+    "@obi-wallet/encoding": "workspace:*"
     "@obi-wallet/headless-ui": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*"

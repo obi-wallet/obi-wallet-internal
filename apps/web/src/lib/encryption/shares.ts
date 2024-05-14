@@ -1,4 +1,4 @@
-import { Base64 } from "@obi-wallet/encoding";
+import { Base64EncodedString } from "@obi-wallet/encoding";
 import { BackupShare, EasyShare, MultisigKey } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
 
@@ -16,7 +16,7 @@ export class EasyShareDecryption {
     );
   }
 
-  public async decrypt(share: Base64) {
+  public async decrypt(share: Base64EncodedString) {
     return EasyShare.parse(
       JSON.parse(await this.primaryKeyDecryption.decrypt(share)),
     );
@@ -34,7 +34,7 @@ export class EasyShareEncryption {
     );
   }
 
-  public async encrypt(share: EasyShare): Promise<Base64> {
+  public async encrypt(share: EasyShare): Promise<Base64EncodedString> {
     return await this.primaryKeyEncryption.encrypt(JSON.stringify(share));
   }
 }
@@ -51,7 +51,7 @@ export class SharesLocalEncryption {
   public async encrypt(shares: {
     easy: EasyShare;
     backup: BackupShare;
-  }): Promise<{ easy: Base64; backup: string }>;
+  }): Promise<{ easy: Base64EncodedString; backup: string }>;
   public async encrypt(shares: {
     easy?: EasyShare;
     backup: BackupShare;

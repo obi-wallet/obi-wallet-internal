@@ -19,7 +19,7 @@ import {
   makeSignBytes,
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
-import { Encoding, Hex } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
 import {
   getSec256k1CompressedPublicKey,
@@ -32,7 +32,10 @@ import { z } from "zod";
 export class CosmosSdkMpcSigner
   implements OfflineDirectSigner, OfflineAminoSigner
 {
-  protected bytesSignedBySignersPerHash = new Map<Hex, Hex[]>();
+  protected bytesSignedBySignersPerHash = new Map<
+    HexEncodedString,
+    HexEncodedString[]
+  >();
   public lastHash: Uint8Array | undefined;
 
   public get address(): string {

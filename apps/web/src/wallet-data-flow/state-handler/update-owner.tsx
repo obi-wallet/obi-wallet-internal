@@ -9,7 +9,7 @@ import {
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
-import { Encoding, Hex } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
@@ -77,7 +77,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           next_hash: {},
         },
         schema: z.object({
-          next_hash: Hex,
+          next_hash: HexEncodedString,
         }),
       });
       return next_hash;

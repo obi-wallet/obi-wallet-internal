@@ -1,9 +1,9 @@
-import { Base64, Encoding } from "@obi-wallet/encoding";
+import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
 
 export class AesGcmEncryption {
   public constructor(protected readonly key: CryptoKey) {}
 
-  public async encrypt(data: string): Promise<Base64> {
+  public async encrypt(data: string): Promise<Base64EncodedString> {
     const enc = new TextEncoder();
     const encoded = enc.encode(data);
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -20,7 +20,7 @@ export class AesGcmEncryption {
 export class AesGcmDecryption {
   public constructor(protected readonly key: CryptoKey) {}
 
-  public async decrypt(data: Base64): Promise<string> {
+  public async decrypt(data: Base64EncodedString): Promise<string> {
     const rawData = Encoding.fromBase64(data).toBytes();
     const iv = rawData.slice(0, 12);
     const encrypted = rawData.slice(12);

@@ -1,16 +1,16 @@
-import { Base64, Encoding } from "@obi-wallet/encoding";
+import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
 import { randomBytes } from "crypto";
 import { publicKeyConvert, publicKeyCreate } from "secp256k1";
 import { z } from "zod";
 
 export const Secp256k1PublicKey = z.object({
   type: z.literal("tendermint/PubKeySecp256k1"),
-  value: Base64,
+  value: Base64EncodedString,
 });
 
 export type Secp256k1PublicKey = z.infer<typeof Secp256k1PublicKey>;
 
-export const Sec256k1PrivateKey = Base64;
+export const Sec256k1PrivateKey = Base64EncodedString;
 
 export type Sec256k1PrivateKey = z.infer<typeof Sec256k1PrivateKey>;
 

@@ -1,6 +1,6 @@
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
-import { Base64 } from "@obi-wallet/encoding";
+import { Base64EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -305,7 +305,7 @@ const backupShare = BackupShare.parse({
 });
 
 const locallyEncryptedSharesByPreviousOwner = {
-  easy: Base64.parse(
+  easy: Base64EncodedString.parse(
     "BLt968eZwXh4Xx6m+Hle3fm8Y1fTtN5lUEH1xDET+lze3aSpEl3j2ViURgUvrKHGHGR2El4C8YuS2YzTpOjrOW46+xpvr1aMkTMnfDXGc6C7mmtwfk2sKNa4qE2zTd7FCvAunM5akWpfbvgCF3wrHTQYAoMU2+LFC+FeGeMFgN2al02EGdKjHHBWby5Am0+aXNOevWvNyX98wJ/GMqJ3UbM6G7Vu2PnueRs7n2xm5FZYDvo/RVuJxeQKCtB17YsA49Bm9rdwj3ajlIafJXuuVGGXP1DbvExU+P/tO8mAGZMN/f3yFi3r5WmLuJ23vW5FfJw3NMi6ZkJtcWPULhga8gjrpWkqvW84Q9w2X+7NQ7k4fos9+X2GcLdfv34QdfLGbxWMxICcXZcqgxx7UovAhpLjzrM5BDdYgkKhWqfl34GP2VHNBxHIjJYr5HSmMk7qRDeBSEZImU1g32MQzhOekodsotrlyuc+lQcfst4teIBA4Za8OBZif4H8YmF1Bu71izx5vmo32rDaA6miU7g+toMYfBCwV0JEWukgzmQo2rziG9MsKhSn3kc7LVstDOUHt+R9+6QcBNCytgkmq+wvdIIhJZL6uhCc0yW4P5+NhuCivzCJTRUjiuShMQsYw3HvyMnnZ9iFUx8b8WcrDdaPxjmhUPxYEVpgvsKnaMFHhfyHTTnWpHdO1SC93kny46PVuVok34toIy2idLwwqI0+RttZJvR4HcebwzmuXaHfDqAEHrZW70AxewSmk3VG4riOhyrAj7NKPfsKnVFOMRrcIr/67WMXcunSxcLnQBNESOjo3ZmwubHwMqQBZy6cSCIB2iucZWp6zkwhIhpsNOTypLjwks+e4bvVTg1QK+4iwZ7MiaiI+QuB9+W4erhQKQV3EHxgvaAyVT5hgYTfLLoy+kTm8ZOsdcF22N7w980pv2tjEMLD+5CT3kvqaXKePSZ5GaH5zy+CFwrsMV7TI/nSZ3VTzZaM7/585k2bN8uYTB6U6LGZvRMo62kzy+t67hLH+bwQkDE7uQhi3wd4DDr/nm9IqXzaNZL0m5VE7rfdA3Z4v9NL/mXiCrEUi/lG2ey5VlYefUJ2Ix05FktaPI/9bdnRP2DOhYqgYiorCwHBAXLY46Jkz4ErH3ZXjthbJlpE2haYsfRHqn6RkMJYf0GmKYsWqVG7gRuvjWf3F6Yz25kLBoKKt6CGxcdM44Oyl+2CHLyVfW8SFY3U4mZxNhBzcbpMaUlDm4m6I2eEmgNkQH3fReGpuaUmUpfn60aY9zVecnmNVI/c4fPsceF2I/JcAf/qxjQMPmR6nuWA1L740jLkXVVFYg==",
   ),
   backup:

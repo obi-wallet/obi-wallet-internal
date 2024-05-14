@@ -1,5 +1,5 @@
 import { setWalletData } from "@/wallet-data-backup/worker-client";
-import { Encoding, Hex } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import {
   createHash,
   MultisigPublicKey,
@@ -15,7 +15,7 @@ const schema = z.object({
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
   serializedWalletData: z.string(),
-  signatures: z.array(Hex),
+  signatures: z.array(HexEncodedString),
 });
 
 export async function POST(request: Request) {

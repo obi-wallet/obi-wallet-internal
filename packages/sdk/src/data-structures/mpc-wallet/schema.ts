@@ -1,4 +1,4 @@
-import { Base64 } from "@obi-wallet/encoding";
+import { Base64EncodedString } from "@obi-wallet/encoding";
 import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../../keys";
@@ -36,7 +36,7 @@ export const MpcWalletSchema = migratable(
     owner: MultisigKey.schema.migratableSchema,
     userEntryAddress: UserEntryAddress,
     encryptedShares: z.object({
-      easy: Base64,
+      easy: Base64EncodedString,
       backup: z.string(),
     }),
   }),
@@ -46,7 +46,7 @@ export const MpcWalletSchema = migratable(
     owner: MultisigKey.schema.migratableSchema,
     userEntryAddress: UserEntryAddress,
     encryptedShares: z.object({
-      easy: Base64,
+      easy: Base64EncodedString,
       backup: z.string(),
     }),
     previousWalletData: WalletData.or(z.null()),
