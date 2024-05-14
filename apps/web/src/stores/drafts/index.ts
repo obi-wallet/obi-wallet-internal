@@ -27,7 +27,11 @@ export class DraftsStore {
     return this._drafts.add({ entity: draft, id });
   }
 
-  public get<T extends Draftable>({ id }: { id: EntityId }) {
-    return this._drafts.get({ id }) as Draft<T> | undefined;
+  public get<T extends Draftable>({
+    id,
+  }: {
+    id: EntityId;
+  }): Draft<T> | undefined {
+    return this._drafts.get({ id });
   }
 }

@@ -4,7 +4,14 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const ButtonVariant = ["primary", "outline", "confirmed", "secondary"] as const;
+const ButtonVariant = [
+  "primary",
+  "outline",
+  "confirmed",
+  "secondary",
+  "variant",
+  "detail",
+] as const;
 const ButtonSize = ["sm", "base"] as const;
 
 type ButtonProps = {
@@ -24,7 +31,6 @@ type ButtonProps = {
   ComponentPropsWithRef<"a">;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function Button(
     {
       children,
@@ -53,6 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       [block && "w-full justify-center"],
       //#region  //*=========== Size ===========
       [size === "base" && ["px-3 py-3.5", "text-sm md:text-base"]],
+      [size === "sm" && ["px-1 py-1", "text-xs md:text-sm"]],
       //#endregion  //*======== Size ===========
       //#region  //*=========== Variants ===========
       [
@@ -67,6 +74,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "hover:border-background-select-hover hover:bg-background-select-hover",
           "active:bg-background-select-active active:hover:border-background-select-active",
           "disabled:border-gray-700 disabled:bg-gray-700 disabled:opacity-50",
+        ],
+        variant === "detail" && [
+          "border border-indigo-950 bg-indigo-950 text-white shadow",
+          "hover:border-indigo-800 hover:bg-indigo-800",
+          "active:bg-indigo-700 active:hover:border-indigo-700",
+          "disabled:border-indigo-950 disabled:bg-indigo-950 disabled:opacity-50",
         ],
         variant === "outline" && [
           "border border-gray-600 bg-transparent text-zinc-400",

@@ -35,7 +35,9 @@ export function TOSModal() {
         <ul className="mb-5 mt-5 flex cursor-pointer flex-col gap-5">
           <li
             className="flex flex-row"
-            onClick={() => setFirstCheckbox(!firstCheckbox)}
+            onClick={() => {
+              return setFirstCheckbox(!firstCheckbox);
+            }}
           >
             <div>
               <div

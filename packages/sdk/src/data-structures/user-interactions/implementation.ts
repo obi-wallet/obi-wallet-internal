@@ -56,8 +56,8 @@ export class UserInteractions {
   }
 
   protected removeUserInteractionWithId(id: string) {
-    this._userInteractions = this._userInteractions.filter(
-      (message) => message.id !== id,
-    );
+    this._userInteractions = this._userInteractions.filter((message) => {
+      return message.id !== id;
+    });
   }
 }

@@ -5,6 +5,7 @@ import { z } from "zod";
 const userDataSchema = z.object({
   name: z.string().optional(),
   avatar: z.string().optional(),
+  balanceHidden: z.boolean().optional(),
 });
 
 export type UserData = z.TypeOf<typeof userDataSchema>;
@@ -17,7 +18,7 @@ export class UserDataStore {
   @observable protected accessor userDataPerWallet: UserDataPerWallet = {};
   protected readonly kvStore: AbstractKVStore;
 
-  constructor(KVStore: AbstractKVStore) {
+  public constructor(KVStore: AbstractKVStore) {
     this.kvStore = KVStore;
     void this.init();
   }

@@ -1,6 +1,13 @@
 import { getFeeLender } from "@/lib/fee-lender";
-import { ChainIdSchema, Messages, SecretJsClient } from "@obi-wallet/sdk";
-import { TxResponse } from "secretjs";
+import { isTest } from "@/lib/testing";
+import { Encoding } from "@obi-wallet/encoding";
+import {
+  ChainIdSchema,
+  SecretJsClient,
+  SecretJsHomeChains,
+} from "@obi-wallet/sdk";
+import { randomBytes } from "ethers";
+import { MsgExecuteContract, TxResponse } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -21,19 +28,42 @@ export async function POST(request: Request) {
   const { chainId } = result.data;
   const { wallet, signer, lenderIndex } = getFeeLender(chainId);
 
+  const chain = SecretJsHomeChains[chainId];
   const client = new SecretJsClient(chainId);
-  const messagesSdk = Messages.chainId(chainId);
-  const message = messagesSdk.getCreateWalletMessage(
-    wallet.address,
-    Buffer.from(wallet.publicKey).toString("base64"),
-    wallet.address,
-  );
+  const message = new MsgExecuteContract({
+    sender: wallet.address,
+    contract_address: chain.accountCreator.address,
+    code_hash: chain.accountCreator.codeHash,
+    msg: {
+      new_account: {
+        owner: wallet.address,
+        signers: {
+          signers: [
+            {
+              address: wallet.address,
+              ty: "creator",
+              pubkey_base_64: Encoding.fromBytes(wallet.publicKey).toBase64(),
+            },
+          ],
+        },
+        fee_debt: 0,
+        update_delay: 0,
+        // next_hash_seed is some randomness and doesn't need to be stored at all
+        next_hash_seed: Encoding.fromBytes(randomBytes(32)).toHex(),
+      },
+    },
+  });
+
   const signedTransaction = await client.createAndSignTransaction({
     signer,
     messages: [message],
   });
+
   const broadcastTransactionResult =
-    await client.broadcastSignedTransaction(signedTransaction);
+    await client.broadcastSignedTransactionOrMockTxDuringTest({
+      signedTransaction,
+      hash: "60CC34C88CEF401B185E983A210DCA840FA523BE5BD6297FF5D7164F89AE45EB",
+    });
 
   if (!broadcastTransactionResult.success) {
     return new Response("TX failed", {
@@ -42,6 +72,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const txResult = broadcastTransactionResult.rawResult as TxResponse;
     invariant(txResult.arrayLog, "No log found");
     const matchingLogs = txResult.arrayLog.filter((log) => {
@@ -54,6 +85,13 @@ export async function POST(request: Request) {
       homeAccountAddress,
       txResult,
       ownerIndex: lenderIndex,
+      ...(isTest()
+        ? {
+            __test: {
+              message,
+            },
+          }
+        : {}),
     });
   } catch (e) {
     console.error(e);

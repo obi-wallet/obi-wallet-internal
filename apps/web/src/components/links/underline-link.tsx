@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
 export const UnderlineLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function UnderlineLink({ children, className, ...rest }, ref) {
     return (
       <UnstyledLink

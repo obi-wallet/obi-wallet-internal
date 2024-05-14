@@ -1,4 +1,4 @@
-import { queryClient } from "@obi-wallet/sdk";
+import { queryClient } from "@obi-wallet/query-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClientProviderProps as OriginalQueryClientProviderProps } from "@tanstack/react-query";
@@ -6,17 +6,12 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode } from "react";
 
-import { RootStoreProvider } from "./root-store";
-import { RootStore } from "../store";
-
-export * from "./root-store";
-
 const persister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });
 
 export type QueryClientProviderProps = OriginalQueryClientProviderProps & {
-  buster?: string;
+  buster: string;
 };
 
 const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
@@ -35,17 +30,15 @@ const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
 export const Provider = observer(function Provider({
   children,
   QueryClientProvider = QueryClientProviderWithPersister,
-  rootStore,
   buster,
 }: {
   children: ReactNode;
   QueryClientProvider?: ComponentType<QueryClientProviderProps>;
-  rootStore: RootStore;
-  buster?: string;
+  buster: string;
 }) {
   return (
     <QueryClientProvider client={queryClient} buster={buster}>
-      <RootStoreProvider value={rootStore}>{children}</RootStoreProvider>
+      {children}
     </QueryClientProvider>
   );
 });

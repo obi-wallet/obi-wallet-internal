@@ -1,17 +1,14 @@
 "use client";
-import {
-  FromAsset,
-  fromAssets,
-  ToAsset,
-  toAssets,
-} from "@/app/dashboard/fast-travel/assets";
+
+import { ToAsset, fromAssets, toAssets } from "@/dashboard/assets";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { cn } from "@/lib/utils";
+import { cn, fromChains, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
+import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
@@ -20,42 +17,37 @@ import copy from "copy-to-clipboard";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import * as R from "ramda";
 import { useEffect, useRef, useState } from "react";
-import { Controller, ControllerFieldState, useForm } from "react-hook-form";
-import { FaCheck, FaExclamation, FaSpinner } from "react-icons/fa6";
-import invariant from "tiny-invariant";
+import { Controller, useForm } from "react-hook-form";
+import {
+  FaArrowRight,
+  FaCheck,
+  FaExclamation,
+  FaSpinner,
+} from "react-icons/fa6";
 import { z } from "zod";
 
 import { Box, Button, Text } from "..";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
-export type PriceData = {
-  mainVsPrice: BigNumber;
-  mainUsd: BigNumber;
-  vsUsd: BigNumber;
-};
-export type AssetAmmount = {
-  amount: string | undefined;
-  asset: string | undefined;
-};
-interface IToleranceProps {
-  field: {
-    onChange: (value: number | undefined) => void;
-    value: number | undefined;
-    onBlur: () => void;
-  };
-  fieldState: ControllerFieldState;
+interface ToleranceProps {
+  onChange: (value: number | undefined) => void;
+  value: number | undefined;
+  onBlur: () => void;
   errorMessage?: string;
 }
-interface ITravelModalProps {
+
+interface TravelModalProps {
   targetAsset: string;
   onDismiss?: () => void;
   modal?: boolean;
   cancelLabel?: string;
 }
+
 interface FormData {
+  fromChain: string;
+  toChain: string;
   fromAsset: {
     amount: string;
     asset: string;
@@ -64,13 +56,20 @@ interface FormData {
     amount: string;
     asset: string;
   };
+  depositAddress: string | undefined;
   slippage: number;
 }
-type ErrorsObject = { [key: string]: { message: string; type: string } };
-type SingleError = { message: string; type: string };
+
+type ErrorsObject = Record<string, { message: string; type: string }>;
+
+interface SingleError {
+  message: string;
+  type: string;
+}
+
 type Errors = ErrorsObject | SingleError;
 
-export const TravelModal = observer<ITravelModalProps>(function TravelModal({
+export const TravelModal = observer<TravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
   modal,
@@ -78,8 +77,11 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
 }) {
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
+  const [simulating, setSimulating] = useState<boolean>(false);
 
   const schema = z.object({
+    fromChain: nonEmptyString("FromChain"),
+    toChain: nonEmptyString("ToChain"),
     fromAsset: z
       .object({
         // amount should be undefined or number
@@ -88,7 +90,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
           .refine(nonEmptyString, "Amount is required")
           .refine((str) => {
             const num = new BigNumber(str);
-            if (num.gte(0)) return true;
+            return num.gte(0);
           }, "Amount is invalid"),
         asset: z.string().refine(nonEmptyString, "Asset is required"),
       })
@@ -118,7 +120,7 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         .refine((str) => {
           if (str === "") return false;
           const num = new BigNumber(str);
-          if (num.gte(0)) return true;
+          return num.gte(0);
         }, "Amount is invalid"),
       asset: z.string().refine(nonEmptyString, "Asset is required"),
     }),
@@ -128,43 +130,45 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       .max(100, "Slippage must be less than 100"),
   });
 
-  const {
-    control,
+  const getChainFromAsset = () => {
+    if (targetAsset === "usdc") {
+      return CosmosSdkChainId.Neutron;
+    } else {
+      return toAssets[targetAsset]?.chainId ?? "";
+    }
+  };
 
-    formState,
-    watch,
-    getValues,
-    setValue,
-  } = useForm<FormData>({
-    defaultValues: {
-      fromAsset: {
-        amount: "",
-        asset: "",
+  const { control, watch, getValues, setValue, trigger, formState } =
+    useForm<FormData>({
+      defaultValues: {
+        fromChain: fromChains[0]?.chainId ?? "",
+        fromAsset: {
+          amount: "",
+          asset: "eth",
+        },
+        toChain: getChainFromAsset(),
+        toAsset: {
+          amount: "",
+          asset: targetAsset,
+        },
+        slippage: 1,
       },
-      toAsset: {
-        amount: "",
-        asset: targetAsset,
-      },
-      slippage: 1,
-    },
-    mode: "onTouched",
-    resolver: zodResolver(schema),
-  });
+      mode: "onTouched",
+      resolver: zodResolver(schema),
+    });
   const fromAssetValue = watch("fromAsset");
-  const toAssetValue = watch("toAsset");
-  const slippageValue = watch("slippage");
+
+  const fromChainValue = watch("fromChain");
+  const toChainValue = watch("toChain");
+  const depositAddress = watch("depositAddress");
 
   const [loading, setLoading] = useState<boolean>(false);
-  // const [txHash, setTxHash] = useState<string | undefined>(undefined);
+
   const router = useRouter();
 
-  const [depositAddress, setDepositAddress] = useState<string | undefined>(
-    undefined,
-  );
   const [addressCopied, setAddressCopied] = useState<boolean>(false);
 
   const executeTx = async () => {
-    if (!formState.isValid) return;
     // get the deposit data
     const from = fromAssets[fromAssetValue?.asset ?? ""];
     setLoading(true);
@@ -173,31 +177,31 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
       console.error("Ethereum provider not found");
       return;
     }
-    await ethereum.request({ method: "eth_requestAccounts" });
-    const walletChainId = await ethereum.request({ method: "eth_chainId" });
-    const chainId = from?.chainId;
-
-    // cast chainId number to hex
-    const hexChainId = "0x" + Number(chainId).toString(16);
-
-    // check if the account is connected to the desired
-    if (walletChainId !== chainId) {
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: hexChainId }],
-      });
-    }
-    const provider = new BrowserProvider(ethereum);
-    const signer = await provider.getSigner();
-
-    const roundedAmount = Number(
-      Number(fromAssetValue?.amount).toFixed(from?.decimals) ?? 0,
-    );
-
-    const amount = parseUnits(roundedAmount.toString(), from?.decimals);
-    const fromAddress = from?.address;
-
     try {
+      await ethereum.request({ method: "eth_requestAccounts" });
+      const walletChainId = await ethereum.request({ method: "eth_chainId" });
+      const chainId = fromChainValue;
+
+      // cast chainId number to hex
+      const hexChainId = "0x" + Number(chainId).toString(16);
+
+      // check if the account is connected to the desired
+      if (walletChainId !== chainId) {
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: hexChainId }],
+        });
+      }
+      const provider = new BrowserProvider(ethereum);
+      const signer = await provider.getSigner();
+
+      const roundedAmount = Number(
+        Number(fromAssetValue?.amount).toFixed(from?.decimals) ?? 0,
+      );
+
+      const amount = parseUnits(roundedAmount.toString(), from?.decimals);
+      const fromAddress = from?.address;
+
       if (fromAddress === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
         //transfer the asset to the deposit address using native transfer
         const tx = {
@@ -226,94 +230,175 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
         router.push("/dashboard");
       }
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const error = e as Error;
       setLoading(false);
-      alert((e as { message: string }).message);
+      alert(error.message);
       console.error(e);
     }
   };
 
-  const getAssetOptions = (assets: {
-    [key: string]: FromAsset | ToAsset;
-  }): IAssetOption[] => {
-    return Object.entries(assets).map(([key, asset]) => ({
-      label: asset.label,
-      image: asset.image,
-      value: key,
-      disabled: asset.disabled,
-    })) as IAssetOption[];
+  const getFromChainOptions = () => {
+    return fromChains.map((chain) => {
+      return {
+        label: chain.label,
+        value: chain.chainId,
+        image: chain.image,
+        disabled: chain.disabled,
+      };
+    });
   };
-  const handleFromAssetChange = async () => {
-    const fromData = getValues("fromAsset");
-    const toData = getValues("toAsset");
+  const getToChainOptions = () => {
+    return toChains.map((chain) => {
+      const targetChain = TargetChain.chainId(chain);
+      return {
+        label: targetChain.label ?? "",
+        value: chain,
+        image: targetChain.image ?? "",
+        disabled: targetChain.disabled,
+      };
+    });
+  };
 
-    // if non of the assets are set we don't need to do anything
-    if (!fromData?.asset || !toData?.asset) return;
-    // if both amounts are not set we don't need to do anything
-    if (!fromData.amount && !toData.amount) return;
+  const getAssetOptions = (assets: Record<string, ToAsset>): IAssetOption[] => {
+    if (assets === undefined) return [];
 
-    if (!fromData) return;
-    if (!fromData.asset || fromData.asset === "") return;
-    if (!toData.asset) return;
-    const coins = {
-      mainCoin: fromAssets[fromData.asset] as FromAsset,
-      vsCoin: toAssets[toData.asset] as ToAsset,
-    };
-    const price = await getPrice(coins);
+    const chainAssets = Object.entries(assets)
+      .filter(([_, asset]) => {
+        if (asset.chainId === toChainValue) {
+          return true;
+        }
+        if (
+          asset.denom.includes("ibc/") &&
+          !["osmosis-1", "stargaze-1"].includes(toChainValue)
+        ) {
+          return true;
+        }
+        return false;
+      })
+      .reduce<Record<string, ToAsset>>((acc, [key, asset]) => {
+        return {
+          ...acc,
+          [key]: asset,
+        };
+      }, {});
 
-    const toAssetAmount = new BigNumber(fromData?.amount ?? 0).times(
-      price.mainVsPrice,
+    return Object.entries(chainAssets).map(
+      ([key, asset]: [string, ToAsset]): IAssetOption => {
+        return {
+          label: asset?.label ?? "",
+          image: asset?.image ?? "",
+          value: key,
+          disabled: asset.disabled,
+        };
+      },
     );
+  };
 
-    const decimals = Math.min(toAssetAmount.decimalPlaces() as number, 8);
-    const amount = toAssetAmount.isNaN()
-      ? ""
-      : toAssetAmount.decimalPlaces(decimals).toString();
-
+  const handleAssetChange = async () => {
+    const formData = getValues();
+    // check from amount, from and to chains and from and to assets
+    if (
+      !formData.fromAsset.amount ||
+      !formData.fromAsset.asset ||
+      !formData.toAsset.asset ||
+      !formData.toChain ||
+      !formData.fromChain ||
+      !publicKey
+    ) {
+      return;
+    }
     setValue(
       "toAsset",
+      { amount: "", asset: formData.toAsset.asset },
       {
-        ...getValues("toAsset"),
-        amount,
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
       },
-      { shouldValidate: true },
     );
+    setValue("depositAddress", undefined, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+
+    if (BigNumber(formData.fromAsset.amount).lt(0.005)) return;
+
+    setSimulating(true);
+    try {
+      const simulation = await simulateTravel(formData, publicKey);
+      if (!simulation) return;
+
+      setSimulating(false);
+
+      if (
+        typeof simulation.skip_simulation !== "string" &&
+        simulation.skip_simulation.msgs.length > 0
+      ) {
+        const skipMsg = JSON.parse(
+          simulation.skip_simulation.msgs[0].multi_chain_msg.msg,
+        );
+
+        const skipAmount = skipMsg.msg.swap_and_action.min_asset.native.amount;
+
+        const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
+
+        setValue(
+          "toAsset",
+          {
+            // amount in human readable format using bignumber
+            amount: new BigNumber(skipAmount)
+              .dividedBy(10 ** toAssetDecimals)
+              .toString(),
+            asset: formData.toAsset.asset,
+          },
+          {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+          },
+        );
+        setValue("depositAddress", simulation.deposit_address, {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        });
+        await trigger();
+        return;
+      }
+
+      const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
+      setValue(
+        "toAsset",
+        {
+          amount: new BigNumber(
+            simulation.squid_simulation.route.estimate.toAmount,
+          )
+            .dividedBy(10 ** toAssetDecimals)
+            .toString(),
+          asset: formData.toAsset.asset,
+        },
+        {
+          shouldDirty: true,
+          shouldTouch: true,
+          shouldValidate: true,
+        },
+      );
+      setValue("depositAddress", simulation.deposit_address, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+      await trigger();
+    } catch (e) {
+      console.error(e);
+      setSimulating(false);
+    }
   };
 
-  const handleToAssetChange = async () => {
-    const fromData = getValues("fromAsset");
-    const toData = getValues("toAsset");
-    // if non of the assets are set we don't need to do anything
-    if (!fromData?.asset || !toData?.asset) return;
-    // if both amounts are not set we don't need to do anything
-    if (!fromData.amount && !toData.amount) return;
-    if (!toData) return;
-    if (!toData.asset || toData.asset === "") return;
-    const fromAssetAsset = getValues("fromAsset").asset;
-    if (!fromAssetAsset) return;
-    const coins = {
-      mainCoin: toAssets[toData.asset] as ToAsset,
-      vsCoin: fromAssets[fromAssetAsset] as FromAsset,
-    };
-    const price = await getPrice(coins);
-
-    const fromAssetAmount = new BigNumber(toData?.amount ?? 0).times(
-      price.mainVsPrice,
-    );
-
-    const decimals = Math.min(fromAssetAmount.decimalPlaces() as number, 8);
-    const amount = fromAssetAmount.isNaN()
-      ? ""
-      : fromAssetAmount.decimalPlaces(decimals).toString();
-
-    setValue(
-      "fromAsset",
-      {
-        ...getValues("fromAsset"),
-        amount,
-      },
-      { shouldValidate: true },
-    );
-  };
+  const fromChainOptions = getFromChainOptions();
+  const toChainOptions = getToChainOptions();
 
   return (
     <div
@@ -324,56 +409,41 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
     >
       <Box
         className={cn(
-          "m-5 h-fit w-full  space-y-4 pt-10 sm:shadow-lg sm:shadow-neutral-600 md:m-10 md:max-w-[560px]",
+          "relative   h-fit w-full sm:shadow-lg sm:shadow-neutral-600 md:m-10 md:max-w-[560px]",
+          "pt-10 ",
         )}
       >
-        <Text size="xl">Obi Fast Travel</Text>
-        <Text size="sm" className=" leading-5">
-          Deposit assets below from an external account to receive them in your
-          Obi account.
-        </Text>
-        <Divider />
+        <div className="space-y-4">
+          <Text size="xl">Obi Fast Travel</Text>
+          <Text size="sm" className=" leading-5">
+            Deposit assets below from an external account to receive them in
+            your Obi account.
+          </Text>
+          <Divider />
+          <span className="mt-7 text-sm">Networks</span>
 
-        <Controller
-          name="fromAsset"
-          control={control}
-          render={({ field, fieldState }) => {
-            const errors = fieldState.error as Errors | undefined;
-            const options = getAssetOptions(fromAssets);
-
-            return (
-              <Input
-                label="Deposit"
-                labelClassname="bg-background-secondary"
-                onChange={(value) => {
-                  field.onChange({
-                    asset: field.value.asset,
-                    amount: value,
-                  });
-                  handleFromAssetChange();
-                }}
-                className={cn(
-                  "z-20",
-                  "relative",
-                  fieldState.error &&
-                    " border-red-500 focus-within:border-red-500",
-                )}
-                onBlur={field.onBlur}
-                value={field.value.amount}
-                placeholder="0.1"
-                inputClassName="flex-4 md:flex-1 sm:flex-6"
-                rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
-                rightComponent={
+          <div className="relative z-30 flex flex-row">
+            <Controller
+              name="fromChain"
+              control={control}
+              render={({ field }) => {
+                return (
                   <Dropdown
-                    itemToString={(item: IAssetOption | null) =>
-                      item?.label ?? ""
+                    itemToString={(item) => {
+                      return item?.label ?? "";
+                    }}
+                    items={fromChainOptions}
+                    selectedItem={
+                      fromChainOptions.find((item) => {
+                        return item.value === fromChainValue;
+                      }) ??
+                      fromChainOptions[0] ??
+                      null
                     }
-                    items={options}
-                    selectedItem={options.find(
-                      (item) => item.value === field.value.asset,
-                    )}
-                    getKey={(item) => item.label}
-                    className="flex-1"
+                    getKey={(item) => {
+                      return item.label;
+                    }}
+                    className="h-full w-full"
                     itemComponent={({ getItemProps, item, isSelected }) => {
                       const {
                         onClick,
@@ -411,28 +481,25 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         </div>
                       );
                     }}
-                    onItemSelect={function (item: IAssetOption): void {
-                      field.onChange({
-                        asset: item.value,
-                        amount: field.value.amount,
-                      });
-                      handleFromAssetChange();
+                    onItemSelect={(item) => {
+                      field.onChange(item.value);
+                      void handleAssetChange();
                     }}
+                    selectedItemClassname="bg-black/30 h-full"
                     selectedItemComponent={(selected) => {
-                      console.log("selected", selected.item);
                       if (!selected.item) {
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
-                          <div className="flex items-center   justify-between">
+                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center   justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
-                              className="h-6 w-6"
+                              className="h-8 w-8"
                             />
                           </div>
-                          <div className="flex flex-col items-end text-sm font-normal">
+                          <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
                             <div className=" uppercase">
                               {selected.item.label}
                             </div>
@@ -441,52 +508,32 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       );
                     }}
                   />
-                }
-              >
-                {errors && <ErrorsComponent errors={errors} />}
-              </Input>
-            );
-          }}
-        />
-        <Controller
-          name="toAsset"
-          control={control}
-          render={({ field, fieldState }) => {
-            const errors = fieldState.error as Errors | undefined;
-            const options = getAssetOptions(toAssets);
-
-            return (
-              <Input
-                label="Receive (estimated)"
-                labelClassname="bg-background-secondary"
-                onChange={(value) => {
-                  field.onChange({
-                    asset: field.value.asset,
-                    amount: value,
-                  });
-                  handleToAssetChange();
-                }}
-                className={cn(
-                  "z-10",
-                  "relative",
-                  fieldState.error &&
-                    " border-red-500 focus-within:border-red-500",
-                )}
-                onBlur={field.onBlur}
-                value={field.value.amount}
-                placeholder="0.1"
-                inputClassName="flex-4 md:flex-1 sm:flex-6"
-                rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
-                rightComponent={
+                );
+              }}
+            />
+            <div className=" flex items-center justify-center p-2  sm:p-5">
+              <FaArrowRight className="m-auto  text-white" />
+            </div>
+            <Controller
+              name="toChain"
+              control={control}
+              render={({ field }) => {
+                return (
                   <Dropdown
-                    itemToString={(item: IAssetOption | null) =>
-                      item?.label ?? ""
+                    itemToString={(item) => {
+                      return item?.label ?? "";
+                    }}
+                    items={toChainOptions}
+                    selectedItem={
+                      toChainOptions.find((item) => {
+                        return item.value === field.value;
+                      }) ??
+                      toChainOptions[0] ??
+                      null
                     }
-                    items={options}
-                    selectedItem={options.find(
-                      (item) => item.value === field.value.asset,
-                    )}
-                    getKey={(item) => item.label}
+                    getKey={(item) => {
+                      return item.label;
+                    }}
                     className="w-full"
                     itemComponent={({ getItemProps, item, isSelected }) => {
                       const {
@@ -525,27 +572,34 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                         </div>
                       );
                     }}
-                    onItemSelect={function (item: IAssetOption): void {
-                      field.onChange({
-                        asset: item.value,
-                        amount: field.value.amount,
-                      });
-                      handleToAssetChange();
+                    onItemSelect={(item) => {
+                      setValue(
+                        "toAsset",
+                        { amount: "", asset: "" },
+                        {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        },
+                      );
+                      field.onChange(item.value);
+                      void handleAssetChange();
                     }}
+                    selectedItemClassname="bg-black/30 h-full"
                     selectedItemComponent={(selected) => {
                       if (!selected.item) {
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
-                          <div className="flex items-center   justify-between">
+                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center   justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
-                              className="h-6 w-6"
+                              className="h-8 w-8"
                             />
                           </div>
-                          <div className="flex flex-col items-end text-sm font-normal">
+                          <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
                             <div className=" uppercase">
                               {selected.item.label}
                             </div>
@@ -554,88 +608,267 @@ export const TravelModal = observer<ITravelModalProps>(function TravelModal({
                       );
                     }}
                   />
-                }
-              >
-                {errors && <ErrorsComponent errors={errors} />}
-              </Input>
-            );
-          }}
-        />
-
-        <Controller
-          name="slippage"
-          control={control}
-          render={({ field, fieldState }) => (
-            <ToleranceSetting
-              field={field}
-              fieldState={fieldState}
-              errorMessage={fieldState.error?.message}
+                );
+              }}
             />
-          )}
-        />
+          </div>
 
-        <Divider />
-        {depositAddress && formState.isValid && (
-          <>
-            <div
-              className={cn(
-                "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
-                addressCopied && "rounded-md  border-2 shadow-md shadow-white",
-              )}
-            >
+          <Controller
+            name="fromAsset"
+            control={control}
+            render={({ field, fieldState }) => {
+              // TODO: Here's something wrong with the types, according to react-hook-form this should always be a single message, review
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              const errors = fieldState.error as Errors | undefined;
+
+              return (
+                <Input
+                  label="Deposit"
+                  labelClassname="bg-background-secondary"
+                  inputDisabled={simulating}
+                  onChange={(value) => {
+                    field.onChange({
+                      asset: field.value.asset,
+                      amount: value,
+                    });
+
+                    void handleAssetChange();
+                  }}
+                  className={cn(
+                    "z-20",
+                    "relative",
+                    fieldState.error &&
+                      " border-red-500 focus-within:border-red-500",
+                  )}
+                  onBlur={field.onBlur}
+                  value={field.value.amount}
+                  placeholder="0.1"
+                  inputClassName="flex-4 md:flex-1 sm:flex-6"
+                  rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
+                  rightComponent={
+                    <div className="flex w-full   flex-row  gap-5 rounded bg-black/30 p-3 font-normal">
+                      <div className="flex items-center   justify-between">
+                        <img
+                          src={fromAssets[field.value.asset]?.image}
+                          alt={fromAssets[field.value.asset]?.label}
+                          className="h-6 w-6"
+                        />
+                      </div>
+                      <div className="flex flex-col items-end text-sm font-normal">
+                        <div className=" uppercase">
+                          {fromAssets[field.value.asset]?.label}
+                        </div>
+                      </div>
+                    </div>
+                  }
+                >
+                  {errors && <ErrorsComponent errors={errors} />}
+                </Input>
+              );
+            }}
+          />
+          <Controller
+            name="toAsset"
+            control={control}
+            render={({ field, fieldState }) => {
+              const options = getAssetOptions(toAssets);
+
+              return (
+                <Input
+                  label="Receive (estimated)"
+                  labelClassname="bg-background-secondary"
+                  className={cn(
+                    "z-10",
+                    "relative",
+                    fieldState.error &&
+                      " border-red-500 focus-within:border-red-500",
+                  )}
+                  onBlur={field.onBlur}
+                  value={field.value.amount}
+                  inputDisabled
+                  placeholder={simulating ? "Simulating..." : "0.1"}
+                  inputClassName="flex-4 md:flex-1 sm:flex-6 "
+                  rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
+                  rightComponent={
+                    <Dropdown
+                      itemToString={(item) => {
+                        return item?.label ?? "";
+                      }}
+                      items={options}
+                      selectedItem={
+                        (field.value.asset !== ""
+                          ? options.find((item) => {
+                              return item.value === field.value.asset;
+                            })
+                          : null) ?? null
+                      }
+                      getKey={(item) => {
+                        return item.label;
+                      }}
+                      className="w-full"
+                      itemComponent={({ getItemProps, item, isSelected }) => {
+                        const {
+                          onClick,
+                          onMouseDown,
+                          onMouseMove,
+                          ...itemProps
+                        } = getItemProps({ item });
+
+                        return (
+                          <div
+                            {...itemProps}
+                            {...(!item.disabled && {
+                              onClick,
+                              onMouseDown,
+                              onMouseMove,
+                            })}
+                            className={cn(
+                              " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                              isSelected && "bg-gray-600 ",
+                              item.disabled &&
+                                "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                            )}
+                          >
+                            <div className="flex items-center justify-center ">
+                              <img
+                                src={item.image}
+                                alt={item.label}
+                                width={24}
+                                height={24}
+                              />
+                            </div>
+                            <div className="text-white">
+                              <div className=" uppercase">{item.label}</div>
+                            </div>
+                          </div>
+                        );
+                      }}
+                      onItemSelect={(item) => {
+                        field.onChange({
+                          asset: item.value,
+                          amount: field.value.amount,
+                        });
+                        void handleAssetChange();
+                      }}
+                      selectedItemComponent={(selected) => {
+                        if (!selected.item) {
+                          return <div>Select</div>;
+                        }
+                        return (
+                          <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                            <div className="flex items-center   justify-between">
+                              <img
+                                src={selected.item.image}
+                                alt={selected.item.label}
+                                className="h-6 w-6"
+                              />
+                            </div>
+                            <div className="flex flex-col items-end text-sm font-normal">
+                              <div className=" uppercase">
+                                {selected.item.label}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }}
+                    />
+                  }
+                />
+              );
+            }}
+          />
+
+          <Controller
+            name="slippage"
+            control={control}
+            render={({ field, fieldState }) => {
+              return (
+                <ToleranceSetting
+                  value={field.value}
+                  onChange={(attr) => {
+                    field.onChange(attr);
+                    void handleAssetChange();
+                  }}
+                  onBlur={field.onBlur}
+                  errorMessage={fieldState.error?.message}
+                />
+              );
+            }}
+          />
+
+          <Divider />
+          {depositAddress && (
+            <>
               <div
                 className={cn(
-                  "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
-
-                  addressCopied && "border-2",
+                  "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
+                  addressCopied &&
+                    "rounded-md  border-2 shadow-md shadow-white",
                 )}
               >
-                <FaExclamation className="m-auto text-white " />
+                <div
+                  className={cn(
+                    "mr-5 flex aspect-square h-10 w-10 items-center justify-center rounded-full border border-white p-2",
+
+                    addressCopied && "border-2",
+                  )}
+                >
+                  <FaExclamation className="m-auto text-white " />
+                </div>
+                <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
+                  Execute with Metamask or deposit to the address shown below.
+                  You may close this dialogue after depositing.
+                </Text>
               </div>
-              <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
-                Execute with Metamask or deposit to the address shown below. You
-                may close this dialogue after depositing.
-              </Text>
-            </div>
-          </>
-        )}
-        {formState.isValid && (
-          <GetAddressComponent
-            fromAsset={fromAssetValue}
-            toAsset={toAssetValue}
-            slippage={slippageValue}
-            addressChanged={setDepositAddress}
-            slippageError={formState.errors.slippage?.message}
-            publicKey={publicKey}
-            onCopy={() => setAddressCopied(true)}
-          />
-        )}
-
-        <div className="mt-8 flex justify-between">
-          <Button className="block w-44" variant="outline" onClick={onDismiss}>
-            {cancelLabel}
-          </Button>
-
-          {formState.isValid && depositAddress && window.ethereum && (
-            <Button className="block w-44" onClick={executeTx}>
-              Use Metamask
-            </Button>
+            </>
           )}
-        </div>
-      </Box>
-      {/* add a loader spinner */}
-      {loading ||
-        (!currentWallet && (
-          <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
-            <FaSpinner className=" animate-spin text-2xl" />
-            Loading
+          {formState.isValid && (
+            <AddressComponent
+              address={depositAddress ?? ""}
+              onCopy={() => {
+                setAddressCopied(true);
+              }}
+            />
+          )}
+
+          <div className="mt-8 flex justify-between">
+            <Button
+              className="block w-44"
+              variant="outline"
+              onClick={onDismiss}
+            >
+              {cancelLabel}
+            </Button>
+
+            {formState.isValid && window.ethereum && (
+              <Button className="block w-44" onClick={executeTx}>
+                Use Metamask
+              </Button>
+            )}
           </div>
-        ))}
+        </div>
+        {loading && (
+          <SendingAnimation className="z-30 -ml-4" text="Check extension" />
+        )}
+      </Box>
+
+      {/* add a loader spinner */}
+      {!currentWallet && (
+        <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
+          <FaSpinner className=" animate-spin text-2xl" />
+          Loading
+        </div>
+      )}
     </div>
   );
 });
 
-function ToleranceSetting({ field, fieldState }: IToleranceProps) {
+function ToleranceSetting({
+  value,
+  onBlur,
+  onChange,
+  errorMessage,
+}: ToleranceProps) {
   const tolerances = [1, 2];
   const [text, setText] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -643,15 +876,17 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
   // this is because we are using a custom input and not the one from react-hook-form
   // so we need to trigger the validation manually
   useEffect(() => {
-    field.onChange(Number(text));
+    onChange(Number(text));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
   useEffect(() => {
-    if (field.value && !isNaN(Number(field.value))) {
-      setText(field.value.toString());
+    if (value && !isNaN(Number(value))) {
+      setText(value.toString());
     }
 
-    field.onBlur();
-  }, [field.value]);
+    onBlur();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
   const renderErrorMessage = (message: string) => {
     if (message.includes("Expected number")) {
       return "Invalid number";
@@ -665,21 +900,23 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
         Slippage Tolerance
       </Text>
       <div className="mb-10  flex flex-row space-x-3">
-        {tolerances.map((tolerance) => (
-          <Box
-            key={`asset-${tolerance}%`}
-            className={cn(
-              "w-17 flex h-9 flex-row items-center space-x-3 text-center",
-              "cursor-pointer",
-              field.value === tolerance
-                ? "bg-background-primary"
-                : "bg-gray-700",
-            )}
-            onClick={() => setText(tolerance.toString())}
-          >
-            <Text>{tolerance}%</Text>
-          </Box>
-        ))}
+        {tolerances.map((tolerance) => {
+          return (
+            <Box
+              key={`asset-${tolerance}%`}
+              className={cn(
+                "w-17 flex h-9 flex-row items-center space-x-3 text-center",
+                "cursor-pointer",
+                value === tolerance ? "bg-background-primary" : "bg-gray-700",
+              )}
+              onClick={() => {
+                return setText(tolerance.toString());
+              }}
+            >
+              <Text>{tolerance}%</Text>
+            </Box>
+          );
+        })}
         <Box
           key="asset-custom%"
           className={cn(
@@ -698,7 +935,7 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
             ref={inputRef}
             type="text"
             value={text}
-            onBlur={field.onBlur}
+            onBlur={onBlur}
             className={cn(
               "w-10 bg-transparent text-center",
               // avoid showing the up and down arrows
@@ -712,9 +949,9 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
           />
           %
         </Box>
-        {fieldState.error?.message && (
+        {errorMessage && (
           <Text color="red" size="xs">
-            {renderErrorMessage(fieldState.error.message)}
+            {renderErrorMessage(errorMessage)}
           </Text>
         )}
       </div>
@@ -722,174 +959,14 @@ function ToleranceSetting({ field, fieldState }: IToleranceProps) {
   );
 }
 
-function GetAddressComponent({
-  fromAsset,
-  toAsset,
-  slippage,
-  addressChanged,
-  slippageError,
-  publicKey,
+function AddressComponent({
+  address,
   onCopy,
 }: {
-  publicKey?: Secp256k1PublicKey;
-  fromAsset?: AssetAmmount;
-  toAsset: AssetAmmount;
-  slippage: number;
-  slippageError?: string;
-  addressChanged: (address: string | undefined) => void;
+  address: string;
   onCopy?: () => void;
 }) {
-  const [address, setAddress] = useState<string | undefined>(undefined);
-  const [invalid, setInvalid] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [isCopied, setIsCopied] = useState(false);
-  useEffect(() => {
-    if (validProps()) {
-      setInvalid(true);
-    }
-
-    const timer = setTimeout(() => {
-      getDepositAddress();
-    }, 1000); // 500ms debounce
-
-    return () => clearTimeout(timer);
-  }, [
-    fromAsset?.amount,
-    toAsset?.amount,
-    fromAsset?.asset,
-    toAsset?.asset,
-    slippage,
-    slippageError,
-  ]);
-
-  useEffect(() => {
-    addressChanged(address);
-  }, [address, addressChanged]);
-
-  const validProps = () => {
-    if (slippageError) return false;
-    if (!fromAsset || !toAsset) return false;
-    if (
-      !fromAsset?.asset ||
-      !toAsset?.asset ||
-      !fromAsset?.amount ||
-      !toAsset?.amount
-    ) {
-      return false;
-    }
-    if (BigNumber(fromAsset.amount).eq(0) || BigNumber(toAsset.amount).eq(0))
-      return false;
-
-    return true;
-  };
-
-  const getDepositAddress = async () => {
-    if (!validProps()) return;
-    setInvalid(false);
-    setLoading(true);
-    const from = fromAssets[fromAsset?.asset ?? ""];
-    const to = toAssets[toAsset?.asset ?? ""];
-    const slippageValue = slippage.toString();
-    const chain = Object.values(CosmosSdkChains).find((chain) => {
-      return chain.prefix === to?.addressPrefix;
-    });
-    invariant(publicKey, "Public key is required");
-    invariant(chain, "Chain is required");
-    const targetChain = TargetChain.chainId(chain.id);
-    const toAddress = targetChain.computeAddress(publicKey);
-    invariant(fromAsset?.amount, "Asset amount is required");
-    const fromAmount = parseUnits(
-      new BigNumber(fromAsset?.amount).toString(),
-      from?.decimals,
-    ).toString();
-
-    const requestData = {
-      slippage: slippageValue,
-      from: {
-        address: "0x337bd07492342e6148212b0dab1bce90e9433e7b",
-        chainId: from?.chainId,
-        asset: from?.address,
-        amount: fromAmount,
-      },
-      to: {
-        chainId: to?.chainId,
-        asset: to?.denom,
-        address: toAddress,
-      },
-
-      pubkey: publicKey?.value,
-    };
-    // fetch the deposit address
-    const requestURL = `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/swap/simulate.rs`;
-
-    // make a post request to the url
-    const res = await fetch(requestURL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (res.ok) {
-      setAddress(data.info);
-    } else {
-      console.error(data.error);
-      alert(data.error);
-    }
-  };
-
-  const renderContent = () => {
-    if (slippageError) {
-      return (
-        <div className="flex items-center justify-center text-white">
-          <FaExclamation className="text-yellow" />
-          <Text className="text-yellow ml-2">Make sure slippage is valid</Text>
-        </div>
-      );
-    }
-    if (invalid) {
-      return (
-        <div className="flex items-center justify-center text-white">
-          <FaExclamation className="text-yellow" />
-          <Text className="text-yellow ml-2">Assets changed</Text>
-        </div>
-      );
-    }
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center text-white">
-          <FaSpinner className="animate-spin" />
-        </div>
-      );
-    }
-    if (address) {
-      return (
-        <div className="relative">
-          <Text className="flex  items-center justify-center text-sm">
-            {address}
-          </Text>
-          <div className="mt-2 text-xs font-medium uppercase text-blue-600">
-            Click to copy
-          </div>
-          {isCopied && (
-            <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white">
-              <span className=" text-green-500">
-                <FaCheck />
-              </span>
-              <p>Copied</p>
-            </div>
-          )}
-        </div>
-      );
-    }
-    return (
-      <div className="flex items-center justify-center text-white">
-        <Text className="ml-2">Fill in the assets to get an address</Text>
-      </div>
-    );
-  };
 
   return (
     <div className="font-size-[16px] mt-10">
@@ -913,73 +990,37 @@ function GetAddressComponent({
           }, 2000);
         }}
       >
-        {renderContent()}
+        <div className="relative">
+          <Text className="flex  items-center justify-center text-sm">
+            {address}
+          </Text>
+          <div className="mt-2 text-xs font-medium uppercase text-blue-600">
+            Click to copy
+          </div>
+          {isCopied && (
+            <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white">
+              <span className=" text-green-500">
+                <FaCheck />
+              </span>
+              <p>Copied</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-const fetchPrice = async (
-  assetData: FromAsset | ToAsset | undefined,
-): Promise<number | undefined> => {
-  if (!assetData) return undefined;
-  // I need to know which type it is so I can use address or denom
-  const isFromAsset = R.has("address", assetData);
-
-  const requestURL = `https://api.0xsquid.com/v1/token-price?chainId=${assetData?.chainId}&tokenAddress=${
-    isFromAsset
-      ? (assetData as FromAsset).address
-      : (assetData as ToAsset).denom
-  }`;
-  // make a post request to the url
-  const res = await fetch(requestURL);
-  const data = await res.json();
-  if (!res.ok) {
-    console.error(data.error);
-    return undefined;
-  }
-
-  return data.price;
-};
-export const getPrice = async ({
-  mainCoin,
-  vsCoin,
-}: {
-  mainCoin: FromAsset | ToAsset;
-  vsCoin: FromAsset | ToAsset;
-}): Promise<PriceData> => {
-  // get Dollar prices from squid
-  const main = await fetchPrice(mainCoin);
-  const vs = await fetchPrice(vsCoin);
-  // we have the dollar price of both coins, now we need the price of the main coin in vs coin
-  // we need to divide the main coin price by the vs coin price
-  if (main && vs) {
-    // get the price of the main coin in vs coin
-    const mainVsPrice = new BigNumber(main).dividedBy(vs);
-    return {
-      mainVsPrice,
-      mainUsd: new BigNumber(main),
-      vsUsd: new BigNumber(vs),
-    };
-  }
-  return {
-    mainVsPrice: new BigNumber(0),
-    mainUsd: new BigNumber(0),
-    vsUsd: new BigNumber(0),
-  };
-};
-
 function ErrorsComponent({ errors }: { errors: Errors }) {
   const renderErrorMessage = () => {
     function isSingle(e: SingleError | ErrorsObject): e is SingleError {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return (e as SingleError).message !== undefined;
     }
 
     if (!errors) return;
-    // I need to know if errors is of type SingleError or ErrorsObject
-    const error = errors as SingleError;
     if (isSingle(errors)) {
-      return error.message;
+      return errors.message;
     } else {
       if (errors?.amount?.message) {
         if (errors?.amount?.message === "Required") return "Amount is required";
@@ -996,3 +1037,45 @@ function ErrorsComponent({ errors }: { errors: Errors }) {
     </div>
   );
 }
+
+const simulateTravel = async (
+  data: FormData,
+  publicKey: Secp256k1PublicKey,
+) => {
+  const requestURL =
+    "https://fast-travel-playground-git-staging-obi-money.vercel.app/api/swap/simulate.rs";
+  const toAsset = toAssets[data.toAsset.asset];
+  const fromAsset = fromAssets[data.fromAsset.asset];
+  const fromAmount = parseUnits(
+    new BigNumber(data.fromAsset?.amount).toString(),
+    fromAsset?.decimals,
+  ).toString();
+  const targetChain = TargetChain.chainId(data.toChain);
+  const toAddress = await targetChain.obiAccountAddress(publicKey);
+  const requestData = {
+    slippage: data.slippage.toString(),
+    from: {
+      address: "0x337bd07492342e6148212b0dab1bce90e9433e7b",
+      chainId: data.fromChain,
+      asset: fromAsset?.address,
+      amount: fromAmount,
+    },
+    to: {
+      chainId: data.toChain,
+      asset: toAsset?.denom,
+      address: toAddress,
+    },
+    pubkey: publicKey.value,
+  };
+  // make a post request to the url
+  const res = await fetch(requestURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestData),
+  });
+  const responseData = await res.json();
+
+  return responseData;
+};

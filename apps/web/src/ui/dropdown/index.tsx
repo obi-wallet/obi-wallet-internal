@@ -1,8 +1,16 @@
-"use client";
 import { cn } from "@/lib/utils";
 import Downshift from "downshift";
-import { RefObject, useRef, useState, useEffect } from "react";
+import {
+  RefObject,
+  useRef,
+  useState,
+  useEffect,
+  FC,
+  CSSProperties,
+  HTMLAttributes,
+} from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
+
 export interface DropdownItem {
   disabled?: boolean;
 }
@@ -10,12 +18,13 @@ export interface DropdownItem {
 export interface CustomDropdownProps<T extends DropdownItem> {
   items: T[];
   itemToString: (item: T | null) => string;
-  itemComponent: React.FC<ItemComponentProps<T>>;
+  itemComponent: FC<ItemComponentProps<T>>;
   onItemSelect: (item: T) => void;
-  selectedItemComponent: React.FC<{ item: T | null }>;
+  selectedItemComponent: FC<{ item: T | null }>;
   getKey?: (item: T) => string;
   className?: string;
-  selectedItem?: T;
+  selectedItem: T | null;
+  selectedItemClassname?: string;
 }
 
 export interface ItemComponentProps<T extends DropdownItem> {
@@ -24,8 +33,8 @@ export interface ItemComponentProps<T extends DropdownItem> {
     item: T;
     index?: number;
     disabled?: boolean;
-    style?: React.CSSProperties;
-  }) => React.HTMLAttributes<HTMLDivElement>;
+    style?: CSSProperties;
+  }) => HTMLAttributes<HTMLDivElement>;
   isSelected: boolean;
 }
 
@@ -38,52 +47,65 @@ export function CustomDropdown<T extends DropdownItem>({
   getKey,
   className,
   selectedItem,
+  selectedItemClassname,
 }: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  useOutsideClick(ref, () => setIsOpen(false));
+  useOutsideClick(ref, () => {
+    return setIsOpen(false);
+  });
 
   return (
     <div ref={ref} className="flex flex-1">
       <Downshift
         onChange={(selection) => {
-          onItemSelect(selection as T);
+          if (!selection) return;
+          onItemSelect(selection);
           setIsOpen(false); // Close dropdown after selection
         }}
-        onOuterClick={() => setIsOpen(false)}
+        onOuterClick={() => {
+          return setIsOpen(false);
+        }}
         itemToString={itemToString}
         selectedItem={selectedItem}
       >
-        {({ getItemProps, selectedItem }) => (
-          <div className={cn("relative z-10", className)}>
-            <button
-              id="dropdownDefaultButton"
-              data-dropdown-toggle="dropdown"
-              className="bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <SelectedItemComponent item={selectedItem as T | null} />
+        {({ getItemProps, selectedItem }) => {
+          return (
+            <div className={cn("relative z-10", className)}>
+              <button
+                id="dropdownDefaultButton"
+                data-dropdown-toggle="dropdown"
+                className={cn(
+                  "bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white",
+                  selectedItemClassname,
+                )}
+                onClick={() => {
+                  return setIsOpen(!isOpen);
+                }}
+              >
+                <SelectedItemComponent item={selectedItem} />
 
-              <div className="ml-3">
-                {isOpen ? <FaAngleUp /> : <FaAngleDown />}
-              </div>
-            </button>
-            {isOpen && (
-              <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
-                {items.map((item, index) => {
-                  return (
-                    <ItemComponent
-                      key={getKey ? getKey(item) : index.toString()}
-                      item={item}
-                      getItemProps={getItemProps}
-                      isSelected={selectedItem === item}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+                <div className="ml-3">
+                  {isOpen ? <FaAngleUp /> : <FaAngleDown />}
+                </div>
+              </button>
+              {isOpen && (
+                <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
+                  {items.map((item, index) => {
+                    return (
+                      <ItemComponent
+                        key={getKey ? getKey(item) : index.toString()}
+                        item={item}
+                        getItemProps={getItemProps}
+                        isSelected={selectedItem === item}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        }}
       </Downshift>
     </div>
   );
@@ -92,6 +114,7 @@ export function CustomDropdown<T extends DropdownItem>({
 function useOutsideClick(ref: RefObject<HTMLElement>, callback: () => void) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       if (ref.current && !ref.current.contains(event.target as Node)) {
         callback();
       }

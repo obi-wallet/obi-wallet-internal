@@ -1,13 +1,10 @@
 "use client";
 
 import { DropDown, TabUi } from "@/components";
-import { usePublicKey } from "@/hooks/use-public-key";
+import { useAddressQuery } from "@/hooks/address";
 import { cn } from "@/lib/utils";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import {
-  CosmosSdkChainId,
-  CosmosSdkChains,
-} from "@/target-chain/cosmos-sdk/chains";
+import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { InputContainer } from "@/ui/container";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
@@ -15,21 +12,11 @@ import { useQRCode } from "next-qrcode";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-export interface IChainOption {
-  label: string;
-  value: string;
-  image: string;
-  disabled?: boolean;
-}
-
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
   const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
-  const publicKey = usePublicKey();
-
-  if (publicKey === undefined) return null;
-  const address = TargetChain.chainId(chainId).computeAddress(publicKey);
+  const { data: address } = useAddressQuery(chainId);
 
   const handleClickQRCode = () => {
     if (!address) return;
@@ -106,16 +93,20 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId: TargetChainId;
   onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = Object.values(CosmosSdkChains).map(
-    ({ name, id, image, disabled }) => {
+  const chainOptions = allTargetChainIds
+    .map((chainId) => {
+      const targetChain = TargetChain.chainId(chainId);
       return {
-        label: name,
-        value: id,
-        image,
-        disabled,
+        label: targetChain.label,
+        value: chainId,
+        image: targetChain.image,
+        disabled: targetChain.disabled,
       };
-    },
-  );
+    })
+    .filter((chain) => {
+      return !chain.disabled;
+    });
+
   return (
     <div className="flex w-full flex-row">
       <DropDown
@@ -135,7 +126,7 @@ const ChainDropdown = observer(function ChainDropdown({
                 <>
                   <img
                     className="h-6 w-6"
-                    src={(option as IChainOption).image}
+                    src={option.image}
                     alt={option?.label}
                   />
                   <span>{option?.label}</span>
@@ -144,25 +135,23 @@ const ChainDropdown = observer(function ChainDropdown({
             </div>
           );
         }}
-        customItemComponent={(option, selectedOption, handleOption) => (
-          <li
-            className={cn(
-              " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-              option.value === selectedOption?.value && "bg-gray-600 ",
-              option.disabled &&
-                "cursor-not-allowed opacity-50 hover:bg-gray-600",
-            )}
-            onClick={handleOption}
-            key={option.value}
-          >
-            <img
-              src={(option as IChainOption).image}
-              alt="asset"
-              className="h-6 w-6 "
-            />
-            <span>{option.label}</span>
-          </li>
-        )}
+        customItemComponent={(option, selectedOption, handleOption) => {
+          return (
+            <li
+              className={cn(
+                " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                option.value === selectedOption?.value && "bg-gray-600 ",
+                option.disabled &&
+                  "cursor-not-allowed opacity-50 hover:bg-gray-600",
+              )}
+              onClick={handleOption}
+              key={option.value}
+            >
+              <img src={option.image} alt="asset" className="h-6 w-6 " />
+              <span>{option.label}</span>
+            </li>
+          );
+        }}
       />
     </div>
   );

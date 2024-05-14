@@ -24,7 +24,6 @@ type IconLinkProps = {
 } & Omit<UnstyledLinkProps, "children">;
 
 export const IconLink = forwardRef<HTMLAnchorElement, IconLinkProps>(
-  // eslint-disable-next-line mobx/missing-observer
   function IconLink(
     {
       className,

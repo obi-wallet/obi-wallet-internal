@@ -1,12 +1,13 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
   Messages,
   MultisigKey,
   SecretJsClient,
+  WalletData,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
-import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -21,6 +22,7 @@ const schema = z.object({
   userEntryAddress: z.string(),
   userEntryCodeHash: z.string(),
   ownerIndex: z.number(),
+  walletData: WalletData,
 });
 
 export interface UserAccountAddress {
@@ -48,29 +50,11 @@ export async function POST(request: Request) {
     userEntryAddress,
     userEntryCodeHash,
     ownerIndex,
+    walletData,
   } = result.data;
 
   const client = new SecretJsClient(homeChainId);
   const messagesSdk = Messages.chainId(homeChainId);
-  const lender1 = getFeeLender(homeChainId);
-  const sendMessage = new MsgSend({
-    from_address: lender1.wallet.address,
-    to_address: ownerAddress,
-    amount: [
-      {
-        amount: "100",
-        denom: "uscrt",
-      },
-    ],
-  });
-  const lendSignedTransaction = await client.createAndSignTransaction({
-    signer: lender1.signer,
-    messages: [sendMessage],
-  });
-  // fire and forget
-  const _lendBroadcastTransactionResult = client.broadcastSignedTransaction(
-    lendSignedTransaction,
-  );
 
   // old lender from before, which is the only account capable of
   // updating owner, even with "magic" first_update_owner
@@ -94,12 +78,10 @@ export async function POST(request: Request) {
   }
 
   const message = messagesSdk.getFirstUpdateWalletMessage(
-    MultisigKey.create(undefined, homeChainId, owner),
+    MultisigKey.create(homeChainId, owner),
     ownerAddress,
     userEntryAddress,
     userEntryCodeHash,
-    "",
-    "",
     wallet.address,
   );
 
@@ -110,6 +92,20 @@ export async function POST(request: Request) {
   const broadcastTransactionResult =
     await client.broadcastSignedTransaction(signedTransaction);
   console.log(broadcastTransactionResult);
+
+  if (broadcastTransactionResult.success) {
+    const response = await setWalletData(walletData);
+    if (response.status !== 200) {
+      return NextResponse.json(
+        {
+          success: false,
+        },
+        {
+          status: response.status,
+        },
+      );
+    }
+  }
 
   return NextResponse.json({
     success: broadcastTransactionResult.success,

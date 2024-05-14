@@ -86,7 +86,7 @@ function keygen(params: Parameters): any[] {
   }
   // This is from MPC wasm
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  const partyToOutgoingRoundMsgs: Record<number, any[]> = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {
@@ -108,11 +108,11 @@ function keygen(params: Parameters): any[] {
               partyToOutgoingRoundMsgs[party_signer_idx][party_round_msg_idx]
                 .receiver != null
             ) {
-              const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
-                party_signer_idx
-                // This should be fine
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ]?.[party_round_msg_idx] as any;
+              const outgoingRoundMsgWithRecipient =
+                partyToOutgoingRoundMsgs[
+                  party_signer_idx
+                  // This should be fine
+                ]?.[party_round_msg_idx];
               const keygenIndex =
                 Number(outgoingRoundMsgWithRecipient.receiver) - 1;
               console.log(
@@ -123,11 +123,11 @@ function keygen(params: Parameters): any[] {
                 outgoingRoundMsgWithRecipient,
               );
             } else {
-              const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
-                party_signer_idx
-                // This should be fine
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              ]?.[0] as any;
+              const roundMsgWithoutRecipient =
+                partyToOutgoingRoundMsgs[
+                  party_signer_idx
+                  // This should be fine
+                ]?.[0];
               for (
                 let receiving_party_keygen_idx = 0;
                 receiving_party_keygen_idx < params.parties;
@@ -173,9 +173,9 @@ function keygen(params: Parameters): any[] {
     // Check if result[1] is an empty array
     // If so, then we are done. Do not proceed to next round.
     if (
-      !Object.values(partyToOutgoingRoundMsgs).every(
-        (msgs) => msgs.length === 0,
-      )
+      !Object.values(partyToOutgoingRoundMsgs).every((msgs) => {
+        return msgs.length === 0;
+      })
     ) {
       handleRound();
     }
@@ -214,7 +214,7 @@ function createSignersAndPresign(
     signers.push(signer);
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const partyToOutgoingRoundMsgs: { [key: number]: any[] } = {};
+  const partyToOutgoingRoundMsgs: Record<number, any[]> = {};
 
   function handleRound() {
     if (Object.keys(partyToOutgoingRoundMsgs).length !== 0) {
@@ -232,10 +232,8 @@ function createSignersAndPresign(
             partyToOutgoingRoundMsgs[selectedPartyId][party_round_msg_idx]
               .receiver != null
           ) {
-            const outgoingRoundMsgWithRecipient = partyToOutgoingRoundMsgs[
-              selectedPartyId
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ]?.[party_round_msg_idx] as any;
+            const outgoingRoundMsgWithRecipient =
+              partyToOutgoingRoundMsgs[selectedPartyId]?.[party_round_msg_idx];
             const keygenIndex =
               Number(outgoingRoundMsgWithRecipient.receiver) - 1;
             console.log(
@@ -245,10 +243,8 @@ function createSignersAndPresign(
 
             signers[keygenIndex].handleIncoming(outgoingRoundMsgWithRecipient);
           } else {
-            const roundMsgWithoutRecipient = partyToOutgoingRoundMsgs[
-              selectedPartyId
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ]?.[0] as any;
+            const roundMsgWithoutRecipient =
+              partyToOutgoingRoundMsgs[selectedPartyId]?.[0];
             for (
               let receiving_party_keygen_idx = 0;
               receiving_party_keygen_idx < selectedPartyIds.length;
@@ -305,9 +301,9 @@ function createSignersAndPresign(
     // Check if result[1] is an empty array
     // If so, then we are done. Do not proceed to next round.
     if (
-      !Object.values(partyToOutgoingRoundMsgs).every(
-        (msgs) => msgs.length === 0,
-      )
+      !Object.values(partyToOutgoingRoundMsgs).every((msgs) => {
+        return msgs.length === 0;
+      })
     ) {
       handleRound();
     }

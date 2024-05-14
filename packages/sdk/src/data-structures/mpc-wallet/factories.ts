@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 import { MpcWallet } from "./implementation";
 import { MpcWalletSchema } from "./schema";
@@ -14,13 +14,10 @@ export function createMpcWallet(
   const serialized = MpcWalletSchema.migratableSchema.parse(migratable);
   return new MpcWallet(
     serialized.homeChain,
-    factories.MultisigKey.create(
-      undefined,
-      serialized.homeChain,
-      serialized.owner,
-    ),
+    factories.MultisigKey.create(serialized.homeChain, serialized.owner),
     serialized.userEntryAddress,
     serialized.encryptedShares,
+    serialized.previousWalletData,
   );
 }
 
@@ -32,7 +29,12 @@ export function createObservableMpcWallet(
   });
   makeObservable<
     MpcWallet,
-    "_homeChainId" | "_owner" | "_userEntryAddress" | "_encryptedShares"
+    | "_homeChainId"
+    | "_owner"
+    | "_userEntryAddress"
+    | "_encryptedShares"
+    | "_previousWalletData"
+    | "setOwner"
   >(
     wallet,
     {
@@ -40,6 +42,10 @@ export function createObservableMpcWallet(
       _owner: observable,
       _userEntryAddress: observable,
       _encryptedShares: observable,
+      _previousWalletData: observable,
+      setOwner: action,
+      setEncryptedShares: action,
+      setPreviousWalletData: action,
       toJSON: false,
     },
     {

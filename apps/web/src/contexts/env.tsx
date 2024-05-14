@@ -9,7 +9,6 @@ export interface Env {
   THEME: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const EnvContext = createContext<Env | null>(null);
 
 export function useEnv() {

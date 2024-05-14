@@ -18,7 +18,9 @@ export class MpcWallets {
 
   public toJSON(): AbstractSerialized<typeof MpcWalletsSchema> {
     return {
-      wallets: this._wallets.map((w) => w.toJSON()),
+      wallets: this._wallets.map((w) => {
+        return w.toJSON();
+      }),
       currentWalletIndex: this._currentWalletIndex,
     };
   }
@@ -28,7 +30,9 @@ export class MpcWallets {
     const serializedWallets = uniqBy((wallet) => {
       return wallet.userEntryAddress;
     }, serialized.wallets);
-    this._wallets = serializedWallets.map((w) => this._factory.create(w));
+    this._wallets = serializedWallets.map((w) => {
+      return this._factory.create(w);
+    });
     this._currentWalletIndex = serialized.currentWalletIndex;
   }
 
@@ -46,9 +50,9 @@ export class MpcWallets {
   }
 
   public setCurrentWallet(wallet: MpcWallet) {
-    const index = this._wallets.findIndex(
-      (w) => w.userEntryAddress === wallet.userEntryAddress,
-    );
+    const index = this._wallets.findIndex((w) => {
+      return w.userEntryAddress === wallet.userEntryAddress;
+    });
     if (index !== -1) {
       this._currentWalletIndex = index;
     }
@@ -59,7 +63,9 @@ export class MpcWallets {
   }
 
   public getWalletByUserEntryAddress(userEntryAddress: string) {
-    return this._wallets.find((w) => w.userEntryAddress === userEntryAddress);
+    return this._wallets.find((w) => {
+      return w.userEntryAddress === userEntryAddress;
+    });
   }
 
   public upsertWallet(wallet: MpcWallet) {
@@ -74,8 +80,8 @@ export class MpcWallets {
   }
 
   public removeWallet(wallet: MpcWallet) {
-    this._wallets = this._wallets.filter(
-      (w) => w.userEntryAddress !== wallet.userEntryAddress,
-    );
+    this._wallets = this._wallets.filter((w) => {
+      return w.userEntryAddress !== wallet.userEntryAddress;
+    });
   }
 }

@@ -1,3 +1,4 @@
+import { Encoding } from "@obi-wallet/encoding";
 import {
   Secp256k1PrivateKeySigner,
   SecretJsHomeChainId,
@@ -19,23 +20,20 @@ export function getFeeLender(
       const feeLender = feeLenders[lenderIndex];
       const wallet = new Wallet(feeLender);
       const signer = new Secp256k1PrivateKeySigner(
-        Buffer.from(wallet.privateKey).toString("base64"),
+        Encoding.fromBytes(wallet.privateKey).toBase64(),
       );
       return { wallet, signer, lenderIndex };
     }
     case SecretJsHomeChainId.MAINNET: {
       invariant(process.env.FEE_LENDER_SECRET_4, "No fee lenders");
       const feeLender = process.env.FEE_LENDER_SECRET_4;
-      console.log("knownLenderIndex is " + knownLenderIndex);
       const lenderIndex = knownLenderIndex ?? Math.floor(Math.random() * 1000);
       const wallet = new Wallet(feeLender, {
         hdAccountIndex: lenderIndex,
       });
       const signer = new Secp256k1PrivateKeySigner(
-        Buffer.from(wallet.privateKey).toString("base64"),
+        Encoding.fromBytes(wallet.privateKey).toBase64(),
       );
-      // we need to return the lender index since it owns the account
-      // before owner is known and first_update_owner is called on it
       return { wallet, signer, lenderIndex };
     }
   }

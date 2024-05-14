@@ -1,4 +1,14 @@
 # Env
 .env
+.env*.local
 
 certificates
+
+# Vercel
+.vercel
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

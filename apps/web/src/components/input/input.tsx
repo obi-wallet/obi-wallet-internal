@@ -5,6 +5,8 @@ import {
   ChangeEvent,
   ComponentPropsWithoutRef,
   forwardRef,
+  Ref,
+  RefObject,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -18,14 +20,15 @@ interface InputProps
   endIcon?: IconType;
   labelBgColor?: string;
   labelText?: string;
-  value?: string | number;
+  value?: string;
   errorMessage?: string;
   classNames?: {
     startIcon?: string;
     endIcon?: string;
   };
   onChange?: (value: string) => void;
-  InputRef?: React.RefObject<HTMLInputElement>;
+  InputRef?: RefObject<HTMLInputElement>;
+  defaultValue?: string;
 }
 interface ParentRef {
   focus: () => void;
@@ -49,42 +52,35 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
     defaultValue,
     ...rest
   }: InputProps,
-  parentRef: React.Ref<ParentRef>,
+  parentRef: Ref<ParentRef>,
 ) {
   const [text, setText] = useState<string>("");
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    console.log("DEFAULT VALUE", defaultValue);
-    setText(defaultValue as string);
+    setText(defaultValue ?? "");
   }, [defaultValue]);
 
-  useImperativeHandle(parentRef, () => ({
-    // This function exposes the localRef's current value to the parent
-    // You can also expose other methods or values if needed
-    focus: () => {
-      ref.current?.focus();
-    },
-  }));
+  useImperativeHandle(parentRef, () => {
+    return {
+      // This function exposes the localRef's current value to the parent
+      // You can also expose other methods or values if needed
+      focus: () => {
+        ref.current?.focus();
+      },
+    };
+  });
 
   useEffect(() => {
-    console.log("VALUE", value);
     if (value !== text) {
       if (type === "number" && isNaN(Number(value))) return;
-      setText(value as string);
+      setText(value ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // useEffect(() => {
-  //   console.log("TEXT", text);
-  //   if (text !== value) {
-  //     onChange && onChange(text as string);
-  //   }
-  // }, [text]);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    console.log({ value, number: isNaN(parseFloat(value)) });
+
     if (type === "number" && isNaN(Number(value))) return;
     setText(value.trim());
     onChange && onChange(value.trim());

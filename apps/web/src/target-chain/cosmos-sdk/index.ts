@@ -1,3 +1,4 @@
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import {
   CosmosSdkChainData,
   CosmosSdkChainId,
@@ -5,6 +6,7 @@ import {
 } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -31,12 +33,16 @@ import {
   StdFee,
 } from "@cosmjs/stargate";
 import { MpcWallet } from "@obi-wallet/sdk";
-import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import {
+  AbstractTargetChain,
+  AssetId,
+} from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import { bech32 } from "bech32";
+import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -60,13 +66,13 @@ function isStdFee(fee: unknown): fee is StdFee {
   return StdFeeSchema.safeParse(fee).success;
 }
 
-export class CosmosSdkTargetChain extends AbstractTargetChain {
+export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
   protected readonly tokenRegistry: CosmosSdkTokenRegistry;
 
   public constructor(chainId: CosmosSdkChainId) {
-    super();
+    super(chainId);
     this.chainData = CosmosSdkChains[chainId];
     const chain = chains.find((c) => {
       return c.chain_id === chainId;
@@ -80,6 +86,14 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return this.chainData.name;
   }
 
+  public get image() {
+    return this.chainData.image;
+  }
+
+  public get disabled() {
+    return this.chainData.disabled ?? false;
+  }
+
   public computeAddress(publicKey: Secp256k1PublicKey) {
     return pubkeyToAddress(
       getSec256k1CompressedPublicKey(publicKey),
@@ -87,7 +101,13 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     );
   }
 
-  public async withStargateClient<T>(f: (client: StargateClient) => T) {
+  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+    return this.computeAddress(publicKey);
+  }
+
+  public async withStargateClient<T>(
+    f: (client: StargateClient) => Promise<T>,
+  ) {
     const client = await this.createStargateClient();
     try {
       return await f(client);
@@ -96,9 +116,71 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     }
   }
 
+  public async balancesQueryFn(address: string) {
+    return await this.withStargateClient(async (client) => {
+      const balances = await client.getAllBalances(address);
+      return balances.map((balance) => {
+        return {
+          chainId: this.chainId,
+          assetId: balance.denom,
+          rawAmount: balance.amount,
+        };
+      });
+    });
+  }
+
+  public async priceQueryFn(id: AssetId) {
+    if (this.chainId === CosmosSdkChainId.Neutron && id !== "untrn") {
+      const url = "https://api.skip.money/v2/fungible/route";
+      const asset = this.assetInfo(id);
+
+      const amountIn = new BigNumber(1)
+        .multipliedBy(10 ** (asset?.decimals ?? 0))
+        .toFixed(0);
+
+      const data = {
+        source_asset_chain_id: "neutron-1",
+        amount_in: amountIn,
+        source_asset_denom: id,
+        dest_asset_denom:
+          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
+        dest_asset_chain_id: this.chainId,
+        allow_unsafe: true,
+      };
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        const number = Number(json.usd_amount_out);
+        return { usdValue: number.toString(10) };
+      } catch (e) {
+        console.log("SKIP ERROR", e);
+      }
+    }
+
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
+    }
+  }
+
   public async withSigningStargateClient<T>(
     signer: OfflineSigner,
-    f: (client: SigningStargateClient) => T,
+    f: (client: SigningStargateClient) => Promise<T>,
   ) {
     const client = await this.createSigningStargateClient(signer);
     try {
@@ -108,7 +190,9 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     }
   }
 
-  public async withCosmWasmClient<T>(f: (client: CosmWasmClient) => T) {
+  public async withCosmWasmClient<T>(
+    f: (client: CosmWasmClient) => Promise<T>,
+  ) {
     const client = await this.createCosmWasmClient();
     try {
       return await f(client);
@@ -119,7 +203,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
 
   public async withSigningCosmWasmClient<T>(
     signer: OfflineSigner,
-    f: (client: SigningCosmWasmClient) => T,
+    f: (client: SigningCosmWasmClient) => Promise<T>,
   ) {
     const client = await this.createSigningCosmWasmClient(signer);
     try {
@@ -182,9 +266,11 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   public async calculateFee({
     wallet,
     messages,
+    memo,
   }: {
     wallet: MpcWallet;
     messages: unknown[];
+    memo: string;
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
@@ -195,9 +281,56 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       const gasEstimation = await client.simulate(
         signer.address,
         messages,
-        undefined,
+        memo,
       );
       return calculateFee(Math.round(gasEstimation * 2), this.gasPrice);
+    });
+  }
+
+  public async calculateHashToSign({
+    wallet,
+    fee,
+    messages,
+    memo,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+  }): Promise<Uint8Array | undefined> {
+    invariant(this.validateMessages(messages), "Invalid messages");
+    const signer = await this.getSigner(wallet);
+    return await signer.mpcSigner.calculateHashToSign(async () => {
+      await this.withSigningStargateClient(signer, async (client) => {
+        await client.sign(signer.address, messages, fee, memo);
+      });
+    });
+  }
+
+  public async sign({
+    wallet,
+    fee,
+    messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    invariant(this.validateMessages(messages), "Invalid messages");
+
+    const signer = await this.getSigner(wallet);
+    signer.mpcSigner.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
+    return await this.withSigningStargateClient(signer, async (client) => {
+      return await client.sign(signer.address, messages, fee, memo);
     });
   }
 
@@ -205,16 +338,26 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     wallet,
     fee,
     messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
   }: {
     wallet: MpcWallet;
     fee: StdFee;
     messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
+    signer.mpcSigner.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
     return await this.withSigningStargateClient(signer, async (client) => {
-      return await client.signAndBroadcast(signer.address, messages, fee);
+      return await client.signAndBroadcast(signer.address, messages, fee, memo);
     });
   }
 
@@ -239,11 +382,24 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return isStdFee(fee);
   }
 
-  public getAsset(denom: string) {
-    return this.tokenRegistry.getAsset({
+  public assetInfo(denom: string) {
+    const asset = this.tokenRegistry.getAsset({
       chainId: this.chainData.id,
       denom,
     });
+
+    if (!asset) return null;
+
+    const denomUnit = asset.denom_units.find((value) => {
+      return value.denom === asset.display;
+    });
+
+    return {
+      name: asset.name,
+      symbol: asset.symbol,
+      decimals: denomUnit?.exponent ?? 0,
+      image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
+    };
   }
 
   public validateAddress(address: string): boolean {

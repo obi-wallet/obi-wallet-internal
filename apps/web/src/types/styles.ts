@@ -14,7 +14,7 @@ export type IColors =
   | "green"
   | "zinc"
   | "transparent";
-export type IFontWeights = "normal" | "medium" | "semibold" | "bold";
+export type IFontWeights = "light" | "normal" | "medium" | "semibold" | "bold";
 export type ILeadings =
   | "none"
   | "tight"

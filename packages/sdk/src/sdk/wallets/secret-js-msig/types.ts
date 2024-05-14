@@ -13,11 +13,6 @@ export enum KeyType {
   Telegram = "telegram",
 }
 
-export interface SerializedPublicKey {
-  type: string;
-  value: string;
-}
-
 export interface SerializedKey {
   type: KeyType;
   publicKey: Secp256k1PublicKey;
@@ -33,7 +28,5 @@ export interface SerializedProxyWallet {
     address: string;
     codeId: number;
   };
-  evmUserContractAddress: string;
-  evmSigningAddress: string | undefined;
   owner: SerializedMultisigKey;
 }

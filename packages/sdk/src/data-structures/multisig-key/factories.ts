@@ -6,67 +6,58 @@ import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
-export type SetupMultisigKeyDetails = {
-  homeAccountAddress: string;
-  evmSigningAddress: string;
-  evmUserContractAddress: string;
-  ownerIndex: number;
-};
-
 export function createMultisigKey(
-  setupDetails: SetupMultisigKeyDetails | undefined, // TODO: make it optional
   chain: ChainId,
   serialized: AbstractMigratable<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
-    evmSigningAddress: "",
-    evmUserContractAddress: "",
   },
   factories = {
     Key,
     createMultisigKey,
   },
 ): MultisigKey {
-  const { keys, threshold } =
+  const { keys, primaryKeyIndex, threshold } =
     MultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
-    keysMapped = keys.map((key) => factories.Key.create(key));
+    keysMapped = keys.map((key) => {
+      return factories.Key.create(key);
+    });
   } catch (e) {
     keysMapped = [];
   }
-  return new MultisigKey(setupDetails, chain, keysMapped, threshold, {
+  return new MultisigKey(chain, keysMapped, primaryKeyIndex, threshold, {
     Key: factories.Key,
     createMultisigKey: factories.createMultisigKey,
   });
 }
 
 export function createObservableMultisigKey(
-  setupDetails: SetupMultisigKeyDetails | undefined,
   chain: ChainId,
   migratable?: AbstractMigratable<typeof MultisigKeySchema>,
 ) {
-  console.log("running createObservableMultisigKey()");
-  const key = createMultisigKey(setupDetails, chain, migratable, {
+  const key = createMultisigKey(chain, migratable, {
     Key: ObservableKey,
     createMultisigKey: createObservableMultisigKey,
   });
   makeObservable<
     MultisigKey,
-    "_setupDetails" | "_chainId" | "_keys" | "_threshold" | "setKey"
+    "_chainId" | "_keys" | "_threshold" | "addKey" | "setKeys" | "setPrimaryKey"
   >(
     key,
     {
-      _setupDetails: observable,
       _chainId: observable,
       _keys: observable,
       _threshold: observable,
       toJSON: false,
       clone: false,
       setThreshold: action,
-      setKey: action,
-      removeKeyOfType: action,
-      setSetupDetails: action,
+      addKey: action,
+      removeKey: action,
+      removeKeyByPublicKey: action,
+      setKeys: action,
+      setPrimaryKey: action,
     },
     {
       name: "MultisigKey",

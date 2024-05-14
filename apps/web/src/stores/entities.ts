@@ -16,7 +16,9 @@ export class Entities<T> implements Draftable {
 
   @computed
   public get entities(): readonly T[] {
-    return this.ids.map((id) => this._entities[id]!);
+    return this.ids.map((id) => {
+      return this._entities[id]!;
+    });
   }
 
   public get({ id }: { id: EntityId }) {
@@ -38,9 +40,9 @@ export class Entities<T> implements Draftable {
 
   @action
   public removeBy({ predicate }: { predicate: (entity: T) => boolean }) {
-    const idsToRemove = this._ids.filter((id) =>
-      predicate(this._entities[id]!),
-    );
+    const idsToRemove = this._ids.filter((id) => {
+      return predicate(this._entities[id]!);
+    });
     idsToRemove.forEach((id) => {
       this.remove({ id });
     });
@@ -48,7 +50,9 @@ export class Entities<T> implements Draftable {
 
   @action
   public remove({ id }: { id: EntityId }) {
-    this._ids = this._ids.filter((idToKeep) => idToKeep !== id);
+    this._ids = this._ids.filter((idToKeep) => {
+      return idToKeep !== id;
+    });
     this._entities = R.omit([id], this._entities);
   }
 
@@ -56,6 +60,7 @@ export class Entities<T> implements Draftable {
     const clone = new Entities<T>();
     clone._ids = [...this._ids];
     clone._entities = { ...this._entities };
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     return clone as this;
   }
 
@@ -69,8 +74,17 @@ export class Entities<T> implements Draftable {
 
   public static merge<T>(...entities: Entities<T>[]): Entities<T> {
     const merged = new Entities<T>();
-    merged._ids = ([] as Array<string>).concat(...entities.map((e) => e._ids));
-    merged._entities = R.mergeAll([{}, ...entities.map((e) => e._entities)]);
+    merged._ids = new Array<string>().concat(
+      ...entities.map((e) => {
+        return e._ids;
+      }),
+    );
+    merged._entities = R.mergeAll([
+      {},
+      ...entities.map((e) => {
+        return e._entities;
+      }),
+    ]);
     return merged;
   }
 

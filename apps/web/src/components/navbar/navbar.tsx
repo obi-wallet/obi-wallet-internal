@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Account, Divider, Footer, PrimaryLink, Text } from "..";
+import { Account, Footer, PrimaryLink, Text } from "..";
 
-type NavMenu = {
+interface NavMenu {
   href: string;
   text: string;
   mobileText?: string;
@@ -17,7 +17,7 @@ type NavMenu = {
   showOnDesktop?: boolean;
   target?: string;
   mobileOrder: number;
-};
+}
 const navMenu: NavMenu[] = [
   {
     href: "/dashboard/transaction/send",
@@ -37,7 +37,16 @@ const navMenu: NavMenu[] = [
     showOnDesktop: true,
     mobileOrder: 3,
   },
-
+  {
+    href: "/dashboard/fast-travel",
+    text: "Fast Travel",
+    mobileText: "FT",
+    module: "fast-travel",
+    icon: "/assets/icons/nav-fast-travel.svg",
+    showOnDesktop: true,
+    showOnMobile: true,
+    mobileOrder: 1,
+  },
   {
     href: "/dashboard/buy-crypto",
     mobileText: "Buy",
@@ -49,14 +58,13 @@ const navMenu: NavMenu[] = [
     mobileOrder: 2,
   },
   {
-    href: "/dashboard/fast-travel",
-    text: "Fast Travel",
-    mobileText: "FT",
-    module: "fast-travel",
-    icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
+    href: "/dashboard/settings/security",
+    text: "Security",
+    module: "settings",
+    icon: "/assets/icons/nav-settings.svg",
     showOnMobile: true,
-    mobileOrder: 1,
+    showOnDesktop: true,
+    mobileOrder: 5,
   },
   {
     href: "/dashboard/app-connect",
@@ -69,11 +77,11 @@ const navMenu: NavMenu[] = [
     mobileOrder: 4,
   },
   {
-    href: "/dashboard/settings",
-    text: "Settings",
-    module: "settings",
-    icon: "/assets/icons/nav-settings.svg",
-    showOnMobile: true,
+    href: "",
+    text: "Extra Life (soon)",
+    module: "extra-life",
+    icon: "/assets/icons/nav-extra-life.svg",
+    showOnMobile: false,
     showOnDesktop: true,
     mobileOrder: 5,
   },
@@ -84,45 +92,55 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className={cn("bg-background-secondary")}>
-      <div className="flex h-full w-[330px] flex-col px-7 pt-16 max-md:hidden md:overflow-y-auto">
-        <div className="hidden   w-full flex-col md:flex">
-          <AccountAndCTA />
+    <nav
+      // style={{
+      //   backgroundImage:
+      //     "linear-gradient(180deg, #0F0F26, #1A1A42,#262661,#0F0F26)",
+      // }}
+      className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950"
+    >
+      <div className="flex h-full w-[330px] flex-col px-3 pt-4 max-md:hidden md:overflow-y-auto">
+        <div className="hidden w-full flex-col md:flex">
+          <Account />
         </div>
-        <Divider />
 
         <div className="mt-7 grow">
           <ul role="list" className="flex flex-col space-y-3">
             {navMenu
-              .filter((item) => item.showOnDesktop)
-              .map((navItem, index) => (
-                <li key={`navmenu-${index}`}>
-                  <PrimaryLink
-                    href={navItem.href}
-                    className={`flex flex-row px-6 py-2 text-xl font-normal text-white lg:text-2xl ${
-                      mainURISegment === navItem.module
-                        ? "bg-background-select rounded-md font-bold"
-                        : ""
-                    }`}
-                    target={navItem.target || "_self"}
-                  >
-                    <Image
-                      src={navItem.icon}
-                      width={30}
-                      height={30}
-                      alt={navItem.text}
-                    />
-                    <Text
-                      className="ml-7"
-                      fontWeight={
-                        mainURISegment === navItem.module ? "bold" : "normal"
-                      }
+              .filter((item) => {
+                return item.showOnDesktop;
+              })
+              .map((navItem) => {
+                return (
+                  <li key={navItem.href}>
+                    <PrimaryLink
+                      href={navItem.href}
+                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
+                        mainURISegment === navItem.module
+                          ? "font-bold opacity-100"
+                          : ""
+                      }`}
+                      target={navItem.target || "_self"}
                     >
-                      {navItem.text}
-                    </Text>
-                  </PrimaryLink>
-                </li>
-              ))}
+                      <Image
+                        src={navItem.icon}
+                        width={30}
+                        height={30}
+                        alt={navItem.text}
+                        className="!h-[30px] !w-[30px]"
+                      />
+                      <Text
+                        className="ml-7"
+                        fontWeight={
+                          mainURISegment === navItem.module ? "bold" : "normal"
+                        }
+                      >
+                        {navItem.text}
+                      </Text>
+                    </PrimaryLink>
+                  </li>
+                );
+              })}
           </ul>
         </div>
         <Footer className="!px-0" />
@@ -131,32 +149,36 @@ export function Navbar() {
         <div className="flex w-full flex-row items-center justify-center px-4 ">
           <ul role="list" className="flex w-full flex-row justify-between p-3 ">
             {navMenu
-              .filter((item) => item.showOnMobile)
-              .sort((itemX, itemY) =>
-                itemX.mobileOrder - itemY.mobileOrder > 0 ? 1 : -1,
-              )
-              .map((navItem, index) => (
-                <li key={`navmenu-${index}`}>
-                  <PrimaryLink
-                    href={navItem.href}
-                    className={cn(
-                      "flex flex-col items-center justify-center space-y-3",
-                      mainURISegment !== navItem.module && "opacity-60",
-                    )}
-                  >
-                    <Image
-                      src={navItem.icon}
-                      height={30}
-                      width={30}
-                      alt={navItem.text}
-                      className="!h-[30px] !w-[30px]"
-                    />
-                    <Text className="text-center">
-                      {navItem.mobileText ?? navItem.text}
-                    </Text>
-                  </PrimaryLink>
-                </li>
-              ))}
+              .filter((item) => {
+                return item.showOnMobile;
+              })
+              .sort((itemX, itemY) => {
+                return itemX.mobileOrder - itemY.mobileOrder > 0 ? 1 : -1;
+              })
+              .map((navItem, index) => {
+                return (
+                  <li key={`navmenu-${index}`}>
+                    <PrimaryLink
+                      href={navItem.href}
+                      className={cn(
+                        "flex flex-col items-center justify-center space-y-3",
+                        mainURISegment !== navItem.module && "opacity-60",
+                      )}
+                    >
+                      <Image
+                        src={navItem.icon}
+                        height={30}
+                        width={30}
+                        alt={navItem.text}
+                        className="!h-[30px] !w-[30px]"
+                      />
+                      <Text className="text-center">
+                        {navItem.mobileText ?? navItem.text}
+                      </Text>
+                    </PrimaryLink>
+                  </li>
+                );
+              })}
           </ul>
         </div>
       </div>

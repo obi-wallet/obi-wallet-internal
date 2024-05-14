@@ -18,17 +18,8 @@ export const SecretJsHomeChains = {
       codeHash:
         "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
     },
-    currentCodeIds: {
-      userAccount: 135,
-      userEntry: 1209,
-    },
     urls: ["https://api.pulsar3.scrttestnet.com:443"],
     denom: "uscrt",
-    startingUsdDebt: "0",
-    bip: [{ path: "m/44'/529'/0'/0/0" }],
-    explorerUrl(address: string) {
-      return `https://testnet.ping.pub/secret/account/${address}`;
-    },
   },
   [SecretJsHomeChainId.MAINNET]: {
     chainId: SecretJsHomeChainId.MAINNET,
@@ -44,16 +35,7 @@ export const SecretJsHomeChains = {
       codeHash:
         "18dc025952aaf371d366e474c088d473b6281e924877fe0bba65209b4a17074e",
     },
-    currentCodeIds: {
-      userAccount: 1267,
-      userEntry: 1268,
-    },
-    urls: ["https://scrt-api.dalnim.finance", "https://lcd.secret.express/"],
+    urls: ["https://scrt-api.dalnim.finance", "https://scrt-api.bodhi.money/"],
     denom: "uscrt",
-    startingUsdDebt: "0",
-    bip: [{ path: "m/44'/529'/0'/0/0" }],
-    explorerUrl(address: string) {
-      return `https://testnet.ping.pub/secret/account/${address}`;
-    },
   },
 };

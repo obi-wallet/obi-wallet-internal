@@ -7,7 +7,6 @@ import Provider from "@/components/provider";
 const preview: Preview = {
   parameters: {
     layout: "fullscreen",
-    actions: { argTypesRegex: "^on[A-Z].*" },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -21,7 +20,7 @@ const preview: Preview = {
   decorators: [
     (Story) => {
       return (
-        <RootContainer>
+        <RootContainer className="bg-gradient-to-br from-black to-slate-900">
           <Provider>
             <MainContainer>
               <Story />

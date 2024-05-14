@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Dexie, { Table } from "dexie";
 import * as R from "ramda";
 
@@ -107,7 +106,7 @@ class EncryptionKey {
     if (!EncryptionKey.singletonPromise) {
       EncryptionKey.singletonPromise = EncryptionKey.getOrCreateEncryptionKey();
     }
-    return EncryptionKey.singletonPromise;
+    return await EncryptionKey.singletonPromise;
   }
 
   protected static async getOrCreateEncryptionKey() {

@@ -1,5 +1,6 @@
+import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
+
 import { ChainId } from "../../chains";
-import { queryClient, QueryClientNamespace } from "../../query-client";
 
 export abstract class AbstractContractsSdk {
   protected queryNamespace: QueryClientNamespace<
@@ -22,11 +23,10 @@ export abstract class AbstractContractsSdk {
     return queryClient.fetchQuery(this.codeIdQuery(contract));
   }
 
-  public codeIdQuery(contract: string) {
+  public get codeIdQuery() {
     return this.queryNamespace.createQuery({
       name: "codeId",
       fn: this.codeIdQueryFn.bind(this),
-      params: contract,
     });
   }
 

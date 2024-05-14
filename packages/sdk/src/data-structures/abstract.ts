@@ -6,9 +6,9 @@ export interface AbstractDataStructure<T, S> {
   schema: S;
 }
 
-export type AbstractDataStructureToSchema<T> =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends { schema: infer S } ? S : never;
+export type AbstractDataStructureToSchema<T> = T extends { schema: infer S }
+  ? S
+  : never;
 export type Migratable<T> = AbstractMigratable<
   AbstractDataStructureToSchema<T>
 >;

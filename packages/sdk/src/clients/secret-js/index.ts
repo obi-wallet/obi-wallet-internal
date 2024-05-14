@@ -10,7 +10,13 @@ import {
   createStakingAminoConverters,
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
-import { BroadcastMode, Msg, SecretNetworkClient, TxOptions } from "secretjs";
+import {
+  BroadcastMode,
+  Msg,
+  SecretNetworkClient,
+  TxOptions,
+  TxResponse,
+} from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -26,7 +32,7 @@ import { Message, SignedTransaction } from "../../transactions";
 
 export async function withSecretNetworkClient<T>(
   chainId: SecretJsChainId,
-  f: (client: SecretNetworkClient) => T,
+  f: (client: SecretNetworkClient) => Promise<T>,
 ) {
   const chain = SecretJsChains[chainId];
 
@@ -54,7 +60,7 @@ export async function withSigningSecretNetworkClient<T>(
     chainId: SecretJsChainId;
     signer: AminoSignerWithAddress;
   },
-  f: (client: SecretNetworkClient) => T,
+  f: (client: SecretNetworkClient) => Promise<T>,
 ) {
   const chain = SecretJsChains[chainId];
 
@@ -79,13 +85,15 @@ export async function withSigningSecretNetworkClient<T>(
 export class SecretJsClient {
   public constructor(protected chainId: SecretJsChainId) {}
 
-  public withSecretNetworkClient<T>(f: (client: SecretNetworkClient) => T) {
+  public withSecretNetworkClient<T>(
+    f: (client: SecretNetworkClient) => Promise<T>,
+  ) {
     return withSecretNetworkClient(this.chainId, f);
   }
 
   public withSigningSecretNetworkClient<T>(
     signer: AminoSignerWithAddress,
-    f: (client: SecretNetworkClient) => T,
+    f: (client: SecretNetworkClient) => Promise<T>,
   ) {
     return withSigningSecretNetworkClient({ chainId: this.chainId, signer }, f);
   }
@@ -115,7 +123,7 @@ export class SecretJsClient {
       schema: T;
     }[],
   ): Promise<z.infer<T>[]> {
-    return this.withSecretNetworkClient(async (client) => {
+    return await this.withSecretNetworkClient(async (client) => {
       return await Promise.all(
         queries.map(async ({ contract, codeHash, query, schema }) => {
           const response = await client.query.compute.queryContract({
@@ -146,12 +154,31 @@ export class SecretJsClient {
     return await this.withSigningSecretNetworkClient(
       SecretJsAminoSigner.fromSigner({ signer, prefix: this.chain.prefix }),
       async (client) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return await client.tx.signTx(messages as Msg[], {
           ...this.defaultTxOptions,
           gasLimit: gasLimit ?? this.defaultTxOptions.gasLimit,
         });
       },
     );
+  }
+
+  public async broadcastSignedTransactionOrMockTxDuringTest({
+    signedTransaction,
+    hash,
+  }: {
+    signedTransaction: SignedTransaction;
+    hash: string;
+  }): Promise<BroadcastTransactionResult> {
+    if (process.env.NODE_ENV === "test") {
+      const rawResult = await this.withSecretNetworkClient(async (client) => {
+        return await client.query.getTx(hash);
+      });
+      invariant(rawResult, "no tx response");
+      return this.wrapTxResponse(rawResult);
+    }
+
+    return await this.broadcastSignedTransaction(signedTransaction);
   }
 
   public async broadcastSignedTransaction(
@@ -203,13 +230,17 @@ export class SecretJsClient {
       // TODO retry handling instead
       rawResult = txResponse;
       invariant(rawResult, "no tx response");
-      return {
-        success: rawResult.code === 0,
-        transactionHash: rawResult.transactionHash,
-        rawLog: rawResult.rawLog,
-        rawResult,
-      };
+      return this.wrapTxResponse(rawResult);
     });
+  }
+
+  protected wrapTxResponse(rawResult: TxResponse): BroadcastTransactionResult {
+    return {
+      success: rawResult.code === 0,
+      transactionHash: rawResult.transactionHash,
+      rawLog: rawResult.rawLog,
+      rawResult,
+    };
   }
 
   public get aminoTypes() {

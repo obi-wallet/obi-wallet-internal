@@ -42,19 +42,6 @@ export interface Session {
   partySignup?: PartySignup;
 }
 
-/*
-// Temporary object passed back and forth between javascript
-// and webassembly for the various rounds.
-export interface RoundEntry {
-  peer_entries: PeerEntry[];
-  // Webassembly adds a bunch of temporary properties
-  // to each round entry for further rounds but
-  // these fields should not be accessed here
-  // however we declare their presence in the type
-  [x: string]: any;
-}
-*/
-
 // State for party signup round during keygen.
 export interface PartySignupInfo {
   parameters: Parameters;
@@ -113,20 +100,20 @@ export interface SignatureRecid {
   recid: number;
 }
 
-export type ExistingKeyRefreshItem = {
+export interface ExistingKeyRefreshItem {
   Existing: {
     // This should be fine
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     key: any;
     updated_party_index?: number;
   };
-};
+}
 
-export type NewKeyRefreshItem = {
+export interface NewKeyRefreshItem {
   New: {
     party_index: number;
   };
-};
+}
 
 export type KeyRefreshItem = ExistingKeyRefreshItem | NewKeyRefreshItem;
 

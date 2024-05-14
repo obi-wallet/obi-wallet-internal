@@ -6,8 +6,8 @@ import {
   PrimaryKeyOnboardingStep,
 } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
-import { createPasskey, KeyType, Sdk } from "@obi-wallet/sdk";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createPasskey, KeyType } from "@obi-wallet/sdk";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -18,7 +18,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   next,
   step,
 }: StepProps<PrimaryKeyOnboardingStep>) {
-  const queryClient = useQueryClient();
   const pathName = usePathname();
   const externalAsset = pathName.split("/")[2]?.split("-")[1];
 
@@ -35,12 +34,6 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           payload: keyPair,
         },
       });
-
-      await queryClient.prefetchQuery(
-        Sdk.chainId(draft.value.homeChainId).transactions.prepareKeyPairQuery(
-          keyPair,
-        ),
-      );
       if (next) next();
     },
   });

@@ -1,6 +1,6 @@
-import { newFetchPublicKey } from "@/hooks/use-public-key";
-import { TargetChain } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { fetchPublicKey } from "@/hooks/use-public-key";
+import { allTargetChainIds, TargetChain } from "@/target-chain";
+import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
@@ -62,20 +62,24 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await newFetchPublicKey(wallet);
-    const enabledCosmosSdkChains = Object.values(CosmosSdkChains).filter(
-      (chain) => {
-        return !chain.disabled;
-      },
-    );
-    return enabledCosmosSdkChains.map((chain) => {
-      const targetChain = TargetChain.chainId(chain.id);
-      return {
-        namespace: "cosmos",
-        chainId: chain.id,
-        address: targetChain.computeAddress(publicKey),
-        publicKey,
-      };
+    const publicKey = await fetchPublicKey(wallet);
+    const enabledCosmosSdkChains = allTargetChainIds.filter((targetChainId) => {
+      return (
+        isCosmosSdkChainId(targetChainId) &&
+        !TargetChain.chainId(targetChainId).disabled
+      );
     });
+
+    return await Promise.all(
+      enabledCosmosSdkChains.map(async (targetChainId) => {
+        const targetChain = TargetChain.chainId(targetChainId);
+        return {
+          namespace: "cosmos",
+          chainId: targetChainId,
+          address: await targetChain.obiAccountAddress(publicKey),
+          publicKey,
+        };
+      }),
+    );
   }
 }

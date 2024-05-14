@@ -14,9 +14,17 @@ export function createMpcWallets(
   factory = MpcWallet,
   serialize = R.identity,
 ) {
-  const serialized = MpcWalletsSchema.migratableSchema.parse(migratable);
+  const serialized = MpcWalletsSchema.migratableSchema.parse({
+    ...migratable,
+    // Filter out wallets without easy shares
+    wallets: migratable.wallets.filter((wallet) => {
+      return !!wallet.encryptedShares.easy;
+    }),
+  });
   return new MpcWallets(
-    serialized.wallets.map((wallet) => factory.create(wallet)),
+    serialized.wallets.map((wallet) => {
+      return factory.create(wallet);
+    }),
     serialized.currentWalletIndex,
     factory,
     serialize,

@@ -40,6 +40,7 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
     // Combining those two gives us what we actually want
     const encodeObjects = decodedBodyWithDecodedMessageValues.messages.map(
       (value, index) => {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const { typeUrl } = decodedBodyWithMessageTypeUrls.messages[
           index
         ] as DecodeObject;
@@ -51,9 +52,19 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
       <ApproveMessages
         targetChainId={chainId}
         messages={encodeObjects}
+        memo={decodedBodyWithDecodedMessageValues.memo}
         rawData={encodeObjects}
-        onApprove={async ({ wallet, fee }) => {
+        onApprove={async ({
+          wallet,
+          fee,
+          intentionsPayload,
+          intentionsResults,
+        }) => {
           const signer = await targetChain.getSigner(wallet);
+          signer.mpcSigner.addIntentionsResults({
+            payload: intentionsPayload,
+            results: intentionsResults,
+          });
           const previousAuthInfo = AuthInfo.decode(signDoc.authInfoBytes);
           const newAuthInfo = AuthInfo.fromPartial({
             ...previousAuthInfo,

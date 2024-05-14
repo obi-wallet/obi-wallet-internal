@@ -2,25 +2,40 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env", "**/.env.*local"],
   "globalEnv": [
+    "CI",
     "FAST_TRAVEL_API_URL",
     "FEE_LENDERS_PULSAR_3",
     "FEE_LENDER_SECRET_4",
-    "PHONE_NUMBER_KEY_SECRET",
-    "PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
-    "PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD",
-    "STACKUP_API_KEYS",
-    "VERCEL_ENV",
     "NEXT_PUBLIC_ENV",
     "NEXT_PUBLIC_FAST_TRAVEL_API_URL",
     "NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET",
-    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
     "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD",
-    "NEXT_PUBLIC_THEME"
+    "NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
+    "NEXT_PUBLIC_THEME",
+    "NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA",
+    "NODE_ENV",
+    "PHONE_NUMBER_KEY_SECRET",
+    "PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD",
+    "PHONE_NUMBER_TWILIO_BASIC_AUTH_USER",
+    "STACKUP_API_KEYS",
+    "VERCEL_ENV",
+    "WALLETS_WORKER_SECRET_PRODUCTION",
+    "WALLETS_WORKER_SECRET_STAGING",
+    "MAINTENANCE_MODE"
   ],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "setup-ci": {
+      "dependsOn": ["^setup-ci"]
+    },
+    "test": {
+      "dependsOn": ["^test"]
+    },
+    "test-next": {
+      "dependsOn": ["^test-next"]
     },
     "test-storybook": {
       "dependsOn": ["^test-storybook"]

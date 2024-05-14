@@ -1,6 +1,3 @@
-import { MpcStore } from "@/stores/mpc";
-import { WalletConnectStore } from "@/stores/wallet-connect";
-import { WasmStore } from "@/stores/wasm";
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
@@ -12,11 +9,16 @@ import { UserDataStore } from ".";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
+import { KeyMetaDataStore } from "./key-meta-data";
+import { MpcStore } from "./mpc";
+import { WalletConnectStore } from "./wallet-connect";
+import { WasmStore } from "./wasm";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
+  public readonly keyMetaDataStore: KeyMetaDataStore;
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly userDataStore: UserDataStore;
@@ -33,6 +35,7 @@ export class RootStore {
   }) {
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
+    this.keyMetaDataStore = new KeyMetaDataStore(new KVStore("key-meta-data"));
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
     this.wasmStore = new WasmStore();
@@ -40,7 +43,6 @@ export class RootStore {
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?
     this.chainStore = new ChainStore({
       configStore: this.configStore,
-      walletsStore: this.walletsStore,
     });
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
@@ -55,10 +57,6 @@ export class RootStore {
 
   public get mpcWalletsStore() {
     return this.sdkRootStore.mpcWalletsStore;
-  }
-
-  public get walletsStore() {
-    return this.sdkRootStore.walletsStore;
   }
 
   public get walletsStoreState() {

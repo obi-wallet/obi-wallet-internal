@@ -15,14 +15,16 @@ export function migratable<T extends z.ZodTypeAny>(
   return createMigratableSchema({
     anyVersion: schema,
     currentVersion: schema,
-    migrate: (data) => data,
+    migrate: (data) => {
+      return data;
+    },
   });
 }
 
-export type AbstractMigratableSchema<
+export interface AbstractMigratableSchema<
   Any extends z.ZodTypeAny,
   Current extends z.ZodTypeAny,
-> = {
+> {
   currentSchema: Current;
   migratableSchema: z.ZodEffects<Any, z.TypeOf<Current>, z.input<Any>>;
   addMigration: <Next extends z.ZodTypeAny>({
@@ -32,7 +34,7 @@ export type AbstractMigratableSchema<
     nextSchema: Next;
     migrate: (data: z.infer<Current>) => z.infer<Next>;
   }) => AbstractMigratableSchema<z.ZodUnion<[Next, Any]>, Next>;
-};
+}
 
 function createMigratableSchema<
   Any extends z.ZodTypeAny,
@@ -78,7 +80,7 @@ function createMigratableSchema<
  */
 export type AbstractMigratable<T> =
   T extends AbstractMigratableSchema<infer Any, infer _Current>
-    ? z.input<Any>
+    ? z.infer<Any>
     : never;
 
 /**
@@ -86,5 +88,5 @@ export type AbstractMigratable<T> =
  */
 export type AbstractSerialized<T> =
   T extends AbstractMigratableSchema<infer _Any, infer Current>
-    ? z.input<Current>
+    ? z.infer<Current>
     : never;

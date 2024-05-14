@@ -1,14 +1,16 @@
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
 
 import {
   CustomDropdown as Dropdown,
+  CustomDropdownProps,
   DropdownItem,
   ItemComponentProps,
 } from ".";
-// types for books
+
 interface Book extends DropdownItem {
   id: string;
   author: string;
@@ -26,7 +28,7 @@ const meta = {
 } satisfies Meta<typeof Dropdown>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story<T extends DropdownItem> = StoryObj<CustomDropdownProps<T>>;
 
 const books: Book[] = [
   { id: "book-1", author: "Harper Lee", title: "To Kill a Mockingbird" },
@@ -52,13 +54,13 @@ function BookComponent({
 }: ItemComponentProps<Book>) {
   return (
     <div
-      {...(getItemProps({
+      {...getItemProps({
         item,
         style: {
           backgroundColor: isSelected ? "blue" : "white",
           color: isSelected ? "white" : "black",
         },
-      }) as React.HTMLAttributes<HTMLDivElement>)}
+      })}
       className="flex cursor-pointer items-center justify-between px-4 py-2"
     >
       <div className="flex items-center space-x-2">
@@ -81,26 +83,33 @@ function SelectedBook({ item }: { item: Book | null }) {
   );
 }
 
-export const Primary: Story = {
+export const Primary: Story<Book> = {
   args: {
     items: books,
-    itemComponent: BookComponent as unknown as React.FC<
-      ItemComponentProps<DropdownItem>
-    >,
-    itemToString: (item) => (item ? (item as Book).title : ""),
-    selectedItemComponent: SelectedBook as React.FC<{
-      item: DropdownItem | null;
-    }>,
+    itemComponent: BookComponent,
+    itemToString: (item) => {
+      return item ? item.title : "";
+    },
+    selectedItemComponent: SelectedBook,
+    onItemSelect: (item) => {
+      console.log(item);
+    },
   },
   render: (args) => {
+    const [item, setItem] = useState<Book | null>(null);
+
     return (
       <div className="min-w-screen flex min-h-screen flex-1 items-center justify-center">
-        <Dropdown
+        <Dropdown<Book>
           items={books}
           className="w-full"
           itemComponent={args.itemComponent}
           itemToString={args.itemToString}
-          onItemSelect={(item) => console.log(item)}
+          selectedItem={item}
+          onItemSelect={(item) => {
+            setItem(item);
+            return console.log(item);
+          }}
           selectedItemComponent={args.selectedItemComponent}
         />
       </div>

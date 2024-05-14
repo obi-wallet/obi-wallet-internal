@@ -12,8 +12,27 @@ module.exports = {
     "eslint-config-turbo",
     "prettier",
   ],
-  plugins: ["mobx", "import", "react", "react-hooks", "unicorn"],
+  plugins: ["mobx", "etc", "import", "react", "react-hooks", "unicorn"],
   rules: {
+    "@typescript-eslint/consistent-indexed-object-style": "error",
+    "@typescript-eslint/consistent-generic-constructors": "error",
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        assertionStyle: "never",
+      },
+    ],
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-inferrable-types": "error",
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        checksConditionals: true,
+        checksVoidReturn: false,
+        checksSpreads: true,
+      },
+    ],
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -22,17 +41,32 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
+    "@typescript-eslint/no-useless-template-literals": "error",
+    "@typescript-eslint/prefer-as-const": "error",
+    "@typescript-eslint/prefer-function-type": "error",
+    "@typescript-eslint/prefer-reduce-type-parameter": "error",
+    "@typescript-eslint/restrict-template-expressions": [
+      "error",
+      {
+        allowNever: true,
+        allowNumber: true,
+      },
+    ],
+    "@typescript-eslint/return-await": ["error", "always"],
+
+    "etc/prefer-interface": "error",
 
     "import/no-default-export": "error",
     "import/no-extraneous-dependencies": [
       "error",
       {
         devDependencies: [
-          "{.storybook,__fixtures__,__stories__,__tests__,__tests-integration__,scripts}/**/*",
+          "{.storybook,__fixtures__,__stories__,__tests__,__tests-e2e__,__tests-integration__,scripts}/**/*",
           "**/storybook-helpers/**/*",
-          "test-setup.ts",
-          "next.config.js",
           "jest*.[jt]s",
+          "next.config.js",
+          "playwright.config.ts",
+          "test-setup.ts",
           "**/*.stories.*",
         ],
         optionalDependencies: false,
@@ -74,7 +108,7 @@ module.exports = {
     "react/no-unescaped-entities": "off",
 
     "react-hooks/exhaustive-deps": [
-      "warn",
+      "error",
       {
         additionalHooks: "useAppStateEffect",
       },
@@ -87,6 +121,8 @@ module.exports = {
       },
     ],
 
+    "arrow-body-style": ["error", "always"],
+    curly: ["error", "multi-line"],
     "no-restricted-imports": [
       "error",
       {
