@@ -3,7 +3,7 @@ import { SHA256, Word32Array } from "jscrypto";
 
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
 
-export function createHash(payload: Buffer): Uint8Array {
+export function createHash(payload: Uint8Array): Uint8Array {
   return SHA256.hash(new Word32Array(payload)).toUint8Array();
 }
 

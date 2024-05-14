@@ -30,9 +30,8 @@ function createBufferSchema<T extends BufferEncoding>(bufferEncoding: T) {
   };
 }
 
-const utf8 = createBufferSchema("utf8");
-export const Utf8EncodedString = utf8.schema;
-export type Utf8EncodedString = z.infer<typeof Utf8EncodedString>;
+export const Utf8EncodedString = z.string();
+export type Utf8EncodedString = string;
 
 const base64 = createBufferSchema("base64");
 export const Base64EncodedString = base64.schema;
@@ -75,7 +74,7 @@ export class Encoding {
   }
 
   public toUtf8() {
-    return utf8.encoding.fromBytes(this.bytes);
+    return Buffer.from(this.bytes).toString("utf8");
   }
 
   public toBase64() {
@@ -95,7 +94,7 @@ export class Encoding {
   }
 
   public static fromUtf8(str: Utf8EncodedString) {
-    return new Encoding(utf8.encoding.toBytes(str));
+    return new Encoding(Uint8Array.from(Buffer.from(str, "utf8")));
   }
 
   public static fromBase64(str: Base64EncodedString) {

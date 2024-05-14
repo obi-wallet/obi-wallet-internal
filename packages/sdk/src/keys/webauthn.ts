@@ -1,5 +1,5 @@
 import { create, get } from "@github/webauthn-json";
-import { Encoding } from "@obi-wallet/encoding";
+import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";
 import {
   Sec256k1PrivateKey,
   Secp256k1KeyPair,
@@ -133,7 +133,7 @@ export async function credentialToKeyPair(credential: {
 }): Promise<Secp256k1KeyPair> {
   const privateKey = await combineKeys(
     DEMO_PRIVATE_KEY,
-    Encoding.fromBytes(Buffer.from(credential.id)).toHex(),
+    Encoding.fromUtf8(Utf8EncodedString.parse(credential.id)).toHex(),
   );
   const webauthnSigner = new Secp256k1PrivateKeySigner(privateKey);
   return {

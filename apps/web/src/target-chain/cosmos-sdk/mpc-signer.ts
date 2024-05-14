@@ -204,10 +204,12 @@ export class CosmosSdkMpcSigner
   }
 
   protected encodeSignature(response: { r: string; s: string }) {
-    const signature = Buffer.from(
-      response.r.padStart(64, "0") + response.s.padStart(64, "0"),
-      "hex",
-    );
+    const r = HexEncodedString.parse(response.r.padStart(64, "0"));
+    const s = HexEncodedString.parse(response.s.padStart(64, "0"));
+    const signature = Encoding.concat(
+      Encoding.fromHex(r),
+      Encoding.fromHex(s),
+    ).toBytes();
     return encodeSecp256k1Signature(
       getSec256k1CompressedPublicKey(this.publicKey),
       signature,

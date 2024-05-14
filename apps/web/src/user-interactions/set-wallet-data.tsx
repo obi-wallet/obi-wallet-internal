@@ -133,7 +133,9 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             intentions={{
               signHashes: [
                 createHash(
-                  Buffer.from(interaction.payload.serializedWalletData, "utf8"),
+                  Encoding.fromUtf8(
+                    interaction.payload.serializedWalletData,
+                  ).toBytes(),
                 ),
               ],
               decryptMessages: [],
