@@ -7,12 +7,14 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 
 export default observer(function AppConnect() {
   const { walletConnectStore } = useStore();
-  const [uri, setUri] = useState("");
+  const searchParams = useSearchParams();
+  const [uri, setUri] = useState(searchParams.get("uri") ?? "");
   const [showExplanationModal, setShowExplanationModal] = useState(false);
 
   const queryClient = useQueryClient();

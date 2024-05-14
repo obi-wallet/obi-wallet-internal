@@ -110,9 +110,9 @@ export function Navbar() {
               .filter((item) => {
                 return item.showOnDesktop;
               })
-              .map((navItem, index) => {
+              .map((navItem) => {
                 return (
-                  <li key={`navmenu-${index}`}>
+                  <li key={navItem.href}>
                     <PrimaryLink
                       href={navItem.href}
                       className={`flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
@@ -127,6 +127,7 @@ export function Navbar() {
                         width={30}
                         height={30}
                         alt={navItem.text}
+                        className="!h-[30px] !w-[30px]"
                       />
                       <Text
                         className="ml-7"
