@@ -1,5 +1,7 @@
 # obi-wallet-internal
 
+See docs.obi.money
+
 ## Testing Strategy
 
 ### Next.js Test Runner
