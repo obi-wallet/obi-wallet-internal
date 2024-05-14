@@ -516,12 +516,14 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
         intent.destination_asset,
       );
       const price = parseFloat(priceInfo.usdValue);
-
-      const amount = new BigNumber(simulation.estimate.toAmount);
       const decimals = Math.min(simulation.params.toToken.decimals, 8);
-      const toAmount = amount.dividedBy(10 ** decimals);
-      const estimate = toAmount.times(price).toFixed(2);
-      setData({ amount: toAmount.toString(), estimate });
+      const amount = new BigNumber(simulation.estimate.toAmountUSD)
+        .dividedBy(price)
+        .decimalPlaces(decimals);
+      setData({
+        amount: amount.toString(),
+        estimate: simulation.estimate.toAmountUSD,
+      });
       setLoading(false);
     })();
   }, [
