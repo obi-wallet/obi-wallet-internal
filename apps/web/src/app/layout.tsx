@@ -1,13 +1,8 @@
-import { Header } from "@/components";
-import { TOSModal } from "@/components/modals/tos";
-import { MainContainer, RootContainer } from "@/layouts/root";
+import { RootLayoutClient } from "@/components/rootLayoutClient";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { ReactNode } from "react";
 
 import "./globals.css";
-
-import { RootLayoutClient } from "@/components/rootLayoutClient";
 
 export const metadata: Metadata = {
   title: "Obi - Anything In Two Clicks",

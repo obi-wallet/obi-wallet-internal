@@ -2,11 +2,11 @@
 import { Header } from "@/components";
 import { TOSModal } from "@/components/modals/tos";
 import { MainContainer, RootContainer } from "@/layouts/root";
-import { ReactNode } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
+import { ReactNode } from "react";
 
 import { MaintenancePage } from "../maintenance";
-import { useSearchParams } from "next/navigation";
 
 const Provider = dynamic(
   () => {
