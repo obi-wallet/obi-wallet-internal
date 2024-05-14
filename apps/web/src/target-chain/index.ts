@@ -17,10 +17,13 @@ export type TargetChainId = CosmosSdkChainId | EvmChainId;
 export const allTargetChainIds = [...allCosmosSdkChainIds, ...allEvmChainIds];
 
 export class TargetChain {
-  public constructor(protected chainId: TargetChainId) {}
+  protected constructor(protected chainId: TargetChainId) {}
 
   public static chainId(chainId: CosmosSdkChainId): CosmosSdkTargetChain;
   public static chainId(chainId: EvmChainId): EvmTargetChain;
+  public static chainId(
+    chainId: TargetChainId,
+  ): AbstractTargetChain<TargetChainId>;
   public static chainId(chainId: string): AbstractTargetChain;
   public static chainId(chainId: string): AbstractTargetChain {
     if (isCosmosSdkChainId(chainId)) {

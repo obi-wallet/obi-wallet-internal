@@ -1,5 +1,5 @@
 import { toAssets } from "@/dashboard/assets";
-import { getTokenPrice, usePendingTXs } from "@/hooks/balances";
+import { usePendingTXs } from "@/hooks/balances";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, getFromChain } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
@@ -512,7 +512,10 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
       const simulation = squidSimulation.data;
       const intent = tx.transaction.intent;
       const toChain = intent.destination_chain_id;
-      const price = await getTokenPrice(toChain, intent.destination_asset);
+      const priceInfo = await TargetChain.chainId(toChain).price(
+        intent.destination_asset,
+      );
+      const price = parseFloat(priceInfo.usdValue);
 
       const amount = new BigNumber(simulation.estimate.toAmount);
       const decimals = Math.min(simulation.params.toToken.decimals, 8);

@@ -3,7 +3,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { staleTime } from "@/lib/stale-time";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { HomeChainId, SecretJsClient } from "@obi-wallet/sdk";
-import invariant from "tiny-invariant";
+import { skipToken } from "@tanstack/react-query";
 import { z } from "zod";
 
 export async function fetchOwner(wallet: {
@@ -37,11 +37,11 @@ export function useOwnerQuery() {
   const wallet = useCurrentWallet({});
   return useQuery({
     queryKey: ["owner", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      return await fetchOwner(wallet);
-    },
-    enabled: !!wallet,
+    queryFn: wallet
+      ? async () => {
+          return await fetchOwner(wallet);
+        }
+      : skipToken,
     staleTime: staleTime({ minute: 5 }),
   });
 }

@@ -1,0 +1,77 @@
+import {
+  FetchQueryOptions,
+  QueryClient,
+  skipToken,
+  WithRequired,
+} from "@tanstack/query-core";
+import { Duration, DurationLikeObject } from "luxon";
+
+export function queryClientDuration(duration: DurationLikeObject) {
+  return Duration.fromObject(duration).toMillis();
+}
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: queryClientDuration({ day: 1 }),
+    },
+  },
+});
+
+// eslint-disable-next-line etc/prefer-interface
+export type NamespacedQuery<TFnParams, TFnReturn> = (
+  params: TFnParams,
+) => Pick<
+  WithRequired<FetchQueryOptions<TFnReturn>, "queryKey" | "queryFn">,
+  "queryKey" | "queryFn" | "staleTime"
+>;
+
+export function makeNamespacedQueryParamsOptional<TFnParams, TFnReturn>(
+  query: NamespacedQuery<TFnParams, TFnReturn>,
+): NamespacedQuery<TFnParams | undefined, TFnReturn | undefined> {
+  return (params: TFnParams | undefined) => {
+    // This type assertion is safe since we only call queryFn if params is defined.
+    const queryResult = query(params!);
+    return {
+      ...queryResult,
+      queryFn: params === undefined ? skipToken : queryResult.queryFn,
+    };
+  };
+}
+
+export class QueryClientNamespace<
+  TNamespace extends string = string,
+  TNamespaceParams extends Record<string, unknown> = Record<string, unknown>,
+> {
+  public constructor(
+    protected namespace: TNamespace,
+    protected namespaceParams: TNamespaceParams,
+  ) {}
+
+  public createQuery<TFnParams, TFnReturn>(queryInfo: {
+    name: string;
+    staleTime?: DurationLikeObject;
+    fn: (args: TFnParams) => Promise<TFnReturn>;
+  }): NamespacedQuery<TFnParams, TFnReturn> {
+    return (params: TFnParams) => {
+      return {
+        queryKey: [
+          {
+            namespace: this.namespace,
+            params: this.namespaceParams,
+          },
+          {
+            fn: queryInfo.name,
+            params,
+          },
+        ],
+        queryFn: (): Promise<TFnReturn> => {
+          return queryInfo.fn(params);
+        },
+        staleTime: queryInfo.staleTime
+          ? queryClientDuration(queryInfo.staleTime)
+          : undefined,
+      };
+    };
+  }
+}

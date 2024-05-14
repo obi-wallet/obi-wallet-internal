@@ -33,12 +33,16 @@ import {
   StdFee,
 } from "@cosmjs/stargate";
 import { MpcWallet } from "@obi-wallet/sdk";
-import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import {
+  AbstractTargetChain,
+  AssetId,
+} from "@obi-wallet/sdk-abstract-target-chain";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import { bech32 } from "bech32";
+import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -62,13 +66,13 @@ function isStdFee(fee: unknown): fee is StdFee {
   return StdFeeSchema.safeParse(fee).success;
 }
 
-export class CosmosSdkTargetChain extends AbstractTargetChain {
+export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> {
   protected readonly chainData: CosmosSdkChainData;
   protected readonly chain: Chain;
   protected readonly tokenRegistry: CosmosSdkTokenRegistry;
 
   public constructor(chainId: CosmosSdkChainId) {
-    super();
+    super(chainId);
     this.chainData = CosmosSdkChains[chainId];
     const chain = chains.find((c) => {
       return c.chain_id === chainId;
@@ -97,6 +101,10 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     );
   }
 
+  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+    return this.computeAddress(publicKey);
+  }
+
   public async withStargateClient<T>(
     f: (client: StargateClient) => Promise<T>,
   ) {
@@ -105,6 +113,68 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
       return await f(client);
     } finally {
       client.disconnect();
+    }
+  }
+
+  public async balancesQueryFn(address: string) {
+    return await this.withStargateClient(async (client) => {
+      const balances = await client.getAllBalances(address);
+      return balances.map((balance) => {
+        return {
+          chainId: this.chainId,
+          assetId: balance.denom,
+          rawAmount: balance.amount,
+        };
+      });
+    });
+  }
+
+  public async priceQueryFn(id: AssetId) {
+    if (this.chainId === CosmosSdkChainId.Neutron && id !== "untrn") {
+      const url = "https://api.skip.money/v2/fungible/route";
+      const asset = this.assetInfo(id);
+
+      const amountIn = new BigNumber(1)
+        .multipliedBy(10 ** (asset?.decimals ?? 0))
+        .toFixed(0);
+
+      const data = {
+        source_asset_chain_id: "neutron-1",
+        amount_in: amountIn,
+        source_asset_denom: id,
+        dest_asset_denom:
+          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
+        dest_asset_chain_id: this.chainId,
+        allow_unsafe: true,
+      };
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+
+        const number = Number(json.usd_amount_out);
+        return { usdValue: number.toString(10) };
+      } catch (e) {
+        console.log("SKIP ERROR", e);
+      }
+    }
+
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
     }
   }
 
@@ -230,14 +300,10 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
   }): Promise<Uint8Array | undefined> {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
-    return await this.withSigningStargateClient(signer, async (client) => {
-      try {
-        // This will fail, but we are able to retrieve the hash that needs to be signed
+    return await signer.mpcSigner.calculateHashToSign(async () => {
+      await this.withSigningStargateClient(signer, async (client) => {
         await client.sign(signer.address, messages, fee, memo);
-      } catch (e) {
-        // Ignoring errors
-      }
-      return signer.lastHash;
+      });
     });
   }
 
@@ -259,7 +325,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -286,7 +352,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.addIntentionsResults({
+    signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -316,7 +382,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain {
     return isStdFee(fee);
   }
 
-  public getAsset(denom: string) {
+  public assetInfo(denom: string) {
     const asset = this.tokenRegistry.getAsset({
       chainId: this.chainData.id,
       denom,

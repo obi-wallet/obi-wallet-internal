@@ -1,8 +1,8 @@
 "use client";
 
-import { Text, Button } from "@/components";
+import { Button, Text } from "@/components";
 import { useStore } from "@/contexts";
-import { useUSDTotalPrice } from "@/hooks/balances";
+import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import { PrimaryLink } from "../links";
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
   const currentWallet = useCurrentWallet({});
-  const totalData = useUSDTotalPrice();
+  const totalData = useUsdTotalValue();
 
   if (!currentWallet) return null;
 
@@ -88,11 +88,7 @@ export const Account = observer(function Account() {
           <div className="flex items-start gap-1">
             <Text>$</Text>
             <Text size="3xl" color="white" fontWeight="bold">
-              {userData.balanceHidden
-                ? "******"
-                : totalData.loading
-                  ? 0
-                  : totalData.total}
+              {userData.balanceHidden ? "******" : totalData.total}
             </Text>
           </div>
         </div>

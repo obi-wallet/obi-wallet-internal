@@ -70,14 +70,16 @@ export class WalletConnectStore {
       );
     });
 
-    return enabledCosmosSdkChains.map((targetChainId) => {
-      const targetChain = TargetChain.chainId(targetChainId);
-      return {
-        namespace: "cosmos",
-        chainId: targetChainId,
-        address: targetChain.computeAddress(publicKey),
-        publicKey,
-      };
-    });
+    return await Promise.all(
+      enabledCosmosSdkChains.map(async (targetChainId) => {
+        const targetChain = TargetChain.chainId(targetChainId);
+        return {
+          namespace: "cosmos",
+          chainId: targetChainId,
+          address: await targetChain.obiAccountAddress(publicKey),
+          publicKey,
+        };
+      }),
+    );
   }
 }

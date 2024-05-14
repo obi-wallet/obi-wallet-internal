@@ -8,7 +8,7 @@ import {
   SecretJsHomeChains,
 } from "@obi-wallet/sdk";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import invariant from "tiny-invariant";
+import { skipToken } from "@tanstack/react-query";
 
 export async function fetchPublicKey(wallet: {
   homeChainId: HomeChainId;
@@ -40,11 +40,11 @@ export function usePublicKeyQuery() {
   const wallet = useCurrentWallet({});
   return useQuery({
     queryKey: ["public-key", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      return await fetchPublicKey(wallet);
-    },
-    enabled: !!wallet,
+    queryFn: wallet
+      ? async () => {
+          return await fetchPublicKey(wallet);
+        }
+      : skipToken,
     staleTime: staleTime({ minute: 5 }),
   });
 }

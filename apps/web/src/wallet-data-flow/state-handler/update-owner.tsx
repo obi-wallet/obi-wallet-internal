@@ -17,7 +17,7 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
-import { useMutation } from "@tanstack/react-query";
+import { skipToken, useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -67,23 +67,23 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
   const nextHash = useQuery({
     queryKey: ["next-hash", { walletData }],
-    queryFn: async () => {
-      invariant(userAccount.data, "User account not found");
-      const client = new SecretJsClient(newOwner.chainId);
-      const { next_hash } = await client.queryContract({
-        contract: userAccount.data.userAccountAddress,
-        codeHash: userAccount.data.userAccountCodeHash,
-        query: {
-          next_hash: {},
-        },
-        schema: z.object({
-          next_hash: HexEncodedString,
-        }),
-      });
-      return next_hash;
-    },
+    queryFn: userAccount.data
+      ? async () => {
+          const client = new SecretJsClient(newOwner.chainId);
+          const { next_hash } = await client.queryContract({
+            contract: userAccount.data.userAccountAddress,
+            codeHash: userAccount.data.userAccountCodeHash,
+            query: {
+              next_hash: {},
+            },
+            schema: z.object({
+              next_hash: HexEncodedString,
+            }),
+          });
+          return next_hash;
+        }
+      : skipToken,
     staleTime: 0,
-    enabled: !!userAccount.data,
   });
 
   const approve = useMutation({

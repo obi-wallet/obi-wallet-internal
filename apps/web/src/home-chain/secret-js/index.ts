@@ -9,12 +9,11 @@ import {
   getOwnerData,
   lookupPublicKey,
 } from "@/wallet-data-backup/worker-client";
+import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import {
   HomeChainId,
   MpcWallet,
   PendingRecoveryKeySchema,
-  queryClient,
-  QueryClientNamespace,
   Secp256k1PublicKey,
   SecretJsClient,
   Serialized,
@@ -44,10 +43,10 @@ export class SecretJsHomeChain {
     );
   }
 
-  public userEntryCodeHashQuery(userEntryAddress: string) {
+  public get userEntryCodeHashQuery() {
     return this.queryNamespace.createQuery({
       name: "userEntryCodeHash",
-      fn: async (userEntryAddress) => {
+      fn: async (userEntryAddress: string) => {
         const userEntryCodeHash = await this.client.withSecretNetworkClient(
           async (secretNetworkClient) => {
             const info = await secretNetworkClient.query.compute.contractInfo({
@@ -66,7 +65,6 @@ export class SecretJsHomeChain {
         );
         return userEntryCodeHash;
       },
-      params: userEntryAddress,
     });
   }
 
@@ -77,13 +75,16 @@ export class SecretJsHomeChain {
     return queryClient.fetchQuery(this.userAccountQuery(params));
   }
 
-  public userAccountQuery(params: {
-    userEntryAddress: string;
-    userEntryCodeHash: string;
-  }) {
+  public get userAccountQuery() {
     return this.queryNamespace.createQuery({
       name: "userAccount",
-      fn: async ({ userEntryAddress, userEntryCodeHash }) => {
+      fn: async ({
+        userEntryAddress,
+        userEntryCodeHash,
+      }: {
+        userEntryAddress: string;
+        userEntryCodeHash: string;
+      }) => {
         const schema = z.object({
           user_account_address: z.string(),
           user_account_code_hash: z.string(),
@@ -103,7 +104,6 @@ export class SecretJsHomeChain {
           userAccountCodeHash: userAccount.user_account_code_hash,
         };
       },
-      params,
     });
   }
 
