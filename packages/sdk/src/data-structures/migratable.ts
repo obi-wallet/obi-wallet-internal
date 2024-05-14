@@ -80,7 +80,7 @@ function createMigratableSchema<
  */
 export type AbstractMigratable<T> =
   T extends AbstractMigratableSchema<infer Any, infer _Current>
-    ? z.input<Any>
+    ? z.infer<Any>
     : never;
 
 /**
@@ -88,5 +88,5 @@ export type AbstractMigratable<T> =
  */
 export type AbstractSerialized<T> =
   T extends AbstractMigratableSchema<infer _Any, infer Current>
-    ? z.input<Current>
+    ? z.infer<Current>
     : never;

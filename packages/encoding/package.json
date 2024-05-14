@@ -1,5 +1,5 @@
 {
-  "name": "@obi-wallet/config",
+  "name": "@obi-wallet/encoding",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -11,12 +11,11 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@obi-wallet/sdk": "workspace:*"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/ramda": "^0.30.0",
     "eslint": "^8.57.0",
     "typescript": "^5.4.5"
   }

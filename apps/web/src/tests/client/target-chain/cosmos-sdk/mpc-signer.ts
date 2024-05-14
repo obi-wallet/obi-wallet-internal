@@ -7,6 +7,7 @@ import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { StdSignature } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
+import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";
 import {
   createHash,
   MpcWallet,
@@ -45,8 +46,8 @@ export const testSuite = createTestSuite(({ test }) => {
 
     invariant(account, "Expected account to be set");
 
-    const message = "hello world";
-    const hash = createHash(Buffer.from(message, "utf-8"));
+    const message = Utf8EncodedString.parse("hello world");
+    const hash = createHash(Encoding.fromUtf8(message).toBytes());
 
     const intentionsPayload = {
       signHashes: [hash],

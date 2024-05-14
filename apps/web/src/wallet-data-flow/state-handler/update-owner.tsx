@@ -9,6 +9,7 @@ import {
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
@@ -76,10 +77,10 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           next_hash: {},
         },
         schema: z.object({
-          next_hash: z.string(),
+          next_hash: HexEncodedString,
         }),
       });
-      return Buffer.from(next_hash, "hex");
+      return next_hash;
     },
     staleTime: 0,
     enabled: !!userAccount.data,
@@ -108,7 +109,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
             signatures: [...results.values()].map((value) => {
-              return Buffer.from(value.signedHashes[0]!).toString("hex");
+              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
             }),
           }),
         });
@@ -134,7 +135,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
             signatures: [...results.values()].map((value) => {
-              return Buffer.from(value.signedHashes[0]!).toString("hex");
+              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
             }),
             walletData,
             previousOwner: previousOwner.toJSON(),
@@ -280,11 +281,11 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
           {nextHash.data ? (
             <ApproveIntentions
-              key={`${proposedUpdate}-${nextHash.data.toString("hex")}`}
+              key={`${proposedUpdate}-${nextHash.data.toString()}`}
               multisigKey={proposedUpdate ? newOwner : previousOwner}
               keyMetaData={keyMetaData}
               intentions={{
-                signHashes: [nextHash.data],
+                signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
                 decryptMessages: [],
                 decryptMultisigKeyEncryptedMessages:
                   getMultisigKeyEncryptedMessages(),

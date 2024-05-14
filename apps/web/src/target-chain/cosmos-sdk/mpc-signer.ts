@@ -19,6 +19,7 @@ import {
   makeSignBytes,
   OfflineDirectSigner,
 } from "@cosmjs/proto-signing";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
 import {
   getSec256k1CompressedPublicKey,
@@ -31,7 +32,10 @@ import { z } from "zod";
 export class CosmosSdkMpcSigner
   implements OfflineDirectSigner, OfflineAminoSigner
 {
-  protected bytesSignedBySignersPerHash = new Map<string, string[]>();
+  protected bytesSignedBySignersPerHash = new Map<
+    HexEncodedString,
+    HexEncodedString[]
+  >();
   public lastHash: Uint8Array | undefined;
 
   public get address(): string {
@@ -66,7 +70,7 @@ export class CosmosSdkMpcSigner
   }) {
     payload.signHashes.forEach((hash, index) => {
       this.bytesSignedBySignersPerHash.set(
-        Buffer.from(hash).toString("hex"),
+        Encoding.fromBytes(hash).toHex(),
         [...results.values()]
           .map((result) => {
             return result.signedHashes[index];
@@ -75,7 +79,7 @@ export class CosmosSdkMpcSigner
             return !!signedHash;
           })
           .map((signedHash) => {
-            return Buffer.from(signedHash).toString("hex");
+            return Encoding.fromBytes(signedHash).toHex();
           }),
       );
     });
@@ -135,7 +139,7 @@ export class CosmosSdkMpcSigner
   ): Promise<StdSignature> {
     invariant(rootStore.current, "Root store is not initialized");
 
-    const bytes = Buffer.from(hash).toString("hex");
+    const bytes = Encoding.fromBytes(hash).toHex();
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
     invariant(bytesSignedBySigners, "Hash has not been signed");
 
@@ -200,10 +204,12 @@ export class CosmosSdkMpcSigner
   }
 
   protected encodeSignature(response: { r: string; s: string }) {
-    const signature = Buffer.from(
-      response.r.padStart(64, "0") + response.s.padStart(64, "0"),
-      "hex",
-    );
+    const r = HexEncodedString.parse(response.r.padStart(64, "0"));
+    const s = HexEncodedString.parse(response.s.padStart(64, "0"));
+    const signature = Encoding.concat(
+      Encoding.fromHex(r),
+      Encoding.fromHex(s),
+    ).toBytes();
     return encodeSecp256k1Signature(
       getSec256k1CompressedPublicKey(this.publicKey),
       signature,

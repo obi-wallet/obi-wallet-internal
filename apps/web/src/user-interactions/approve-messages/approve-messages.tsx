@@ -9,6 +9,7 @@ import {
 import { Coin } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { StdFee } from "@cosmjs/stargate";
+import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
@@ -79,7 +80,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
 
         return {
           fee,
-          hash: Buffer.from(hash).toString("hex"),
+          hash: Encoding.fromBytes(hash).toHex(),
         };
       },
       refetchOnWindowFocus: false,
@@ -110,7 +111,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     );
     const intentionsPayload: IntentionsPayload | null = txInfo.data
       ? {
-          signHashes: [new Uint8Array(Buffer.from(txInfo.data.hash, "hex"))],
+          signHashes: [Encoding.fromHex(txInfo.data.hash).toBytes()],
           decryptMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
         }

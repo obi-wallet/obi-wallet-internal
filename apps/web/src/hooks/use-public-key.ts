@@ -1,5 +1,6 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { staleTime } from "@/lib/stale-time";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   HomeChainId,
@@ -8,7 +9,6 @@ import {
 } from "@obi-wallet/sdk";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
-import { z } from "zod";
 
 export async function fetchPublicKey(wallet: {
   homeChainId: HomeChainId;
@@ -17,20 +17,22 @@ export async function fetchPublicKey(wallet: {
   const client = new SecretJsClient(wallet.homeChainId);
   const chain = SecretJsHomeChains[wallet.homeChainId];
 
-  const schema = z.string();
   const response = await client.queryContract({
     contract: chain.secretSigner.address,
     codeHash: chain.secretSigner.codeHash,
     query: {
       passport_pubkey: { user_entry_address: wallet.userEntryAddress },
     },
-    schema,
+    schema: HexEncodedString,
   });
 
   return {
     type: "tendermint/PubKeySecp256k1",
-    // Append missing first byte
-    value: Buffer.from(`04${response}`, "hex").toString("base64"),
+    value: Encoding.concat(
+      // Append missing first byte
+      Encoding.fromHex(HexEncodedString.parse("04")),
+      Encoding.fromHex(response),
+    ).toBase64(),
   };
 }
 

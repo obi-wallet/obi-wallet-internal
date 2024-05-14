@@ -7,6 +7,7 @@ import {
   EasyShare,
   MpcWallet,
   Serialized,
+  UserEntryAddress,
   WalletData,
 } from "@obi-wallet/sdk";
 import invariant from "tiny-invariant";
@@ -28,7 +29,9 @@ export function useGetWallet() {
     return {
       homeChain: owner.chainId,
       owner: owner.toJSON()!,
-      userEntryAddress: state.walletData.userEntryAddress,
+      userEntryAddress: UserEntryAddress.parse(
+        state.walletData.userEntryAddress,
+      ),
       previousWalletData: state.walletData,
       encryptedShares,
     };
