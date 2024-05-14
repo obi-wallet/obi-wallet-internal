@@ -1,7 +1,7 @@
 "use client";
 
 import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
-import { EnvContext, StoreContext } from "@/contexts";
+import { StoreContext } from "@/contexts";
 import { useCreateRootStore } from "@/hooks/use-create-root-store";
 import { obiModalConfig } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
@@ -32,22 +32,9 @@ const Provider = observer<ProviderProps>(function Provider({
       QueryClientProvider={QueryClientProvider}
       buster={buster.current}
     >
-      <EnvContext.Provider
-        value={{
-          FAST_TRAVEL_API_URL: process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL!,
-          PHONE_NUMBER_KEY_SECRET:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_KEY_SECRET!,
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_USER:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_USER!,
-          PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD:
-            process.env.NEXT_PUBLIC_PHONE_NUMBER_TWILIO_BASIC_AUTH_PASSWORD!,
-          THEME: process.env.NEXT_PUBLIC_THEME!,
-        }}
-      >
-        <StoreContext.Provider value={rootStore}>
-          <MultiThemeProvider>{children}</MultiThemeProvider>
-        </StoreContext.Provider>
-      </EnvContext.Provider>
+      <StoreContext.Provider value={rootStore}>
+        <MultiThemeProvider>{children}</MultiThemeProvider>
+      </StoreContext.Provider>
       <ReactQueryDevtools />
     </SdkProvider>
   );
