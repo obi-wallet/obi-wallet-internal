@@ -1,6 +1,6 @@
 "use client";
 
-import { ToAsset, fromAssets, toAssets } from "@/dashboard/assets";
+import { fromAssets, ToAsset, toAssets } from "@/dashboard/assets";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, toChains } from "@/lib/utils";
@@ -11,7 +11,9 @@ import { Input } from "@/ui/input";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import { skipToken } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import copy from "copy-to-clipboard";
 import { BrowserProvider, Contract, parseUnits } from "ethers";
@@ -45,21 +47,6 @@ interface TravelModalProps {
   cancelLabel?: string;
 }
 
-interface FormData {
-  fromChain: string;
-  toChain: string;
-  fromAsset: {
-    amount: string;
-    asset: string;
-  };
-  toAsset: {
-    amount: string;
-    asset: string;
-  };
-  depositAddress: string | undefined;
-  slippage: number;
-}
-
 type ErrorsObject = Record<string, { message: string; type: string }>;
 
 interface SingleError {
@@ -69,6 +56,49 @@ interface SingleError {
 
 type Errors = ErrorsObject | SingleError;
 
+const schema = z.object({
+  fromChain: nonEmptyString("FromChain"),
+  toChain: nonEmptyString("ToChain"),
+  fromAsset: z
+    .object({
+      // amount should be undefined or number
+      amount: z
+        .string()
+        .refine(nonEmptyString, "Amount is required")
+        .refine((str) => {
+          const num = new BigNumber(str);
+          return num.gte(0);
+        }, "Amount is invalid"),
+      asset: z.string().refine(nonEmptyString, "Asset is required"),
+    })
+    .refine(
+      (data) => {
+        const { amount, asset } = data;
+        const num = new BigNumber(amount);
+        // Define the minimum amount based on whether the asset contains "ETHEREUM"
+        const minAmount = asset.toUpperCase().includes("ETHEREUM")
+          ? 0.01
+          : 0.005;
+        return num.isGreaterThanOrEqualTo(minAmount);
+      },
+      (data) => {
+        const isEth = data.asset.toUpperCase().includes("ETHEREUM");
+        const minAmount = isEth ? "0.01" : "0.005";
+        return {
+          message: `Min ${minAmount} for this chain`,
+        };
+      },
+    ),
+
+  toAsset: z.string().refine(nonEmptyString, "Asset is required"),
+  slippage: z
+    .number()
+    .min(1, "Slippage must be greater than 1")
+    .max(100, "Slippage must be less than 100"),
+});
+
+type FormData = z.infer<typeof schema>;
+
 export const TravelModal = observer<TravelModalProps>(function TravelModal({
   targetAsset,
   onDismiss,
@@ -77,58 +107,6 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 }) {
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
-  const [simulating, setSimulating] = useState<boolean>(false);
-
-  const schema = z.object({
-    fromChain: nonEmptyString("FromChain"),
-    toChain: nonEmptyString("ToChain"),
-    fromAsset: z
-      .object({
-        // amount should be undefined or number
-        amount: z
-          .string()
-          .refine(nonEmptyString, "Amount is required")
-          .refine((str) => {
-            const num = new BigNumber(str);
-            return num.gte(0);
-          }, "Amount is invalid"),
-        asset: z.string().refine(nonEmptyString, "Asset is required"),
-      })
-      .refine(
-        (data) => {
-          const { amount, asset } = data;
-          const num = new BigNumber(amount);
-          // Define the minimum amount based on whether the asset contains "ETHEREUM"
-          const minAmount = asset.toUpperCase().includes("ETHEREUM")
-            ? 0.01
-            : 0.005;
-          return num.isGreaterThanOrEqualTo(minAmount);
-        },
-        (data) => {
-          const isEth = data.asset.toUpperCase().includes("ETHEREUM");
-          const minAmount = isEth ? "0.01" : "0.005";
-          return {
-            message: `Min ${minAmount} for this chain`,
-          };
-        },
-      ),
-
-    toAsset: z.object({
-      amount: z
-        .string()
-        .refine(nonEmptyString, "Amount is required")
-        .refine((str) => {
-          if (str === "") return false;
-          const num = new BigNumber(str);
-          return num.gte(0);
-        }, "Amount is invalid"),
-      asset: z.string().refine(nonEmptyString, "Asset is required"),
-    }),
-    slippage: z
-      .number()
-      .min(1, "Slippage must be greater than 1")
-      .max(100, "Slippage must be less than 100"),
-  });
 
   const getChainFromAsset = () => {
     if (targetAsset === "usdc") {
@@ -138,29 +116,87 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
     }
   };
 
-  const { control, watch, getValues, setValue, trigger, formState } =
-    useForm<FormData>({
-      defaultValues: {
-        fromChain: fromChains[0]?.chainId ?? "",
-        fromAsset: {
-          amount: "",
-          asset: "eth",
-        },
-        toChain: getChainFromAsset(),
-        toAsset: {
-          amount: "",
-          asset: targetAsset,
-        },
-        slippage: 1,
+  const { control, watch, setValue, formState } = useForm<FormData>({
+    defaultValues: {
+      fromChain: fromChains[0]?.chainId ?? "",
+      fromAsset: {
+        amount: "",
+        asset: "eth",
       },
-      mode: "onTouched",
-      resolver: zodResolver(schema),
-    });
+      toChain: getChainFromAsset(),
+      toAsset: targetAsset,
+      slippage: 1,
+    },
+    mode: "onTouched",
+    resolver: zodResolver(schema),
+  });
   const fromAssetValue = watch("fromAsset");
-
+  const toAssetValue = watch("toAsset");
   const fromChainValue = watch("fromChain");
   const toChainValue = watch("toChain");
-  const depositAddress = watch("depositAddress");
+  const slippage = watch("slippage");
+
+  const formData = {
+    fromAsset: fromAssetValue,
+    toAsset: toAssetValue,
+    fromChain: fromChainValue,
+    toChain: toChainValue,
+    slippage,
+  };
+  const simulateQuery = useQuery({
+    queryKey: ["travel-modal-simulate", { formData }],
+    queryFn:
+      formData.fromAsset.amount &&
+      formData.fromAsset.asset &&
+      formData.toAsset &&
+      formData.toChain &&
+      formData.fromChain &&
+      publicKey
+        ? async () => {
+            if (BigNumber(formData.fromAsset.amount).lt(0.005)) return null;
+
+            try {
+              const simulation = await simulateTravel(formData, publicKey);
+              if (!simulation) return null;
+
+              if (
+                typeof simulation.skip_simulation !== "string" &&
+                simulation.skip_simulation.msgs.length > 0
+              ) {
+                const skipMsg = JSON.parse(
+                  simulation.skip_simulation.msgs[0].multi_chain_msg.msg,
+                );
+                const skipAmount =
+                  skipMsg.msg.swap_and_action.min_asset.native.amount;
+                const toAssetDecimals =
+                  toAssets[formData.toAsset]?.decimals ?? 6;
+                return {
+                  amount: new BigNumber(skipAmount)
+                    .dividedBy(10 ** toAssetDecimals)
+                    .toString(),
+                  depositAddress: simulation.deposit_address,
+                };
+              }
+
+              const toAssetDecimals = toAssets[formData.toAsset]?.decimals ?? 6;
+              return {
+                depositAddress: simulation.deposit_address,
+                amount: new BigNumber(
+                  simulation.squid_simulation.route.estimate.toAmount,
+                )
+                  .dividedBy(10 ** toAssetDecimals)
+                  .toString(),
+              };
+            } catch (e) {
+              console.error(e);
+              return null;
+            }
+          }
+        : skipToken,
+  });
+  const simulating = simulateQuery.isFetching;
+  const depositAmount = simulateQuery.data?.amount ?? "";
+  const depositAddress = simulateQuery.data?.depositAddress;
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -295,108 +331,6 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
     );
   };
 
-  const handleAssetChange = async () => {
-    const formData = getValues();
-    // check from amount, from and to chains and from and to assets
-    if (
-      !formData.fromAsset.amount ||
-      !formData.fromAsset.asset ||
-      !formData.toAsset.asset ||
-      !formData.toChain ||
-      !formData.fromChain ||
-      !publicKey
-    ) {
-      return;
-    }
-    setValue(
-      "toAsset",
-      { amount: "", asset: formData.toAsset.asset },
-      {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      },
-    );
-    setValue("depositAddress", undefined, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
-
-    if (BigNumber(formData.fromAsset.amount).lt(0.005)) return;
-
-    setSimulating(true);
-    try {
-      const simulation = await simulateTravel(formData, publicKey);
-      if (!simulation) return;
-
-      setSimulating(false);
-
-      if (
-        typeof simulation.skip_simulation !== "string" &&
-        simulation.skip_simulation.msgs.length > 0
-      ) {
-        const skipMsg = JSON.parse(
-          simulation.skip_simulation.msgs[0].multi_chain_msg.msg,
-        );
-
-        const skipAmount = skipMsg.msg.swap_and_action.min_asset.native.amount;
-
-        const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
-
-        setValue(
-          "toAsset",
-          {
-            // amount in human readable format using bignumber
-            amount: new BigNumber(skipAmount)
-              .dividedBy(10 ** toAssetDecimals)
-              .toString(),
-            asset: formData.toAsset.asset,
-          },
-          {
-            shouldDirty: true,
-            shouldTouch: true,
-            shouldValidate: true,
-          },
-        );
-        setValue("depositAddress", simulation.deposit_address, {
-          shouldDirty: true,
-          shouldTouch: true,
-          shouldValidate: true,
-        });
-        await trigger();
-        return;
-      }
-
-      const toAssetDecimals = toAssets[formData.toAsset.asset]?.decimals ?? 6;
-      setValue(
-        "toAsset",
-        {
-          amount: new BigNumber(
-            simulation.squid_simulation.route.estimate.toAmount,
-          )
-            .dividedBy(10 ** toAssetDecimals)
-            .toString(),
-          asset: formData.toAsset.asset,
-        },
-        {
-          shouldDirty: true,
-          shouldTouch: true,
-          shouldValidate: true,
-        },
-      );
-      setValue("depositAddress", simulation.deposit_address, {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
-      await trigger();
-    } catch (e) {
-      console.error(e);
-      setSimulating(false);
-    }
-  };
-
   const fromChainOptions = getFromChainOptions();
   const toChainOptions = getToChainOptions();
 
@@ -483,7 +417,6 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                     }}
                     onItemSelect={(item) => {
                       field.onChange(item.value);
-                      void handleAssetChange();
                     }}
                     selectedItemClassname="bg-black/30 h-full"
                     selectedItemComponent={(selected) => {
@@ -573,17 +506,12 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                       );
                     }}
                     onItemSelect={(item) => {
-                      setValue(
-                        "toAsset",
-                        { amount: "", asset: "" },
-                        {
-                          shouldDirty: true,
-                          shouldTouch: true,
-                          shouldValidate: true,
-                        },
-                      );
+                      setValue("toAsset", "", {
+                        shouldDirty: true,
+                        shouldTouch: true,
+                        shouldValidate: true,
+                      });
                       field.onChange(item.value);
-                      void handleAssetChange();
                     }}
                     selectedItemClassname="bg-black/30 h-full"
                     selectedItemComponent={(selected) => {
@@ -625,14 +553,11 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                 <Input
                   label="Deposit"
                   labelClassname="bg-background-secondary"
-                  inputDisabled={simulating}
                   onChange={(value) => {
                     field.onChange({
                       asset: field.value.asset,
                       amount: value,
                     });
-
-                    void handleAssetChange();
                   }}
                   className={cn(
                     "z-20",
@@ -684,7 +609,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                       " border-red-500 focus-within:border-red-500",
                   )}
                   onBlur={field.onBlur}
-                  value={field.value.amount}
+                  value={depositAmount}
                   inputDisabled
                   placeholder={simulating ? "Simulating..." : "0.1"}
                   inputClassName="flex-4 md:flex-1 sm:flex-6 "
@@ -696,9 +621,9 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                       }}
                       items={options}
                       selectedItem={
-                        (field.value.asset !== ""
+                        (field.value !== ""
                           ? options.find((item) => {
-                              return item.value === field.value.asset;
+                              return item.value === field.value;
                             })
                           : null) ?? null
                       }
@@ -744,11 +669,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         );
                       }}
                       onItemSelect={(item) => {
-                        field.onChange({
-                          asset: item.value,
-                          amount: field.value.amount,
-                        });
-                        void handleAssetChange();
+                        field.onChange(item.value);
+                        // void handleAssetChange();
                       }}
                       selectedItemComponent={(selected) => {
                         if (!selected.item) {
@@ -787,7 +709,6 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                   value={field.value}
                   onChange={(attr) => {
                     field.onChange(attr);
-                    void handleAssetChange();
                   }}
                   onBlur={field.onBlur}
                   errorMessage={fieldState.error?.message}
@@ -822,14 +743,14 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
               </div>
             </>
           )}
-          {formState.isValid && (
+          {depositAddress ? (
             <AddressComponent
-              address={depositAddress ?? ""}
+              address={depositAddress}
               onCopy={() => {
                 setAddressCopied(true);
               }}
             />
-          )}
+          ) : null}
 
           <div className="mt-8 flex justify-between">
             <Button
@@ -1042,9 +963,8 @@ const simulateTravel = async (
   data: FormData,
   publicKey: Secp256k1PublicKey,
 ) => {
-  const requestURL =
-    process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL! + "/api/swap/simulate";
-  const toAsset = toAssets[data.toAsset.asset];
+  const requestURL = `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/swap/simulate`;
+  const toAsset = toAssets[data.toAsset];
   const fromAsset = fromAssets[data.fromAsset.asset];
   const fromAmount = parseUnits(
     new BigNumber(data.fromAsset?.amount).toString(),
@@ -1067,7 +987,6 @@ const simulateTravel = async (
     },
     pubkey: publicKey.value,
   };
-  // make a post request to the url
   const res = await fetch(requestURL, {
     method: "POST",
     headers: {
