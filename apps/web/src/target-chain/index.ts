@@ -1,11 +1,14 @@
 import { CosmosSdkTargetChain } from "@/target-chain/cosmos-sdk";
 import {
+  allCosmosSdkChainIds,
   CosmosSdkChainId,
   isCosmosSdkChainId,
 } from "@/target-chain/cosmos-sdk/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
 export type TargetChainId = CosmosSdkChainId;
+
+export const allTargetChainIds = [...allCosmosSdkChainIds];
 
 export class TargetChain {
   public constructor(protected chainId: TargetChainId) {}

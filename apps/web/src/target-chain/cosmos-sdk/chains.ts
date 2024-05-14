@@ -7,6 +7,15 @@ export enum CosmosSdkChainId {
   Inj = "injective-1",
 }
 
+export const allCosmosSdkChainIds = [
+  CosmosSdkChainId.Sei,
+  CosmosSdkChainId.Osmosis,
+  CosmosSdkChainId.Neutron,
+  CosmosSdkChainId.Stargaze,
+  CosmosSdkChainId.Tia,
+  CosmosSdkChainId.Inj,
+];
+
 export function isCosmosSdkChainId(
   chainId: string,
 ): chainId is CosmosSdkChainId {
@@ -62,7 +71,6 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     prefix: "celestia",
     image:
       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-    // disabled: true,
   },
   [CosmosSdkChainId.Inj]: {
     id: CosmosSdkChainId.Inj,
