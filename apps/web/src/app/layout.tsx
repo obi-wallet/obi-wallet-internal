@@ -1,6 +1,6 @@
 import { RootLayoutClient } from "@/components/rootLayoutClient";
 import type { Metadata } from "next";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 
 import "./globals.css";
 
@@ -15,9 +15,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className="h-full">
       <body className="flex h-full flex-col bg-gradient-to-br from-black to-slate-900">
-        <RootLayoutClient isMaintenance={isMaintenance}>
-          {children}
-        </RootLayoutClient>
+        <Suspense>
+          <RootLayoutClient isMaintenance={isMaintenance}>
+            {children}
+          </RootLayoutClient>
+        </Suspense>
       </body>
     </html>
   );

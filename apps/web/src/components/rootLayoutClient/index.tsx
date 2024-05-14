@@ -4,7 +4,7 @@ import { TOSModal } from "@/components/modals/tos";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 
 import { MaintenancePage } from "../maintenance";
 
@@ -23,11 +23,14 @@ export function RootLayoutClient({
   children: ReactNode;
   isMaintenance: boolean;
 }) {
-  // get bypass variable from url
+  const bypassRef = useRef<boolean | null>(null);
   const searchParams = useSearchParams();
-  const bypass = searchParams.get("bypass");
 
-  if (isMaintenance && bypass !== "true") {
+  if (bypassRef.current === null) {
+    bypassRef.current = searchParams.get("bypass") === "true";
+  }
+
+  if (isMaintenance && !bypassRef.current) {
     return <MaintenancePage />;
   }
 
