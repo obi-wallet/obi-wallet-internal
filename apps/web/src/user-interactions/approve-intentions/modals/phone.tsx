@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 export interface PhoneKeyModalProps {
   keyItem: KeyItem;
@@ -32,14 +33,19 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
     const [code, setCode] = useState("");
     const [to, setTo] = useState("");
 
-    const result = PhoneSingleKeyMetaData.safeParse(keyItem.keyMetaData);
+    const result = z
+      .union([PhoneSingleKeyMetaData, TelegramSingleKeyMetaData])
+      .safeParse(keyItem.keyMetaData);
     invariant(result.success, "Invalid key metadata");
 
-    const securityQuestionIndex =
-      securityQuestions.findIndex((question) => {
+    const getSecurityQuestion = () => {
+      const securityQuestion = securityQuestions.find((question) => {
         return question.value === result.data.payload.securityQuestion;
-      }) ?? 0;
-    const securityQuestion = securityQuestions[securityQuestionIndex]!;
+      });
+      return securityQuestion || securityQuestions[0]!;
+    };
+    const securityQuestion = getSecurityQuestion();
+
     const needsTo = !keyItem.keyMetaData.payload;
 
     const confirm = useMutation({
