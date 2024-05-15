@@ -1,8 +1,8 @@
 "use client";
 
-import { Text, Button } from "@/components";
+import { Button, Text } from "@/components";
 import { useStore } from "@/contexts";
-import { useUSDTotalPrice } from "@/hooks/balances";
+import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import { PrimaryLink } from "../links";
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
   const currentWallet = useCurrentWallet({});
-  const totalData = useUSDTotalPrice();
+  const totalData = useUsdTotalValue();
 
   if (!currentWallet) return null;
 
@@ -29,7 +29,13 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] bg-gradient-to-r from-[#333333] to-[#1B1B1B]">
+      <div
+        className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]"
+        style={{
+          backgroundImage:
+            "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+        }}
+      >
         <div className="flex flex-row gap-3 px-4 py-3.5">
           <div className="h-[70px] w-[70px] rounded-full bg-sky-500 ">
             {userData.avatar ? (
@@ -82,11 +88,7 @@ export const Account = observer(function Account() {
           <div className="flex items-start gap-1">
             <Text>$</Text>
             <Text size="3xl" color="white" fontWeight="bold">
-              {userData.balanceHidden
-                ? "******"
-                : totalData.loading
-                  ? 0
-                  : totalData.total}
+              {userData.balanceHidden ? "******" : totalData.total}
             </Text>
           </div>
         </div>

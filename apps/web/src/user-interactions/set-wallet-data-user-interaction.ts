@@ -1,4 +1,5 @@
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { Utf8EncodedString } from "@obi-wallet/encoding";
 import { HomeChainId, MultisigKey, Serialized } from "@obi-wallet/sdk";
 import {
   createUserInteractionType,
@@ -9,7 +10,7 @@ export interface SetWalletDataUserInteractionPayload {
   readonly homeChainId: HomeChainId;
   readonly owner: Serialized<MultisigKey>;
   readonly keyMetaData: KeyMetaData;
-  readonly serializedWalletData: string;
+  readonly serializedWalletData: Utf8EncodedString;
 }
 
 export type SetWalletDataUserInteraction = UserInteraction<

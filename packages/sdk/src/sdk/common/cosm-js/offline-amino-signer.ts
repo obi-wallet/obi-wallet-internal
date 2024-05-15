@@ -8,6 +8,7 @@ import {
   StdSignDoc,
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
+import { Encoding } from "@obi-wallet/encoding";
 
 import { Signer } from "../../../signers";
 
@@ -32,7 +33,7 @@ export class CosmJsOfflineAminoSigner implements AbstractOfflineAminoSigner {
   }
 
   protected get publicKey(): Uint8Array {
-    return new Uint8Array(Buffer.from(this.signer.publicKey.value, "base64"));
+    return Encoding.fromBase64(this.signer.publicKey.value).toBytes();
   }
 
   public async getAccounts(): Promise<readonly AccountData[]> {

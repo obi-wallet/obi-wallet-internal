@@ -1,98 +1,39 @@
-import { toAssets } from "@/app/dashboard/fast-travel/assets";
-import { SimulationEntry } from "@/app/dashboard/page";
-import { TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChains } from "@/target-chain/cosmos-sdk/chains";
+import { SimulationEntry } from "@/dashboard/schema";
+import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { usePublicKey } from "../use-public-key";
 
-export interface Coin {
-  denom: string;
-  amount: string;
-  price: number;
-}
-
-export interface Balance {
-  balances: Coin[];
-  chainId: TargetChainId;
-}
-
-export interface NewCoin {
-  targetChainId: TargetChainId;
-  denom: string;
-  amount: string;
+export interface AssetWithPrice extends Asset<TargetChainId> {
   price: string;
 }
 
-export interface NewBalance {
-  balances: NewCoin[];
-  targetChainId: TargetChainId;
-}
-
-async function fetchNewBalances({
+async function fetchBalances({
   address,
   targetChainId,
 }: {
   address?: string;
   targetChainId: TargetChainId;
-}): Promise<NewBalance> {
+}): Promise<AssetWithPrice[]> {
   if (!address) {
-    return { balances: [], targetChainId };
+    return [];
   }
 
-  return await TargetChain.chainId(targetChainId).withStargateClient(
-    async (client) => {
-      const coins = await client.getAllBalances(address);
-      const balances = await Promise.all(
-        coins.map(async (balance) => {
-          const price = await getTokenPrice(targetChainId, balance.denom);
-          return {
-            targetChainId,
-            denom: balance.denom,
-            amount: balance.amount,
-            price: price.toString(),
-          };
-        }),
-      );
-      return {
-        balances,
-        targetChainId,
-      };
-    },
-  );
-}
+  const targetChain = TargetChain.chainId(targetChainId);
+  const balances = await targetChain.balances(address);
 
-async function fetchBalances({
-  address,
-  chainId,
-}: {
-  address?: string;
-  chainId: TargetChainId;
-}): Promise<Balance> {
-  if (!address) {
-    return { balances: [], chainId };
-  }
-
-  return await TargetChain.chainId(chainId).withStargateClient(
-    async (client) => {
-      const coins = await client.getAllBalances(address);
-      const balances = await Promise.all(
-        coins.map(async (balance) => {
-          const price = await getTokenPrice(chainId, balance.denom);
-          return {
-            ...balance,
-            price,
-          };
-        }),
-      );
+  return await Promise.all(
+    balances.map(async (asset): Promise<AssetWithPrice> => {
       return {
-        balances,
-        chainId,
+        ...asset,
+        price: (await targetChain.price(asset.assetId)).usdValue,
       };
-    },
+    }),
   );
 }
 
@@ -103,135 +44,69 @@ export function useInvalidateBalancesQueries() {
   };
 }
 
-export function useNewBalances({
-  publicKey,
-}: {
-  publicKey?: Secp256k1PublicKey;
-}) {
-  const chains = Object.values(CosmosSdkChains);
-
-  // useQueries to fetch balances for each chain
+export function useBalances() {
+  const publicKey = usePublicKey();
   return useQueries({
-    queries: chains.map((chain) => {
-      return {
-        queryKey: ["new-balances", chain.id, publicKey],
-        enabled: !!publicKey, // Only run query if address is provided
-        queryFn: async (): Promise<NewBalance> => {
-          invariant(publicKey, "Expected publicKey to be set.");
-          if (chain.disabled) {
-            return {
-              balances: [],
-              targetChainId: chain.id,
-            };
-          }
-          return await fetchNewBalances({
-            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-            targetChainId: chain.id,
-          });
-        },
-      };
-    }),
+    queries: publicKey
+      ? allTargetChainIds.map((targetChainId) => {
+          return {
+            queryKey: ["balances", targetChainId, publicKey],
+            queryFn: async (): Promise<AssetWithPrice[]> => {
+              invariant(publicKey, "Expected publicKey to be set.");
+              const targetChain = TargetChain.chainId(targetChainId);
+              if (targetChain.disabled) {
+                return [];
+              }
+              return await fetchBalances({
+                address: targetChain.computeAddress(publicKey),
+                targetChainId,
+              });
+            },
+          };
+        })
+      : [],
   });
 }
 
-export function useBalances({
-  publicKey,
-}: {
-  publicKey: Secp256k1PublicKey | undefined;
-}) {
-  // get an array of all the chain ids from TargetChainId
-  const chains = Object.values(CosmosSdkChains);
-
-  // useQueries to fetch balances for each chain
-  return useQueries({
-    queries: chains.map((chain) => {
-      return {
-        queryKey: ["balances", chain.id, publicKey],
-        enabled: !!publicKey, // Only run query if address is provided
-        queryFn: async (): Promise<Balance> => {
-          invariant(publicKey, "Expected publicKey to be set.");
-          if (chain.disabled) {
-            return {
-              balances: [],
-              chainId: chain.id,
-            };
-          }
-          return await fetchBalances({
-            address: TargetChain.chainId(chain.id).computeAddress(publicKey),
-            chainId: chain.id,
-          });
-        },
-      };
-    }),
-  });
-}
-
-const getTokenPrice = async (
-  chainId: string,
-  denom: string,
-): Promise<number> => {
-  const url = `https://api.0xsquid.com/v1/token-price?chainId=${chainId}&tokenAddress=${denom}`;
-  const res = await fetch(url);
-  if (res.status !== 200) {
-    return 0;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const json = (await res.json()) as { price: number };
-  return json.price;
-};
-
-export function useUSDTotalPrice(): {
+export function useUsdTotalValue(): {
   total: string;
   loading: boolean;
 } {
-  const publicKey = usePublicKey();
-  const balances = useBalances({ publicKey });
-  // if (publicKey === undefined) return { total: 0, loading: false };
+  const balances = useBalances();
 
-  // if all balances are not loaded, return 0
   if (
     balances.every((balance) => {
       return balance.isPending;
     })
   ) {
     return {
-      total: "0",
+      total: (0).toFixed(2),
       loading: true,
     };
   }
 
-  const filteredSuccessBalances = balances.filter((bal) => {
-    return bal.status === "success";
-  });
-  const flatBalances = filteredSuccessBalances
+  const flatBalances = balances
     .map((balance) => {
-      return balance.data?.balances;
+      return balance.data;
     })
-    .filter((balance): balance is Coin[] => {
-      return balance !== undefined;
+    .filter((balance): balance is AssetWithPrice[] => {
+      return !!balance;
     })
     .flat();
 
   const total = flatBalances
     .reduce((acc, balance) => {
-      const price = balance.price;
+      const targetChain = TargetChain.chainId(balance.chainId);
+      const asset = targetChain.assetInfo(balance.assetId);
 
-      const asset =
-        toAssets[
-          Object.keys(toAssets).find((key) => {
-            return toAssets[key]?.denom === balance?.denom;
-          }) ?? ""
-        ];
       if (!asset) {
         return acc;
       }
-      const amount = Number(balance?.amount);
-      const decimals = asset?.decimals ?? 0;
-      // get amount using the asset's decimals
-      const decimalAmount = amount / Math.pow(10, decimals);
-      return acc + price * decimalAmount;
-    }, 0)
+      const amount = new BigNumber(balance.rawAmount);
+      const decimalAmount = amount.dividedBy(10 ** asset.decimals);
+      const price = new BigNumber(balance.price);
+      return acc.plus(price.times(decimalAmount));
+    }, new BigNumber(0))
     .toFixed(2);
 
   return {
@@ -240,7 +115,9 @@ export function useUSDTotalPrice(): {
   };
 }
 
-const fetchPendingTX = async (pubKey: string) => {
+const fetchPendingTX = async (
+  pubKey: string,
+): Promise<z.infer<typeof SimulationEntry>> => {
   if (!pubKey) return [];
 
   const url = `${
@@ -250,8 +127,7 @@ const fetchPendingTX = async (pubKey: string) => {
   const res = await fetch(url);
   const data = await res.json();
 
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return data as SimulationEntry[];
+  return SimulationEntry.parse(data);
 };
 
 export const usePendingTXs = (pubKey: string) => {

@@ -1,5 +1,6 @@
 import { Draft } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { Base64EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -57,7 +58,7 @@ export interface WalletDataFlowState {
     backup: BackupShare;
   } | null;
   locallyEncryptedSharesByPreviousOwner: {
-    easy: string;
+    easy: Base64EncodedString;
     backup: string;
   } | null;
   onDone({
@@ -200,7 +201,7 @@ export interface WalletDataFlowStatePayload {
       backup: BackupShare;
     };
     locallyEncryptedSharesByPreviousOwner?: {
-      easy: string;
+      easy: Base64EncodedString;
       backup: string;
     };
   };

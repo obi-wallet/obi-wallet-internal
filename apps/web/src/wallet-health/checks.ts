@@ -10,6 +10,7 @@ import {
 } from "@/wallet-data-backup/sync-wallet-data";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
+  skipToken,
   useMutation,
   UseMutationResult,
   useQueryClient,
@@ -39,12 +40,12 @@ export function useOwnerUpToDateCheck(): WalletHealthCheck {
   const wallet = useCurrentWallet({});
   const query = useQuery({
     queryKey: ["owner-up-to-date", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      const owner = await fetchOwner(wallet);
-      return wallet.owner.address === owner;
-    },
-    enabled: !!wallet,
+    queryFn: wallet
+      ? async () => {
+          const owner = await fetchOwner(wallet);
+          return wallet.owner.address === owner;
+        }
+      : skipToken,
   });
 
   return {
@@ -57,22 +58,22 @@ function useWalletBackupQuery() {
   const wallet = useCurrentWallet({});
   return useQuery({
     queryKey: ["wallet-backup", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      const homeChain = HomeChain.chainId(wallet.homeChainId);
-      return await Promise.all(
-        wallet.owner.keys.map(async (key) => {
-          return {
-            key,
-            data: await homeChain.lookupWalletBackup({
-              homeChainId: wallet.homeChainId,
-              publicKey: key.publicKey,
+    queryFn: wallet
+      ? async () => {
+          const homeChain = HomeChain.chainId(wallet.homeChainId);
+          return await Promise.all(
+            wallet.owner.keys.map(async (key) => {
+              return {
+                key,
+                data: await homeChain.lookupWalletBackup({
+                  homeChainId: wallet.homeChainId,
+                  publicKey: key.publicKey,
+                }),
+              };
             }),
-          };
-        }),
-      );
-    },
-    enabled: !!wallet,
+          );
+        }
+      : skipToken,
   });
 }
 
@@ -133,67 +134,67 @@ export function useWalletBackupCheck(): WalletHealthCheck {
       wallet?.userEntryAddress,
       wallet?.previousWalletData,
     ],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      invariant(walletBackup.data, "Expected wallet backup to be set.");
-      const backupPerKey = walletBackup.data;
+    queryFn:
+      wallet && walletBackup.data
+        ? async () => {
+            const backupPerKey = walletBackup.data;
 
-      return backupPerKey.every(({ data }) => {
-        const fail = (message: string) => {
-          console.error(message);
-          return false;
-        };
+            return backupPerKey.every(({ data }) => {
+              const fail = (message: string) => {
+                console.error(message);
+                return false;
+              };
 
-        invariant(data, "Expected data to be set");
+              invariant(data, "Expected data to be set");
 
-        if (data.userEntryAddress !== wallet.userEntryAddress) {
-          return fail(
-            `Expected backup to be for wallet ${wallet.userEntryAddress}, got ${data.userEntryAddress}`,
-          );
-        }
+              if (data.userEntryAddress !== wallet.userEntryAddress) {
+                return fail(
+                  `Expected backup to be for wallet ${wallet.userEntryAddress}, got ${data.userEntryAddress}`,
+                );
+              }
 
-        const actualOwner = wallet.owner;
-        const backupOwner = data.owner;
+              const actualOwner = wallet.owner;
+              const backupOwner = data.owner;
 
-        if (backupOwner.threshold !== actualOwner.threshold.toString()) {
-          return fail(
-            `Expected backup threshold to be ${actualOwner.threshold.toString()}, got ${backupOwner.threshold}`,
-          );
-        }
+              if (backupOwner.threshold !== actualOwner.threshold.toString()) {
+                return fail(
+                  `Expected backup threshold to be ${actualOwner.threshold.toString()}, got ${backupOwner.threshold}`,
+                );
+              }
 
-        if (backupOwner.keys.length !== actualOwner.keys.length) {
-          return fail(
-            `Expected backup to have ${actualOwner.keys.length} keys, got ${backupOwner.keys.length}`,
-          );
-        }
+              if (backupOwner.keys.length !== actualOwner.keys.length) {
+                return fail(
+                  `Expected backup to have ${actualOwner.keys.length} keys, got ${backupOwner.keys.length}`,
+                );
+              }
 
-        const allKeysMatch = backupOwner.keys.every((backupKey, i) => {
-          const actualKey = actualOwner.keys[i];
-          invariant(actualKey, "Expected actual key to be set");
+              const allKeysMatch = backupOwner.keys.every((backupKey, i) => {
+                const actualKey = actualOwner.keys[i];
+                invariant(actualKey, "Expected actual key to be set");
 
-          if (backupKey.type !== actualKey.type) return false;
-          if (
-            JSON.stringify(backupKey.publicKey) !==
-            JSON.stringify(actualKey.publicKey)
-          ) {
-            return false;
+                if (backupKey.type !== actualKey.type) return false;
+                if (
+                  JSON.stringify(backupKey.publicKey) !==
+                  JSON.stringify(actualKey.publicKey)
+                ) {
+                  return false;
+                }
+
+                return true;
+              });
+
+              if (!allKeysMatch) {
+                return fail("Expected all keys to match");
+              }
+
+              if (typeof data.encryptedShares.backup !== "string") {
+                return fail("Expected backup share to be backed up");
+              }
+
+              return true;
+            });
           }
-
-          return true;
-        });
-
-        if (!allKeysMatch) {
-          return fail("Expected all keys to match");
-        }
-
-        if (typeof data.encryptedShares.backup !== "string") {
-          return fail("Expected backup share to be backed up");
-        }
-
-        return true;
-      });
-    },
-    enabled: !!wallet && !!walletBackup.data,
+        : skipToken,
   });
 
   return {
@@ -215,27 +216,27 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
       wallet?.userEntryAddress,
       wallet?.previousWalletData,
     ],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      invariant(walletBackup.data, "Expected wallet backup to be set.");
-      const backupPerKey = walletBackup.data;
+    queryFn:
+      wallet && walletBackup.data
+        ? async () => {
+            const backupPerKey = walletBackup.data;
 
-      return backupPerKey.every(({ data }) => {
-        const fail = (message: string) => {
-          console.error(message);
-          return false;
-        };
+            return backupPerKey.every(({ data }) => {
+              const fail = (message: string) => {
+                console.error(message);
+                return false;
+              };
 
-        invariant(data, "Expected data to be set");
+              invariant(data, "Expected data to be set");
 
-        if (typeof data.encryptedShares.easy !== "string") {
-          return fail("Expected easy share to be backed up");
-        }
+              if (typeof data.encryptedShares.easy !== "string") {
+                return fail("Expected easy share to be backed up");
+              }
 
-        return true;
-      });
-    },
-    enabled: !!wallet && !!walletBackup.data,
+              return true;
+            });
+          }
+        : skipToken,
   });
 
   return {
@@ -256,12 +257,11 @@ export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
       wallet?.userEntryAddress,
       wallet?.previousWalletData,
     ],
-    queryFn: async () => {
-      invariant(walletDataState.data, "Expected wallet backup to be set.");
-
-      return walletDataState.data.type === WalletDataStateType.UpToDate;
-    },
-    enabled: !!walletDataState.data,
+    queryFn: walletDataState.data
+      ? async () => {
+          return walletDataState.data.type === WalletDataStateType.UpToDate;
+        }
+      : skipToken,
   });
 
   return {
@@ -280,11 +280,11 @@ export function useWalletHasEasyShareCheck(): WalletHealthCheck {
 
   const query = useQuery({
     queryKey: ["wallet-has-easy-share", wallet?.userEntryAddress],
-    queryFn: async () => {
-      invariant(wallet, "Expected wallet to be set.");
-      return !!wallet.encryptedEasyShare;
-    },
-    enabled: !!wallet,
+    queryFn: wallet
+      ? async () => {
+          return !!wallet.encryptedEasyShare;
+        }
+      : skipToken,
   });
 
   return {

@@ -6,9 +6,10 @@ import {
   handleMultisigKeyDecryptedMessage,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
-import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
+import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
@@ -16,9 +17,8 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
-import { useMutation } from "@tanstack/react-query";
+import { skipToken, useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
-import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -67,23 +67,23 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
   const nextHash = useQuery({
     queryKey: ["next-hash", { walletData }],
-    queryFn: async () => {
-      invariant(userAccount.data, "User account not found");
-      const client = new SecretJsClient(newOwner.chainId);
-      const { next_hash } = await client.queryContract({
-        contract: userAccount.data.userAccountAddress,
-        codeHash: userAccount.data.userAccountCodeHash,
-        query: {
-          next_hash: {},
-        },
-        schema: z.object({
-          next_hash: z.string(),
-        }),
-      });
-      return Buffer.from(next_hash, "hex");
-    },
+    queryFn: userAccount.data
+      ? async () => {
+          const client = new SecretJsClient(newOwner.chainId);
+          const { next_hash } = await client.queryContract({
+            contract: userAccount.data.userAccountAddress,
+            codeHash: userAccount.data.userAccountCodeHash,
+            query: {
+              next_hash: {},
+            },
+            schema: z.object({
+              next_hash: HexEncodedString,
+            }),
+          });
+          return next_hash;
+        }
+      : skipToken,
     staleTime: 0,
-    enabled: !!userAccount.data,
   });
 
   const approve = useMutation({
@@ -109,7 +109,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
             signatures: [...results.values()].map((value) => {
-              return Buffer.from(value.signedHashes[0]!).toString("hex");
+              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
             }),
           }),
         });
@@ -135,7 +135,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
             signatures: [...results.values()].map((value) => {
-              return Buffer.from(value.signedHashes[0]!).toString("hex");
+              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
             }),
             walletData,
             previousOwner: previousOwner.toJSON(),
@@ -281,11 +281,11 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
           {nextHash.data ? (
             <ApproveIntentions
-              key={`${proposedUpdate}-${nextHash.data.toString("hex")}`}
+              key={`${proposedUpdate}-${nextHash.data.toString()}`}
               multisigKey={proposedUpdate ? newOwner : previousOwner}
               keyMetaData={keyMetaData}
               intentions={{
-                signHashes: [nextHash.data],
+                signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
                 decryptMessages: [],
                 decryptMultisigKeyEncryptedMessages:
                   getMultisigKeyEncryptedMessages(),
@@ -319,16 +319,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         </div>
       </div>
 
-      {approve.isPending && (
-        <div className="absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-50">
-          <div className="w-60 rounded-xl bg-blue-600 p-5">
-            <Lottie animationData={SendingAnimation} />
-            <Text size="xl" className="justify-center text-white">
-              Sending
-            </Text>
-          </div>
-        </div>
-      )}
+      {approve.isPending && <SendingAnimation />}
     </div>
   );
 });

@@ -1,3 +1,4 @@
+import { Base64EncodedString } from "@obi-wallet/encoding";
 import { toJS } from "mobx";
 
 import { MpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
@@ -10,7 +11,7 @@ export class MpcWallet {
     protected _owner: MultisigKey,
     protected _userEntryAddress: string,
     protected _encryptedShares: {
-      easy: string;
+      easy: Base64EncodedString;
       backup: string;
     },
     protected _previousWalletData: WalletData | null,
@@ -48,7 +49,10 @@ export class MpcWallet {
     return this._previousWalletData;
   }
 
-  public setEncryptedShares(encryptedShares: { easy: string; backup: string }) {
+  public setEncryptedShares(encryptedShares: {
+    easy: Base64EncodedString;
+    backup: string;
+  }) {
     this._encryptedShares = encryptedShares;
   }
 

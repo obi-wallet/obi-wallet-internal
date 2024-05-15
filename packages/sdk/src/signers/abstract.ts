@@ -3,7 +3,7 @@ import { SHA256, Word32Array } from "jscrypto";
 
 import { KeySubclassTypeMapping, KeyType } from "../data-structures";
 
-export function createHash(payload: Buffer): Uint8Array {
+export function createHash(payload: Uint8Array): Uint8Array {
   return SHA256.hash(new Word32Array(payload)).toUint8Array();
 }
 
@@ -12,7 +12,6 @@ export abstract class Signer {
   public abstract signHash(hash: Uint8Array): Promise<Uint8Array>;
 
   public async sign(payload: Buffer): Promise<Buffer> {
-    console.log("calling signer sign()");
     return Buffer.from(await this.signHash(this.createHash(payload)));
   }
 

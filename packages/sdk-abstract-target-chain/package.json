@@ -11,6 +11,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@obi-wallet/query-client": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*"
   },
   "devDependencies": {

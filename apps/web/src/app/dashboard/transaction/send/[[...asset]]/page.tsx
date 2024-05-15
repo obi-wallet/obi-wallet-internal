@@ -1,17 +1,16 @@
 "use client";
 
-import { Button, IBalanceOption } from "@/components";
+import { Button, IBalanceOption, Text } from "@/components";
 import {
-  NewBalance,
+  AssetWithPrice,
   useInvalidateBalancesQueries,
-  useNewBalances,
+  useBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { usePublicKey } from "@/hooks/use-public-key";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { isEvmChainId } from "@/target-chain/evm/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { nonEmptyString } from "@/validation-helpers";
@@ -31,8 +30,12 @@ const schema = z
   .object({
     coin: z.object({
       amount: z.string(),
-      // TODO: This should be more precise
-      asset: z.any().optional(),
+      asset: z
+        .custom<IBalanceOption>(() => {
+          // TODO: this should be more precise
+          return true;
+        })
+        .nullable(),
     }),
     recipient: nonEmptyString("Address"),
     memo: z.string(),
@@ -41,7 +44,6 @@ const schema = z
   .refine(
     (data) => {
       if (!data.coin.asset) return true;
-      if (!isCosmosSdkChainId(data.coin.asset.targetChainId)) return true;
 
       try {
         return TargetChain.chainId(
@@ -64,7 +66,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     defaultValues: {
       coin: {
         amount: "",
-        asset: undefined,
+        asset: null,
       },
       recipient: "",
       memo: "",
@@ -74,8 +76,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const publicKey = usePublicKey();
-  const balances = useNewBalances({ publicKey });
+  const balances = useBalances();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const send = useMutation({
@@ -83,22 +84,22 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(wallet, "Wallet not found");
       invariant(coin.asset, "No asset selected");
 
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const asset = coin.asset as IBalanceOption;
-
+      const asset = coin.asset;
       const chainId = asset.targetChainId;
-      const denomUnit = asset.asset.denom_units.find((value) => {
-        return value.denom === asset.asset.display;
-      });
 
       const tokens: Coin[] = [
         {
           amount: new BigNumber(coin.amount)
-            .multipliedBy(10 ** (denomUnit?.exponent ?? 0))
+            .multipliedBy(10 ** asset.asset.decimals)
             .toFixed(0, BigNumber.ROUND_DOWN),
           denom: asset.denom,
         },
       ];
+
+      if (isEvmChainId(chainId)) {
+        window.alert("EVM chain not supported yet");
+        return;
+      }
 
       const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
 
@@ -128,7 +129,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       return response;
     },
     onSuccess(response) {
-      if (response.approved) {
+      if (response?.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
           window.alert("TX broadcast successfully");
@@ -149,42 +150,24 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .map((b) => {
       return b.data;
     })
-    .filter((b): b is NewBalance => {
-      return !!b?.balances;
+    .filter((b): b is AssetWithPrice[] => {
+      return Array.isArray(b);
     });
 
-  // add chainId to balance.balances
-  const withChainId = balance
-    .map((b) => {
-      return {
-        balances: b?.balances.map((balance) => {
-          return {
-            ...balance,
-            chainId: b.targetChainId,
-          };
-        }),
-      };
-    })
-    .map((b) => {
-      return b.balances;
-    })
-    .flat();
+  const withChainId = balance.flat();
 
   const balanceOptions = withChainId
     .map((b) => {
-      const assetData = TargetChain.chainId(b.chainId).getAsset(b.denom);
+      const assetData = TargetChain.chainId(b.chainId).assetInfo(b.assetId);
       if (!assetData) return null;
 
-      const amount = new BigNumber(b.amount);
-      const denomUnit = assetData.denom_units.find((value) => {
-        return value.denom === assetData.display;
-      });
-      const decimalAmount = amount.dividedBy(10 ** (denomUnit?.exponent ?? 0));
+      const amount = new BigNumber(b.rawAmount);
+      const decimalAmount = amount.dividedBy(10 ** assetData.decimals);
 
       const result: IBalanceOption = {
-        image: assetData.images?.[0]?.svg ?? assetData.images?.[0]?.png,
+        image: assetData.image ?? undefined,
         targetChainId: b.chainId,
-        denom: b.denom,
+        denom: b.assetId,
         network: TargetChain.chainId(b.chainId).label,
         assetUnit: assetData?.symbol,
         balance: decimalAmount,
@@ -229,7 +212,12 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       </div>
     );
   }
-
+  const validation = schema.safeParse(form.getValues());
+  const issue = validation.error?.issues[0];
+  const invalidAddress =
+    issue?.message === "Invalid address" &&
+    issue.path.length === 0 &&
+    issue.code === "custom";
   return (
     <div className="space-y-7 py-4">
       <Controller
@@ -288,7 +276,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 >
                   {coin.asset
                     ? `${coin.asset.balance.toString()} ${
-                        coin.asset.asset.display
+                        coin.asset.asset.symbol
                       }`
                     : ""}
                 </div>
@@ -305,6 +293,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   }}
                   className="w-full"
                   itemComponent={({ getItemProps, item, isSelected }) => {
+                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}
@@ -324,13 +313,15 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-white">
-                          <div className=" uppercase">{item.asset.display}</div>
+                          <div>
+                            {`${item.asset.symbol.toUpperCase()} (on ${item.network})`}
+                          </div>
                           <div>{item.balance.toString()}</div>
                         </div>
                       </div>
                     );
                   }}
-                  onItemSelect={function (item: IBalanceOption): void {
+                  onItemSelect={function (item) {
                     setCoin({
                       amount: coin.amount,
                       asset: item,
@@ -351,8 +342,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                           />
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
-                          <div className=" uppercase">
-                            {selected.item.asset.display}
+                          <div>
+                            {`${selected.item.asset.symbol.toUpperCase()} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>
@@ -361,7 +352,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 />
               }
             >
-              <div className="flex gap-3  text-slate-500">
+              <div className="flex gap-3 text-slate-500">
                 <span
                   className=" cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
@@ -433,7 +424,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           );
         }}
       />
-      <div className="flex justify-end">
+      <div className="flex justify-between">
+        {invalidAddress ? (
+          <Text className="ml-2 text-red-600">
+            Assets can only be sent to the same chain
+          </Text>
+        ) : (
+          <div />
+        )}
         <Button
           className="block w-44"
           disabled={!form.formState.isValid || send.isPending}

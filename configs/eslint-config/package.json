@@ -9,8 +9,8 @@
     "react-internal.js"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.9.0",
+    "@typescript-eslint/parser": "^7.9.0",
     "@vercel/style-guide": "^6.0.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-turbo": "^1.13.3",
@@ -20,7 +20,7 @@
     "eslint-plugin-mobx": "^0.0.9",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-unicorn": "^52.0.0",
+    "eslint-plugin-unicorn": "^53.0.0",
     "typescript": "^5.4.5"
   }
 }

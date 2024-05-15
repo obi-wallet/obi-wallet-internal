@@ -1,3 +1,4 @@
+import { Encoding } from "@obi-wallet/encoding";
 import {
   Sec256k1PrivateKey,
   Secp256k1PublicKey,
@@ -11,14 +12,14 @@ export class Secp256k1PrivateKeySigner extends Signer {
 
   public constructor(privateKey: Sec256k1PrivateKey) {
     super();
-    this.privateKey = new Uint8Array(Buffer.from(privateKey, "base64"));
+    this.privateKey = Encoding.fromBase64(privateKey).toBytes();
   }
 
   public get publicKey(): Secp256k1PublicKey {
     const publicKey = secp256k1.publicKeyCreate(this.privateKey);
     return {
       type: "tendermint/PubKeySecp256k1",
-      value: Buffer.from(publicKey).toString("base64"),
+      value: Encoding.fromBytes(publicKey).toBase64(),
     };
   }
 

@@ -99,7 +99,7 @@ export function Navbar() {
       // }}
       className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950"
     >
-      <div className="flex h-full w-[330px] flex-col px-3 pt-6 max-md:hidden md:overflow-y-auto">
+      <div className="flex h-full w-[330px] flex-col px-3 pt-4 max-md:hidden md:overflow-y-auto">
         <div className="hidden w-full flex-col md:flex">
           <Account />
         </div>
@@ -110,16 +110,19 @@ export function Navbar() {
               .filter((item) => {
                 return item.showOnDesktop;
               })
-              .map((navItem, index) => {
+              .map((navItem) => {
                 return (
-                  <li key={`navmenu-${index}`}>
+                  <li key={navItem.href}>
                     <PrimaryLink
                       href={navItem.href}
-                      className={`flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
-                        mainURISegment === navItem.module
-                          ? "font-bold opacity-100"
-                          : ""
-                      }`}
+                      className={cn(
+                        `flex flex-row px-6 py-2 text-xl font-normal text-white opacity-40 lg:text-2xl ${
+                          mainURISegment === navItem.module
+                            ? "font-bold opacity-100"
+                            : ""
+                        }`,
+                        "hover:font-bold  hover:opacity-100",
+                      )}
                       target={navItem.target || "_self"}
                     >
                       <Image
@@ -127,6 +130,7 @@ export function Navbar() {
                         width={30}
                         height={30}
                         alt={navItem.text}
+                        className="!h-[30px] !w-[30px]"
                       />
                       <Text
                         className="ml-7"

@@ -7,15 +7,16 @@ import {
   ApproveIntentions,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
-import SendingAnimation from "@/user-interactions/approve-messages/sending-animation.json";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
+import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { createHash, MultisigKey, WalletData } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
-import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
+
+import { SendingAnimation } from "./approve-messages/sending-animation";
 
 export const SetWalletDataUserInteractionHandler = observer<{
   children: ReactNode;
@@ -74,14 +75,14 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
           return !!signature;
         })
         .map((signature) => {
-          return Buffer.from(signature).toString("hex");
+          return Encoding.fromBytes(signature).toHex();
         });
 
       const response = await fetch("/api/set-wallet-data", {
         method: "POST",
         body: JSON.stringify({
           serializedWalletData: interaction.payload.serializedWalletData,
-          signatures: signatures,
+          signatures,
           userAccountAddress: userAccount.data.userAccountAddress,
           userAccountCodeHash: userAccount.data.userAccountCodeHash,
         }),
@@ -132,10 +133,9 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             intentions={{
               signHashes: [
                 createHash(
-                  Buffer.from(
+                  Encoding.fromUtf8(
                     interaction.payload.serializedWalletData,
-                    "utf-8",
-                  ),
+                  ).toBytes(),
                 ),
               ],
               decryptMessages: [],
@@ -169,16 +169,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
         </div>
       </div>
 
-      {approve.isPending && (
-        <div className="absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-50">
-          <div className="w-60 rounded-xl bg-blue-600 p-5">
-            <Lottie animationData={SendingAnimation} />
-            <Text size="xl" className="justify-center text-white">
-              Sending
-            </Text>
-          </div>
-        </div>
-      )}
+      {approve.isPending && <SendingAnimation />}
     </div>
   );
 });

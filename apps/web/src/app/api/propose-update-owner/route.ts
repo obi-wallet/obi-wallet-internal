@@ -1,4 +1,5 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { HexEncodedString } from "@obi-wallet/encoding";
 import {
   HomeChainIdSchema,
   Messages,
@@ -14,7 +15,7 @@ const schema = z.object({
   newOwner: MultisigKey.schema.migratableSchema,
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
-  signatures: z.array(z.string()),
+  signatures: z.array(HexEncodedString),
 });
 
 export async function POST(request: Request) {
