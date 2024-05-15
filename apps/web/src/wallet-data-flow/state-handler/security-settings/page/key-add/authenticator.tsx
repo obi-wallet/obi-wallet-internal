@@ -1,11 +1,11 @@
 import { Box, Divider, Text } from "@/components";
+import { AddAuthenticatorKey } from "@/keys/authenticator/add-authenticator-key";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../../context";
-import { AddAuthenticatorKey } from "@/keys/authenticator/add-authenticator-key";
 
 export const AddAuthenticatorKeyPage = observer(function AddTelegramKeyPage() {
-  const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
+  const { popPage } = useSecuritySettingsContext();
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -14,7 +14,7 @@ export const AddAuthenticatorKeyPage = observer(function AddTelegramKeyPage() {
       </Text>
       <Divider className="my-2" />
       <AddAuthenticatorKey
-        onSubmit={async ({ publicKey, keyMetaData }) => {
+        onSubmit={async () => {
           popPage();
         }}
         onCancel={() => {

@@ -1,20 +1,11 @@
-import { Button, DropDown, Text } from "@/components";
-import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
-import {
-  useSecurityQuestionInput,
-  useSecurityQuestions,
-} from "@/keys/phone/use-security-questions";
-import {
-  SingleKeyMetaData,
-  TelegramSingleKeyMetaData,
-} from "@/stores/key-meta-data";
+import { Button, Text } from "@/components";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { Input } from "@/ui/input";
+import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import { useState } from "react";
+import invariant from "tiny-invariant";
 
 interface AuthenticatorType {
   qrcode: string;
@@ -30,7 +21,7 @@ export interface AddAuthenticatorKeyProps {
 }
 
 export const AddAuthenticatorKey = observer<AddAuthenticatorKeyProps>(
-  function AddAuthenticatorKey({ onSubmit, onCancel }) {
+  function AddAuthenticatorKey({ onCancel }) {
     const [scannedQrCode, setScannedQrCode] = useState(false);
     const [userToken, setUserToken] = useState("");
 
@@ -38,17 +29,14 @@ export const AddAuthenticatorKey = observer<AddAuthenticatorKeyProps>(
       isPending,
       isError,
       data: qrcodeData,
-      error,
     } = useQuery({
       queryKey: ["authenticator-qrcode"],
       queryFn: async (): Promise<AuthenticatorType> => {
         const response = await fetch("/api/authenticator/qrcode");
-        if (response.status === 200) {
-          const data = await response.json();
-          return data;
-        } else {
-          return Promise.reject(new Error("Something went wrong!"));
-        }
+        invariant(response.status === 200, "Something went wrong!");
+
+        const data = await response.json();
+        return data;
       },
     });
 
@@ -61,18 +49,14 @@ export const AddAuthenticatorKey = observer<AddAuthenticatorKeyProps>(
             token: userToken,
           }),
         });
-        if (response.status === 200) {
-          const result = (await response.json()) as { verified: boolean };
-          console.log({ result });
-        } else {
-          return Promise.reject(new Error("Something went wrong!"));
-        }
+        invariant(response.status === 200, "Something went wrong!");
+
+        const result: { verified: boolean } = await response.json();
+        console.log({ result });
       } else {
         setScannedQrCode(true);
       }
     };
-
-    console.log({ isPending, isError, qrcodeData, error });
 
     return (
       <>

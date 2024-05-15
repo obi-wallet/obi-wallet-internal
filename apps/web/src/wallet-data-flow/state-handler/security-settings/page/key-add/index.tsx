@@ -1,11 +1,11 @@
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
+import { AddAuthenticatorKeyPage } from "./authenticator";
 import { AddPasskeyPage } from "./passkey";
 import { AddPhoneKeyPage } from "./phone";
 import { AddTelegramKeyPage } from "./telegram";
 import { KeyAddPage } from "../../context";
-import { AddAuthenticatorKeyPage } from "./authenticator";
 
 export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
   function SecuritySettingsKeyAddPage({ page }) {
