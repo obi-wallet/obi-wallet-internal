@@ -58,7 +58,7 @@ export function useBalances() {
                 return [];
               }
               return await fetchBalances({
-                address: targetChain.computeAddress(publicKey),
+                address: await targetChain.obiAccountAddress(publicKey),
                 targetChainId,
               });
             },
