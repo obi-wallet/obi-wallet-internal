@@ -3423,7 +3423,6 @@ __metadata:
     typescript: "npm:^5.4.5"
     vercel: "npm:^34.1.14"
     viem: "npm:^2.10.5"
-    webpack-hook-plugin: "npm:^1.0.7"
     zod: "npm:^3.23.8"
     zora: "npm:^5.2.0"
   languageName: unknown
@@ -21816,13 +21815,6 @@ __metadata:
     webpack:
       optional: true
   checksum: 10c0/0f31670835f3c0f588392235a6183facf314c0dca312467254a56458142be6fee746f7f6b304f281c740364fd36f256c597ab37d87e5971633cee2f70a8cd5e7
-  languageName: node
-  linkType: hard
-
-"webpack-hook-plugin@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "webpack-hook-plugin@npm:1.0.7"
-  checksum: 10c0/6b2319664c3490fed2e99e2b87d706f459b8f9d230a6ff4d551fe99a6a4e4bf9af39cf2351567dbd91ba0b5fbd2c081095bea4cd67be9565afd87e7fe8aad9d0
   languageName: node
   linkType: hard
 
