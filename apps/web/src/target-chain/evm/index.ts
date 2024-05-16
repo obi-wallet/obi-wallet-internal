@@ -68,7 +68,7 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
     });
 
     const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-      entryPoint: ENTRYPOINT_ADDRESS_V06,
+      entryPoint: this.entryPoint,
       signer: account,
     });
 
@@ -128,6 +128,10 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
     }
 
     return null;
+  }
+
+  public get entryPoint() {
+    return ENTRYPOINT_ADDRESS_V06;
   }
 
   public validateAddress(address: string): address is Address {
