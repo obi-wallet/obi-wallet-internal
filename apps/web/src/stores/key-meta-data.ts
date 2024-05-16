@@ -1,4 +1,4 @@
-import { AbstractKVStore } from "@obi-wallet/headless-ui";
+import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import { z } from "zod";

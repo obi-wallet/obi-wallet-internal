@@ -1,6 +1,6 @@
-import { rootStore } from "@/hooks/use-create-root-store";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { EasyShareDecryption } from "@/lib/encryption";
+import { rootStore } from "@/stores";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";

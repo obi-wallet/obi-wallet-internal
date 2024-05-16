@@ -1,4 +1,4 @@
-import { rootStore } from "@/hooks/use-create-root-store";
+import { rootStore } from "@/stores";
 import {
   Base64EncodedString,
   Encoding,

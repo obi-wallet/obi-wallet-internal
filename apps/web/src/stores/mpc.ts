@@ -3,7 +3,7 @@ import {
   AbstractKVStore,
   RootStore,
   WalletState,
-} from "@obi-wallet/headless-ui";
+} from "@obi-wallet/headless-ui-store";
 import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import {
   BackupShare,
