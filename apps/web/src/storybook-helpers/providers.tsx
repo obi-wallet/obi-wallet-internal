@@ -3,7 +3,7 @@ import { rootStore } from "@/hooks/use-create-root-store";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { RootStore } from "@/stores";
 import { obiModalConfig } from "@obi-wallet/config";
-import { MockKVStore } from "@obi-wallet/headless-ui";
+import { MockKVStore } from "@obi-wallet/headless-ui-store";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { ReactNode } from "react";
 

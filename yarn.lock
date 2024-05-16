@@ -3150,13 +3150,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@obi-wallet/headless-ui-store@workspace:*, @obi-wallet/headless-ui-store@workspace:packages/headless-ui-store":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/headless-ui-store@workspace:packages/headless-ui-store"
+  dependencies:
+    "@obi-wallet/sdk": "workspace:*"
+    "@react-native-async-storage/async-storage": "npm:^1.23.1"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@types/ramda": "npm:^0.30.0"
+    dexie: "npm:^4.0.4"
+    eslint: "npm:^8.57.0"
+    mobx: "npm:^6.12.3"
+    ramda: "npm:^0.30.0"
+    typescript: "npm:^5.4.5"
+  peerDependencies:
+    react: ^18.2.0
+  languageName: unknown
+  linkType: soft
+
 "@obi-wallet/headless-ui@workspace:*, @obi-wallet/headless-ui@workspace:packages/headless-ui":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/headless-ui@workspace:packages/headless-ui"
   dependencies:
     "@obi-wallet/query-client": "workspace:*"
-    "@obi-wallet/sdk": "workspace:*"
-    "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@react-native-async-storage/async-storage": "npm:^1.23.1"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -3164,13 +3181,9 @@ __metadata:
     "@tanstack/react-query": "npm:^5.36.0"
     "@tanstack/react-query-persist-client": "npm:^5.36.0"
     "@types/ramda": "npm:^0.30.0"
-    dexie: "npm:^4.0.4"
     eslint: "npm:^8.57.0"
-    ethers: "npm:^6.12.1"
     mobx: "npm:^6.12.3"
     mobx-react-lite: "npm:^4.0.7"
-    ramda: "npm:^0.30.0"
-    rooks: "npm:^7.14.1"
     tiny-invariant: "npm:^1.3.3"
     typescript: "npm:^5.4.5"
   peerDependencies:
@@ -3335,6 +3348,7 @@ __metadata:
     "@obi-wallet/config": "workspace:*"
     "@obi-wallet/encoding": "workspace:*"
     "@obi-wallet/headless-ui": "workspace:*"
+    "@obi-wallet/headless-ui-store": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm": "workspace:*"
     "@obi-wallet/mpc-ecdsa-wasm-types": "workspace:*"
     "@obi-wallet/query-client": "workspace:*"
@@ -4191,6 +4205,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.9.0"
     "@typescript-eslint/parser": "npm:^7.9.0"
     "@vercel/style-guide": "npm:^6.0.0"
+    eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-config-turbo: "npm:^1.13.3"
     eslint-import-resolver-typescript: "npm:^3.6.1"

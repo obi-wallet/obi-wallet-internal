@@ -3,7 +3,7 @@ import {
   AbstractKVStore,
   KVStore as DefaultKVStore,
   RootStore as SdkRootStore,
-} from "@obi-wallet/headless-ui";
+} from "@obi-wallet/headless-ui-store";
 
 import { UserDataStore } from ".";
 import { ChainStore } from "./chain";
