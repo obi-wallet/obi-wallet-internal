@@ -33,5 +33,7 @@ Sentry.init({
 });
 
 if (process.env.NODE_ENV === "development") {
-  void Spotlight.init();
+  void Spotlight.init({
+    anchor: "bottomLeft",
+  });
 }

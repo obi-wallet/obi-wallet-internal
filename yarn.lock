@@ -3348,7 +3348,7 @@ __metadata:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@sentry/nextjs": "npm:^8.0.0"
-    "@spotlightjs/spotlight": "npm:^1.2.17"
+    "@spotlightjs/spotlight": "npm:^2.0.0-alpha.1"
     "@storybook/addon-essentials": "npm:^8.0.10"
     "@storybook/addon-interactions": "npm:^8.0.10"
     "@storybook/addon-links": "npm:^8.0.10"
@@ -4671,10 +4671,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spotlightjs/overlay@npm:1.8.3":
-  version: 1.8.3
-  resolution: "@spotlightjs/overlay@npm:1.8.3"
-  checksum: 10c0/315013d86f6ec448d85131eceae8f21432c13cf4888c192ca0cd39c1f1c0681ec54282bb59414e80f5c276ecda12e9c7bd862c5ffda1a1d3d347ca2c6a82c1a2
+"@spotlightjs/overlay@npm:2.0.0-alpha.1":
+  version: 2.0.0-alpha.1
+  resolution: "@spotlightjs/overlay@npm:2.0.0-alpha.1"
+  checksum: 10c0/792e7f2619b275e86bccfc9cca6256c13f08bcc07722529b3e6b5a2ea233df0462e0bf161cafbe5aaa10fd5d20cd9bb2695b716a5c832a7a763682e922d1b71c
   languageName: node
   linkType: hard
 
@@ -4687,15 +4687,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@spotlightjs/spotlight@npm:^1.2.17":
-  version: 1.2.17
-  resolution: "@spotlightjs/spotlight@npm:1.2.17"
+"@spotlightjs/spotlight@npm:^2.0.0-alpha.1":
+  version: 2.0.0-alpha.1
+  resolution: "@spotlightjs/spotlight@npm:2.0.0-alpha.1"
   dependencies:
-    "@spotlightjs/overlay": "npm:1.8.3"
+    "@spotlightjs/overlay": "npm:2.0.0-alpha.1"
     "@spotlightjs/sidecar": "npm:1.4.0"
   bin:
     spotlight-sidecar: bin/run.js
-  checksum: 10c0/9843fef47a997650bf9e6f9c17e58fb51e22d4a6174fbde578cfc776a00a5b8b8dc112eb909c1e1102fe27db5a2e15b0144633f0961a234560df1206b378513e
+  checksum: 10c0/0223b4519046fb99aeaca82072e5523ac8748a5834e8389ecd12267e6b0b4ca05fb2be73534866a5f928e3f9302cfe09d128004f43c67a30bb41640b8ddd4715
   languageName: node
   linkType: hard
 
