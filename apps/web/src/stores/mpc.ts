@@ -91,7 +91,7 @@ export class MpcStore {
   }
 
   protected async getUnclaimedShares(): Promise<UnclaimedShares | undefined> {
-    return await this.unclaimedSharesKVStore.get<UnclaimedShares>(
+    return this.unclaimedSharesKVStore.get<UnclaimedShares>(
       unclaimedSharesKvStoreEntry,
     );
   }

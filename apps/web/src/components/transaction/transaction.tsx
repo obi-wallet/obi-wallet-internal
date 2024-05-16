@@ -46,7 +46,7 @@ export function Transaction({
   return (
     <Box
       className={cn(
-        "relative flex w-80 flex-col items-center justify-center px-8",
+        "relative flex w-96 flex-col items-center justify-center px-8",
         { "py-12": !!image },
         className,
       )}
@@ -84,7 +84,11 @@ export function Transaction({
           )}
         >
           <Text color="zinc">
-            {`Send ${amountInfo.map((info) => `${info.amount} ${info.denom}`).join(",")} to`}
+            {`Send ${amountInfo
+              .map((info) => {
+                return `${info.amount} ${info.denom}`;
+              })
+              .join(",")} to`}
           </Text>
           <Text color="blue" className="break-all text-center leading-normal">
             {addresses.join("\n")}
