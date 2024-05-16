@@ -246,9 +246,13 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       return messageToDescription({ message, targetChainId });
     })
     .flat();
-  const addresses = messages.map((message) => {
-    return messageToAddress({ message, targetChainId });
-  });
+  const addresses = messages
+    .map((message) => {
+      return messageToAddress({ message });
+    })
+    .filter((address) => {
+      return address !== "" ? true : false;
+    });
 
   return (
     <Transaction
@@ -280,12 +284,7 @@ function messageToAmount({
   }
 }
 
-function messageToAddress({
-  message,
-}: {
-  message: EncodeObject;
-  targetChainId: TargetChainId;
-}) {
+function messageToAddress({ message }: { message: EncodeObject }) {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
