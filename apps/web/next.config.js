@@ -27,7 +27,7 @@ module.exports = withSentryConfig(
     },
     webpack: (config) => {
       config.externals.push("pino-pretty", "lokijs", "encoding");
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === "development" && process.env.CI !== "true") {
         config.plugins.push(
           new WebpackHookPlugin({
             onBuildStart: ["yarn spotlight"],
