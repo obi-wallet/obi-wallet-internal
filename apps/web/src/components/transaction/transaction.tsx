@@ -64,7 +64,7 @@ export function Transaction({
       ) : null}
       {amountInfo.length > 0 ? (
         <>
-          <Text className="mt-10" size="sm" color="zinc">
+          <Text className="mt-4" size="sm" color="zinc">
             Amount
           </Text>
           <Text size="2xl" className="mt-1">
@@ -79,8 +79,8 @@ export function Transaction({
       {addresses.length > 0 ? (
         <div
           className={cn(
-            { "mt-12": amountInfo.length > 0 },
-            "flex flex-col justify-center gap-1",
+            { "mt-4": amountInfo.length > 0 },
+            "flex flex-col items-center justify-center gap-1",
           )}
         >
           <Text color="zinc">
@@ -97,7 +97,7 @@ export function Transaction({
       ) : (
         <Text
           className={cn(
-            { "mt-12": amountInfo.length > 0 },
+            { "mt-4": amountInfo.length > 0 },
             "break-all text-center leading-normal",
           )}
           color="zinc"
@@ -107,7 +107,7 @@ export function Transaction({
       )}
 
       {targetChainLabel || feeInfo.length > 0 || memo ? (
-        <div className="mt-9 w-full space-y-3">
+        <div className="mt-5 w-full space-y-3">
           {targetChainLabel ? (
             <div className="flex flex-row justify-between">
               <Text color="gray">Network</Text>
