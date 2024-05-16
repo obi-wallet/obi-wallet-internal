@@ -301,7 +301,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
     return await signer.mpcSigner.calculateHashToSign(async () => {
-      await this.withSigningStargateClient(signer, async (client) => {
+      await this.withSigningCosmWasmClient(signer, async (client) => {
         await client.sign(signer.address, messages, fee, memo);
       });
     });
@@ -329,7 +329,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
       payload: intentionsPayload,
       results: intentionsResults,
     });
-    return await this.withSigningStargateClient(signer, async (client) => {
+    return await this.withSigningCosmWasmClient(signer, async (client) => {
       return await client.sign(signer.address, messages, fee, memo);
     });
   }
@@ -356,7 +356,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
       payload: intentionsPayload,
       results: intentionsResults,
     });
-    return await this.withSigningStargateClient(signer, async (client) => {
+    return await this.withSigningCosmWasmClient(signer, async (client) => {
       return await client.signAndBroadcast(signer.address, messages, fee, memo);
     });
   }
