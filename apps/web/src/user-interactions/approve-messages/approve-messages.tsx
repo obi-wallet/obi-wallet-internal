@@ -248,6 +248,9 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       return messageToDescription({ message, targetChainId });
     })
     .flat();
+  const addresses = messages.map((message) => {
+    return messageToAddress({ message, targetChainId });
+  });
 
   return (
     <Transaction
@@ -257,6 +260,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       feeInfo={feeInfo}
       rawData={rawData}
       memo={memo}
+      addresses={addresses}
     />
   );
 });
@@ -275,6 +279,23 @@ function messageToAmount({
     default:
       console.warn("Unknown message type: ", message.typeUrl);
       return [];
+  }
+}
+
+function messageToAddress({
+  message,
+}: {
+  message: EncodeObject;
+  targetChainId: TargetChainId;
+}) {
+  switch (message.typeUrl) {
+    case "/cosmos.bank.v1beta1.MsgSend": {
+      const { value } = message;
+      return value.address;
+    }
+    default:
+      console.warn("Unknown message type: ", message.typeUrl);
+      return "";
   }
 }
 

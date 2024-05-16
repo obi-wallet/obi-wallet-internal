@@ -18,6 +18,7 @@ type TransactionProps = {
     denom: string;
   }[];
   descriptions: string[];
+  addresses?: string[];
   memo: string;
   targetChainId?: TargetChainId;
   rawData: unknown;
@@ -31,6 +32,7 @@ export function Transaction({
   targetChainId,
   rawData,
   memo,
+  addresses = [],
   ...rest
 }: TransactionProps) {
   const [showData, setShowData] = useState(false);
@@ -74,15 +76,31 @@ export function Transaction({
           </Text>
         </>
       ) : null}
-      <Text
-        className={cn(
-          { "mt-12": amountInfo.length > 0 },
-          "break-all text-center leading-normal",
-        )}
-        color="zinc"
-      >
-        {descriptions.join("\n")}
-      </Text>
+      {addresses.length > 0 ? (
+        <div
+          className={cn(
+            { "mt-12": amountInfo.length > 0 },
+            "flex flex-col justify-center gap-1",
+          )}
+        >
+          <Text color="zinc">
+            {`Send ${amountInfo.map((info) => `${info.amount} ${info.denom}`).join(",")} to`}
+          </Text>
+          <Text color="blue" className="break-all text-center leading-normal">
+            {addresses.join("\n")}
+          </Text>
+        </div>
+      ) : (
+        <Text
+          className={cn(
+            { "mt-12": amountInfo.length > 0 },
+            "break-all text-center leading-normal",
+          )}
+          color="zinc"
+        >
+          {descriptions.join("\n")}
+        </Text>
+      )}
 
       {targetChainLabel || feeInfo.length > 0 || memo ? (
         <div className="mt-9 w-full space-y-3">
