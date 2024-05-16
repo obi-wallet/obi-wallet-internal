@@ -297,7 +297,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     fee: StdFee;
     messages: unknown[];
     memo: string;
-  }): Promise<Uint8Array | undefined> {
+  }): Promise<Uint8Array> {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
     return await signer.mpcSigner.calculateHashToSign(async () => {
