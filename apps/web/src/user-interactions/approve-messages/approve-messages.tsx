@@ -82,8 +82,6 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
           memo,
         });
 
-        invariant(hash, "Hash could not be calculated");
-
         return {
           fee,
           hash: Encoding.fromBytes(hash).toHex(),
