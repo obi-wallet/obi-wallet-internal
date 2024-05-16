@@ -8,6 +8,7 @@
     "dev": "next dev",
     "lint": "eslint .",
     "setup-ci": "vercel env pull .env",
+    "spotlight": "spotlight-sidecar",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "test": "jest",
@@ -37,6 +38,7 @@
     "@obi-wallet/wallet-connect": "workspace:*",
     "@reactuses/core": "^5.0.13",
     "@sentry/nextjs": "^8.0.0",
+    "@spotlightjs/spotlight": "^1.2.17",
     "@tanstack/react-query": "^5.36.0",
     "@walletconnect/utils": "^2.13.0",
     "apexcharts": "^3.49.1",
@@ -118,6 +120,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "vercel": "^34.1.14",
+    "webpack-hook-plugin": "^1.0.7",
     "zora": "^5.2.0"
   }
 }

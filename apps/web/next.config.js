@@ -1,4 +1,5 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const WebpackHookPlugin = require("webpack-hook-plugin");
 
 /** @type {import('next').NextConfig} */
 module.exports = withSentryConfig(
@@ -26,6 +27,11 @@ module.exports = withSentryConfig(
     },
     webpack: (config) => {
       config.externals.push("pino-pretty", "lokijs", "encoding");
+      config.plugins.push(
+        new WebpackHookPlugin({
+          onBuildStart: ["yarn spotlight-sidecar"],
+        }),
+      );
       return config;
     },
   },

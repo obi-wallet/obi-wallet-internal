@@ -3348,6 +3348,7 @@ __metadata:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@sentry/nextjs": "npm:^8.0.0"
+    "@spotlightjs/spotlight": "npm:^1.2.17"
     "@storybook/addon-essentials": "npm:^8.0.10"
     "@storybook/addon-interactions": "npm:^8.0.10"
     "@storybook/addon-links": "npm:^8.0.10"
@@ -3422,6 +3423,7 @@ __metadata:
     typescript: "npm:^5.4.5"
     vercel: "npm:^34.1.14"
     viem: "npm:^2.10.5"
+    webpack-hook-plugin: "npm:^1.0.7"
     zod: "npm:^3.23.8"
     zora: "npm:^5.2.0"
   languageName: unknown
@@ -4667,6 +4669,34 @@ __metadata:
   dependencies:
     "@sinonjs/commons": "npm:^3.0.0"
   checksum: 10c0/2e2fb6cc57f227912814085b7b01fede050cd4746ea8d49a1e44d5a0e56a804663b0340ae2f11af7559ea9bf4d087a11f2f646197a660ea3cb04e19efc04aa63
+  languageName: node
+  linkType: hard
+
+"@spotlightjs/overlay@npm:1.8.3":
+  version: 1.8.3
+  resolution: "@spotlightjs/overlay@npm:1.8.3"
+  checksum: 10c0/315013d86f6ec448d85131eceae8f21432c13cf4888c192ca0cd39c1f1c0681ec54282bb59414e80f5c276ecda12e9c7bd862c5ffda1a1d3d347ca2c6a82c1a2
+  languageName: node
+  linkType: hard
+
+"@spotlightjs/sidecar@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@spotlightjs/sidecar@npm:1.4.0"
+  bin:
+    spotlight-sidecar: server.js
+  checksum: 10c0/8781c5c1a096bc680ccb60aab674adb5809d7b711e6c1caede4cff85a1d1e7e2277b1d1f1d6ba15c0082371156f810c36d30d29be09fcd751dd2e3dfa0865cb9
+  languageName: node
+  linkType: hard
+
+"@spotlightjs/spotlight@npm:^1.2.17":
+  version: 1.2.17
+  resolution: "@spotlightjs/spotlight@npm:1.2.17"
+  dependencies:
+    "@spotlightjs/overlay": "npm:1.8.3"
+    "@spotlightjs/sidecar": "npm:1.4.0"
+  bin:
+    spotlight-sidecar: bin/run.js
+  checksum: 10c0/9843fef47a997650bf9e6f9c17e58fb51e22d4a6174fbde578cfc776a00a5b8b8dc112eb909c1e1102fe27db5a2e15b0144633f0961a234560df1206b378513e
   languageName: node
   linkType: hard
 
@@ -21786,6 +21816,13 @@ __metadata:
     webpack:
       optional: true
   checksum: 10c0/0f31670835f3c0f588392235a6183facf314c0dca312467254a56458142be6fee746f7f6b304f281c740364fd36f256c597ab37d87e5971633cee2f70a8cd5e7
+  languageName: node
+  linkType: hard
+
+"webpack-hook-plugin@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "webpack-hook-plugin@npm:1.0.7"
+  checksum: 10c0/6b2319664c3490fed2e99e2b87d706f459b8f9d230a6ff4d551fe99a6a4e4bf9af39cf2351567dbd91ba0b5fbd2c081095bea4cd67be9565afd87e7fe8aad9d0
   languageName: node
   linkType: hard
 
