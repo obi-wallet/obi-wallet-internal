@@ -4,7 +4,7 @@ import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { ENTRYPOINT_ADDRESS_V06 } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
 import invariant from "tiny-invariant";
 import { createPublicClient, http } from "viem";
@@ -27,7 +27,7 @@ export const testSuite = createTestSuite(({ test }) => {
     });
 
     const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-      entryPoint: ENTRYPOINT_ADDRESS_V07,
+      entryPoint: ENTRYPOINT_ADDRESS_V06,
       signer: account,
     });
 
