@@ -1,5 +1,5 @@
 import { useStore } from "@/contexts";
-import { WalletState } from "@obi-wallet/headless-ui";
+import { WalletState } from "@obi-wallet/headless-ui-store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

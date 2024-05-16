@@ -1,6 +1,6 @@
 import { HomeChain } from "@/home-chain";
-import { rootStore } from "@/hooks/use-create-root-store";
 import { SharesLocalEncryption } from "@/lib/encryption";
+import { rootStore } from "@/stores";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
 import {

@@ -1,4 +1,4 @@
-import { AbstractKVStore } from "@obi-wallet/headless-ui";
+import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
 import { z } from "zod";
 

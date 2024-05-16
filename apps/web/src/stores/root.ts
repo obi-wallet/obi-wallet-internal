@@ -3,7 +3,7 @@ import {
   AbstractKVStore,
   KVStore as DefaultKVStore,
   RootStore as SdkRootStore,
-} from "@obi-wallet/headless-ui";
+} from "@obi-wallet/headless-ui-store";
 
 import { UserDataStore } from ".";
 import { ChainStore } from "./chain";
@@ -13,6 +13,18 @@ import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
 import { WalletConnectStore } from "./wallet-connect";
 import { WasmStore } from "./wasm";
+
+export const rootStore: { current: RootStore | null } = { current: null };
+
+export function createRootStore({ config }: { config: Config }): RootStore {
+  if (!rootStore.current) {
+    rootStore.current = new RootStore({
+      deviceLanguage: "en",
+      initialConfig: config,
+    });
+  }
+  return rootStore.current;
+}
 
 export class RootStore {
   public readonly chainStore: ChainStore;
