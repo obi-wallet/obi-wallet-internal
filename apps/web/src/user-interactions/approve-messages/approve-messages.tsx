@@ -122,53 +122,51 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       : null;
 
     return (
-      <div className="relative w-full">
-        <div className="flex justify-center">
-          <div className="flex w-fit flex-col items-center">
-            <Text
-              leading="loose"
-              size="3xl"
-              fontWeight="bold"
-              className="mb-8 mt-4"
-            >
-              Complete Transaction
-            </Text>
+      <div className="mb-5 flex max-h-[calc(100vh_-_80px)] w-full justify-center overflow-auto">
+        <div className="flex w-fit flex-col items-center">
+          <Text
+            leading="loose"
+            size="3xl"
+            fontWeight="bold"
+            className="mb-8 mt-4"
+          >
+            Complete Transaction
+          </Text>
 
-            <PrettyPrint
-              messages={messages}
-              rawData={rawData}
-              targetChainId={targetChainId}
-              fee={txInfo.data?.fee}
-              memo={memo}
+          <PrettyPrint
+            messages={messages}
+            rawData={rawData}
+            targetChainId={targetChainId}
+            fee={txInfo.data?.fee}
+            memo={memo}
+          />
+
+          {intentionsPayload ? (
+            <ApproveIntentions
+              multisigKey={wallet.owner}
+              keyMetaData={keyMetaData}
+              intentions={intentionsPayload}
+              onApprove={(results) => {
+                setIntentionsResults(results);
+              }}
             />
+          ) : null}
 
-            {intentionsPayload ? (
-              <ApproveIntentions
-                multisigKey={wallet.owner}
-                keyMetaData={keyMetaData}
-                intentions={intentionsPayload}
-                onApprove={(results) => {
-                  setIntentionsResults(results);
-                }}
-              />
-            ) : null}
-
-            <div className="mt-6 flex w-full flex-row space-x-6 ">
-              <Button block variant="outline" onClick={onReject}>
-                Reject
-              </Button>
-              <Button
-                block
-                disabled={
-                  !txInfo.isSuccess || approve.isPending || !intentionsResults
-                }
-                onClick={() => {
-                  approve.mutate();
-                }}
-              >
-                Approve
-              </Button>
-            </div>
+          <div className="mt-6 flex w-full flex-row space-x-6 ">
+            <Button block variant="outline" onClick={onReject}>
+              Reject
+            </Button>
+            <Button
+              block
+              disabled={
+                !txInfo.isSuccess || approve.isPending || !intentionsResults
+              }
+              onClick={() => {
+                approve.mutate();
+              }}
+            >
+              Approve
+            </Button>
           </div>
         </div>
 
