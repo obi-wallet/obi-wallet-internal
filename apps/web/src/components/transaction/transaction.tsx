@@ -83,14 +83,17 @@ export function Transaction({
             "flex flex-col items-center justify-center gap-1",
           )}
         >
-          <Text color="zinc">
+          <Text color="zinc" className="text-sm">
             {`Send ${amountInfo
               .map((info) => {
                 return `${info.amount} ${info.denom}`;
               })
               .join(",")} to`}
           </Text>
-          <Text color="blue" className="break-all text-center leading-normal">
+          <Text
+            color="blue"
+            className="break-all text-center text-xs leading-normal"
+          >
             {addresses.join("\n")}
           </Text>
         </div>
