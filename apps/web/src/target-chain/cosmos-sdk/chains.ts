@@ -38,7 +38,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://sei-rpc.polkachu.com"],
     prefix: "sei",
     image:
-      "https://assets.coingecko.com/coins/images/28205/standard/Sei_Logo_-_Transparent.png?1696527207",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.svg",
   },
   [CosmosSdkChainId.Osmosis]: {
     id: CosmosSdkChainId.Osmosis,
@@ -46,7 +46,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://rpc.osmosis.zone"],
     prefix: "osmo",
     image:
-      "https://assets.coingecko.com/coins/images/16724/large/osmo.png?1696516298",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
   },
   [CosmosSdkChainId.Neutron]: {
     id: CosmosSdkChainId.Neutron,
@@ -54,7 +54,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://rpc-lb.neutron.org"],
     prefix: "neutron",
     image:
-      "https://assets.coingecko.com/coins/images/30813/large/ntrn.png?1696529669",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.svg",
   },
   [CosmosSdkChainId.Stargaze]: {
     id: CosmosSdkChainId.Stargaze,
@@ -62,7 +62,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://rpc.stargaze-apis.com/"],
     prefix: "stars",
     image:
-      "https://assets.coingecko.com/coins/images/22363/large/stargaze_star_pink.png?1702801402",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/stars.svg",
   },
   [CosmosSdkChainId.Tia]: {
     id: CosmosSdkChainId.Tia,
@@ -70,7 +70,7 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://celestia-rpc.publicnode.com:443"],
     prefix: "celestia",
     image:
-      "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/celestia/images/celestia.svg",
   },
   [CosmosSdkChainId.Inj]: {
     id: CosmosSdkChainId.Inj,
@@ -78,6 +78,6 @@ export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
     rpcs: ["https://injective-rpc.publicnode.com:443"],
     prefix: "inj",
     image:
-      "https://assets.coingecko.com/coins/images/33976/large/autism-logo.png?1703578236",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
   },
 };

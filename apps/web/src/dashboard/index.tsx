@@ -1,62 +1,76 @@
 "use client";
 
-import { Account, Box, Divider, Text } from "@/components";
-import {
-  AssetWithPrice,
-  useBalances,
-  useUsdTotalValue,
-} from "@/hooks/balances";
+import { Account, Divider, Text } from "@/components";
+import { AssetWithPrice, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
+import { Input } from "@/ui/input";
+import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { FaExclamation } from "react-icons/fa6";
+import React, { useState } from "react";
+import { CiSearch } from "react-icons/ci";
 
 import { PendingAssets } from "./pending";
+
+interface PrettyAssetData extends AssetWithPrice {
+  usdBalance: BigNumber;
+  prettyAmount: BigNumber;
+  assetInfo: AssetInfo | null;
+}
 
 export const DashboardPage = observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
 
   return (
-    <div className="flex  w-full flex-col space-y-4 text-white">
+    <div className="flex w-full flex-col text-white">
       <Assets />
     </div>
   );
 });
 
 const Assets = observer(function Assets() {
+  const [searchAsset, setSearchAsset] = useState("");
   return (
-    <Box className="h-full rounded-md text-xl">
-      <div className="hidden  w-full flex-1 flex-col max-md:flex">
+    <>
+      <div className="hidden w-full flex-1 flex-col max-md:flex">
         <Account />
       </div>
-      <div className="hidden flex-row justify-between md:flex ">
-        <Text>Assets</Text>
-        <Total />
+      <div className="hidden flex-row gap-3 md:flex">
+        <Input
+          className="mt-0 px-3 py-1.5"
+          leftComponent={<CiSearch className="h-6 w-6" color="white" />}
+          labelClassname="bg-background-secondary"
+          placeholder="Search Assets"
+          value={searchAsset}
+          onChange={(asset) => {
+            setSearchAsset(asset);
+          }}
+          inputClassName="ml-2"
+        />
       </div>
 
       <Divider className="mt-5 hidden md:block" />
       {/* create an alert banner to remind users to wait if a tx has just been issued */}
-      <div className="mt-3 flex w-full flex-row items-center rounded-md bg-slate-600 p-2">
-        <FaExclamation className="ml-2 mr-3" />
-        <Text size="sm" className="leading-normal">
+
+      <PendingAssets />
+      <AssetBalance searchAsset={searchAsset.toLowerCase()} />
+      <div className="mt-10 flex w-full flex-row items-center justify-center">
+        <Text size="sm" className="leading-normal" fontWeight="light">
           Fast Travel transactions may take a few minutes to be processed and
           will appear here once visible on the network.
         </Text>
       </div>
-
-      <PendingAssets />
-      <AssetBalance />
-    </Box>
+    </>
   );
 });
-const Total = observer(function Total() {
-  const totalPrice = useUsdTotalValue();
-  return <Text>$ {totalPrice.total}</Text>;
-});
 
-const AssetBalance = observer(function AssetBalance() {
+const AssetBalance = observer(function AssetBalance({
+  searchAsset,
+}: {
+  searchAsset: string;
+}) {
   const balances = useBalances();
 
   if (
@@ -67,78 +81,129 @@ const AssetBalance = observer(function AssetBalance() {
     return <span className="font-extrabold  text-white"> loading </span>;
   }
 
-  return balances.map((balance) => {
-    if (!balance.data || balance.data.length === 0) return null;
+  const prettyBalances = balances
+    .map((balance) => {
+      const chain: { label: string; image: string } = {
+        label: "",
+        image: "",
+      };
+      const prettyData: PrettyAssetData[] = (
+        balance.data?.map((asset) => {
+          const targetChain = TargetChain.chainId(asset.chainId);
+          chain.label = targetChain.label;
+          chain.image = targetChain.image;
 
-    return balance.data.map((assetWithPrice) => {
-      return (
-        <NewAssetItem
-          key={`${assetWithPrice.chainId}:${assetWithPrice.assetId}`}
-          coin={assetWithPrice}
-        />
-      );
+          const assetInfo = targetChain.assetInfo(asset.assetId);
+          const amount = new BigNumber(asset.rawAmount).dividedBy(
+            10 ** (assetInfo?.decimals ?? 0),
+          );
+
+          const priceBn = new BigNumber(asset.price);
+          const usdBalance = priceBn.times(amount);
+          return {
+            ...asset,
+            usdBalance,
+            prettyAmount: amount,
+            assetInfo,
+          };
+        }) || []
+      ).filter((asset) => {
+        return asset.assetInfo?.symbol.toLowerCase().includes(searchAsset);
+      });
+
+      return { ...balance, prettyData, chain };
+    })
+    .filter((balance) => {
+      return balance.prettyData.length > 0;
     });
-  });
-});
-
-function NewAssetItem({ coin }: { coin: AssetWithPrice }) {
-  const router = useRouter();
-
-  const targetChain = TargetChain.chainId(coin.chainId);
-  const assetData = targetChain.assetInfo(coin.assetId);
-  const amount = new BigNumber(coin.rawAmount).dividedBy(
-    10 ** (assetData?.decimals ?? 0),
-  );
 
   return (
-    <div
-      className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-gray-700 p-5 hover:bg-gray-600"
-      onClick={() => {
-        router.push(
-          `/dashboard/transaction/send/${encodeURIComponent(
-            `${coin.chainId}:${coin.assetId}`,
-          )}`,
+    <div className="flex flex-col gap-10">
+      {prettyBalances.map((chainBalance) => {
+        if (!chainBalance.data || chainBalance.data.length === 0) return null;
+
+        return (
+          <React.Fragment key={chainBalance.chain.label}>
+            <NetworkAssets assets={chainBalance} />
+          </React.Fragment>
         );
-      }}
-    >
-      <div className="flex flex-row items-center">
-        <div className="mr-3">
-          {assetData?.image ? (
-            <img
-              src={assetData.image}
-              alt={assetData.symbol}
-              className="h-8 w-8"
-            />
-          ) : (
-            <div className="h-8 w-8" />
-          )}
-        </div>
-        <div className="flex flex-row">
-          <div className="mr-5 text-lg">
-            <div>{assetData?.symbol}</div>
-            <div className="text-xs opacity-60">(on {targetChain.label})</div>
-          </div>
+      })}
+    </div>
+  );
+});
+
+function NetworkAssets({
+  assets,
+}: {
+  assets: {
+    prettyData: PrettyAssetData[];
+    chain: {
+      label: string;
+      image: string;
+    };
+  };
+}) {
+  return (
+    <div>
+      <div
+        className="rounded-t-lg px-4 py-1.5"
+        style={{
+          backgroundImage:
+            "linear-gradient(270deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+        }}
+      >
+        <div className="flex flex-row items-center gap-5">
+          <img
+            src={assets.chain.image}
+            alt={assets.chain.label}
+            className="h-8 w-8"
+          />
+          <Text>{assets.chain.label}</Text>
         </div>
       </div>
-      <NewPriceComponent amount={amount} price={coin.price} />
+      <div className="flex w-full flex-col gap-1">
+        {assets.prettyData.map((data) => {
+          return (
+            <React.Fragment key={`${assets.chain.label}-${data.assetId}`}>
+              <AssetItem asset={data} />
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function NewPriceComponent({
-  amount,
-  price,
-}: {
-  price: string;
-  amount: BigNumber;
-}) {
-  const priceBn = new BigNumber(price);
-  const total = priceBn.times(amount);
+function AssetItem({ asset }: { asset: PrettyAssetData }) {
+  const router = useRouter();
 
   return (
-    <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount.toString(10)}</div>
-      <div className="text-xs">${total.toFixed(2)}</div>
+    <div
+      className="hover:bg-asset-hover-gradient flex cursor-pointer gap-5 py-1.5 pl-4 hover:rounded-lg"
+      onClick={() => {
+        router.push(
+          `/dashboard/transaction/send/${encodeURIComponent(
+            `${asset.chainId}:${asset.assetId}`,
+          )}`,
+        );
+      }}
+    >
+      {asset.assetInfo?.image ? (
+        <img
+          src={asset.assetInfo.image}
+          alt={asset.assetInfo.symbol}
+          className="h-8 w-8"
+        />
+      ) : (
+        <div className="h-8 w-8" />
+      )}
+      <div className="flex w-full justify-between">
+        <Text fontWeight="bold">{asset.assetInfo?.symbol}</Text>
+        <div className="flex w-1/2 justify-between">
+          <Text>{asset.prettyAmount.toString()}</Text>
+          <Text fontWeight="bold">${asset.usdBalance.toFixed(2)}</Text>
+        </div>
+      </div>
     </div>
   );
 }

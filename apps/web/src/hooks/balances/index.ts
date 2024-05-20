@@ -46,7 +46,7 @@ export function useInvalidateBalancesQueries() {
 
 export function useBalances() {
   const publicKey = usePublicKey();
-  return useQueries({
+  const queries = useQueries({
     queries: publicKey
       ? allTargetChainIds.map((targetChainId) => {
           return {
@@ -65,6 +65,10 @@ export function useBalances() {
           };
         })
       : [],
+  });
+
+  return queries.filter((query) => {
+    return query.data && query.data.length > 0;
   });
 }
 
