@@ -33,7 +33,9 @@ export const Onboarding = observer(function Onboarding({
       ? () => {
           return router.push(`${step - 1}`);
         }
-      : undefined;
+      : () => {
+          return router.push("/");
+        };
   const next =
     step + 1 < steps.length
       ? () => {
