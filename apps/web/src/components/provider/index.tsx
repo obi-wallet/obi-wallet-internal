@@ -11,6 +11,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useRef } from "react";
 
+import { AlertProvider } from "./alert";
+
 export interface ProviderProps {
   children: ReactNode;
   QueryClientProvider?: typeof QueryClientProvider;
@@ -33,7 +35,9 @@ const Provider = observer<ProviderProps>(function Provider({
       buster={buster.current}
     >
       <StoreContext.Provider value={rootStore}>
-        <MultiThemeProvider>{children}</MultiThemeProvider>
+        <MultiThemeProvider>
+          <AlertProvider>{children}</AlertProvider>
+        </MultiThemeProvider>
       </StoreContext.Provider>
       <ReactQueryDevtools />
     </SdkProvider>

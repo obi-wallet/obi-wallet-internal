@@ -1,4 +1,6 @@
 import { Button, Text, Transaction } from "@/components";
+import { AlertType } from "@/components/custom-alert";
+import { useAlert } from "@/hooks/alert";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import {
   ApproveIntentions,
@@ -23,6 +25,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
 }) {
   const { state, dispatch } = useWalletDataFlowContext();
   const finishFlow = useFinishFlow();
+  const alert = useAlert();
   const owner = state.ownerDraft.value;
   const keyMetaData = state.keyMetaDataDraft.value.value;
 
@@ -66,7 +69,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
           },
         });
       } else {
-        window.alert("Wallet not recoverable");
+        alert.showAlert("Wallet not recoverable", AlertType.ERROR);
       }
     },
     onError(error) {
