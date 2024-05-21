@@ -33,6 +33,9 @@ module.exports = {
         "asset-hover-gradient":
           "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
       },
+      fontFamily: {
+        PressStart2P: ["var(--font-Press-Start-2P)"],
+      },
     },
   },
   plugins: [],
