@@ -248,9 +248,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
     .map((message) => {
       return messageToAddress({ message });
     })
-    .filter((address) => {
-      return address !== "" ? true : false;
-    });
+    .flat();
 
   return (
     <Transaction
@@ -286,11 +284,11 @@ function messageToAddress({ message }: { message: EncodeObject }) {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
-      return value.toAddress || "";
+      return value.toAddress || [];
     }
     default:
       console.warn("Unknown message type: ", message.typeUrl);
-      return "";
+      return [];
   }
 }
 
