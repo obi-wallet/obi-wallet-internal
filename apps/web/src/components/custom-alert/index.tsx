@@ -17,7 +17,7 @@ interface CustomAlertProps {
 }
 
 export function CustomAlert({ message, onClose, type }: CustomAlertProps) {
-  const renderIcon = () => {
+  const getIcon = () => {
     switch (type) {
       case AlertType.SUCCESS:
         return success;
@@ -25,16 +25,15 @@ export function CustomAlert({ message, onClose, type }: CustomAlertProps) {
         return error;
       case AlertType.WARNING:
         return warning;
-      default:
-        return success;
     }
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="min-w-56  max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
         {type && (
           <div className={cn("m-0 ml-auto mr-auto w-20 ")}>
-            <Lottie animationData={renderIcon()} loop={false} />
+            <Lottie animationData={getIcon()} />
           </div>
         )}
         <p className="mb-4  p-5 text-white">{message}</p>

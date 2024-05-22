@@ -7,11 +7,9 @@ export interface Alert {
 }
 
 export interface AlertContextType {
-  showAlert: (message: string, type?: AlertType) => void;
+  showAlert: (message: string, type: AlertType) => void;
   closeAlert: () => void;
   currentAlert: Alert | null;
 }
 
-export const AlertContext = createContext<AlertContextType | undefined>(
-  undefined,
-);
+export const AlertContext = createContext<AlertContextType | null>(null);
