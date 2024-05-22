@@ -31,7 +31,6 @@ import {
 import { z } from "zod";
 
 import { Box, Button, Text } from "..";
-import { AlertType } from "../custom-alert";
 import { Divider } from "../divider";
 import { IAssetOption } from "../dropdown";
 
@@ -250,7 +249,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
-        alert.showAlert("Transaction sent!", AlertType.SUCCESS);
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
         return;
       } else {
@@ -265,7 +264,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
         await contract?.transfer(depositAddress, amount);
 
         setLoading(false);
-        alert.showAlert("Transaction sent!", AlertType.SUCCESS);
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
       }
     } catch (e) {
@@ -273,7 +272,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
       const error = e as Error;
       setLoading(false);
 
-      alert.showAlert(error.message, AlertType.ERROR);
+      alert.showError(error.message);
       console.error(e);
     }
   };

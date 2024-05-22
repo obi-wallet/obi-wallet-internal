@@ -1,5 +1,4 @@
 import { Box, Divider, Text } from "@/components";
-import { AlertType } from "@/components/custom-alert";
 import { useAlert } from "@/hooks/alert";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
 import { isPublicKeyInUse } from "@/wallet-data-backup/worker-client";
@@ -25,9 +24,8 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
               publicKey,
             })
           ) {
-            alert.showAlert(
+            alert.showWarning(
               "This key is already used by a wallet. Please use a different Telegram Chat ID or security answer.",
-              AlertType.WARNING,
             );
           } else {
             draft.value.addTelegramKey(publicKey);

@@ -1,12 +1,11 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
-import { AlertType } from "@/components/custom-alert";
 import { useAlert } from "@/hooks/alert";
 import {
   AssetWithPrice,
-  useInvalidateBalancesQueries,
   useBalances,
+  useInvalidateBalancesQueries,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -100,7 +99,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       ];
 
       if (isEvmChainId(chainId)) {
-        alert.showAlert("EVM chain not supported yet", AlertType.ERROR);
+        alert.showError("EVM chain not supported yet");
         return;
       }
 
@@ -135,17 +134,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       if (response?.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
-          alert.showAlert("TX broadcast successfully", AlertType.SUCCESS);
+          alert.showSuccess("TX broadcast successfully");
         } else {
-          alert.showAlert(
-            `TX failed: ${broadcastResult.rawLog}`,
-            AlertType.ERROR,
-          );
+          alert.showError(`TX failed: ${broadcastResult.rawLog}`);
         }
       }
     },
     onError(error: Error) {
-      alert.showAlert(`TX failed: ${error.message}`, AlertType.ERROR);
+      alert.showError(`TX failed: ${error.message}`);
     },
   });
 

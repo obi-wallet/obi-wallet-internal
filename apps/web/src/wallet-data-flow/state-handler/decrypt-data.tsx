@@ -1,5 +1,4 @@
 import { Button, Text, Transaction } from "@/components";
-import { AlertType } from "@/components/custom-alert";
 import { useAlert } from "@/hooks/alert";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import {
@@ -69,7 +68,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
           },
         });
       } else {
-        alert.showAlert("Wallet not recoverable", AlertType.ERROR);
+        alert.showError("Wallet not recoverable");
       }
     },
     onError(error) {

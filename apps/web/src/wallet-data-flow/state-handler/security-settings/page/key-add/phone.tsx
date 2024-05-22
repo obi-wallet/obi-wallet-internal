@@ -1,5 +1,4 @@
 import { Box, Divider, Text } from "@/components";
-import { AlertType } from "@/components/custom-alert";
 import { useAlert } from "@/hooks/alert";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { isPublicKeyInUse } from "@/wallet-data-backup/worker-client";
@@ -25,9 +24,8 @@ export const AddPhoneKeyPage = observer(function AddPhoneKeyPage() {
               publicKey,
             })
           ) {
-            alert.showAlert(
+            alert.showWarning(
               "This key is already used by a wallet. Please use a different phone number or security answer.",
-              AlertType.WARNING,
             );
           } else {
             draft.value.addPhoneKey(publicKey);
