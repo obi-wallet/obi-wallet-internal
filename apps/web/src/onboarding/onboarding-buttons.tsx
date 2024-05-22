@@ -1,4 +1,3 @@
-import { Button } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
 
 export interface OnboardingButtonsProps {

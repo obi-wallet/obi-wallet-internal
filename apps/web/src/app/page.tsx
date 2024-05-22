@@ -19,7 +19,7 @@ export default observer(function Introduction() {
       />
       <BitButton
         href="/onboarding/internal"
-        className="font-PressStart2P before:contents: bg-transparent"
+        className="font-press-start-2p before:contents: bg-transparent"
       >
         Press Start
       </BitButton>

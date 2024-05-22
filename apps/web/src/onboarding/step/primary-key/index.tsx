@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Text } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
 import {
   OnboardingFromType,
@@ -41,7 +41,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
   return (
     <>
-      <Text fontWeight="bold" size="3xl" className="font-PressStart2P">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         {step.from === OnboardingFromType.External
           ? "Secure Your Asset"
           : "Create Your First Key"}

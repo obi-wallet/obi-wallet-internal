@@ -13,7 +13,7 @@ export const ExplanationStep = observer(function ExplanationStep({
 }: StepProps<ExplanationOnboardingStep>) {
   return (
     <>
-      <Text fontWeight="bold" size="3xl" className="font-PressStart2P">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         Secure Your Account
       </Text>
       <Text
