@@ -5,12 +5,13 @@ import {
   RootStore as SdkRootStore,
 } from "@obi-wallet/headless-ui-store";
 
-import { UserDataStore } from ".";
+import { AlertStore } from "./alert";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
+import { UserDataStore } from "./user-data";
 import { WalletConnectStore } from "./wallet-connect";
 import { WasmStore } from "./wasm";
 
@@ -27,6 +28,7 @@ export function createRootStore({ config }: { config: Config }): RootStore {
 }
 
 export class RootStore {
+  public readonly alertStore: AlertStore;
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
@@ -45,6 +47,7 @@ export class RootStore {
     initialConfig: Config;
     KVStore?: new (prefix: string) => AbstractKVStore;
   }) {
+    this.alertStore = new AlertStore();
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
     this.keyMetaDataStore = new KeyMetaDataStore(new KVStore("key-meta-data"));

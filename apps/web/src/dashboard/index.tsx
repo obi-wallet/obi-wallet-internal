@@ -17,6 +17,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
+
   return (
     <div className="flex  w-full flex-col space-y-4 text-white">
       <Assets />

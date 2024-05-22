@@ -1,4 +1,4 @@
-import { RootLayoutClient } from "@/components/rootLayoutClient";
+import { RootLayoutClient } from "@/components/root-layout-client";
 import type { Metadata } from "next";
 import { ReactNode, Suspense } from "react";
 

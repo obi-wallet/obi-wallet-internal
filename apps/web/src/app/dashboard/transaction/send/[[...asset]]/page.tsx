@@ -1,10 +1,11 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { useAlert } from "@/hooks/alert";
 import {
   AssetWithPrice,
-  useInvalidateBalancesQueries,
   useBalances,
+  useInvalidateBalancesQueries,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -77,6 +78,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
 
   const wallet = useCurrentWallet({});
   const balances = useBalances();
+  const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
   const send = useMutation({
@@ -97,7 +99,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       ];
 
       if (isEvmChainId(chainId)) {
-        window.alert("EVM chain not supported yet");
+        alert.showError("EVM chain not supported yet");
         return;
       }
 
@@ -132,14 +134,14 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       if (response?.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
-          window.alert("TX broadcast successfully");
+          alert.showSuccess("TX broadcast successfully");
         } else {
-          window.alert(`TX failed: ${broadcastResult.rawLog}`);
+          alert.showError(`TX failed: ${broadcastResult.rawLog}`);
         }
       }
     },
     onError(error: Error) {
-      window.alert(`TX failed: ${error.message}`);
+      alert.showError(`TX failed: ${error.message}`);
     },
   });
 
