@@ -1,14 +1,11 @@
-import { ComponentPropsWithRef, forwardRef } from "react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { ComponentPropsWithRef, forwardRef } from "react";
 
 type ButtonProps = ComponentPropsWithRef<"button"> & ComponentPropsWithRef<"a">;
 
 export const BitButton = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    { children, className, disabled: buttonDisabled, href, ...rest },
-    ref,
-  ) {
+  function Button({ children, className, href, ...rest }, ref) {
     const style = cn(
       "font-PressStart2P cursor-pointer text-2xl text-white opacity-60",
       "hover:opacity-100",

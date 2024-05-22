@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Text } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
 import {
   OnboardingFromType,

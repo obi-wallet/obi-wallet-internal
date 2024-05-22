@@ -1,9 +1,8 @@
 import { RootLayoutClient } from "@/components/rootLayoutClient";
+import { PressStart2P } from "@/lib/fonts";
 import type { Metadata } from "next";
 import { ReactNode, Suspense } from "react";
-
 import "./globals.css";
-import { PressStart2P } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Obi - Anything In Two Clicks",

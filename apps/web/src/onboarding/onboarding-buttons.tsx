@@ -1,4 +1,3 @@
-import { Button } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
 
 export interface OnboardingButtonsProps {
@@ -14,12 +13,6 @@ export function OnboardingButtons({
   nextLabel = "Continue",
   nextDisabled,
 }: OnboardingButtonsProps) {
-  const nextButton = (
-    <BitButton onClick={next} className="block w-full" disabled={nextDisabled}>
-      {nextLabel}
-    </BitButton>
-  );
-
   return (
     <div className="flex flex-col gap-6">
       {next && (
