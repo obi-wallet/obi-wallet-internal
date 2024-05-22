@@ -3,7 +3,7 @@ import { createContext } from "react";
 
 export interface Alert {
   message: string;
-  type?: AlertType;
+  type: AlertType;
 }
 
 export interface AlertContextType {

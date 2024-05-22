@@ -1,24 +1,25 @@
+import { Alert } from "@/contexts/alert";
 import { cn } from "@/lib/utils";
 import Lottie from "lottie-react";
 
 import error from "./danger.json";
 import success from "./success.json";
 import warning from "./warning.json";
+
 export enum AlertType {
   SUCCESS = "success",
   ERROR = "error",
   WARNING = "warning",
 }
 
-interface CustomAlertProps {
-  message: string;
-  type?: AlertType;
+export interface CustomAlertProps {
+  alert: Alert;
   onClose: () => void;
 }
 
-export function CustomAlert({ message, onClose, type }: CustomAlertProps) {
+export function CustomAlert({ alert, onClose }: CustomAlertProps) {
   const getIcon = () => {
-    switch (type) {
+    switch (alert.type) {
       case AlertType.SUCCESS:
         return success;
       case AlertType.ERROR:
@@ -30,13 +31,11 @@ export function CustomAlert({ message, onClose, type }: CustomAlertProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="min-w-56  max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
-        {type && (
-          <div className={cn("m-0 ml-auto mr-auto w-20 ")}>
-            <Lottie animationData={getIcon()} />
-          </div>
-        )}
-        <p className="mb-4  p-5 text-white">{message}</p>
+      <div className="min-w-56 max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
+        <div className={cn("m-0 ml-auto mr-auto w-20 ")}>
+          <Lottie animationData={getIcon()} />
+        </div>
+        <p className="mb-4 p-5 text-white">{alert.message}</p>
         <button
           onClick={onClose}
           className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-700"

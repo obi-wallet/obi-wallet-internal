@@ -18,6 +18,7 @@ const Provider = dynamic(
     ssr: false,
   },
 );
+
 export function RootLayoutClient({
   children,
   isMaintenance,
@@ -51,15 +52,8 @@ export function RootLayoutClient({
 
 function Alert() {
   const { currentAlert, closeAlert } = useAlert();
-  console.log(currentAlert);
-  if (currentAlert) {
-    return (
-      <CustomAlert
-        message={currentAlert.message}
-        onClose={closeAlert}
-        type={currentAlert.type}
-      />
-    );
-  }
-  return null;
+
+  if (!currentAlert) return null;
+
+  return <CustomAlert alert={currentAlert} onClose={closeAlert} />;
 }
