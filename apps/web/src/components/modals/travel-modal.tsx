@@ -1,6 +1,7 @@
 "use client";
 
 import { fromAssets, ToAsset, toAssets } from "@/dashboard/assets";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, toChains } from "@/lib/utils";
@@ -107,6 +108,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 }) {
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
+  const alert = useAlert();
 
   const getChainFromAsset = () => {
     if (targetAsset === "usdc") {
@@ -247,7 +249,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
-        alert("Transaction sent!");
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
         return;
       } else {
@@ -262,14 +264,15 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
         await contract?.transfer(depositAddress, amount);
 
         setLoading(false);
-        alert("Transaction sent!");
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
       }
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = e as Error;
       setLoading(false);
-      alert(error.message);
+
+      alert.showError(error.message);
       console.error(e);
     }
   };

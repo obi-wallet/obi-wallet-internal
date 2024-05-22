@@ -22,6 +22,7 @@ interface PrettyAssetData extends AssetWithPrice {
 
 export const DashboardPage = observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
+
   return (
     <div className="flex w-full flex-col text-white">
       <Assets />

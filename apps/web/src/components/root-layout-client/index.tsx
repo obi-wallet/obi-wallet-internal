@@ -1,4 +1,5 @@
 "use client";
+import { Alert } from "@/alert";
 import { Header } from "@/components";
 import { TOSModal } from "@/components/modals/tos";
 import { MainContainer, RootContainer } from "@/layouts/root";
@@ -16,6 +17,7 @@ const Provider = dynamic(
     ssr: false,
   },
 );
+
 export function RootLayoutClient({
   children,
   isMaintenance,
@@ -41,6 +43,7 @@ export function RootLayoutClient({
         <MainContainer>{children}</MainContainer>
         <TOSModal />
         <div id="modal-root" />
+        <Alert />
       </Provider>
     </RootContainer>
   );
