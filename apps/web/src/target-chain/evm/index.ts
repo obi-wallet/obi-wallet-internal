@@ -7,7 +7,7 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { ENTRYPOINT_ADDRESS_V06 } from "permissionless";
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
 import {
   Address,
@@ -135,7 +135,7 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
   }
 
   public get entryPoint() {
-    return ENTRYPOINT_ADDRESS_V06;
+    return ENTRYPOINT_ADDRESS_V07;
   }
 
   public validateAddress(address: string): address is Address {
