@@ -45,7 +45,8 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
   },
   [EvmChainId.EthereumTestnet]: {
     id: EvmChainId.EthereumTestnet,
-    image: "/assets/images/ethereum-logo.png",
+    image:
+      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
     chain: sepolia,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
