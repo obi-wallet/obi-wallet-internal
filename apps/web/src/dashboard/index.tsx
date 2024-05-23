@@ -9,7 +9,7 @@ import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { Fragment, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 
 import { PendingAssets } from "./pending";
@@ -123,9 +123,9 @@ const AssetBalance = observer(function AssetBalance({
         if (!chainBalance.data || chainBalance.data.length === 0) return null;
 
         return (
-          <React.Fragment key={chainBalance.chain.label}>
+          <Fragment key={chainBalance.chain.label}>
             <NetworkAssets assets={chainBalance} />
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </div>
@@ -164,9 +164,9 @@ function NetworkAssets({
       <div className="flex w-full flex-col gap-1">
         {assets.prettyData.map((data) => {
           return (
-            <React.Fragment key={`${assets.chain.label}-${data.assetId}`}>
+            <Fragment key={`${assets.chain.label}-${data.assetId}`}>
               <AssetItem asset={data} />
-            </React.Fragment>
+            </Fragment>
           );
         })}
       </div>
