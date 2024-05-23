@@ -66,8 +66,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         />
       ) : (
         <Image
-          width="306"
-          height="234"
+          width="168"
+          height="194"
           src="/assets/images/fingerprint.png"
           alt="OBI Logo"
           className="mt-48"
