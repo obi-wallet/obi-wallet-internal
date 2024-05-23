@@ -1,4 +1,6 @@
 import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
+import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
+import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   AssetId,
@@ -17,6 +19,7 @@ import {
   http,
   isAddress,
   keccak256,
+  LocalAccount,
 } from "viem";
 import { toAccount } from "viem/accounts";
 import { z } from "zod";
@@ -53,11 +56,6 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
   }
 
   protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    const publicClient = createPublicClient({
-      chain: this.chainData.chain,
-      transport: http(),
-    });
-
     const account = toAccount({
       address: this.computeAddress(publicKey),
       async signMessage() {
@@ -71,21 +69,13 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
       },
     });
 
-    const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-      entryPoint: this.entryPoint,
-      signer: account,
-    });
-
+    const kernelAccount = await this.kernelAccount(account);
     return kernelAccount.address;
   }
 
   public async balancesQueryFn(address: string) {
-    const client = createPublicClient({
-      transport: http(),
-      chain: this.chainData.chain,
-    });
     if (this.validateAddress(address)) {
-      const balance = await client.getBalance({
+      const balance = await this.publicClient.getBalance({
         address,
       });
       if (balance > 0) {
@@ -144,5 +134,28 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
 
   public get nativeCurrency() {
     return this.chainData.chain.nativeCurrency;
+  }
+
+  public get publicClient() {
+    return createPublicClient({
+      chain: this.chainData.chain,
+      transport: http(),
+    });
+  }
+
+  public async kernelAccount(account: LocalAccount) {
+    return await signerToEcdsaKernelSmartAccount(this.publicClient, {
+      entryPoint: this.entryPoint,
+      signer: account,
+    });
+  }
+
+  public async signerFromWallet(wallet: MpcWallet) {
+    return await EvmMpcSigner.fromWallet(wallet, this.chainId);
+  }
+
+  public async localAccountFromWallet(wallet: MpcWallet) {
+    const signer = await this.signerFromWallet(wallet);
+    return toAccount(signer.accountSource);
   }
 }

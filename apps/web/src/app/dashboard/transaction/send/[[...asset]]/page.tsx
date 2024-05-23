@@ -89,16 +89,20 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const asset = coin.asset;
       const chainId = asset.targetChainId;
 
-      const tokens: Coin[] = [
-        {
-          amount: new BigNumber(coin.amount)
-            .multipliedBy(10 ** asset.asset.decimals)
-            .toFixed(0, BigNumber.ROUND_DOWN),
-          denom: asset.denom,
-        },
-      ];
+      const rawAmount = new BigNumber(coin.amount)
+        .multipliedBy(10 ** asset.asset.decimals)
+        .toFixed(0, BigNumber.ROUND_DOWN);
 
       if (isEvmChainId(chainId)) {
+        const targetChain = TargetChain.chainId(chainId);
+        invariant(targetChain.validateAddress(recipient), "Invalid address");
+        const account = await targetChain.localAccountFromWallet(wallet);
+        const kernelAccount = await targetChain.kernelAccount(account);
+        const _callData = await kernelAccount.encodeCallData({
+          to: recipient,
+          data: "0x",
+          value: BigInt(rawAmount),
+        });
         alert.showError("EVM chain not supported yet");
         return;
       }
@@ -108,6 +112,13 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
       invariant(firstAccount, "No account found");
+
+      const tokens: Coin[] = [
+        {
+          amount: rawAmount,
+          denom: asset.denom,
+        },
+      ];
 
       const message: MsgSendEncodeObject = {
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
