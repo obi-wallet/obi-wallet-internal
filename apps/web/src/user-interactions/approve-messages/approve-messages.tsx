@@ -280,11 +280,11 @@ function messageToAmount({
   }
 }
 
-function messageToAddress({ message }: { message: EncodeObject }) {
+function messageToAddress({ message }: { message: EncodeObject }): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
-      return value.toAddress || [];
+      return value.toAddress ? [value.toAddress] : [];
     }
     default:
       console.warn("Unknown message type: ", message.typeUrl);
@@ -298,7 +298,7 @@ function messageToDescription({
 }: {
   message: EncodeObject;
   targetChainId: CosmosSdkChainId;
-}) {
+}): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
