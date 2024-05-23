@@ -107,14 +107,29 @@ const AssetBalance = observer(function AssetBalance({
             assetInfo,
           };
         }) || []
-      ).filter((asset) => {
-        return asset.assetInfo?.symbol.toLowerCase().includes(searchAsset);
-      });
+      )
+        .filter((asset) => {
+          return asset.assetInfo?.symbol.toLowerCase().includes(searchAsset);
+        })
+        .sort((assetA, assetB) => {
+          if (assetA.usdBalance < assetB.usdBalance) return 1;
+          return -1;
+        });
 
       return { ...balance, prettyData, chain };
     })
     .filter((balance) => {
       return balance.prettyData.length > 0;
+    })
+    .sort((balanceA, balanceB) => {
+      const balanceAValueSum = balanceA.prettyData.reduce((acc, curr) => {
+        return acc.plus(curr.usdBalance);
+      }, new BigNumber(0));
+      const balanceBValueSum = balanceB.prettyData.reduce((acc, curr) => {
+        return acc.plus(curr.usdBalance);
+      }, new BigNumber(0));
+      if (balanceAValueSum < balanceBValueSum) return 1;
+      return -1;
     });
 
   return (
@@ -149,7 +164,7 @@ function NetworkAssets({
         className="rounded-t-lg px-4 py-1.5"
         style={{
           backgroundImage:
-            "linear-gradient(270deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
         }}
       >
         <div className="flex flex-row items-center gap-5">
@@ -159,6 +174,22 @@ function NetworkAssets({
             className="h-8 w-8"
           />
           <Text>{assets.chain.label}</Text>
+        </div>
+      </div>
+      <div className="flex gap-5 py-1.5 pl-4">
+        <div className="w-8" />
+        <div className="flex w-full justify-between">
+          <Text fontWeight="light" className="text-[10px] text-slate-400">
+            ASSET
+          </Text>
+          <div className="flex w-1/2 justify-between">
+            <Text fontWeight="light" className="text-[10px] text-slate-400">
+              BALANCE
+            </Text>
+            <Text fontWeight="light" className="text-[10px] text-slate-400">
+              VALUE
+            </Text>
+          </div>
         </div>
       </div>
       <div className="flex w-full flex-col gap-1">
