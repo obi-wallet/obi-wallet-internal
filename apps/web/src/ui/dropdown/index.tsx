@@ -76,7 +76,7 @@ export function CustomDropdown<T extends DropdownItem>({
                 id="dropdownDefaultButton"
                 data-dropdown-toggle="dropdown"
                 className={cn(
-                  "bg-background-primary hover:bg-background-primary-hoverfocus`:outline-none relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white",
+                  "bg-background-primary hover:bg-background-primary-hover relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white focus:outline-none",
                   selectedItemClassname,
                 )}
                 onClick={() => {
@@ -90,7 +90,7 @@ export function CustomDropdown<T extends DropdownItem>({
                 </div>
               </button>
               {isOpen && (
-                <div className="z-1000  absolute right-0 w-full rounded-lg bg-gray-700 shadow">
+                <div className="z-1000 absolute right-0 w-full overflow-hidden rounded-b-lg bg-gray-700 shadow">
                   {items.map((item, index) => {
                     return (
                       <ItemComponent

@@ -122,53 +122,51 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       : null;
 
     return (
-      <div className="relative w-full">
-        <div className="flex justify-center">
-          <div className="flex w-fit flex-col items-center">
-            <Text
-              leading="loose"
-              size="3xl"
-              fontWeight="bold"
-              className="mb-8 mt-4"
-            >
-              Complete Transaction
-            </Text>
+      <div className="mb-5 flex max-h-[calc(100vh_-_80px)] w-full justify-center overflow-auto">
+        <div className="flex w-fit flex-col items-center">
+          <Text
+            leading="loose"
+            size="3xl"
+            fontWeight="bold"
+            className="mb-8 mt-4"
+          >
+            Complete Transaction
+          </Text>
 
-            <PrettyPrint
-              messages={messages}
-              rawData={rawData}
-              targetChainId={targetChainId}
-              fee={txInfo.data?.fee}
-              memo={memo}
+          <PrettyPrint
+            messages={messages}
+            rawData={rawData}
+            targetChainId={targetChainId}
+            fee={txInfo.data?.fee}
+            memo={memo}
+          />
+
+          {intentionsPayload ? (
+            <ApproveIntentions
+              multisigKey={wallet.owner}
+              keyMetaData={keyMetaData}
+              intentions={intentionsPayload}
+              onApprove={(results) => {
+                setIntentionsResults(results);
+              }}
             />
+          ) : null}
 
-            {intentionsPayload ? (
-              <ApproveIntentions
-                multisigKey={wallet.owner}
-                keyMetaData={keyMetaData}
-                intentions={intentionsPayload}
-                onApprove={(results) => {
-                  setIntentionsResults(results);
-                }}
-              />
-            ) : null}
-
-            <div className="mt-6 flex w-full flex-row space-x-6 ">
-              <Button block variant="outline" onClick={onReject}>
-                Reject
-              </Button>
-              <Button
-                block
-                disabled={
-                  !txInfo.isSuccess || approve.isPending || !intentionsResults
-                }
-                onClick={() => {
-                  approve.mutate();
-                }}
-              >
-                Approve
-              </Button>
-            </div>
+          <div className="mt-6 flex w-full flex-row space-x-6 ">
+            <Button block variant="outline" onClick={onReject}>
+              Reject
+            </Button>
+            <Button
+              block
+              disabled={
+                !txInfo.isSuccess || approve.isPending || !intentionsResults
+              }
+              onClick={() => {
+                approve.mutate();
+              }}
+            >
+              Approve
+            </Button>
           </div>
         </div>
 
@@ -246,6 +244,11 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       return messageToDescription({ message, targetChainId });
     })
     .flat();
+  const addresses = messages
+    .map((message) => {
+      return messageToAddress({ message });
+    })
+    .flat();
 
   return (
     <Transaction
@@ -255,6 +258,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
       feeInfo={feeInfo}
       rawData={rawData}
       memo={memo}
+      addresses={addresses}
     />
   );
 });
@@ -276,13 +280,25 @@ function messageToAmount({
   }
 }
 
+function messageToAddress({ message }: { message: EncodeObject }): string[] {
+  switch (message.typeUrl) {
+    case "/cosmos.bank.v1beta1.MsgSend": {
+      const { value } = message;
+      return value.toAddress ? [value.toAddress] : [];
+    }
+    default:
+      console.warn("Unknown message type: ", message.typeUrl);
+      return [];
+  }
+}
+
 function messageToDescription({
   message,
   targetChainId,
 }: {
   message: EncodeObject;
   targetChainId: CosmosSdkChainId;
-}) {
+}): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;

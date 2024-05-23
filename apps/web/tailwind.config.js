@@ -29,6 +29,13 @@ module.exports = {
         9: "9 9 0%",
         10: "10 10 0%",
       },
+      backgroundImage: {
+        "asset-hover-gradient":
+          "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+      },
+      fontFamily: {
+        "press-start-2p": ["var(--font-press-start-2p)"],
+      },
     },
   },
   plugins: [],

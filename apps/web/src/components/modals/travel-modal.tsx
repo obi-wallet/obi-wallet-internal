@@ -404,7 +404,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
                         >
-                          <div className="flex items-center justify-center ">
+                          <div className="flex items-center justify-center">
                             <img
                               src={item.image}
                               alt={item.label}
@@ -413,7 +413,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="text-white">
-                            <div className=" uppercase">{item.label}</div>
+                            <div className="uppercase">{item.label}</div>
                           </div>
                         </div>
                       );
@@ -427,8 +427,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center   justify-center ">
+                        <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -448,7 +448,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
               }}
             />
             <div className=" flex items-center justify-center p-2  sm:p-5">
-              <FaArrowRight className="m-auto  text-white" />
+              <FaArrowRight className="m-auto text-white" />
             </div>
             <Controller
               name="toChain"
@@ -488,8 +488,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             onMouseMove,
                           })}
                           className={cn(
-                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                            isSelected && "bg-gray-600 ",
+                            "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600",
                             item.disabled &&
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
@@ -522,8 +522,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center   justify-center ">
+                        <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -531,7 +531,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
-                            <div className=" uppercase">
+                            <div className="uppercase">
                               {selected.item.label}
                             </div>
                           </div>

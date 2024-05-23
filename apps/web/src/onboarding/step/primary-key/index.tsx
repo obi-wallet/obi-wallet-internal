@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Text } from "@/components";
+import { BitButton } from "@/components/buttons/8bit-button";
 import {
   OnboardingFromType,
   PrimaryKeyOnboardingStep,
@@ -40,7 +41,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
   return (
     <>
-      <Text fontWeight="bold" size="3xl">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         {step.from === OnboardingFromType.External
           ? "Secure Your Asset"
           : "Create Your First Key"}
@@ -53,59 +54,61 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       >
         {step.from === OnboardingFromType.External
           ? `Create a passkey to secure access to your ${capitalizedExternalAsset} tokens and other assets.`
-          : "Sign in with one of the services below to create your first key."}
+          : "Create a primary passkey to protect your account."}
       </Text>
 
-      {step.from === OnboardingFromType.External && (
+      {step.from === OnboardingFromType.External ? (
         <Image
           width="192"
           height="192"
           src="/assets/images/external-passkey.png"
           alt="passkey"
         />
+      ) : (
+        <Image
+          width="306"
+          height="234"
+          src="/assets/images/fingerprint.png"
+          alt="OBI Logo"
+          className="mt-48"
+        />
       )}
 
-      <Button
-        onClick={() => {
-          passkeyFlow.mutate();
-        }}
-        className="block w-full"
-        variant="primary"
-      >
-        <div>Passkey</div>
-        {/* TODO: recommendation only makes sense when we have multiple options */}
-        {/*<div>(Recommended)</div>*/}
-      </Button>
-      <Button disabled className="block w-full" variant="primary">
+      <div className="flex flex-col gap-6">
+        <BitButton
+          onClick={() => {
+            passkeyFlow.mutate();
+          }}
+        >
+          Continue
+        </BitButton>
+        {/* <Button disabled className="block w-full" variant="primary">
         More Services Coming Soon
-      </Button>
+      </Button> */}
 
-      {/* TODO: cloud keys aren't integrated yet */}
-      {/*<div className="flex w-full items-center">*/}
-      {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-      {/*  <Text className="grow-0 px-3" color="gray">*/}
-      {/*    OR*/}
-      {/*  </Text>*/}
-      {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-      {/*</div>*/}
+        {/* TODO: cloud keys aren't integrated yet */}
+        {/*<div className="flex w-full items-center">*/}
+        {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
+        {/*  <Text className="grow-0 px-3" color="gray">*/}
+        {/*    OR*/}
+        {/*  </Text>*/}
+        {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
+        {/*</div>*/}
 
-      {/*<div className="flex w-full flex-row justify-around">*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaApple className="h-9 w-9 text-white" />*/}
-      {/*  </div>*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaGoogle className="h-7 w-7 text-white" />*/}
-      {/*  </div>*/}
-      {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-      {/*    <FaWindows className="h-7 w-7 text-white" />*/}
-      {/*  </div>*/}
-      {/*</div>*/}
+        {/*<div className="flex w-full flex-row justify-around">*/}
+        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
+        {/*    <FaApple className="h-9 w-9 text-white" />*/}
+        {/*  </div>*/}
+        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
+        {/*    <FaGoogle className="h-7 w-7 text-white" />*/}
+        {/*  </div>*/}
+        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
+        {/*    <FaWindows className="h-7 w-7 text-white" />*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
-      {back ? (
-        <Button onClick={back} className="block w-full" variant="outline">
-          Back
-        </Button>
-      ) : null}
+        {back ? <BitButton onClick={back}>Back</BitButton> : null}
+      </div>
     </>
   );
 });
