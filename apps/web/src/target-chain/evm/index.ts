@@ -41,6 +41,10 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
     return this.chainData.disabled ?? false;
   }
 
+  public get evmChainId() {
+    return this.chainData.chain.id;
+  }
+
   public computeAddress(publicKey: Secp256k1PublicKey) {
     const u8 = getSec256k1UncompressedPublicKey(publicKey);
     const hex = `0x${Buffer.from(u8).toString("hex")}`;

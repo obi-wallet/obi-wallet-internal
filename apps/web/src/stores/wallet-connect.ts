@@ -1,4 +1,4 @@
-import { fetchPublicKey } from "@/hooks/use-public-key";
+import { HomeChain } from "@/home-chain";
 import { allTargetChainIds, TargetChain } from "@/target-chain";
 import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
@@ -62,7 +62,9 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await fetchPublicKey(wallet);
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
     const enabledCosmosSdkChains = allTargetChainIds.filter((targetChainId) => {
       return (
         isCosmosSdkChainId(targetChainId) &&
