@@ -41,7 +41,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
   return (
     <>
-      <Text fontWeight="bold" size="3xl" className="font-PressStart2P">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         {step.from === OnboardingFromType.External
           ? "Secure Your Asset"
           : "Create Your First Key"}

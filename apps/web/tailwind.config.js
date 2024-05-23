@@ -34,7 +34,7 @@ module.exports = {
           "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
       },
       fontFamily: {
-        PressStart2P: ["var(--font-Press-Start-2P)"],
+        "press-start-2p": ["var(--font-press-start-2p)"],
       },
     },
   },

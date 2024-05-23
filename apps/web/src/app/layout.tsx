@@ -1,5 +1,5 @@
 import { RootLayoutClient } from "@/components/root-layout-client";
-import { PressStart2P } from "@/lib/fonts";
+import { pressStart2P } from "@/lib/fonts";
 import type { Metadata } from "next";
 import { ReactNode, Suspense } from "react";
 import "./globals.css";
@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const isMaintenance = process.env.MAINTENANCE_MODE === "true";
 
   return (
-    <html className={`h-full ${PressStart2P.variable}`}>
+    <html className={`h-full ${pressStart2P.variable}`}>
       <body className="flex h-full flex-col bg-gradient-to-br from-black to-slate-900">
         <Suspense>
           <RootLayoutClient isMaintenance={isMaintenance}>

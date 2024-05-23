@@ -33,7 +33,7 @@ export const UserDataStep = observer(function UserDataStep({
 
   return (
     <>
-      <Text fontWeight="bold" size="3xl" className="font-PressStart2P">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         Create An Account
       </Text>
       <Text
