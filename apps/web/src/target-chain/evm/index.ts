@@ -25,7 +25,7 @@ import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
 export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
-  protected readonly chainData: EvmChainData;
+  public readonly chainData: EvmChainData;
 
   public constructor(chainId: EvmChainId) {
     super(chainId);
