@@ -29,9 +29,11 @@ async function fetchBalances({
 
   return await Promise.all(
     balances.map(async (asset): Promise<AssetWithPrice> => {
+      const price = (await targetChain.price(asset.assetId)).usdValue;
       return {
         ...asset,
-        price: (await targetChain.price(asset.assetId)).usdValue,
+
+        price,
       };
     }),
   );
