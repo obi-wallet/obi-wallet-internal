@@ -14,10 +14,12 @@ import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
 import { isEvmChainId } from "@/target-chain/evm/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
+import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
@@ -89,17 +91,34 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const asset = coin.asset;
       const chainId = asset.targetChainId;
 
-      const tokens: Coin[] = [
-        {
-          amount: new BigNumber(coin.amount)
-            .multipliedBy(10 ** asset.asset.decimals)
-            .toFixed(0, BigNumber.ROUND_DOWN),
-          denom: asset.denom,
-        },
-      ];
+      const rawAmount = new BigNumber(coin.amount)
+        .multipliedBy(10 ** asset.asset.decimals)
+        .toFixed(0, BigNumber.ROUND_DOWN);
 
       if (isEvmChainId(chainId)) {
-        alert.showError("EVM chain not supported yet");
+        const targetChain = TargetChain.chainId(chainId);
+        invariant(targetChain.validateAddress(recipient), "Invalid address");
+        const account = await targetChain.localAccountFromWallet(wallet);
+        const kernelAccount = await targetChain.kernelAccount(account);
+        const callData = HexEncodedStringWithPrefix.parse(
+          await kernelAccount.encodeCallData({
+            to: recipient,
+            data: "0x",
+            value: BigInt(rawAmount),
+          }),
+        );
+        const response = await SignAndBroadcastEvm.start({
+          callData,
+          cancelable: true,
+          targetChainId: chainId,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+        });
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          alert.showSuccess("TX sent");
+        }
         return;
       }
 
@@ -108,6 +127,13 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
       invariant(firstAccount, "No account found");
+
+      const tokens: Coin[] = [
+        {
+          amount: rawAmount,
+          denom: asset.denom,
+        },
+      ];
 
       const message: MsgSendEncodeObject = {
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
@@ -128,10 +154,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       });
 
       await invalidateBalancesQueries(chainId);
-      return response;
-    },
-    onSuccess(response) {
-      if (response?.approved) {
+      if (response.approved) {
         const broadcastResult = response.payload;
         if (broadcastResult.success) {
           alert.showSuccess("TX broadcast successfully");

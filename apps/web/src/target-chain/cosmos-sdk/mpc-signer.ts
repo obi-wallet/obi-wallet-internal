@@ -1,4 +1,4 @@
-import { fetchPublicKey } from "@/hooks/use-public-key";
+import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
 import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
 import { MpcSigner } from "@/target-chain/mpc-signer";
@@ -50,7 +50,9 @@ export class CosmosSdkMpcSigner
     wallet: MpcWallet,
     targetChainId: CosmosSdkChainId,
   ): Promise<CosmosSdkMpcSigner> {
-    const publicKey = await fetchPublicKey(wallet);
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
 
     return new CosmosSdkMpcSigner(wallet, publicKey, targetChainId);
   }
