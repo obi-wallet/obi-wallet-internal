@@ -5,9 +5,18 @@ export interface AbstractEncoding<T> {
   toBytes(value: T): Uint8Array;
 }
 
-function createBufferSchema<T extends BufferEncoding>(bufferEncoding: T) {
+function createBufferSchema<T extends BufferEncoding>({
+  bufferEncoding,
+  caseSensitive,
+}: {
+  bufferEncoding: T;
+  caseSensitive: boolean;
+}) {
   const schema = z
     .string()
+    .transform((str) => {
+      return caseSensitive ? str : str.toLowerCase();
+    })
     .refine((str) => {
       // Only validate during runtime in development
       if (process.env.NODE_ENV === "production") {
@@ -33,16 +42,25 @@ function createBufferSchema<T extends BufferEncoding>(bufferEncoding: T) {
 export const Utf8EncodedString = z.string();
 export type Utf8EncodedString = string;
 
-const base64 = createBufferSchema("base64");
+const base64 = createBufferSchema({
+  bufferEncoding: "base64",
+  caseSensitive: true,
+});
 export const Base64EncodedString = base64.schema;
 export type Base64EncodedString = z.infer<typeof Base64EncodedString>;
 
-const hex = createBufferSchema("hex");
+const hex = createBufferSchema({
+  bufferEncoding: "hex",
+  caseSensitive: false,
+});
 export const HexEncodedString = hex.schema;
 export type HexEncodedString = z.infer<typeof HexEncodedString>;
 
 export const HexEncodedStringWithPrefix = z
   .string()
+  .transform((str) => {
+    return str.toLowerCase();
+  })
   .refine((str): str is `0x${HexEncodedString}` => {
     return (
       str.startsWith("0x") &&

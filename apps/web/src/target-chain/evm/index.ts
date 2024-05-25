@@ -1,5 +1,8 @@
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
 import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
@@ -9,13 +12,12 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { ENTRYPOINT_ADDRESS_V07, UserOperation } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
 import {
   Address,
   createPublicClient,
   getAddress,
-  Hex,
   http,
   isAddress,
   keccak256,
@@ -24,7 +26,71 @@ import {
 import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
-export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
+export type EvmUserOperation = UserOperation<"v0.7">;
+// Replace all bigints with strings
+export interface SerializedEvmUserOperation
+  extends Omit<
+    EvmUserOperation,
+    | "nonce"
+    | "callGasLimit"
+    | "verificationGasLimit"
+    | "preVerificationGas"
+    | "maxFeePerGas"
+    | "maxPriorityFeePerGas"
+    | "paymasterVerificationGasLimit"
+    | "paymasterPostOpGasLimit"
+  > {
+  nonce: string;
+  callGasLimit: string;
+  verificationGasLimit: string;
+  preVerificationGas: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  paymasterVerificationGasLimit?: string;
+  paymasterPostOpGasLimit?: string;
+}
+
+export function serializeUserOperation(
+  userOperation: EvmUserOperation,
+): SerializedEvmUserOperation {
+  return {
+    ...userOperation,
+    nonce: userOperation.nonce.toString(),
+    callGasLimit: userOperation.callGasLimit.toString(),
+    verificationGasLimit: userOperation.verificationGasLimit.toString(),
+    preVerificationGas: userOperation.preVerificationGas.toString(),
+    maxFeePerGas: userOperation.maxFeePerGas.toString(),
+    maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas.toString(),
+    paymasterVerificationGasLimit:
+      userOperation.paymasterVerificationGasLimit?.toString(),
+    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit?.toString(),
+  };
+}
+
+export function deserializeUserOperation(
+  userOperation: SerializedEvmUserOperation,
+): EvmUserOperation {
+  return {
+    ...userOperation,
+    nonce: BigInt(userOperation.nonce),
+    callGasLimit: BigInt(userOperation.callGasLimit),
+    verificationGasLimit: BigInt(userOperation.verificationGasLimit),
+    preVerificationGas: BigInt(userOperation.preVerificationGas),
+    maxFeePerGas: BigInt(userOperation.maxFeePerGas),
+    maxPriorityFeePerGas: BigInt(userOperation.maxPriorityFeePerGas),
+    paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit
+      ? BigInt(userOperation.paymasterVerificationGasLimit)
+      : undefined,
+    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit
+      ? BigInt(userOperation.paymasterPostOpGasLimit)
+      : undefined,
+  };
+}
+
+export class EvmTargetChain extends AbstractTargetChain<
+  EvmChainId,
+  HexEncodedStringWithPrefix
+> {
   public readonly chainData: EvmChainData;
 
   public constructor(chainId: EvmChainId) {
@@ -70,7 +136,7 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
     });
 
     const kernelAccount = await this.kernelAccount(account);
-    return kernelAccount.address;
+    return HexEncodedStringWithPrefix.parse(kernelAccount.address);
   }
 
   public async balancesQueryFn(address: string) {
@@ -157,5 +223,72 @@ export class EvmTargetChain extends AbstractTargetChain<EvmChainId, Hex> {
   public async localAccountFromWallet(wallet: MpcWallet) {
     const signer = await this.signerFromWallet(wallet);
     return toAccount(signer.accountSource);
+  }
+
+  public async calculateHashToSign({
+    wallet,
+    userOperation,
+  }: {
+    wallet: MpcWallet;
+    userOperation: EvmUserOperation;
+  }) {
+    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+
+    const account = toAccount(signer.accountSource);
+    const kernelAccount = await this.kernelAccount(account);
+
+    return await signer.mpcSigner.calculateHashToSign(async () => {
+      await kernelAccount.signUserOperation(userOperation);
+    });
+  }
+
+  public async sign({
+    wallet,
+    userOperation,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    userOperation: EvmUserOperation;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+    signer.mpcSigner.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
+
+    const account = toAccount(signer.accountSource);
+    const kernelAccount = await this.kernelAccount(account);
+
+    const signature = await kernelAccount.signUserOperation(userOperation);
+    return signature;
+  }
+
+  public async signAndBroadcast({
+    wallet,
+    userOperation,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    userOperation: EvmUserOperation;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    userOperation.signature = await this.sign({
+      wallet,
+      userOperation,
+      intentionsPayload,
+      intentionsResults,
+    });
+    await fetch("/api/evm/send-user-operation", {
+      method: "POST",
+      body: JSON.stringify({
+        targetChainId: this.chainData.id,
+        userOperation: serializeUserOperation(userOperation),
+      }),
+    });
   }
 }

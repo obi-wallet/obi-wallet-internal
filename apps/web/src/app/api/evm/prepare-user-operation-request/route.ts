@@ -1,5 +1,6 @@
 import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
+import { serializeUserOperation } from "@/target-chain/evm";
 import { EvmChainIdSchema } from "@/target-chain/evm/chains";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { HomeChainIdSchema } from "@obi-wallet/sdk";
@@ -21,11 +22,6 @@ const schema = z.object({
   callData: HexEncodedStringWithPrefix,
 });
 
-// @ts-expect-error TODO: This is needed for JSON serialize, maybe we should do that differently
-BigInt.prototype.toJSON = function () {
-  return this.toString();
-};
-
 export async function POST(request: Request) {
   const result = schema.safeParse(await request.json());
   if (!result.success) {
@@ -44,7 +40,7 @@ export async function POST(request: Request) {
   const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.evmChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
 
   const account = toAccount({
-    address: TargetChain.chainId(targetChainId).computeAddress(publicKey),
+    address: targetChain.computeAddress(publicKey),
     async signMessage() {
       throw new Error("signMessage not implemented");
     },
@@ -59,11 +55,13 @@ export async function POST(request: Request) {
   const kernelAccount = await targetChain.kernelAccount(account);
 
   const paymasterClient = createPimlicoPaymasterClient({
+    chain: targetChain.chainData.chain,
     transport: http(pimlicoUrl),
     entryPoint: targetChain.entryPoint,
   });
 
   const bundlerClient = createPimlicoBundlerClient({
+    chain: targetChain.chainData.chain,
     transport: http(pimlicoUrl),
     entryPoint: targetChain.entryPoint,
   });
@@ -81,7 +79,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const userOp = await smartAccountClient.prepareUserOperationRequest({
+  const userOperation = await smartAccountClient.prepareUserOperationRequest({
     userOperation: {
       callData,
     },
@@ -89,6 +87,6 @@ export async function POST(request: Request) {
 
   return Response.json({
     success: true,
-    userOp,
+    userOperation: serializeUserOperation(userOperation),
   });
 }
