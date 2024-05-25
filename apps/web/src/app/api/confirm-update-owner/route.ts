@@ -12,6 +12,8 @@ import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+export const maxDuration = 45;
+
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
   userAccountAddress: z.string(),
