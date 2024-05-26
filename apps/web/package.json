@@ -113,6 +113,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-storybook": "^0.8.0",
     "jest": "^29.7.0",
+    "msw": "^2.3.0",
+    "msw-storybook-addon": "^2.0.2",
     "next-test-api-route-handler": "^4.0.7",
     "playwright": "^1.44.0",
     "postcss": "^8.4.38",
@@ -123,5 +125,10 @@
     "vercel": "^34.1.14",
     "webpack-hook-plugin": "^1.0.7",
     "zora": "^5.2.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      ".storybook/public"
+    ]
   }
 }
