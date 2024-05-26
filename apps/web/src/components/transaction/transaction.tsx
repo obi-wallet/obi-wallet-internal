@@ -138,16 +138,18 @@ export function Transaction({
         </div>
       ) : null}
       <div className="mt-6 flex w-full flex-col bg-indigo-950">
-        <Button
-          className="w-full justify-center"
-          size="sm"
-          onClick={() => {
-            setShowData(!showData);
-          }}
-          variant="detail"
-        >
-          See Data
-        </Button>
+        {rawData ? (
+          <Button
+            className="w-full justify-center"
+            size="sm"
+            onClick={() => {
+              setShowData(!showData);
+            }}
+            variant="detail"
+          >
+            See Data
+          </Button>
+        ) : null}
         {showData ? (
           <div
             className={cn(
