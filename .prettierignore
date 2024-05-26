@@ -9,3 +9,12 @@ deprecated/
 
 # Built Output
 packages/mpc-ecdsa-wasm/src/
+
+# MSW
+mockServiceWorker.js
+
+# Playwright
+/apps/web/test-results/
+/apps/web/playwright-report/
+/apps/web/blob-report/
+/apps/web/playwright/.cache/

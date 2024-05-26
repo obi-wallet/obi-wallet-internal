@@ -1,4 +1,4 @@
-import { Button, Text } from "@/components";
+import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain } from "@/target-chain";
@@ -16,9 +16,11 @@ import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { skipToken, useMutation } from "@tanstack/react-query";
+import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
+import { decodeFunctionData, hexToBigInt, size, sliceHex } from "viem";
 import { z } from "zod";
 
 export interface ApproveEvmTransactionProps {
@@ -145,13 +147,11 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             Complete Transaction
           </Text>
 
-          {/*<PrettyPrint*/}
-          {/*    messages={messages}*/}
-          {/*    rawData={rawData}*/}
-          {/*    targetChainId={targetChainId}*/}
-          {/*    fee={txInfo.data?.fee}*/}
-          {/*    memo={memo}*/}
-          {/*/>*/}
+          <PrettyPrint
+            callData={callData}
+            targetChainId={targetChainId}
+            userOperation={userOperation.data?.userOperation}
+          />
 
           {intentionsPayload ? (
             <ApproveIntentions
@@ -189,3 +189,127 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
     );
   },
 );
+
+const PrettyPrint = observer(function PrettyPrint({
+  callData,
+  targetChainId,
+}: {
+  callData: HexEncodedStringWithPrefix;
+  userOperation?: SerializedEvmUserOperation;
+  targetChainId: EvmChainId;
+}) {
+  // TODO: copy-pasted from permissionless
+  const KernelV3ExecuteAbi = [
+    {
+      type: "function",
+      name: "execute",
+      inputs: [
+        { name: "execMode", type: "bytes32", internalType: "ExecMode" },
+        { name: "executionCalldata", type: "bytes", internalType: "bytes" },
+      ],
+      outputs: [],
+      stateMutability: "payable",
+    },
+    {
+      type: "function",
+      name: "executeFromExecutor",
+      inputs: [
+        { name: "execMode", type: "bytes32", internalType: "ExecMode" },
+        { name: "executionCalldata", type: "bytes", internalType: "bytes" },
+      ],
+      outputs: [
+        { name: "returnData", type: "bytes[]", internalType: "bytes[]" },
+      ],
+      stateMutability: "payable",
+    },
+    {
+      type: "function",
+      name: "executeUserOp",
+      inputs: [
+        {
+          name: "userOp",
+          type: "tuple",
+          internalType: "struct PackedUserOperation",
+          components: [
+            {
+              name: "sender",
+              type: "address",
+              internalType: "address",
+            },
+            { name: "nonce", type: "uint256", internalType: "uint256" },
+            { name: "initCode", type: "bytes", internalType: "bytes" },
+            { name: "callData", type: "bytes", internalType: "bytes" },
+            {
+              name: "accountGasLimits",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            {
+              name: "preVerificationGas",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "gasFees",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            {
+              name: "paymasterAndData",
+              type: "bytes",
+              internalType: "bytes",
+            },
+            { name: "signature", type: "bytes", internalType: "bytes" },
+          ],
+        },
+        { name: "userOpHash", type: "bytes32", internalType: "bytes32" },
+      ],
+      outputs: [],
+      stateMutability: "payable",
+    },
+  ] as const;
+
+  const functionData = decodeFunctionData({
+    abi: KernelV3ExecuteAbi,
+    data: callData,
+  });
+
+  if (functionData.functionName === "execute") {
+    const [_execMode, executionCallData] = functionData.args;
+
+    // First 20 bytes is the recipient
+    const to = sliceHex(executionCallData, 0, 20);
+    // Next 32 bytes is the value
+    const value = sliceHex(executionCallData, 20, 52);
+    // The rest is the data
+    const data =
+      size(executionCallData) > 52 ? sliceHex(executionCallData, 52) : null;
+
+    const targetChain = TargetChain.chainId(targetChainId);
+    const asset = targetChain.assetInfo(targetChain.nativeCurrency.symbol);
+    const amount = new BigNumber(hexToBigInt(value).toString(10))
+      .dividedBy(10 ** (asset?.decimals ?? 0))
+      .toString();
+
+    return (
+      <Transaction
+        amountInfo={[
+          {
+            denom: asset?.symbol ?? targetChain.nativeCurrency.symbol,
+            amount,
+          },
+        ]}
+        feeInfo={[]}
+        descriptions={[]}
+        addresses={[to]}
+        memo=""
+        targetChainId={targetChainId}
+        rawData={data}
+      />
+    );
+  }
+
+  console.warn("Unknown function name", functionData.functionName);
+
+  return null;
+});
