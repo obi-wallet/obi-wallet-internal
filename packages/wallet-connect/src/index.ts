@@ -1,4 +1,4 @@
-import { Encoding } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -15,11 +15,28 @@ import {
 
 export * from "./user-interactions";
 
+export interface Account {
+  namespace: string;
+  chainId: string;
+  address: string;
+  publicKey: Secp256k1PublicKey;
+}
+
+export interface EthSendTransactionPayload {
+  chainId: number;
+  gas: HexEncodedStringWithPrefix;
+  value: HexEncodedStringWithPrefix;
+  from: HexEncodedStringWithPrefix;
+  to: HexEncodedStringWithPrefix;
+  data: HexEncodedStringWithPrefix;
+}
+
 export async function setupWalletConnect({
   projectId,
   metadata,
   getAccounts,
   getWalletMeta,
+  ethSendTransaction,
 }: {
   projectId: string;
   metadata: {
@@ -28,17 +45,15 @@ export async function setupWalletConnect({
     url: string;
     icons: string[];
   };
-  getAccounts: () => Promise<
-    {
-      namespace: string;
-      chainId: string;
-      address: string;
-      publicKey: Secp256k1PublicKey;
-    }[]
-  >;
+  getAccounts: () => Promise<Account[]>;
   getWalletMeta: () => {
     userEntryAddress: string;
   };
+  ethSendTransaction: (
+    payload: EthSendTransactionPayload,
+  ) => Promise<
+    { approved: true; txHash: HexEncodedStringWithPrefix } | { approved: false }
+  >;
 }) {
   const core = new Core({
     projectId,
@@ -80,8 +95,6 @@ export async function setupWalletConnect({
               ).toBase64(),
             };
           });
-
-        console.log(result);
 
         const response = {
           id,
@@ -152,6 +165,33 @@ export async function setupWalletConnect({
         }
         break;
       }
+      case "eth_sendTransaction": {
+        const payload = request.params[0];
+        const response = await ethSendTransaction({
+          ...payload,
+          chainId: parseInt(chainId, 10),
+        });
+        if (response.approved) {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              result: response.txHash,
+            },
+          });
+        } else {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              error: getSdkError("USER_REJECTED"),
+            },
+          });
+        }
+        break;
+      }
     }
   });
 
@@ -160,43 +200,67 @@ export async function setupWalletConnect({
   });
 
   web3wallet.on("session_proposal", async (params) => {
-    console.log("incoming session_proposal", params);
+    try {
+      console.log("incoming session_proposal", params);
 
-    // Automatically approve the session proposal for now
-    const response = { approved: true };
-    // const response = await WalletConnectPairingUserInteraction.start(params);
+      // Automatically approve the session proposal for now
+      const response = { approved: true };
+      // const response = await WalletConnectPairingUserInteraction.start(params);
 
-    if (response.approved) {
-      const accounts = await getAccounts();
-      const chains = accounts.map((account) => {
-        return `${account.namespace}:${account.chainId}`;
-      });
-      const approvedNamespaces = buildApprovedNamespaces({
-        proposal: params.params,
-        supportedNamespaces: {
-          cosmos: {
-            chains: chains,
-            methods: [
-              "cosmos_getAccounts",
-              "cosmos_signAmino",
-              "cosmos_signDirect",
-            ],
-            accounts: accounts.map((account) => {
-              return `${account.namespace}:${account.chainId}:${account.address}`;
-            }),
-            events: ["chainChanged", "accountsChanged"],
+      if (response.approved) {
+        const accounts = await getAccounts();
+        const cosmosAccounts = accounts.filter((account) => {
+          return account.namespace === "cosmos";
+        });
+        const evmAccounts = accounts.filter((account) => {
+          return account.namespace === "eip155";
+        });
+
+        const buildChains = (accounts: Account[]) => {
+          return accounts.map((account) => {
+            return `${account.namespace}:${account.chainId}`;
+          });
+        };
+
+        const buildAccounts = (accounts: Account[]) => {
+          return accounts.map((account) => {
+            return `${account.namespace}:${account.chainId}:${account.address}`;
+          });
+        };
+
+        const approvedNamespaces = buildApprovedNamespaces({
+          proposal: params.params,
+          supportedNamespaces: {
+            cosmos: {
+              chains: buildChains(cosmosAccounts),
+              methods: [
+                "cosmos_getAccounts",
+                "cosmos_signAmino",
+                "cosmos_signDirect",
+              ],
+              accounts: buildAccounts(cosmosAccounts),
+              events: ["chainChanged", "accountsChanged"],
+            },
+            eip155: {
+              chains: buildChains(evmAccounts),
+              methods: ["eth_sendTransaction"],
+              accounts: buildAccounts(evmAccounts),
+              events: [],
+            },
           },
-        },
-      });
-      const _session = await web3wallet.approveSession({
-        id: params.id,
-        namespaces: approvedNamespaces,
-      });
-    } else {
-      await web3wallet.rejectSession({
-        id: params.id,
-        reason: getSdkError("USER_REJECTED"),
-      });
+        });
+        const _session = await web3wallet.approveSession({
+          id: params.id,
+          namespaces: approvedNamespaces,
+        });
+      } else {
+        await web3wallet.rejectSession({
+          id: params.id,
+          reason: getSdkError("USER_REJECTED"),
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   });
 

@@ -64,9 +64,10 @@ export const SignAndBroadcastEvmHandlerInner = observer<{
           return;
         }
 
-        await targetChain.signAndBroadcast(payload);
+        const hash = await targetChain.signAndBroadcast(payload);
         interaction.resolve({
           approved: true,
+          hash,
         });
       }}
     />

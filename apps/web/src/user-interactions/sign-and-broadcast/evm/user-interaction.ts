@@ -17,7 +17,7 @@ export interface SignAndBroadcastEvmPayload {
 
 export type SignAndBroadcastEvm = UserInteraction<
   SignAndBroadcastEvmPayload,
-  { approved: boolean }
+  { approved: true; hash: HexEncodedStringWithPrefix } | { approved: false }
 >;
 
 export const SignAndBroadcastEvmSymbol = Symbol();
