@@ -1,15 +1,29 @@
-import { arbitrum, arbitrumSepolia, Chain, sepolia } from "viem/chains";
+import {
+  arbitrum,
+  arbitrumSepolia,
+  base,
+  baseSepolia,
+  Chain,
+  mainnet,
+  sepolia,
+} from "viem/chains";
 import { z } from "zod";
 
 export enum EvmChainId {
   Arbitrum = "arbitrum",
   ArbitrumTestnet = "arbitrum-testnet",
+  Base = "base",
+  BaseTestnet = "base-testnet",
+  Ethereum = "ethereum-mainnet",
   EthereumTestnet = "ethereum-testnet",
 }
 
 export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.Arbitrum),
   z.literal(EvmChainId.ArbitrumTestnet),
+  z.literal(EvmChainId.Base),
+  z.literal(EvmChainId.BaseTestnet),
+  z.literal(EvmChainId.Ethereum),
   z.literal(EvmChainId.EthereumTestnet),
 ]);
 
@@ -20,6 +34,9 @@ export function isEvmChainId(chainId: string): chainId is EvmChainId {
 export const allEvmChainIds = [
   EvmChainId.Arbitrum,
   EvmChainId.ArbitrumTestnet,
+  EvmChainId.Base,
+  EvmChainId.BaseTestnet,
+  EvmChainId.Ethereum,
   EvmChainId.EthereumTestnet,
 ];
 
@@ -41,6 +58,25 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     id: EvmChainId.ArbitrumTestnet,
     image: "/assets/images/arbitrum-logo.png",
     chain: arbitrumSepolia,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Base]: {
+    id: EvmChainId.Base,
+    image: "/assets/images/base-logo.png",
+    chain: base,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.BaseTestnet]: {
+    id: EvmChainId.BaseTestnet,
+    image: "/assets/images/base-logo.png",
+    chain: baseSepolia,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Ethereum]: {
+    id: EvmChainId.Ethereum,
+    image:
+      "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+    chain: mainnet,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.EthereumTestnet]: {
