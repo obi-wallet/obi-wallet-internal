@@ -283,12 +283,33 @@ export class EvmTargetChain extends AbstractTargetChain<
       intentionsPayload,
       intentionsResults,
     });
-    await fetch("/api/evm/send-user-operation", {
+    const response = await fetch("/api/evm/send-user-operation", {
       method: "POST",
       body: JSON.stringify({
         targetChainId: this.chainData.id,
         userOperation: serializeUserOperation(userOperation),
       }),
     });
+    const schema = z.object({
+      hash: HexEncodedStringWithPrefix,
+    });
+    const { hash } = schema.parse(await response.json());
+    return hash;
+  }
+
+  public async waitForUserOperationReceipt(hash: HexEncodedStringWithPrefix) {
+    const response = await fetch("/api/evm/wait-for-user-operation-receipt", {
+      method: "POST",
+      body: JSON.stringify({
+        targetChainId: this.chainData.id,
+        hash,
+      }),
+    });
+    const schema = z.object({
+      success: z.boolean(),
+      reason: z.string().optional(),
+      txHash: HexEncodedStringWithPrefix,
+    });
+    return schema.parse(await response.json());
   }
 }
