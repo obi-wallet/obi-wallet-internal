@@ -95,7 +95,9 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           disabled={
             sentMagicCode
               ? !code
-              : !name || !number || !securityQuestion.securityAnswer
+              : !(!askForName || name) ||
+                !number ||
+                !securityQuestion.securityAnswer
           }
         >
           Next
