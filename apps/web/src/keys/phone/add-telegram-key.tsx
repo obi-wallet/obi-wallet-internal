@@ -92,7 +92,9 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             disabled={
               sentMagicCode
                 ? !code
-                : !name || !chatId || !securityQuestion.securityAnswer
+                : !(!askForName || name) ||
+                  !chatId ||
+                  !securityQuestion.securityAnswer
             }
           >
             Next
