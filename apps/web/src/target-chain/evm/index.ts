@@ -195,6 +195,8 @@ export class EvmTargetChain extends AbstractTargetChain<
           case "BNB":
           case "tBNB":
             return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
+          case "CRO":
+            return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
           case "MATIC":
             return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
           default:
