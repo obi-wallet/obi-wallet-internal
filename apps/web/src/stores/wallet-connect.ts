@@ -20,6 +20,9 @@ export class WalletConnectStore {
 
   public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
     this.walletsStore = walletsStore;
+
+    // Make sure we set up WalletConnect on all pages
+    void this.getActiveSessions();
   }
 
   public async pair(uri: string) {
