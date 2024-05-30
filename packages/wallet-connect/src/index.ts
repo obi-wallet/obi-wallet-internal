@@ -36,6 +36,7 @@ export async function setupWalletConnect({
   metadata,
   getAccounts,
   getWalletMeta,
+  ethPersonalSign,
   ethSendTransaction,
 }: {
   projectId: string;
@@ -49,6 +50,12 @@ export async function setupWalletConnect({
   getWalletMeta: () => {
     userEntryAddress: string;
   };
+  ethPersonalSign: (
+    message: HexEncodedStringWithPrefix,
+  ) => Promise<
+    | { approved: true; signedMessage: HexEncodedStringWithPrefix }
+    | { approved: false }
+  >;
   ethSendTransaction: (
     payload: EthSendTransactionPayload,
   ) => Promise<
@@ -192,6 +199,40 @@ export async function setupWalletConnect({
         }
         break;
       }
+      case "personal_sign": {
+        const payload = request.params[0];
+        const response = await ethPersonalSign(payload);
+        if (response.approved) {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              result: response.signedMessage,
+            },
+          });
+        } else {
+          await web3wallet.respondSessionRequest({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              error: getSdkError("USER_REJECTED"),
+            },
+          });
+        }
+        break;
+      }
+      case "wallet_switchEthereumChain": {
+        await web3wallet.respondSessionRequest({
+          topic,
+          response: {
+            id,
+            jsonrpc: "2.0",
+            result: true,
+          },
+        });
+      }
     }
   });
 
@@ -243,9 +284,13 @@ export async function setupWalletConnect({
             },
             eip155: {
               chains: buildChains(evmAccounts),
-              methods: ["eth_sendTransaction"],
+              methods: [
+                "eth_sendTransaction",
+                "personal_sign",
+                "wallet_switchEthereumChain",
+              ],
               accounts: buildAccounts(evmAccounts),
-              events: [],
+              events: ["chainChanged", "accountsChanged"],
             },
           },
         });
