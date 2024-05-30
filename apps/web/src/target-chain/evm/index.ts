@@ -121,7 +121,15 @@ export class EvmTargetChain extends AbstractTargetChain<
     return getAddress(`0x${address}`);
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+  protected async obiAccountAddressQueryFn(
+    publicKey: Secp256k1PublicKey,
+  ): Promise<HexEncodedStringWithPrefix> {
+    if (this.chainId === EvmChainId.BscTestnet) {
+      return await new EvmTargetChain(EvmChainId.Bsc).obiAccountAddressQueryFn(
+        publicKey,
+      );
+    }
+
     const account = toAccount({
       address: this.computeAddress(publicKey),
       async signMessage() {
@@ -177,13 +185,24 @@ export class EvmTargetChain extends AbstractTargetChain<
   }
 
   public assetInfo(id: AssetId) {
-    if (id === "ETH") {
+    if (id === this.nativeCurrency.symbol) {
+      const getImage = () => {
+        switch (id) {
+          case "ETH":
+            return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
+          case "BNB":
+          case "tBNB":
+            return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
+          default:
+            return null;
+        }
+      };
+
       return {
         name: this.nativeCurrency.name,
         symbol: this.nativeCurrency.symbol,
         decimals: this.nativeCurrency.decimals,
-        image:
-          "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
+        image: getImage(),
       };
     }
 

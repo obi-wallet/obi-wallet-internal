@@ -3,6 +3,8 @@ import {
   arbitrumSepolia,
   base,
   baseSepolia,
+  bsc,
+  bscTestnet,
   Chain,
   mainnet,
   sepolia,
@@ -14,8 +16,10 @@ export enum EvmChainId {
   ArbitrumTestnet = "arbitrum-testnet",
   Base = "base",
   BaseTestnet = "base-testnet",
-  Ethereum = "ethereum-mainnet",
+  Ethereum = "ethereum",
   EthereumTestnet = "ethereum-testnet",
+  Bsc = "bsc",
+  BscTestnet = "bsc-testnet",
 }
 
 export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
@@ -23,6 +27,8 @@ export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.ArbitrumTestnet),
   z.literal(EvmChainId.Base),
   z.literal(EvmChainId.BaseTestnet),
+  z.literal(EvmChainId.Bsc),
+  z.literal(EvmChainId.BscTestnet),
   z.literal(EvmChainId.Ethereum),
   z.literal(EvmChainId.EthereumTestnet),
 ]);
@@ -36,6 +42,8 @@ export const allEvmChainIds = [
   EvmChainId.ArbitrumTestnet,
   EvmChainId.Base,
   EvmChainId.BaseTestnet,
+  EvmChainId.Bsc,
+  EvmChainId.BscTestnet,
   EvmChainId.Ethereum,
   EvmChainId.EthereumTestnet,
 ];
@@ -84,6 +92,20 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
     chain: sepolia,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Bsc]: {
+    id: EvmChainId.Bsc,
+    image:
+      "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
+    chain: bsc,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.BscTestnet]: {
+    id: EvmChainId.BscTestnet,
+    image:
+      "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
+    chain: bscTestnet,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
 };
