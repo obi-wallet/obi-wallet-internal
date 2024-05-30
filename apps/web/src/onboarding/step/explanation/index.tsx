@@ -8,12 +8,12 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
 export const ExplanationStep = observer(function ExplanationStep({
-  // back,
+  back,
   next,
 }: StepProps<ExplanationOnboardingStep>) {
   return (
     <>
-      <Text fontWeight="bold" size="3xl">
+      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
         Secure Your Account
       </Text>
       <Text
@@ -33,11 +33,12 @@ export const ExplanationStep = observer(function ExplanationStep({
       />
 
       <OnboardingButtons
-        // back={back}
+        back={() => {
+          if (back) back();
+        }}
         next={() => {
           if (next) next();
         }}
-        nextLabel="Create My First Key"
       />
     </>
   );

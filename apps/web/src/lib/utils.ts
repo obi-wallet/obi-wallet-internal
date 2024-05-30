@@ -52,4 +52,5 @@ export const toChains = [
   CosmosSdkChainId.Inj,
   CosmosSdkChainId.Osmosis,
   CosmosSdkChainId.Neutron,
+  CosmosSdkChainId.Stargaze,
 ];

@@ -130,7 +130,10 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
   }
 
   public async priceQueryFn(id: AssetId) {
-    if (this.chainId === CosmosSdkChainId.Neutron && id !== "untrn") {
+    if (
+      [CosmosSdkChainId.Neutron, CosmosSdkChainId.Sei].includes(this.chainId) &&
+      !["untrn", "usei"].includes(id)
+    ) {
       const url = "https://api.skip.money/v2/fungible/route";
       const asset = this.assetInfo(id);
 
@@ -139,7 +142,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
         .toFixed(0);
 
       const data = {
-        source_asset_chain_id: "neutron-1",
+        source_asset_chain_id: this.chainId,
         amount_in: amountIn,
         source_asset_denom: id,
         dest_asset_denom:
@@ -165,15 +168,16 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     }
 
     const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
-    const response = await fetch(url);
-
     try {
+      const response = await fetch(url);
       const schema = z.object({
         price: z.number(),
       });
-      const { price } = schema.parse(await response.json());
+      const data = await response.json();
+      const { price } = schema.parse(data);
       return { usdValue: price.toString(10) };
     } catch (e) {
+      console.error("Error fetching price", e);
       return { usdValue: "0" };
     }
   }
@@ -297,7 +301,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
     fee: StdFee;
     messages: unknown[];
     memo: string;
-  }): Promise<Uint8Array | undefined> {
+  }): Promise<Uint8Array> {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
     return await signer.mpcSigner.calculateHashToSign(async () => {

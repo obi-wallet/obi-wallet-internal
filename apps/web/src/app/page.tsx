@@ -1,7 +1,6 @@
 "use client";
 
-import { Button, Text } from "@/components";
-import { CURRENT_THEME } from "@/configs";
+import { BitButton } from "@/components/buttons/8bit-button";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -10,34 +9,20 @@ export default observer(function Introduction() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
 
   return (
-    <section className="flex w-full flex-col items-center justify-center space-y-9 p-5 max-sm:px-10">
-      <Text className="text-2xl" leading="normal" fontWeight="bold">
-        {CURRENT_THEME.explaination.title || "What is an Obi Account?"}
-      </Text>
+    <section className="flex w-full flex-col items-center space-y-9 p-5 max-sm:px-10">
       <Image
-        width="151"
-        height="268"
+        width="306"
+        height="234"
         src="/assets/images/obi-wizard.png"
-        alt="Icon"
+        alt="OBI Logo"
+        className="mt-48"
       />
-      <div className="w-[440px] space-y-9 max-sm:w-full">
-        <Text
-          className="text-center text-base "
-          color="zinc"
-          fontWeight="medium"
-          leading="tight"
-        >
-          {CURRENT_THEME.explaination.description ||
-            "Obi Smart Accounts are a convenient and secure way to custody your crypto assets without the risk and hassle of seed phrases or private keys."}
-        </Text>
-        <Button
-          href="/onboarding/internal"
-          className="block w-full"
-          variant="primary"
-        >
-          Get Started
-        </Button>
-      </div>
+      <BitButton
+        href="/onboarding/internal"
+        className="font-press-start-2p before:contents: bg-transparent"
+      >
+        Press Start
+      </BitButton>
     </section>
   );
 });

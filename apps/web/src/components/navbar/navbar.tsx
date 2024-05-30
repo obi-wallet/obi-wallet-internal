@@ -92,14 +92,8 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav
-      // style={{
-      //   backgroundImage:
-      //     "linear-gradient(180deg, #0F0F26, #1A1A42,#262661,#0F0F26)",
-      // }}
-      className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950"
-    >
-      <div className="flex h-full w-[330px] flex-col px-3 pt-4 max-md:hidden md:overflow-y-auto">
+    <nav className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950">
+      <div className="flex h-full w-[330px] flex-col px-3 pt-6 max-md:hidden md:overflow-y-auto">
         <div className="hidden w-full flex-col md:flex">
           <Account />
         </div>

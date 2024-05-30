@@ -1,39 +1,26 @@
-import { Button } from "@/components";
+import { BitButton } from "@/components/buttons/8bit-button";
 
 export interface OnboardingButtonsProps {
   back?: () => void;
   next?: () => void;
-  nextLabel: string;
+  nextLabel?: string;
   nextDisabled?: boolean;
 }
 
 export function OnboardingButtons({
   back,
   next,
-  nextLabel,
+  nextLabel = "Continue",
   nextDisabled,
 }: OnboardingButtonsProps) {
-  const nextButton = (
-    <Button
-      onClick={next}
-      className="block w-full"
-      variant="primary"
-      disabled={nextDisabled}
-    >
-      {nextLabel}
-    </Button>
+  return (
+    <div className="flex flex-col gap-6">
+      {next && (
+        <BitButton onClick={next} disabled={nextDisabled}>
+          {nextLabel}
+        </BitButton>
+      )}
+      {back && <BitButton onClick={back}>Back</BitButton>}
+    </div>
   );
-
-  if (back) {
-    return (
-      <div className="grid w-full grid-cols-2 gap-6">
-        <Button className="block w-full" variant="outline" onClick={back}>
-          Back
-        </Button>
-        {nextButton}
-      </div>
-    );
-  }
-
-  return nextButton;
 }

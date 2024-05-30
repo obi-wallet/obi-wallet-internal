@@ -9,6 +9,7 @@ import {
   getOwnerData,
   lookupPublicKey,
 } from "@/wallet-data-backup/worker-client";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import {
   HomeChainId,
@@ -16,6 +17,7 @@ import {
   PendingRecoveryKeySchema,
   Secp256k1PublicKey,
   SecretJsClient,
+  SecretJsHomeChains,
   Serialized,
   UsableKeySchema,
   WalletData,
@@ -29,12 +31,14 @@ export class SecretJsHomeChain {
     { chainId: HomeChainId }
   >;
   protected client: SecretJsClient;
+  protected chain: (typeof SecretJsHomeChains)[HomeChainId];
 
   public constructor(protected chainId: HomeChainId) {
     this.queryNamespace = new QueryClientNamespace("secret-js-home-chain", {
       chainId,
     });
     this.client = new SecretJsClient(chainId);
+    this.chain = SecretJsHomeChains[chainId];
   }
 
   public userEntryCodeHash(userEntryAddress: string) {
@@ -253,5 +257,37 @@ export class SecretJsHomeChain {
       );
     }
     return result.data;
+  }
+
+  public publicKey(userEntryAddress: string) {
+    return queryClient.fetchQuery(this.publicKeyQuery(userEntryAddress));
+  }
+  public get publicKeyQuery() {
+    return this.queryNamespace.createQuery({
+      name: "obiAccountAddress",
+      fn: this.publicKeyQueryFn.bind(this),
+      staleTime: { day: 1 },
+    });
+  }
+  protected async publicKeyQueryFn(
+    userEntryAddress: string,
+  ): Promise<Secp256k1PublicKey> {
+    const response = await this.client.queryContract({
+      contract: this.chain.secretSigner.address,
+      codeHash: this.chain.secretSigner.codeHash,
+      query: {
+        passport_pubkey: { user_entry_address: userEntryAddress },
+      },
+      schema: HexEncodedString,
+    });
+
+    return {
+      type: "tendermint/PubKeySecp256k1",
+      value: Encoding.concat(
+        // Append missing first byte
+        Encoding.fromHex(HexEncodedString.parse("04")),
+        Encoding.fromHex(response),
+      ).toBase64(),
+    };
   }
 }

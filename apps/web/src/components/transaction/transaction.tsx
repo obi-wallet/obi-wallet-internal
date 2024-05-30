@@ -18,6 +18,7 @@ type TransactionProps = {
     denom: string;
   }[];
   descriptions: string[];
+  addresses?: string[];
   memo: string;
   targetChainId?: TargetChainId;
   rawData: unknown;
@@ -31,6 +32,7 @@ export function Transaction({
   targetChainId,
   rawData,
   memo,
+  addresses = [],
   ...rest
 }: TransactionProps) {
   const [showData, setShowData] = useState(false);
@@ -44,7 +46,7 @@ export function Transaction({
   return (
     <Box
       className={cn(
-        "relative flex w-80 flex-col items-center justify-center px-8",
+        "relative flex w-96 flex-col items-center justify-center px-8",
         { "py-12": !!image },
         className,
       )}
@@ -62,7 +64,7 @@ export function Transaction({
       ) : null}
       {amountInfo.length > 0 ? (
         <>
-          <Text className="mt-10" size="sm" color="zinc">
+          <Text className="mt-4" size="sm" color="zinc">
             Amount
           </Text>
           <Text size="2xl" className="mt-1">
@@ -74,18 +76,41 @@ export function Transaction({
           </Text>
         </>
       ) : null}
-      <Text
-        className={cn(
-          { "mt-12": amountInfo.length > 0 },
-          "break-all text-center leading-normal",
-        )}
-        color="zinc"
-      >
-        {descriptions.join("\n")}
-      </Text>
+      {addresses.length > 0 ? (
+        <div
+          className={cn(
+            { "mt-4": amountInfo.length > 0 },
+            "flex flex-col items-center justify-center gap-1",
+          )}
+        >
+          <Text color="zinc" className="text-sm">
+            {`Send ${amountInfo
+              .map((info) => {
+                return `${info.amount} ${info.denom}`;
+              })
+              .join(",")} to`}
+          </Text>
+          <Text
+            color="blue"
+            className="break-all text-center text-xs leading-normal"
+          >
+            {addresses.join("\n")}
+          </Text>
+        </div>
+      ) : (
+        <Text
+          className={cn(
+            { "mt-4": amountInfo.length > 0 },
+            "break-all text-center leading-normal",
+          )}
+          color="zinc"
+        >
+          {descriptions.join("\n")}
+        </Text>
+      )}
 
       {targetChainLabel || feeInfo.length > 0 || memo ? (
-        <div className="mt-9 w-full space-y-3">
+        <div className="mt-5 w-full space-y-3">
           {targetChainLabel ? (
             <div className="flex flex-row justify-between">
               <Text color="gray">Network</Text>
@@ -113,16 +138,18 @@ export function Transaction({
         </div>
       ) : null}
       <div className="mt-6 flex w-full flex-col bg-indigo-950">
-        <Button
-          className="w-full justify-center"
-          size="sm"
-          onClick={() => {
-            setShowData(!showData);
-          }}
-          variant="detail"
-        >
-          See Data
-        </Button>
+        {rawData ? (
+          <Button
+            className="w-full justify-center"
+            size="sm"
+            onClick={() => {
+              setShowData(!showData);
+            }}
+            variant="detail"
+          >
+            See Data
+          </Button>
+        ) : null}
         {showData ? (
           <div
             className={cn(

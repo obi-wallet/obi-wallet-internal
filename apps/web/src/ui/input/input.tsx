@@ -14,7 +14,7 @@ export interface InputProps
     DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
     "onChange"
   > {
-  label: string;
+  label?: string;
   labelClassname: string;
   onChange?: (value: string) => void;
   containerClassName?: string;
@@ -68,10 +68,10 @@ export function Input({
                   }
                 : undefined
             }
-            className={cn("flex   w-full flex-1 ", inputClassName)}
+            className={cn("flex w-full flex-1", inputClassName)}
           />
           {rightComponent && (
-            <div className={cn(" flex  flex-1", rightContainerClassName)}>
+            <div className={cn("flex flex-1", rightContainerClassName)}>
               {rightComponent}
             </div>
           )}

@@ -1,10 +1,14 @@
 import type { Preview } from "@storybook/react";
+import { initialize, mswLoader } from "msw-storybook-addon";
 
 import "../src/app/globals.css";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import Provider from "@/components/provider";
 
+initialize({ onUnhandledRequest: "warn" });
+
 const preview: Preview = {
+  loaders: [mswLoader],
   parameters: {
     layout: "fullscreen",
     controls: {

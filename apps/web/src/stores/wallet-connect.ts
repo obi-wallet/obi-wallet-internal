@@ -1,10 +1,18 @@
-import { fetchPublicKey } from "@/hooks/use-public-key";
+import { HomeChain } from "@/home-chain";
 import { allTargetChainIds, TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import {
+  CosmosSdkChainId,
+  isCosmosSdkChainId,
+} from "@/target-chain/cosmos-sdk/chains";
+import { EvmChainId, EvmChains, isEvmChainId } from "@/target-chain/evm/chains";
+import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallets } from "@obi-wallet/sdk";
+import { EthSendTransactionPayload } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
 import invariant from "tiny-invariant";
+import { hexToBigInt } from "viem";
 
 export class WalletConnectStore {
   protected readonly walletsStore: MpcWallets;
@@ -12,6 +20,9 @@ export class WalletConnectStore {
 
   public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
     this.walletsStore = walletsStore;
+
+    // Make sure we set up WalletConnect on all pages
+    void this.getActiveSessions();
   }
 
   public async pair(uri: string) {
@@ -54,6 +65,8 @@ export class WalletConnectStore {
             userEntryAddress: wallet.userEntryAddress,
           };
         },
+        ethPersonalSign: this.ethPersonalSign.bind(this),
+        ethSendTransaction: this.ethSendTransaction.bind(this),
       });
     }
     return this.web3Wallet;
@@ -62,16 +75,28 @@ export class WalletConnectStore {
   protected async getAccounts() {
     const wallet = this.walletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await fetchPublicKey(wallet);
-    const enabledCosmosSdkChains = allTargetChainIds.filter((targetChainId) => {
-      return (
-        isCosmosSdkChainId(targetChainId) &&
-        !TargetChain.chainId(targetChainId).disabled
-      );
-    });
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+    const enabledCosmosSdkChains = allTargetChainIds.filter(
+      (targetChainId): targetChainId is CosmosSdkChainId => {
+        return (
+          isCosmosSdkChainId(targetChainId) &&
+          !TargetChain.chainId(targetChainId).disabled
+        );
+      },
+    );
+    const enabledEvmChains = allTargetChainIds.filter(
+      (targetChainId): targetChainId is EvmChainId => {
+        return (
+          isEvmChainId(targetChainId) &&
+          !TargetChain.chainId(targetChainId).disabled
+        );
+      },
+    );
 
-    return await Promise.all(
-      enabledCosmosSdkChains.map(async (targetChainId) => {
+    return await Promise.all([
+      ...enabledCosmosSdkChains.map(async (targetChainId) => {
         const targetChain = TargetChain.chainId(targetChainId);
         return {
           namespace: "cosmos",
@@ -80,6 +105,72 @@ export class WalletConnectStore {
           publicKey,
         };
       }),
+      ...enabledEvmChains.map(async (targetChainId) => {
+        const targetChain = TargetChain.chainId(targetChainId);
+        return {
+          namespace: "eip155",
+          chainId: `${targetChain.evmChainId}`,
+          address: await targetChain.obiAccountAddress(publicKey),
+          publicKey,
+        };
+      }),
+    ]);
+  }
+
+  protected async ethPersonalSign(
+    _message: HexEncodedStringWithPrefix,
+  ): Promise<
+    | { approved: true; signedMessage: HexEncodedStringWithPrefix }
+    | { approved: false }
+  > {
+    console.error("ethPersonalSign not implemented yet");
+    return { approved: false };
+  }
+
+  protected async ethSendTransaction(
+    payload: EthSendTransactionPayload,
+  ): Promise<
+    { approved: true; txHash: HexEncodedStringWithPrefix } | { approved: false }
+  > {
+    console.log("ethSendTransaction", payload);
+    const targetChainId = Object.values(EvmChains).find((chain) => {
+      return chain.chain.id === payload.chainId;
+    })?.id;
+    invariant(targetChainId, "Target chain not found");
+
+    const targetChain = TargetChain.chainId(targetChainId);
+    const wallet = this.walletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+
+    const account = await targetChain.localAccountFromWallet(wallet);
+    const kernelAccount = await targetChain.kernelAccount(account);
+    const callData = HexEncodedStringWithPrefix.parse(
+      await kernelAccount.encodeCallData({
+        to: payload.to,
+        data: payload.data,
+        value: hexToBigInt(payload.value),
+      }),
     );
+    const response = await SignAndBroadcastEvm.start({
+      callData,
+      cancelable: true,
+      targetChainId,
+      walletMeta: {
+        userEntryAddress: wallet.userEntryAddress,
+      },
+    });
+    if (response.approved) {
+      const receipt = await targetChain.waitForUserOperationReceipt(
+        response.hash,
+      );
+      return {
+        approved: true,
+        txHash: receipt.txHash,
+      };
+    } else {
+      return {
+        approved: false,
+      };
+    }
   }
 }

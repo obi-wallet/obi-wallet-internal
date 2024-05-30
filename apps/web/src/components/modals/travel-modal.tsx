@@ -1,6 +1,7 @@
 "use client";
 
 import { fromAssets, ToAsset, toAssets } from "@/dashboard/assets";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, toChains } from "@/lib/utils";
@@ -107,6 +108,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 }) {
   const publicKey = usePublicKey();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
+  const alert = useAlert();
 
   const getChainFromAsset = () => {
     if (targetAsset === "usdc") {
@@ -247,7 +249,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
 
         const transaction = await signer.sendTransaction(tx);
         console.log("Transaction hash:", transaction.hash);
-        alert("Transaction sent!");
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
         return;
       } else {
@@ -262,14 +264,15 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
         await contract?.transfer(depositAddress, amount);
 
         setLoading(false);
-        alert("Transaction sent!");
+        alert.showSuccess("Transaction sent!");
         router.push("/dashboard");
       }
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const error = e as Error;
       setLoading(false);
-      alert(error.message);
+
+      alert.showError(error.message);
       console.error(e);
     }
   };
@@ -338,7 +341,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
     <div
       className={cn(
         "top-0 flex  h-full w-full flex-1 justify-center rounded-md bg-black/30 backdrop-blur-sm",
-        modal ? "absolute" : "relative",
+        modal ? "absolute" : "relative bg-transparent",
       )}
     >
       <Box
@@ -354,7 +357,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
             your Obi account.
           </Text>
           <Divider />
-          <span className="mt-7 text-sm">Networks</span>
+          <span className="mt-7 text-sm text-white">Networks</span>
 
           <div className="relative z-30 flex flex-row">
             <Controller
@@ -401,7 +404,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
                         >
-                          <div className="flex items-center justify-center ">
+                          <div className="flex items-center justify-center">
                             <img
                               src={item.image}
                               alt={item.label}
@@ -410,7 +413,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="text-white">
-                            <div className=" uppercase">{item.label}</div>
+                            <div className="uppercase">{item.label}</div>
                           </div>
                         </div>
                       );
@@ -424,8 +427,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center   justify-center ">
+                        <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -445,7 +448,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
               }}
             />
             <div className=" flex items-center justify-center p-2  sm:p-5">
-              <FaArrowRight className="m-auto  text-white" />
+              <FaArrowRight className="m-auto text-white" />
             </div>
             <Controller
               name="toChain"
@@ -485,8 +488,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             onMouseMove,
                           })}
                           className={cn(
-                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                            isSelected && "bg-gray-600 ",
+                            "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600",
                             item.disabled &&
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
@@ -519,8 +522,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         return <div>Select</div>;
                       }
                       return (
-                        <div className="flex  w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center   justify-center ">
+                        <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -528,7 +531,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
-                            <div className=" uppercase">
+                            <div className="uppercase">
                               {selected.item.label}
                             </div>
                           </div>
@@ -580,7 +583,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         />
                       </div>
                       <div className="flex flex-col items-end text-sm font-normal">
-                        <div className=" uppercase">
+                        <div className=" uppercase text-white">
                           {fromAssets[field.value.asset]?.label}
                         </div>
                       </div>

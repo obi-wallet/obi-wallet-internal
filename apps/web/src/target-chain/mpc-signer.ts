@@ -56,11 +56,17 @@ export class MpcSigner {
   }
 
   public async calculateHashToSign(f: () => Promise<void>) {
+    let error;
     try {
       // This will fail, but we are able to retrieve the hash that needs to be signed
       await f();
     } catch (e) {
-      // Ignoring errors
+      // Don't throw the error yet
+      error = e;
+    }
+    if (!this.lastHash) {
+      // We could not retrieve the hash, so propagate the error
+      throw error;
     }
     return this.lastHash;
   }
@@ -70,7 +76,7 @@ export class MpcSigner {
 
     const bytes = Encoding.fromBytes(hash).toHex();
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
-    invariant(bytesSignedBySigners, "Hash has not been signed");
+    invariant(bytesSignedBySigners, `Hash ${bytes} has not been signed`);
 
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 

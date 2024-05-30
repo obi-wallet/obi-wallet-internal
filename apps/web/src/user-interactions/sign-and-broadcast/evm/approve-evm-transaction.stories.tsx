@@ -1,0 +1,72 @@
+import { MOCK_WALLET_DATA } from "@/mocks/wallet";
+import { providerWithWalletDecorator } from "@/storybook-helpers";
+import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
+import { EvmChainId } from "@/target-chain/evm/chains";
+import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { Meta, StoryObj } from "@storybook/react";
+import { http as mswHttp, HttpResponse } from "msw";
+
+import { ApproveEvmTransaction } from "./approve-evm-transaction";
+
+const meta = {
+  title: "User Interactions/Approve EVM Transaction",
+  component: ApproveEvmTransaction,
+  tags: ["autodocs"],
+  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+} satisfies Meta<typeof ApproveEvmTransaction>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+const callData = HexEncodedStringWithPrefix.parse(
+  "0xe9ae5c530000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000342d653c9c12411dea8c4d8fee227584cd086792ee00000000000000000000000000000000000000000000000000038d7ea4c68000000000000000000000000000",
+);
+
+const serializedUserOperation = {
+  sender: "0x240E1a9dFF1d792c1120b7BCF09b1775bAb2D1DF",
+  nonce:
+    "890457095688689016701125407583492770720572911388340797834163564274778112",
+  factory: "0xd703aaE79538628d27099B8c4f621bE4CCd142d5",
+  factoryData:
+    "0xc5265d5d0000000000000000000000006723b44abeec4e71ebe3232bd5b455805badd22f0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e412af322c018104e3Ad430EA6d354d013A6789fDFc71E671c4300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000014F6B2dd201946B5776C7E0e7e28F1247A3Bc8b8e9000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  callData:
+    "0xe9ae5c530000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000342d653c9c12411dea8c4d8fee227584cd086792ee00000000000000000000000000000000000000000000000000038d7ea4c68000000000000000000000000000",
+  callGasLimit: "86532",
+  verificationGasLimit: "371907",
+  preVerificationGas: "60671",
+  maxFeePerGas: "26912178",
+  maxPriorityFeePerGas: "26294026",
+  signature:
+    "0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c",
+  paymaster: "0x4685d9587a7F72Da32dc323bfFF17627aa632C61",
+  paymasterVerificationGasLimit: "20181",
+  paymasterPostOpGasLimit: "1",
+  paymasterData:
+    "0x000000000000000000000000000000000000000000000000000000006653beaf000000000000000000000000000000000000000000000000000000000000000009c43c74ec8fced1bbef64f9fdbf30ebfe30cb88bc0ccff0567363db13bd19a652d55ffddfbd26e64ba565f40cad0bec68f60f3073261d0d0a0bba10ab8f99a61b",
+};
+
+export const SendMessage: Story = {
+  args: {
+    walletMeta: {
+      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+    },
+    targetChainId: EvmChainId.EthereumTestnet,
+    callData,
+    onReject: () => {},
+    onApprove: async () => {
+      console.log("approved");
+    },
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        mswHttp.post("/api/evm/prepare-user-operation-request", () => {
+          return HttpResponse.json({
+            success: true,
+            userOperation: serializedUserOperation,
+          });
+        }),
+      ],
+    },
+  },
+};
