@@ -7,6 +7,7 @@ import {
   bscTestnet,
   Chain,
   mainnet,
+  polygon,
   sepolia,
 } from "viem/chains";
 import { z } from "zod";
@@ -16,10 +17,11 @@ export enum EvmChainId {
   ArbitrumTestnet = "arbitrum-testnet",
   Base = "base",
   BaseTestnet = "base-testnet",
-  Ethereum = "ethereum",
-  EthereumTestnet = "ethereum-testnet",
   Bsc = "bsc",
   BscTestnet = "bsc-testnet",
+  Ethereum = "ethereum",
+  EthereumTestnet = "ethereum-testnet",
+  Polygon = "polygon",
 }
 
 export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
@@ -31,6 +33,7 @@ export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.BscTestnet),
   z.literal(EvmChainId.Ethereum),
   z.literal(EvmChainId.EthereumTestnet),
+  z.literal(EvmChainId.Polygon),
 ]);
 
 export function isEvmChainId(chainId: string): chainId is EvmChainId {
@@ -46,6 +49,7 @@ export const allEvmChainIds = [
   EvmChainId.BscTestnet,
   EvmChainId.Ethereum,
   EvmChainId.EthereumTestnet,
+  EvmChainId.Polygon,
 ];
 
 export interface EvmChainData {
@@ -106,6 +110,13 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
     chain: bscTestnet,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Polygon]: {
+    id: EvmChainId.Polygon,
+    image:
+      "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745",
+    chain: polygon,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
 };

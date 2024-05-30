@@ -87,6 +87,8 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
       return "BASE";
     case EvmChainId.Ethereum:
       return "ETHEREUM";
+    case EvmChainId.Polygon:
+      return "POLYGON";
     case EvmChainId.ArbitrumTestnet:
     case EvmChainId.BaseTestnet:
     case EvmChainId.Bsc:
