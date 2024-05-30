@@ -121,7 +121,15 @@ export class EvmTargetChain extends AbstractTargetChain<
     return getAddress(`0x${address}`);
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+  protected async obiAccountAddressQueryFn(
+    publicKey: Secp256k1PublicKey,
+  ): Promise<HexEncodedStringWithPrefix> {
+    if (this.chainId === EvmChainId.BscTestnet) {
+      return await new EvmTargetChain(EvmChainId.Bsc).obiAccountAddressQueryFn(
+        publicKey,
+      );
+    }
+
     const account = toAccount({
       address: this.computeAddress(publicKey),
       async signMessage() {
@@ -178,12 +186,29 @@ export class EvmTargetChain extends AbstractTargetChain<
 
   public assetInfo(id: AssetId) {
     if (id === this.nativeCurrency.symbol) {
+      const getImage = () => {
+        switch (id) {
+          case "AVAX":
+            return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
+          case "ETH":
+            return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
+          case "BNB":
+          case "tBNB":
+            return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
+          case "CRO":
+            return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
+          case "MATIC":
+            return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
+          default:
+            return null;
+        }
+      };
+
       return {
         name: this.nativeCurrency.name,
         symbol: this.nativeCurrency.symbol,
         decimals: this.nativeCurrency.decimals,
-        // TODO:
-        image: null,
+        image: getImage(),
       };
     }
 
