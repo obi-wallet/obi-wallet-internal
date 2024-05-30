@@ -20,6 +20,9 @@ export class WalletConnectStore {
 
   public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
     this.walletsStore = walletsStore;
+
+    // Make sure we set up WalletConnect on all pages
+    void this.getActiveSessions();
   }
 
   public async pair(uri: string) {
@@ -62,6 +65,7 @@ export class WalletConnectStore {
             userEntryAddress: wallet.userEntryAddress,
           };
         },
+        ethPersonalSign: this.ethPersonalSign.bind(this),
         ethSendTransaction: this.ethSendTransaction.bind(this),
       });
     }
@@ -113,6 +117,16 @@ export class WalletConnectStore {
     ]);
   }
 
+  protected async ethPersonalSign(
+    _message: HexEncodedStringWithPrefix,
+  ): Promise<
+    | { approved: true; signedMessage: HexEncodedStringWithPrefix }
+    | { approved: false }
+  > {
+    console.error("ethPersonalSign not implemented yet");
+    return { approved: false };
+  }
+
   protected async ethSendTransaction(
     payload: EthSendTransactionPayload,
   ): Promise<
@@ -149,7 +163,6 @@ export class WalletConnectStore {
       const receipt = await targetChain.waitForUserOperationReceipt(
         response.hash,
       );
-      console.log(receipt);
       return {
         approved: true,
         txHash: receipt.txHash,
