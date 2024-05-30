@@ -177,13 +177,13 @@ export class EvmTargetChain extends AbstractTargetChain<
   }
 
   public assetInfo(id: AssetId) {
-    if (id === this.nativeCurrency.symbol) {
+    if (id === "ETH") {
       return {
         name: this.nativeCurrency.name,
         symbol: this.nativeCurrency.symbol,
         decimals: this.nativeCurrency.decimals,
-        // TODO:
-        image: null,
+        image:
+          "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
       };
     }
 
