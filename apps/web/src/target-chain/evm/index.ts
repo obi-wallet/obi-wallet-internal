@@ -188,6 +188,8 @@ export class EvmTargetChain extends AbstractTargetChain<
     if (id === this.nativeCurrency.symbol) {
       const getImage = () => {
         switch (id) {
+          case "AVAX":
+            return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
           case "ETH":
             return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
           case "BNB":

@@ -1,6 +1,7 @@
 import {
   arbitrum,
   arbitrumSepolia,
+  avalanche,
   base,
   baseSepolia,
   bsc,
@@ -16,6 +17,7 @@ import { z } from "zod";
 export enum EvmChainId {
   Arbitrum = "arbitrum",
   ArbitrumTestnet = "arbitrum-testnet",
+  Avalanche = "avalanche",
   Base = "base",
   BaseTestnet = "base-testnet",
   Bsc = "bsc",
@@ -29,6 +31,7 @@ export enum EvmChainId {
 export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.Arbitrum),
   z.literal(EvmChainId.ArbitrumTestnet),
+  z.literal(EvmChainId.Avalanche),
   z.literal(EvmChainId.Base),
   z.literal(EvmChainId.BaseTestnet),
   z.literal(EvmChainId.Bsc),
@@ -46,6 +49,7 @@ export function isEvmChainId(chainId: string): chainId is EvmChainId {
 export const allEvmChainIds = [
   EvmChainId.Arbitrum,
   EvmChainId.ArbitrumTestnet,
+  EvmChainId.Avalanche,
   EvmChainId.Base,
   EvmChainId.BaseTestnet,
   EvmChainId.Bsc,
@@ -74,6 +78,13 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     id: EvmChainId.ArbitrumTestnet,
     image: "/assets/images/arbitrum-logo.png",
     chain: arbitrumSepolia,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Avalanche]: {
+    id: EvmChainId.Avalanche,
+    image:
+      "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369",
+    chain: avalanche,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Base]: {

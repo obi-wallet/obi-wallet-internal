@@ -83,6 +83,8 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
       return "INJECTIVE";
     case EvmChainId.Arbitrum:
       return "ARBITRUM";
+    case EvmChainId.Avalanche:
+      return "AVALANCHE";
     case EvmChainId.Base:
       return "BASE";
     case EvmChainId.Ethereum:
