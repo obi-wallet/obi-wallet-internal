@@ -341,7 +341,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
     <div
       className={cn(
         "top-0 flex  h-full w-full flex-1 justify-center rounded-md bg-black/30 backdrop-blur-sm",
-        modal ? "absolute" : "relative",
+        modal ? "absolute" : "relative bg-transparent",
       )}
     >
       <Box
@@ -357,7 +357,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
             your Obi account.
           </Text>
           <Divider />
-          <span className="mt-7 text-sm">Networks</span>
+          <span className="mt-7 text-sm text-white">Networks</span>
 
           <div className="relative z-30 flex flex-row">
             <Controller
@@ -583,7 +583,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         />
                       </div>
                       <div className="flex flex-col items-end text-sm font-normal">
-                        <div className=" uppercase">
+                        <div className=" uppercase text-white">
                           {fromAssets[field.value.asset]?.label}
                         </div>
                       </div>
