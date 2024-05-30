@@ -7,6 +7,7 @@ import {
   bscTestnet,
   Chain,
   mainnet,
+  optimism,
   polygon,
   sepolia,
 } from "viem/chains";
@@ -21,6 +22,7 @@ export enum EvmChainId {
   BscTestnet = "bsc-testnet",
   Ethereum = "ethereum",
   EthereumTestnet = "ethereum-testnet",
+  Optimism = "optimism",
   Polygon = "polygon",
 }
 
@@ -33,6 +35,7 @@ export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.BscTestnet),
   z.literal(EvmChainId.Ethereum),
   z.literal(EvmChainId.EthereumTestnet),
+  z.literal(EvmChainId.Optimism),
   z.literal(EvmChainId.Polygon),
 ]);
 
@@ -49,6 +52,7 @@ export const allEvmChainIds = [
   EvmChainId.BscTestnet,
   EvmChainId.Ethereum,
   EvmChainId.EthereumTestnet,
+  EvmChainId.Optimism,
   EvmChainId.Polygon,
 ];
 
@@ -110,6 +114,13 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
     chain: bscTestnet,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Optimism]: {
+    id: EvmChainId.Optimism,
+    image:
+      "https://assets.coingecko.com/coins/images/25244/standard/Optimism.png?1696524385",
+    chain: optimism,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Polygon]: {
