@@ -12,6 +12,7 @@ import {
   optimism,
   polygon,
   sepolia,
+  zora,
 } from "viem/chains";
 import { z } from "zod";
 
@@ -28,6 +29,7 @@ export enum EvmChainId {
   EthereumTestnet = "ethereum-testnet",
   Optimism = "optimism",
   Polygon = "polygon",
+  Zora = "zora",
 }
 
 export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
@@ -43,6 +45,7 @@ export const EvmChainIdSchema: z.ZodType<EvmChainId> = z.union([
   z.literal(EvmChainId.EthereumTestnet),
   z.literal(EvmChainId.Optimism),
   z.literal(EvmChainId.Polygon),
+  z.literal(EvmChainId.Zora),
 ]);
 
 export function isEvmChainId(chainId: string): chainId is EvmChainId {
@@ -62,6 +65,7 @@ export const allEvmChainIds = [
   EvmChainId.EthereumTestnet,
   EvmChainId.Optimism,
   EvmChainId.Polygon,
+  EvmChainId.Zora,
 ];
 
 export interface EvmChainData {
@@ -150,6 +154,13 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745",
     chain: polygon,
+    disabled: process.env.NEXT_PUBLIC_ENV === "production",
+  },
+  [EvmChainId.Zora]: {
+    id: EvmChainId.Zora,
+    image:
+      "https://assets.coingecko.com/markets/images/1479/large/zora.jpeg?1709872000",
+    chain: zora,
     disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
 };

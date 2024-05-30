@@ -99,6 +99,7 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
     case EvmChainId.BscTestnet:
     case EvmChainId.Cronos:
     case EvmChainId.EthereumTestnet:
+    case EvmChainId.Zora:
       return null;
   }
 }
