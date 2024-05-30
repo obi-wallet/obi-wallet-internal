@@ -80,7 +80,6 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     id: EvmChainId.Arbitrum,
     image: "/assets/images/arbitrum-logo.png",
     chain: arbitrum,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.ArbitrumTestnet]: {
     id: EvmChainId.ArbitrumTestnet,
@@ -93,13 +92,11 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369",
     chain: avalanche,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Base]: {
     id: EvmChainId.Base,
     image: "/assets/images/base-logo.png",
     chain: base,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.BaseTestnet]: {
     id: EvmChainId.BaseTestnet,
@@ -112,14 +109,12 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599",
     chain: cronos,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Ethereum]: {
     id: EvmChainId.Ethereum,
     image:
       "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628",
     chain: mainnet,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.EthereumTestnet]: {
     id: EvmChainId.EthereumTestnet,
@@ -133,7 +128,6 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970",
     chain: bsc,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.BscTestnet]: {
     id: EvmChainId.BscTestnet,
@@ -147,20 +141,17 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/25244/standard/Optimism.png?1696524385",
     chain: optimism,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Polygon]: {
     id: EvmChainId.Polygon,
     image:
       "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745",
     chain: polygon,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
   [EvmChainId.Zora]: {
     id: EvmChainId.Zora,
     image:
       "https://assets.coingecko.com/markets/images/1479/large/zora.jpeg?1709872000",
     chain: zora,
-    disabled: process.env.NEXT_PUBLIC_ENV === "production",
   },
 };
