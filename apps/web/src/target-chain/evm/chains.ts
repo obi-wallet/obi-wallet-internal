@@ -109,6 +109,7 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599",
     chain: cronos,
+    disabled: true,
   },
   [EvmChainId.Ethereum]: {
     id: EvmChainId.Ethereum,
@@ -153,5 +154,6 @@ export const EvmChains: Record<EvmChainId, EvmChainData> = {
     image:
       "https://assets.coingecko.com/markets/images/1479/large/zora.jpeg?1709872000",
     chain: zora,
+    disabled: true,
   },
 };
