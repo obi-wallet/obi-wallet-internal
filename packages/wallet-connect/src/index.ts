@@ -1,7 +1,11 @@
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
 import { ErrorResponse } from "@walletconnect/jsonrpc-types";
-import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
+import {
+  buildApprovedNamespaces,
+  BuildApprovedNamespacesParams,
+  getSdkError,
+} from "@walletconnect/utils";
 import { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
 
 export * from "./user-interactions";
@@ -21,7 +25,7 @@ export type SessionRequestResponse =
 export async function setupWalletConnect({
   projectId,
   metadata,
-  getAccounts,
+  getSupportedNamespaces,
   handleSessionRequest,
 }: {
   projectId: string;
@@ -31,7 +35,9 @@ export async function setupWalletConnect({
     url: string;
     icons: string[];
   };
-  getAccounts: () => Promise<Account[]>;
+  getSupportedNamespaces: () => Promise<
+    BuildApprovedNamespacesParams["supportedNamespaces"]
+  >;
   handleSessionRequest: (
     payload: SessionRequestPayload,
   ) => Promise<SessionRequestResponse>;
@@ -77,50 +83,9 @@ export async function setupWalletConnect({
       // const response = await WalletConnectPairingUserInteraction.start(params);
 
       if (response.approved) {
-        const accounts = await getAccounts();
-        const cosmosAccounts = accounts.filter((account) => {
-          return account.namespace === "cosmos";
-        });
-        const evmAccounts = accounts.filter((account) => {
-          return account.namespace === "eip155";
-        });
-
-        const buildChains = (accounts: Account[]) => {
-          return accounts.map((account) => {
-            return `${account.namespace}:${account.chainId}`;
-          });
-        };
-
-        const buildAccounts = (accounts: Account[]) => {
-          return accounts.map((account) => {
-            return `${account.namespace}:${account.chainId}:${account.address}`;
-          });
-        };
-
         const approvedNamespaces = buildApprovedNamespaces({
           proposal: params.params,
-          supportedNamespaces: {
-            cosmos: {
-              chains: buildChains(cosmosAccounts),
-              methods: [
-                "cosmos_getAccounts",
-                "cosmos_signAmino",
-                "cosmos_signDirect",
-              ],
-              accounts: buildAccounts(cosmosAccounts),
-              events: ["chainChanged", "accountsChanged"],
-            },
-            eip155: {
-              chains: buildChains(evmAccounts),
-              methods: [
-                "eth_sendTransaction",
-                "personal_sign",
-                "wallet_switchEthereumChain",
-              ],
-              accounts: buildAccounts(evmAccounts),
-              events: ["chainChanged", "accountsChanged"],
-            },
-          },
+          supportedNamespaces: await getSupportedNamespaces(),
         });
         const _session = await web3wallet.approveSession({
           id: params.id,

@@ -1,6 +1,8 @@
+import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
 import {
+  allEip155Chains,
   Eip155ChainData,
   Eip155ChainId,
   Eip155Chains,
@@ -25,6 +27,7 @@ import {
 import { getSdkError } from "@walletconnect/utils";
 import { ENTRYPOINT_ADDRESS_V07, UserOperation } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import invariant from "tiny-invariant";
 import {
   Address,
   createPublicClient,
@@ -348,6 +351,42 @@ export class Eip155TargetChain extends AbstractTargetChain<
       txHash: HexEncodedStringWithPrefix,
     });
     return schema.parse(await response.json());
+  }
+
+  public static async getSupportedWalletConnectNamespaces() {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const eip155Chains = allEip155Chains
+      .map((targetChainId) => {
+        return new Eip155TargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    return {
+      eip155: {
+        chains: eip155Chains.map((chain) => {
+          return chain.chainId;
+        }),
+        methods: [
+          "eth_sendTransaction",
+          "personal_sign",
+          "wallet_switchEthereumChain",
+        ],
+        accounts: await Promise.all(
+          eip155Chains.map(async (chain) => {
+            const address = await chain.obiAccountAddressQueryFn(publicKey);
+            return `${chain.chainId}:${address}`;
+          }),
+        ),
+        events: ["chainChanged", "accountsChanged"],
+      },
+    };
   }
 
   public async handleWalletConnectSessionRequest({

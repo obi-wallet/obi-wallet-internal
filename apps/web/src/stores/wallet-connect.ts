@@ -1,7 +1,4 @@
-import { HomeChain } from "@/home-chain";
-import { allTargetChainIds, TargetChain } from "@/target-chain";
-import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import { Eip155ChainId, isEip155ChainId } from "@/target-chain/eip-155/chains";
+import { TargetChain } from "@/target-chain";
 import { MpcWallets } from "@obi-wallet/sdk";
 import {
   SessionRequestPayload,
@@ -9,7 +6,6 @@ import {
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
-import invariant from "tiny-invariant";
 
 export class WalletConnectStore {
   protected readonly walletsStore: MpcWallets;
@@ -54,56 +50,12 @@ export class WalletConnectStore {
           url: "",
           icons: [],
         },
-        getAccounts: this.getAccounts.bind(this),
+        getSupportedNamespaces:
+          TargetChain.getSupportedWalletConnectNamespaces.bind(TargetChain),
         handleSessionRequest: this.handleSessionRequest.bind(this),
       });
     }
     return this.web3Wallet;
-  }
-
-  protected async getAccounts() {
-    const wallet = this.walletsStore.currentWallet;
-    invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-      wallet.userEntryAddress,
-    );
-    const enabledCosmosChains = allTargetChainIds.filter(
-      (targetChainId): targetChainId is CosmosChainId => {
-        return (
-          isCosmosChainId(targetChainId) &&
-          !TargetChain.chainId(targetChainId).disabled
-        );
-      },
-    );
-    const enabledEip155Chains = allTargetChainIds.filter(
-      (targetChainId): targetChainId is Eip155ChainId => {
-        return (
-          isEip155ChainId(targetChainId) &&
-          !TargetChain.chainId(targetChainId).disabled
-        );
-      },
-    );
-
-    return await Promise.all([
-      ...enabledCosmosChains.map(async (targetChainId) => {
-        const targetChain = TargetChain.chainId(targetChainId);
-        return {
-          namespace: "cosmos",
-          chainId: targetChain.cosmosChainId,
-          address: await targetChain.obiAccountAddress(publicKey),
-          publicKey,
-        };
-      }),
-      ...enabledEip155Chains.map(async (targetChainId) => {
-        const targetChain = TargetChain.chainId(targetChainId);
-        return {
-          namespace: "eip155",
-          chainId: `${targetChain.eip155ChainId}`,
-          address: await targetChain.obiAccountAddress(publicKey),
-          publicKey,
-        };
-      }),
-    ]);
   }
 
   protected async handleSessionRequest(

@@ -35,4 +35,16 @@ export class TargetChain {
     }
     throw new Error(`ChainId ${chainId} not found`);
   }
+
+  public static async getSupportedWalletConnectNamespaces() {
+    const namespaces = await Promise.all([
+      CosmosTargetChain.getSupportedWalletConnectNamespaces(),
+      Eip155TargetChain.getSupportedWalletConnectNamespaces(),
+    ]);
+
+    return {
+      ...namespaces[0],
+      ...namespaces[1],
+    };
+  }
 }
