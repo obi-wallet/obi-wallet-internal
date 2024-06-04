@@ -1,7 +1,7 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
-import { EvmChainId, EvmChains } from "@/target-chain/evm/chains";
-import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
+import { Eip155ChainId, Eip155Chains } from "@/target-chain/eip-155/chains";
+import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
@@ -15,19 +15,22 @@ export const testSuite = createTestSuite(({ test }) => {
     const wallet = MpcWallet.create(MOCK_WALLET_DATA);
     invariant(wallet.owner.primaryKey, "Expected primary key to be set");
 
-    const signer = await EvmMpcSigner.fromWallet(wallet, EvmChainId.Arbitrum);
+    const signer = await Eip155MpcSigner.fromWallet(
+      wallet,
+      Eip155ChainId.Arbitrum,
+    );
 
     const message = "hello world";
 
     const account = toAccount(signer.accountSource);
 
     const publicClient = createPublicClient({
-      chain: EvmChains[EvmChainId.Arbitrum].chain,
+      chain: Eip155Chains[Eip155ChainId.Arbitrum].chain,
       transport: http(),
     });
 
     const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
-      entryPoint: TargetChain.chainId(EvmChainId.Arbitrum).entryPoint,
+      entryPoint: TargetChain.chainId(Eip155ChainId.Arbitrum).entryPoint,
       signer: account,
     });
 

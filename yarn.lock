@@ -3339,6 +3339,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@obi-wallet/sdk-caip@workspace:packages/sdk-caip":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-caip@workspace:packages/sdk-caip"
+  dependencies:
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    eslint: "npm:^8.57.0"
+    tiny-invariant: "npm:^1.3.3"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
+
 "@obi-wallet/sdk-secp256k1@workspace:*, @obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1"

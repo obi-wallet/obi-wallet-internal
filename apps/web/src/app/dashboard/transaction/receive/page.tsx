@@ -4,7 +4,7 @@ import { DropDown, TabUi } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { cn } from "@/lib/utils";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { InputContainer } from "@/ui/container";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
@@ -14,7 +14,7 @@ import { FaCheck } from "react-icons/fa6";
 
 export default observer(function Receive() {
   const { Canvas } = useQRCode();
-  const [chainId, setChainId] = useState<TargetChainId>(CosmosSdkChainId.Sei);
+  const [chainId, setChainId] = useState<TargetChainId>(CosmosChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
   const { data: address } = useAddressQuery(chainId);
 

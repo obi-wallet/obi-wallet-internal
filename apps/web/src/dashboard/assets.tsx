@@ -1,7 +1,8 @@
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { Caip2ChainId } from "@obi-wallet/sdk-caip";
 
 export interface ToAsset {
-  chainId: string;
+  chainId: Caip2ChainId;
   decimals: number;
   label: string;
   denom: string;
@@ -30,7 +31,7 @@ export const fromAssets: Record<string, FromAsset> = {
 
 export const toAssets: Record<string, ToAsset> = {
   stars: {
-    chainId: CosmosSdkChainId.Stargaze,
+    chainId: CosmosChainId.Stargaze,
     decimals: 6,
     label: "STARS",
     denom: "ustars",
@@ -40,7 +41,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "stars",
   },
   sei: {
-    chainId: CosmosSdkChainId.Sei,
+    chainId: CosmosChainId.Sei,
     decimals: 6,
     label: "SEI",
     denom: "usei",
@@ -50,7 +51,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "sei",
   },
   osmosis: {
-    chainId: CosmosSdkChainId.Osmosis,
+    chainId: CosmosChainId.Osmosis,
     decimals: 6,
     label: "OSMO",
     denom: "uosmo",
@@ -59,7 +60,7 @@ export const toAssets: Record<string, ToAsset> = {
     addressPrefix: "osmo",
   },
   neutron: {
-    chainId: CosmosSdkChainId.Neutron,
+    chainId: CosmosChainId.Neutron,
     decimals: 6,
     label: "NTRN",
     denom: "untrn",
@@ -69,7 +70,7 @@ export const toAssets: Record<string, ToAsset> = {
   },
 
   newt: {
-    chainId: CosmosSdkChainId.Neutron,
+    chainId: CosmosChainId.Neutron,
     decimals: 6,
     label: "NEWT",
     denom: "factory/neutron1p8d89wvxyjcnawmgw72klknr3lg9gwwl6ypxda/newt",
@@ -77,7 +78,7 @@ export const toAssets: Record<string, ToAsset> = {
   },
 
   apollo: {
-    chainId: CosmosSdkChainId.Neutron,
+    chainId: CosmosChainId.Neutron,
     decimals: 6,
     label: "Apollo",
     denom:
@@ -87,7 +88,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: false,
   },
   usdc: {
-    chainId: "axelar-dojo-1",
+    chainId: "cosmos:axelar-dojo-1",
     decimals: 6,
     label: "axlUSDC",
     denom:
@@ -97,7 +98,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: false,
   },
   celestia: {
-    chainId: CosmosSdkChainId.Tia,
+    chainId: CosmosChainId.Tia,
     decimals: 6,
     label: "Celestia (TIA)",
     denom: "utia",
@@ -106,7 +107,7 @@ export const toAssets: Record<string, ToAsset> = {
     disabled: true,
   },
   autism: {
-    chainId: CosmosSdkChainId.Inj,
+    chainId: CosmosChainId.Inj,
     decimals: 6,
     label: "AUTISM",
     denom: "uautism",

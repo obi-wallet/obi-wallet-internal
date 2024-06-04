@@ -1,6 +1,6 @@
 import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
-import { EvmChainId } from "@/target-chain/evm/chains";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { MpcSigner } from "@/target-chain/mpc-signer";
 import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet, Secp256k1PublicKey } from "@obi-wallet/sdk";
@@ -15,26 +15,26 @@ import {
   TransactionSerializable,
 } from "viem";
 
-export class EvmMpcSigner {
+export class Eip155MpcSigner {
   public readonly mpcSigner: MpcSigner;
 
   protected constructor(
     protected wallet: MpcWallet,
     protected publicKey: Secp256k1PublicKey,
-    protected targetChainId: EvmChainId,
+    protected targetChainId: Eip155ChainId,
   ) {
     this.mpcSigner = new MpcSigner(wallet);
   }
 
   public static async fromWallet(
     wallet: MpcWallet,
-    targetChainId: EvmChainId,
-  ): Promise<EvmMpcSigner> {
+    targetChainId: Eip155ChainId,
+  ): Promise<Eip155MpcSigner> {
     const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
       wallet.userEntryAddress,
     );
 
-    return new EvmMpcSigner(wallet, publicKey, targetChainId);
+    return new Eip155MpcSigner(wallet, publicKey, targetChainId);
   }
 
   public get accountSource(): CustomSource {

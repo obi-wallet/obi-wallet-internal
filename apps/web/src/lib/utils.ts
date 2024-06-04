@@ -1,4 +1,4 @@
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import clsx, { ClassValue } from "clsx";
 import { ec } from "elliptic";
 import { twMerge } from "tailwind-merge";
@@ -48,9 +48,9 @@ export const fromChains = [
 ];
 
 export const toChains = [
-  CosmosSdkChainId.Sei,
-  CosmosSdkChainId.Inj,
-  CosmosSdkChainId.Osmosis,
-  CosmosSdkChainId.Neutron,
-  CosmosSdkChainId.Stargaze,
+  CosmosChainId.Sei,
+  CosmosChainId.Inj,
+  CosmosChainId.Osmosis,
+  CosmosChainId.Neutron,
+  CosmosChainId.Stargaze,
 ];

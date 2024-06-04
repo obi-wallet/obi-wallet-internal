@@ -1,10 +1,11 @@
 import { HomeChain } from "@/home-chain";
 import { allTargetChainIds, TargetChain } from "@/target-chain";
+import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import {
-  CosmosSdkChainId,
-  isCosmosSdkChainId,
-} from "@/target-chain/cosmos-sdk/chains";
-import { EvmChainId, EvmChains, isEvmChainId } from "@/target-chain/evm/chains";
+  Eip155ChainId,
+  Eip155Chains,
+  isEip155ChainId,
+} from "@/target-chain/eip-155/chains";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallets } from "@obi-wallet/sdk";
@@ -78,38 +79,38 @@ export class WalletConnectStore {
     const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
       wallet.userEntryAddress,
     );
-    const enabledCosmosSdkChains = allTargetChainIds.filter(
-      (targetChainId): targetChainId is CosmosSdkChainId => {
+    const enabledCosmosChains = allTargetChainIds.filter(
+      (targetChainId): targetChainId is CosmosChainId => {
         return (
-          isCosmosSdkChainId(targetChainId) &&
+          isCosmosChainId(targetChainId) &&
           !TargetChain.chainId(targetChainId).disabled
         );
       },
     );
-    const enabledEvmChains = allTargetChainIds.filter(
-      (targetChainId): targetChainId is EvmChainId => {
+    const enabledEip155Chains = allTargetChainIds.filter(
+      (targetChainId): targetChainId is Eip155ChainId => {
         return (
-          isEvmChainId(targetChainId) &&
+          isEip155ChainId(targetChainId) &&
           !TargetChain.chainId(targetChainId).disabled
         );
       },
     );
 
     return await Promise.all([
-      ...enabledCosmosSdkChains.map(async (targetChainId) => {
+      ...enabledCosmosChains.map(async (targetChainId) => {
         const targetChain = TargetChain.chainId(targetChainId);
         return {
           namespace: "cosmos",
-          chainId: targetChainId,
+          chainId: targetChain.cosmosChainId,
           address: await targetChain.obiAccountAddress(publicKey),
           publicKey,
         };
       }),
-      ...enabledEvmChains.map(async (targetChainId) => {
+      ...enabledEip155Chains.map(async (targetChainId) => {
         const targetChain = TargetChain.chainId(targetChainId);
         return {
           namespace: "eip155",
-          chainId: `${targetChain.evmChainId}`,
+          chainId: `${targetChain.eip155ChainId}`,
           address: await targetChain.obiAccountAddress(publicKey),
           publicKey,
         };
@@ -133,7 +134,7 @@ export class WalletConnectStore {
     { approved: true; txHash: HexEncodedStringWithPrefix } | { approved: false }
   > {
     console.log("ethSendTransaction", payload);
-    const targetChainId = Object.values(EvmChains).find((chain) => {
+    const targetChainId = Object.values(Eip155Chains).find((chain) => {
       return chain.chain.id === payload.chainId;
     })?.id;
     invariant(targetChainId, "Target chain not found");

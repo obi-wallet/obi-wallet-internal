@@ -10,8 +10,8 @@ import {
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { isEvmChainId } from "@/target-chain/evm/chains";
+import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
+import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
@@ -95,7 +95,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         .multipliedBy(10 ** asset.asset.decimals)
         .toFixed(0, BigNumber.ROUND_DOWN);
 
-      if (isEvmChainId(chainId)) {
+      if (isEip155ChainId(chainId)) {
         const targetChain = TargetChain.chainId(chainId);
         invariant(targetChain.validateAddress(recipient), "Invalid address");
         const account = await targetChain.localAccountFromWallet(wallet);
@@ -122,7 +122,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         return;
       }
 
-      const signer = await CosmosSdkMpcSigner.fromWallet(wallet, chainId);
+      const signer = await CosmosMpcSigner.fromWallet(wallet, chainId);
 
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];

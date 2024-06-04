@@ -1,7 +1,7 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import type { Meta, StoryObj } from "@storybook/react";
 
@@ -37,7 +37,7 @@ const interaction: SignAndBroadcastTransactionUserInteraction = {
     memo: "a memo",
     mockOnly: true,
     cancelable: true,
-    targetChainId: CosmosSdkChainId.Sei,
+    targetChainId: CosmosChainId.Sei,
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },

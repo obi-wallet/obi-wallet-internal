@@ -5,8 +5,8 @@ import { TargetChain } from "@/target-chain";
 import {
   deserializeUserOperation,
   SerializedEvmUserOperation,
-} from "@/target-chain/evm";
-import { EvmChainId } from "@/target-chain/evm/chains";
+} from "@/target-chain/eip-155";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -27,7 +27,7 @@ export interface ApproveEvmTransactionProps {
   walletMeta: {
     userEntryAddress: string;
   };
-  targetChainId: EvmChainId;
+  targetChainId: Eip155ChainId;
   callData: HexEncodedStringWithPrefix;
   onReject(): void;
   onApprove(args: {
@@ -196,7 +196,7 @@ const PrettyPrint = observer(function PrettyPrint({
 }: {
   callData: HexEncodedStringWithPrefix;
   userOperation?: SerializedEvmUserOperation;
-  targetChainId: EvmChainId;
+  targetChainId: Eip155ChainId;
 }) {
   // TODO: copy-pasted from permissionless
   const KernelV3ExecuteAbi = [

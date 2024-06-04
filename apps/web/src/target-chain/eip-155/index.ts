@@ -1,6 +1,10 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
-import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
+import {
+  Eip155ChainData,
+  Eip155ChainId,
+  Eip155Chains,
+} from "@/target-chain/eip-155/chains";
+import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
@@ -87,15 +91,15 @@ export function deserializeUserOperation(
   };
 }
 
-export class EvmTargetChain extends AbstractTargetChain<
-  EvmChainId,
+export class Eip155TargetChain extends AbstractTargetChain<
+  Eip155ChainId,
   HexEncodedStringWithPrefix
 > {
-  public readonly chainData: EvmChainData;
+  public readonly chainData: Eip155ChainData;
 
-  public constructor(chainId: EvmChainId) {
+  public constructor(chainId: Eip155ChainId) {
     super(chainId);
-    this.chainData = EvmChains[chainId];
+    this.chainData = Eip155Chains[chainId];
   }
 
   public get label(): string {
@@ -110,7 +114,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     return this.chainData.disabled ?? false;
   }
 
-  public get evmChainId() {
+  public get eip155ChainId() {
     return this.chainData.chain.id;
   }
 
@@ -124,10 +128,10 @@ export class EvmTargetChain extends AbstractTargetChain<
   protected async obiAccountAddressQueryFn(
     publicKey: Secp256k1PublicKey,
   ): Promise<HexEncodedStringWithPrefix> {
-    if (this.chainId === EvmChainId.BscTestnet) {
-      return await new EvmTargetChain(EvmChainId.Bsc).obiAccountAddressQueryFn(
-        publicKey,
-      );
+    if (this.chainId === Eip155ChainId.BscTestnet) {
+      return await new Eip155TargetChain(
+        Eip155ChainId.Bsc,
+      ).obiAccountAddressQueryFn(publicKey);
     }
 
     const account = toAccount({
@@ -242,7 +246,7 @@ export class EvmTargetChain extends AbstractTargetChain<
   }
 
   public async signerFromWallet(wallet: MpcWallet) {
-    return await EvmMpcSigner.fromWallet(wallet, this.chainId);
+    return await Eip155MpcSigner.fromWallet(wallet, this.chainId);
   }
 
   public async localAccountFromWallet(wallet: MpcWallet) {
@@ -257,7 +261,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     wallet: MpcWallet;
     userOperation: EvmUserOperation;
   }) {
-    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+    const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
 
     const account = toAccount(signer.accountSource);
     const kernelAccount = await this.kernelAccount(account);
@@ -278,7 +282,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     intentionsPayload: IntentionsPayload;
     intentionsResults: IntentionsResults;
   }) {
-    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+    const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
     signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,

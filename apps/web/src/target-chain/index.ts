@@ -1,36 +1,37 @@
-import { CosmosSdkTargetChain } from "@/target-chain/cosmos-sdk";
-import {
-  allCosmosSdkChainIds,
-  CosmosSdkChainId,
-  isCosmosSdkChainId,
-} from "@/target-chain/cosmos-sdk/chains";
-import { EvmTargetChain } from "@/target-chain/evm";
-import {
-  allEvmChainIds,
-  EvmChainId,
-  isEvmChainId,
-} from "@/target-chain/evm/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
-export type TargetChainId = CosmosSdkChainId | EvmChainId;
+import { CosmosTargetChain } from "./cosmos";
+import {
+  allCosmosChains,
+  CosmosChainId,
+  isCosmosChainId,
+} from "./cosmos/chains";
+import { Eip155TargetChain } from "./eip-155";
+import {
+  allEip155Chains,
+  Eip155ChainId,
+  isEip155ChainId,
+} from "./eip-155/chains";
 
-export const allTargetChainIds = [...allCosmosSdkChainIds, ...allEvmChainIds];
+export type TargetChainId = CosmosChainId | Eip155ChainId;
+
+export const allTargetChainIds = [...allCosmosChains, ...allEip155Chains];
 
 export class TargetChain {
   protected constructor(protected chainId: TargetChainId) {}
 
-  public static chainId(chainId: CosmosSdkChainId): CosmosSdkTargetChain;
-  public static chainId(chainId: EvmChainId): EvmTargetChain;
+  public static chainId(chainId: CosmosChainId): CosmosTargetChain;
+  public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
   public static chainId(
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
   public static chainId(chainId: string): AbstractTargetChain;
   public static chainId(chainId: string): AbstractTargetChain {
-    if (isCosmosSdkChainId(chainId)) {
-      return new CosmosSdkTargetChain(chainId);
+    if (isCosmosChainId(chainId)) {
+      return new CosmosTargetChain(chainId);
     }
-    if (isEvmChainId(chainId)) {
-      return new EvmTargetChain(chainId);
+    if (isEip155ChainId(chainId)) {
+      return new Eip155TargetChain(chainId);
     }
     throw new Error(`ChainId ${chainId} not found`);
   }

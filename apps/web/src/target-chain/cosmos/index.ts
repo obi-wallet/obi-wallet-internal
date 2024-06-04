@@ -1,11 +1,11 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import {
-  CosmosSdkChainData,
-  CosmosSdkChainId,
-  CosmosSdkChains,
-} from "@/target-chain/cosmos-sdk/chains";
-import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
+  CosmosChainData,
+  CosmosChainId,
+  CosmosChains,
+} from "@/target-chain/cosmos/chains";
+import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
+import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Chain } from "@chain-registry/types";
 import {
@@ -37,6 +37,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { parseCaip2ChainId } from "@obi-wallet/sdk-caip";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -66,20 +67,23 @@ function isStdFee(fee: unknown): fee is StdFee {
   return StdFeeSchema.safeParse(fee).success;
 }
 
-export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> {
-  protected readonly chainData: CosmosSdkChainData;
+export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
+  public readonly cosmosChainId: string;
+  protected readonly chainData: CosmosChainData;
   protected readonly chain: Chain;
-  protected readonly tokenRegistry: CosmosSdkTokenRegistry;
+  protected readonly tokenRegistry: CosmosTokenRegistry;
 
-  public constructor(chainId: CosmosSdkChainId) {
+  public constructor(chainId: CosmosChainId) {
     super(chainId);
-    this.chainData = CosmosSdkChains[chainId];
+    this.chainData = CosmosChains[chainId];
+    const { reference } = parseCaip2ChainId(chainId);
+    this.cosmosChainId = reference;
     const chain = chains.find((c) => {
-      return c.chain_id === chainId;
+      return c.chain_id === reference;
     });
-    invariant(chain, `Chain not found for ${chainId}`);
+    invariant(chain, `Chain not found for ${reference}`);
     this.chain = chain;
-    this.tokenRegistry = CosmosSdkTokenRegistry.getInstance();
+    this.tokenRegistry = CosmosTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -131,7 +135,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
 
   public async priceQueryFn(id: AssetId) {
     if (
-      [CosmosSdkChainId.Neutron, CosmosSdkChainId.Sei].includes(this.chainId) &&
+      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
       !["untrn", "usei"].includes(id)
     ) {
       const url = "https://api.skip.money/v2/fungible/route";
@@ -142,12 +146,12 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
         .toFixed(0);
 
       const data = {
-        source_asset_chain_id: this.chainId,
+        source_asset_chain_id: this.cosmosChainId,
         amount_in: amountIn,
         source_asset_denom: id,
         dest_asset_denom:
           "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.chainId,
+        dest_asset_chain_id: this.cosmosChainId,
         allow_unsafe: true,
       };
       try {
@@ -167,7 +171,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
       }
     }
 
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${id}`;
     try {
       const response = await fetch(url);
       const schema = z.object({
@@ -375,7 +379,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
   }
 
   public async getSigner(wallet: MpcWallet) {
-    return await CosmosSdkMpcSigner.fromWallet(wallet, this.chainData.id);
+    return await CosmosMpcSigner.fromWallet(wallet, this.chainData.id);
   }
 
   public validateMessages(messages: unknown[]): messages is EncodeObject[] {

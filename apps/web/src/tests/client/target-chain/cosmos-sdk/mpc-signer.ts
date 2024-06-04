@@ -1,6 +1,6 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
-import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { fromBase64 } from "@cosmjs/encoding";
@@ -18,10 +18,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const wallet = MpcWallet.create(MOCK_WALLET_DATA);
     invariant(wallet.owner.primaryKey, "Expected primary key to be set");
 
-    const signer = await CosmosSdkMpcSigner.fromWallet(
-      wallet,
-      CosmosSdkChainId.Sei,
-    );
+    const signer = await CosmosMpcSigner.fromWallet(wallet, CosmosChainId.Sei);
     const account = (await signer.getAccounts())[0];
 
     invariant(account, "Expected account to be set");
