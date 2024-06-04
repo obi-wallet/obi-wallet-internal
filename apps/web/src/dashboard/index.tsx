@@ -167,29 +167,30 @@ function NetworkAssets({
             "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
         }}
       >
-        <div className="flex flex-row items-center gap-5">
+        <div className="flex flex-row items-center gap-2">
           <img
             src={assets.chain.image}
             alt={assets.chain.label}
-            className="h-8 w-8"
+            className="h-5 w-5 sm:h-8 sm:w-8"
           />
-          <Text>{assets.chain.label}</Text>
+          <Text className=" text-xs text-white opacity-70">
+            {assets.chain.label}
+          </Text>
         </div>
       </div>
-      <div className="flex gap-5 py-1.5 pl-4">
-        <div className="w-8" />
-        <div className="flex w-full justify-between">
+      <div className="flex gap-5 py-1.5 pl-4 sm:flex">
+        <div className="flex w-full justify-between ">
           <Text fontWeight="light" className="text-[10px] text-slate-400">
             ASSET
           </Text>
-          <div className="flex w-1/2 justify-between">
-            <Text fontWeight="light" className="text-[10px] text-slate-400">
-              BALANCE
-            </Text>
-            <Text fontWeight="light" className="text-[10px] text-slate-400">
-              VALUE
-            </Text>
-          </div>
+
+          <Text fontWeight="light" className="text-[10px] text-slate-400">
+            BALANCE
+          </Text>
+
+          <Text fontWeight="light" className="text-[10px] text-slate-400">
+            VALUE
+          </Text>
         </div>
       </div>
       <div className="flex w-full flex-col gap-1">
@@ -210,7 +211,7 @@ function AssetItem({ asset }: { asset: PrettyAssetData }) {
 
   return (
     <div
-      className="hover:bg-asset-hover-gradient flex cursor-pointer gap-5 py-1.5 pl-4 hover:rounded-lg"
+      className="hover:bg-asset-hover-gradient flex w-full cursor-pointer justify-between gap-5  py-1.5  pl-4  hover:rounded-lg"
       onClick={() => {
         router.push(
           `/dashboard/transaction/send/${encodeURIComponent(
@@ -219,22 +220,28 @@ function AssetItem({ asset }: { asset: PrettyAssetData }) {
         );
       }}
     >
-      {asset.assetInfo?.image ? (
-        <img
-          src={asset.assetInfo.image}
-          alt={asset.assetInfo.symbol}
-          className="h-8 w-8"
-        />
-      ) : (
-        <div className="h-8 w-8" />
-      )}
-      <div className="flex w-full justify-between">
-        <Text fontWeight="bold">{asset.assetInfo?.symbol}</Text>
-        <div className="flex w-1/2 justify-between">
-          <Text>{asset.prettyAmount.toString()}</Text>
-          <Text fontWeight="bold">${asset.usdBalance.toFixed(2)}</Text>
-        </div>
+      <div className="flex flex-row gap-2 ">
+        {asset.assetInfo?.image ? (
+          <img
+            src={asset.assetInfo.image}
+            alt={asset.assetInfo.symbol}
+            className="h-6 w-6 sm:h-8 sm:w-8"
+          />
+        ) : (
+          <div className="h-6 w-6 sm:h-8 sm:w-8" />
+        )}
+
+        <Text fontWeight="bold" className="max-sm:text-sm ">
+          {asset.assetInfo?.symbol}
+        </Text>
       </div>
+
+      <Text className=" -ml-6 max-sm:text-sm ">
+        {asset.prettyAmount.toString()}
+      </Text>
+      <Text fontWeight="bold" className=" max-sm:text-sm">
+        ${asset.usdBalance.toFixed(2)}
+      </Text>
     </div>
   );
 }

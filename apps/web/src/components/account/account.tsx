@@ -29,35 +29,39 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div
-        className="relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]"
-        style={{
-          backgroundImage:
-            "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
-        }}
-      >
+      <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]  max-sm:bg-none">
         <div className="flex flex-row gap-3 px-4 py-3.5">
-          <div className="h-[70px] w-[70px] rounded-full bg-sky-500 ">
+          <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
             {userData.avatar ? (
               <Image
                 width={70}
                 height={70}
-                className="h-[70px] w-[70px] rounded-full object-cover"
+                className="h-full w-full rounded-full object-cover"
                 src={userData.avatar}
                 alt={name}
               />
             ) : (
-              <FaCircleUser className="h-[70px] w-[70px] text-white" />
+              <FaCircleUser className="h-full w-full text-white" />
             )}
           </div>
-          <div className="flex flex-col justify-center gap-1">
-            <Text size="xl" color="white" fontWeight="bold">
+          <div className="relative flex w-full flex-col justify-center gap-1">
+            <img
+              src="/points.svg"
+              alt="points"
+              className="  absolute right-1 top-1 h-5"
+            />
+            <Text
+              size="sm"
+              color="white"
+              fontWeight="bold"
+              className="sm:text-xl"
+            >
               {name}
             </Text>
 
             <PrimaryLink
               href="/dashboard/settings/account"
-              className="text-indigo-300"
+              className="text-sm text-indigo-300 sm:text-xl"
             >
               Edit Profile
             </PrimaryLink>
@@ -68,7 +72,9 @@ export const Account = observer(function Account() {
       <div className="">
         <div className="gap-1 bg-slate-900 px-4 pb-3.5 pt-2.5">
           <div className="flex justify-between">
-            <Text fontWeight="normal">Balance</Text>
+            <Text fontWeight="normal" className=" mb-2 text-sm">
+              Balance
+            </Text>
             {userData.balanceHidden ? (
               <FaRegEye
                 className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"

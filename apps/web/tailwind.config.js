@@ -32,6 +32,8 @@ module.exports = {
       backgroundImage: {
         "asset-hover-gradient":
           "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
+        "panel-gradient":
+          "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
       },
       fontFamily: {
         "press-start-2p": ["var(--font-press-start-2p)"],
