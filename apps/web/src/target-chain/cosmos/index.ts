@@ -10,6 +10,8 @@ import {
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
+import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -47,8 +49,6 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
-  CosmosSignAminoUserInteraction,
-  CosmosSignDirectUserInteraction,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";

@@ -3411,7 +3411,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/wallet-connect@workspace:packages/wallet-connect"
   dependencies:
-    "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/proto-signing": "npm:^0.32.3"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
