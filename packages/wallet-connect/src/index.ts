@@ -1,17 +1,8 @@
-import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
-import {
-  getSec256k1CompressedPublicKey,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
+import { ErrorResponse } from "@walletconnect/jsonrpc-types";
 import { buildApprovedNamespaces, getSdkError } from "@walletconnect/utils";
-import { Web3Wallet } from "@walletconnect/web3wallet";
-import invariant from "tiny-invariant";
-
-import {
-  CosmosSignAminoUserInteraction,
-  CosmosSignDirectUserInteraction,
-} from "./user-interactions";
+import { Web3Wallet, Web3WalletTypes } from "@walletconnect/web3wallet";
 
 export * from "./user-interactions";
 
@@ -22,22 +13,16 @@ export interface Account {
   publicKey: Secp256k1PublicKey;
 }
 
-export interface EthSendTransactionPayload {
-  chainId: number;
-  gas: HexEncodedStringWithPrefix;
-  value: HexEncodedStringWithPrefix;
-  from: HexEncodedStringWithPrefix;
-  to: HexEncodedStringWithPrefix;
-  data: HexEncodedStringWithPrefix;
-}
+export type SessionRequestPayload = Web3WalletTypes.SessionRequest["params"];
+export type SessionRequestResponse =
+  | { result: unknown }
+  | { error: ErrorResponse };
 
 export async function setupWalletConnect({
   projectId,
   metadata,
   getAccounts,
-  getWalletMeta,
-  ethPersonalSign,
-  ethSendTransaction,
+  handleSessionRequest,
 }: {
   projectId: string;
   metadata: {
@@ -47,20 +32,9 @@ export async function setupWalletConnect({
     icons: string[];
   };
   getAccounts: () => Promise<Account[]>;
-  getWalletMeta: () => {
-    userEntryAddress: string;
-  };
-  ethPersonalSign: (
-    message: HexEncodedStringWithPrefix,
-  ) => Promise<
-    | { approved: true; signedMessage: HexEncodedStringWithPrefix }
-    | { approved: false }
-  >;
-  ethSendTransaction: (
-    payload: EthSendTransactionPayload,
-  ) => Promise<
-    { approved: true; txHash: HexEncodedStringWithPrefix } | { approved: false }
-  >;
+  handleSessionRequest: (
+    payload: SessionRequestPayload,
+  ) => Promise<SessionRequestResponse>;
 }) {
   const core = new Core({
     projectId,
@@ -79,161 +53,15 @@ export async function setupWalletConnect({
     console.log("incoming session_request", event);
 
     const { topic, params, id } = event;
-    const { request } = params;
-    const [namespace, chainId] = params.chainId.split(":");
-    invariant(typeof namespace === "string", "namespace must be a string");
-    invariant(typeof chainId === "string", "chainId must be a string");
-
-    switch (request.method) {
-      case "cosmos_getAccounts": {
-        const accounts = await getAccounts();
-        const result = accounts
-          .filter((account) => {
-            return (
-              account.namespace === namespace && account.chainId === chainId
-            );
-          })
-          .map((account) => {
-            return {
-              algo: "secp256k1",
-              address: account.address,
-              pubkey: Encoding.fromBytes(
-                getSec256k1CompressedPublicKey(account.publicKey),
-              ).toBase64(),
-            };
-          });
-
-        const response = {
-          id,
-          jsonrpc: "2.0",
-          result,
-        };
-
-        await web3wallet.respondSessionRequest({ topic, response });
-        break;
-      }
-      case "cosmos_signAmino": {
-        const walletMeta = getWalletMeta();
-        const response = await CosmosSignAminoUserInteraction.start({
-          walletMeta,
-          cancelable: true,
-          signerAddress: request.params.signerAddress,
-          signDoc: request.params.signDoc,
-        });
-
-        if (response.approved) {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              result: response.payload,
-            },
-          });
-        } else {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              error: getSdkError("USER_REJECTED"),
-            },
-          });
-        }
-        break;
-      }
-      case "cosmos_signDirect": {
-        const walletMeta = getWalletMeta();
-        const response = await CosmosSignDirectUserInteraction.start({
-          walletMeta,
-          cancelable: true,
-          signerAddress: request.params.signerAddress,
-          signDoc: request.params.signDoc,
-        });
-
-        if (response.approved) {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              result: response.payload,
-            },
-          });
-        } else {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              error: getSdkError("USER_REJECTED"),
-            },
-          });
-        }
-        break;
-      }
-      case "eth_sendTransaction": {
-        const payload = request.params[0];
-        const response = await ethSendTransaction({
-          ...payload,
-          chainId: parseInt(chainId, 10),
-        });
-        if (response.approved) {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              result: response.txHash,
-            },
-          });
-        } else {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              error: getSdkError("USER_REJECTED"),
-            },
-          });
-        }
-        break;
-      }
-      case "personal_sign": {
-        const payload = request.params[0];
-        const response = await ethPersonalSign(payload);
-        if (response.approved) {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              result: response.signedMessage,
-            },
-          });
-        } else {
-          await web3wallet.respondSessionRequest({
-            topic,
-            response: {
-              id,
-              jsonrpc: "2.0",
-              error: getSdkError("USER_REJECTED"),
-            },
-          });
-        }
-        break;
-      }
-      case "wallet_switchEthereumChain": {
-        await web3wallet.respondSessionRequest({
-          topic,
-          response: {
-            id,
-            jsonrpc: "2.0",
-            result: true,
-          },
-        });
-      }
-    }
+    const response = await handleSessionRequest(params);
+    await web3wallet.respondSessionRequest({
+      topic,
+      response: {
+        id,
+        jsonrpc: "2.0",
+        ...response,
+      },
+    });
   });
 
   web3wallet.on("auth_request", async (...params) => {

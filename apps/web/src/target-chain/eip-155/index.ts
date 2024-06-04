@@ -1,4 +1,5 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { rootStore } from "@/stores";
 import {
   Eip155ChainData,
   Eip155ChainId,
@@ -6,6 +7,7 @@ import {
 } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
@@ -16,12 +18,18 @@ import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import {
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
+import { getSdkError } from "@walletconnect/utils";
 import { ENTRYPOINT_ADDRESS_V07, UserOperation } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
 import {
   Address,
   createPublicClient,
   getAddress,
+  hexToBigInt,
   http,
   isAddress,
   keccak256,
@@ -340,5 +348,55 @@ export class Eip155TargetChain extends AbstractTargetChain<
       txHash: HexEncodedStringWithPrefix,
     });
     return schema.parse(await response.json());
+  }
+
+  public async handleWalletConnectSessionRequest({
+    request,
+  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    if (!wallet) {
+      return { error: getSdkError("USER_DISCONNECTED") };
+    }
+
+    switch (request.method) {
+      case "eth_sendTransaction": {
+        const payload = request.params[0];
+
+        const account = await this.localAccountFromWallet(wallet);
+        const kernelAccount = await this.kernelAccount(account);
+        const callData = HexEncodedStringWithPrefix.parse(
+          await kernelAccount.encodeCallData({
+            to: payload.to,
+            data: payload.data,
+            value: hexToBigInt(payload.value),
+          }),
+        );
+        const response = await SignAndBroadcastEvm.start({
+          callData,
+          cancelable: true,
+          targetChainId: this.chainId,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+        });
+        if (response.approved) {
+          const receipt = await this.waitForUserOperationReceipt(response.hash);
+          return { result: receipt.txHash };
+        } else {
+          return {
+            error: getSdkError("USER_REJECTED"),
+          };
+        }
+      }
+      case "personal_sign": {
+        const _payload = request.params[0];
+        // TODO:
+        return { error: getSdkError("USER_REJECTED") };
+      }
+      case "wallet_switchEthereumChain":
+        return { result: true };
+      default:
+        return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
   }
 }

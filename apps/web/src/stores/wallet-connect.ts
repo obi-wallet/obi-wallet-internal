@@ -1,19 +1,15 @@
 import { HomeChain } from "@/home-chain";
 import { allTargetChainIds, TargetChain } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import {
-  Eip155ChainId,
-  Eip155Chains,
-  isEip155ChainId,
-} from "@/target-chain/eip-155/chains";
-import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
-import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { Eip155ChainId, isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { MpcWallets } from "@obi-wallet/sdk";
-import { EthSendTransactionPayload } from "@obi-wallet/wallet-connect";
+import {
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
 import invariant from "tiny-invariant";
-import { hexToBigInt } from "viem";
 
 export class WalletConnectStore {
   protected readonly walletsStore: MpcWallets;
@@ -59,15 +55,7 @@ export class WalletConnectStore {
           icons: [],
         },
         getAccounts: this.getAccounts.bind(this),
-        getWalletMeta: () => {
-          const wallet = this.walletsStore.currentWallet;
-          invariant(wallet, "Wallet not found");
-          return {
-            userEntryAddress: wallet.userEntryAddress,
-          };
-        },
-        ethPersonalSign: this.ethPersonalSign.bind(this),
-        ethSendTransaction: this.ethSendTransaction.bind(this),
+        handleSessionRequest: this.handleSessionRequest.bind(this),
       });
     }
     return this.web3Wallet;
@@ -118,60 +106,10 @@ export class WalletConnectStore {
     ]);
   }
 
-  protected async ethPersonalSign(
-    _message: HexEncodedStringWithPrefix,
-  ): Promise<
-    | { approved: true; signedMessage: HexEncodedStringWithPrefix }
-    | { approved: false }
-  > {
-    console.error("ethPersonalSign not implemented yet");
-    return { approved: false };
-  }
-
-  protected async ethSendTransaction(
-    payload: EthSendTransactionPayload,
-  ): Promise<
-    { approved: true; txHash: HexEncodedStringWithPrefix } | { approved: false }
-  > {
-    console.log("ethSendTransaction", payload);
-    const targetChainId = Object.values(Eip155Chains).find((chain) => {
-      return chain.chain.id === payload.chainId;
-    })?.id;
-    invariant(targetChainId, "Target chain not found");
-
-    const targetChain = TargetChain.chainId(targetChainId);
-    const wallet = this.walletsStore.currentWallet;
-    invariant(wallet, "Wallet not found");
-
-    const account = await targetChain.localAccountFromWallet(wallet);
-    const kernelAccount = await targetChain.kernelAccount(account);
-    const callData = HexEncodedStringWithPrefix.parse(
-      await kernelAccount.encodeCallData({
-        to: payload.to,
-        data: payload.data,
-        value: hexToBigInt(payload.value),
-      }),
-    );
-    const response = await SignAndBroadcastEvm.start({
-      callData,
-      cancelable: true,
-      targetChainId,
-      walletMeta: {
-        userEntryAddress: wallet.userEntryAddress,
-      },
-    });
-    if (response.approved) {
-      const receipt = await targetChain.waitForUserOperationReceipt(
-        response.hash,
-      );
-      return {
-        approved: true,
-        txHash: receipt.txHash,
-      };
-    } else {
-      return {
-        approved: false,
-      };
-    }
+  protected async handleSessionRequest(
+    payload: SessionRequestPayload,
+  ): Promise<SessionRequestResponse> {
+    const targetChain = TargetChain.chainId(payload.chainId);
+    return await targetChain.handleWalletConnectSessionRequest(payload);
   }
 }

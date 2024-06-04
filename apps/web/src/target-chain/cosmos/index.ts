@@ -1,5 +1,8 @@
+import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { rootStore } from "@/stores";
 import {
+  allCosmosChains,
   CosmosChainData,
   CosmosChainId,
   CosmosChains,
@@ -32,6 +35,7 @@ import {
   StargateClient,
   StdFee,
 } from "@cosmjs/stargate";
+import { Encoding } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
@@ -42,6 +46,13 @@ import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import {
+  CosmosSignAminoUserInteraction,
+  CosmosSignDirectUserInteraction,
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
+import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
@@ -432,5 +443,74 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public get registry() {
     return new Registry([...defaultRegistryTypes, ...wasmTypes]);
+  }
+
+  public async handleWalletConnectSessionRequest({
+    request,
+  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    if (!wallet) {
+      return { error: getSdkError("USER_DISCONNECTED") };
+    }
+
+    switch (request.method) {
+      case "cosmos_getAccounts": {
+        const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+          wallet.userEntryAddress,
+        );
+        const cosmosChains = allCosmosChains.map((targetChainId) => {
+          return new CosmosTargetChain(targetChainId);
+        });
+
+        const result = await Promise.all(
+          cosmosChains
+            .filter((chain) => {
+              return !chain.disabled;
+            })
+            .map(async (targetChain) => {
+              return {
+                algo: "secp256k1",
+                address: await targetChain.obiAccountAddress(publicKey),
+                pubkey: Encoding.fromBytes(
+                  getSec256k1CompressedPublicKey(publicKey),
+                ).toBase64(),
+              };
+            }),
+        );
+        return { result };
+      }
+      case "cosmos_signAmino": {
+        const response = await CosmosSignAminoUserInteraction.start({
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
+        if (response.approved) {
+          return { result: response.payload };
+        } else {
+          return { error: getSdkError("USER_REJECTED") };
+        }
+      }
+      case "cosmos_signDirect": {
+        const response = await CosmosSignDirectUserInteraction.start({
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
+        if (response.approved) {
+          return { result: response.payload };
+        } else {
+          return { error: getSdkError("USER_REJECTED") };
+        }
+      }
+      default:
+        return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
   }
 }
