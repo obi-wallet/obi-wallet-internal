@@ -29,7 +29,7 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]  max-sm:bg-none">
+      <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
         <div className="px-4 pb-3.5 pt-1.5 relative">
           <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
             <img src="/points.svg" alt="points" className="h-5" />

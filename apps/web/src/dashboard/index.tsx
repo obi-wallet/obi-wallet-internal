@@ -56,7 +56,7 @@ const Assets = observer(function Assets() {
 
       <PendingAssets />
       <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-      <div className="mt-10 flex w-full flex-row items-center justify-center">
+      <div className="mt-10 flex w-full flex-row items-center justify-center max-md:px-2">
         <Text size="sm" className="leading-normal" fontWeight="light">
           Fast Travel transactions may take a few minutes to be processed and
           will appear here once visible on the network.
