@@ -30,41 +30,41 @@ export const Account = observer(function Account() {
   return (
     <>
       <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px]  max-sm:bg-none">
-        <div className="flex flex-row gap-3 px-4 py-3.5">
-          <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
-            {userData.avatar ? (
-              <Image
-                width={70}
-                height={70}
-                className="h-full w-full rounded-full object-cover"
-                src={userData.avatar}
-                alt={name}
-              />
-            ) : (
-              <FaCircleUser className="h-full w-full text-white" />
-            )}
+        <div className="px-4 pb-3.5 pt-1.5 relative">
+          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
+            <img src="/points.svg" alt="points" className="h-5" />
           </div>
-          <div className="relative flex w-full flex-col justify-center gap-1">
-            <img
-              src="/points.svg"
-              alt="points"
-              className="  absolute right-1 top-1 h-5"
-            />
-            <Text
-              size="sm"
-              color="white"
-              fontWeight="bold"
-              className="sm:text-xl"
-            >
-              {name}
-            </Text>
+          <div className="flex flex-row gap-3 ">
+            <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
+              {userData.avatar ? (
+                <Image
+                  width={70}
+                  height={70}
+                  className="h-full w-full rounded-full object-cover"
+                  src={userData.avatar}
+                  alt={name}
+                />
+              ) : (
+                <FaCircleUser className="h-full w-full text-white" />
+              )}
+            </div>
+            <div className="relative flex w-full flex-col justify-center gap-1">
+              <Text
+                size="sm"
+                color="white"
+                fontWeight="bold"
+                className="sm:text-xl"
+              >
+                {name}
+              </Text>
 
-            <PrimaryLink
-              href="/dashboard/settings/account"
-              className="text-sm text-indigo-300 sm:text-xl"
-            >
-              Edit Profile
-            </PrimaryLink>
+              <PrimaryLink
+                href="/dashboard/settings/account"
+                className="text-sm text-indigo-300 sm:text-xl"
+              >
+                Edit Profile
+              </PrimaryLink>
+            </div>
           </div>
         </div>
       </div>
