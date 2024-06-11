@@ -7,6 +7,7 @@ import {
   UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 
 export async function isPublicKeyInUse({
   homeChainId,
@@ -80,7 +81,7 @@ export function getOwnerData(owner: Migratable<MultisigKey>) {
         };
       }
 
-      throw new Error(`Invalid key: ${JSON.stringify(key)}`);
+      throw new Error(`Invalid key: ${serialize(key)}`);
     }),
   };
 }
@@ -88,7 +89,7 @@ export function getOwnerData(owner: Migratable<MultisigKey>) {
 export async function setWalletData(walletData: WalletData) {
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
-    body: JSON.stringify({
+    body: serialize({
       type: "set-wallet-data",
       payload: walletData,
     }),
@@ -105,7 +106,7 @@ export async function updateOwner({
 }) {
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
-    body: JSON.stringify({
+    body: serialize({
       type: "update-owner",
       payload: {
         walletData,

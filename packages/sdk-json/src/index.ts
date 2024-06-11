@@ -25,18 +25,28 @@ export function deserializeBigInt(value: SerializedBigInt): bigint {
   return BigInt(value.__value);
 }
 
-export function serialize(object: unknown) {
-  return JSON.stringify(object, (key, value) => {
-    if (typeof value === "bigint") {
-      return serializeBigInt(value);
-    }
+export function serialize(
+  object: unknown,
+  _replacer?: null,
+  space?: string | number,
+) {
+  // eslint-disable-next-line no-restricted-globals
+  return JSON.stringify(
+    object,
+    (_key, value) => {
+      if (typeof value === "bigint") {
+        return serializeBigInt(value);
+      }
 
-    return value;
-  });
+      return value;
+    },
+    space,
+  );
 }
 
 export function deserialize(json: string) {
-  return JSON.parse(json, (key, value) => {
+  // eslint-disable-next-line no-restricted-globals
+  return JSON.parse(json, (_key, value) => {
     if (isSerializedBigInt(value)) {
       return deserializeBigInt(value);
     }

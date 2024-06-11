@@ -16,6 +16,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
@@ -325,7 +326,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
     });
     const response = await fetch("/api/evm/send-user-operation", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         targetChainId: this.chainData.id,
         userOperation: serializeUserOperation(userOperation),
       }),
@@ -340,7 +341,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public async waitForUserOperationReceipt(hash: HexEncodedStringWithPrefix) {
     const response = await fetch("/api/evm/wait-for-user-operation-receipt", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         targetChainId: this.chainData.id,
         hash,
       }),

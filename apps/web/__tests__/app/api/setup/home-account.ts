@@ -1,4 +1,5 @@
 import { SecretJsHomeChainId } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { testApiHandler } from "next-test-api-route-handler";
 
 test("/api/setup/home-account", async () => {
@@ -9,7 +10,7 @@ test("/api/setup/home-account", async () => {
     async test({ fetch }) {
       const response = await fetch({
         method: "POST",
-        body: JSON.stringify({
+        body: serialize({
           chainId: SecretJsHomeChainId.MAINNET,
         }),
       });

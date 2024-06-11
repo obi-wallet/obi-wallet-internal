@@ -44,6 +44,7 @@ import {
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip2ChainId } from "@obi-wallet/sdk-caip";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -171,7 +172,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: serialize(data),
         });
         const json = await res.json();
 

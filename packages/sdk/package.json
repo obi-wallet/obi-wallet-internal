@@ -21,6 +21,7 @@
     "@obi-wallet/encoding": "workspace:*",
     "@obi-wallet/query-client": "workspace:*",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
+    "@obi-wallet/sdk-json": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@simplewebauthn/typescript-types": "^8.3.4",
     "@tanstack/query-core": "^5.36.0",

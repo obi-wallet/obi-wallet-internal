@@ -9,6 +9,7 @@ import {
 } from "@/stores/key-meta-data";
 import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
 import { Key, KeyType } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";
@@ -64,7 +65,7 @@ export class PhoneKeyWorkerClient {
       `https://phone-keys.obiwallet.workers.dev/handle${code ? `?code=${code}` : ""}`,
       {
         method: "POST",
-        body: JSON.stringify({
+        body: serialize({
           to: this.to,
           answer: this.answer,
           via: this.via,

@@ -15,6 +15,7 @@ import { SendingAnimation } from "@/user-interactions/approve-messages/sending-a
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { skipToken, useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -64,7 +65,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
               "/api/evm/prepare-user-operation-request",
               {
                 method: "POST",
-                body: JSON.stringify({
+                body: serialize({
                   homeChainId: wallet.homeChainId,
                   targetChainId,
                   userEntryAddress: wallet.userEntryAddress,

@@ -16,6 +16,7 @@ import {
   Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { action, observable, toJS } from "mobx";
 import invariant from "tiny-invariant";
@@ -187,7 +188,7 @@ export class NewOnboardingPayload implements Draftable {
     if (this._unclaimedHomeAccount) return;
     const response = await fetch("/api/setup/home-account", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         chainId: this.homeChainId,
       }),
     });
@@ -199,7 +200,7 @@ export class NewOnboardingPayload implements Draftable {
     const result = UnclaimedHomeAccount.safeParse(await response.json());
     if (!result.success) {
       throw new Error(
-        `Failed to parse magic account: ${JSON.stringify(result.error)}`,
+        `Failed to parse magic account: ${serialize(result.error)}`,
       );
     }
 
@@ -229,7 +230,7 @@ export class NewOnboardingPayload implements Draftable {
 
     const response = await fetch("/api/setup/distribute-shares", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         homeChainId: this.homeChainId,
         networkParticipants: this._shares.networkParticipants,
         networkShare: this._shares.networkShare,
@@ -275,7 +276,7 @@ export class NewOnboardingPayload implements Draftable {
 
     const response = await fetch("/api/setup/first-update-owner", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         homeChainId: this.homeChainId,
         owner: this._multisigKey.toJSON(),
         ownerAddress: this._multisigKey.address,

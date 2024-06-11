@@ -1,5 +1,6 @@
 import { Encoding } from "@obi-wallet/encoding";
 import { TargetChainId } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
@@ -14,7 +15,7 @@ export function computeEthereumAddress(publicKey: Secp256k1PublicKey) {
 }
 
 export function getConfig(chainId: TargetChainId) {
-  const apiKeys = JSON.parse(process.env.STACKUP_API_KEYS ?? "{}");
+  const apiKeys = deserialize(process.env.STACKUP_API_KEYS ?? "{}");
   const apiKey = apiKeys[chainId];
 
   if (!apiKey) return null;

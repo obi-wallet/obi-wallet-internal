@@ -3,6 +3,7 @@ import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
+import { serialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../context";
@@ -88,7 +89,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                 homeChainId: draft.value.chainId,
                 owner: draft.value.toJSON()!,
                 keyMetaData: keyMetaDataDraft.value.value,
-                serializedWalletData: JSON.stringify(wallet),
+                serializedWalletData: serialize(wallet),
               });
               if (response.approved) {
                 currentWallet.setPreviousWalletData(wallet);

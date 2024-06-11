@@ -18,6 +18,7 @@ import {
   Caip2ChainIdSchema,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
@@ -173,7 +174,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                 typeof simulation.skip_simulation !== "string" &&
                 simulation.skip_simulation.msgs.length > 0
               ) {
-                const skipMsg = JSON.parse(
+                const skipMsg = deserialize(
                   simulation.skip_simulation.msgs[0].multi_chain_msg.msg,
                 );
                 const skipAmount =
@@ -1003,7 +1004,7 @@ const simulateTravel = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(requestData),
+    body: serialize(requestData),
   });
   const responseData = await res.json();
 

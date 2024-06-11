@@ -3239,6 +3239,7 @@ __metadata:
   resolution: "@obi-wallet/headless-ui-store@workspace:packages/headless-ui-store"
   dependencies:
     "@obi-wallet/sdk": "workspace:*"
+    "@obi-wallet/sdk-json": "workspace:*"
     "@react-native-async-storage/async-storage": "npm:^1.23.1"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
@@ -3394,6 +3395,7 @@ __metadata:
     "@obi-wallet/encoding": "workspace:*"
     "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
+    "@obi-wallet/sdk-json": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
