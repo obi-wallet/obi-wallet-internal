@@ -1,23 +1,39 @@
+import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { EvmChainData, EvmChainId, EvmChains } from "@/target-chain/evm/chains";
-import { EvmMpcSigner } from "@/target-chain/evm/mpc-signer";
+import { rootStore } from "@/stores";
+import {
+  allEip155Chains,
+  Eip155ChainData,
+  Eip155ChainId,
+  Eip155Chains,
+} from "@/target-chain/eip-155/chains";
+import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import {
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
+import { getSdkError } from "@walletconnect/utils";
 import { ENTRYPOINT_ADDRESS_V07, UserOperation } from "permissionless";
 import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import invariant from "tiny-invariant";
 import {
   Address,
   createPublicClient,
   getAddress,
+  hexToBigInt,
   http,
   isAddress,
   keccak256,
@@ -27,75 +43,35 @@ import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
 export type EvmUserOperation = UserOperation<"v0.7">;
-// Replace all bigints with strings
-export interface SerializedEvmUserOperation
-  extends Omit<
-    EvmUserOperation,
-    | "nonce"
-    | "callGasLimit"
-    | "verificationGasLimit"
-    | "preVerificationGas"
-    | "maxFeePerGas"
-    | "maxPriorityFeePerGas"
-    | "paymasterVerificationGasLimit"
-    | "paymasterPostOpGasLimit"
-  > {
-  nonce: string;
-  callGasLimit: string;
-  verificationGasLimit: string;
-  preVerificationGas: string;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-  paymasterVerificationGasLimit?: string;
-  paymasterPostOpGasLimit?: string;
-}
+
+export const SerializedEvmUserOperation = z
+  .string()
+  .brand("SerializedEvmUserOperation");
+export type SerializedEvmUserOperation = z.infer<
+  typeof SerializedEvmUserOperation
+>;
 
 export function serializeUserOperation(
   userOperation: EvmUserOperation,
 ): SerializedEvmUserOperation {
-  return {
-    ...userOperation,
-    nonce: userOperation.nonce.toString(),
-    callGasLimit: userOperation.callGasLimit.toString(),
-    verificationGasLimit: userOperation.verificationGasLimit.toString(),
-    preVerificationGas: userOperation.preVerificationGas.toString(),
-    maxFeePerGas: userOperation.maxFeePerGas.toString(),
-    maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas.toString(),
-    paymasterVerificationGasLimit:
-      userOperation.paymasterVerificationGasLimit?.toString(),
-    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit?.toString(),
-  };
+  return SerializedEvmUserOperation.parse(serialize(userOperation));
 }
 
 export function deserializeUserOperation(
   userOperation: SerializedEvmUserOperation,
 ): EvmUserOperation {
-  return {
-    ...userOperation,
-    nonce: BigInt(userOperation.nonce),
-    callGasLimit: BigInt(userOperation.callGasLimit),
-    verificationGasLimit: BigInt(userOperation.verificationGasLimit),
-    preVerificationGas: BigInt(userOperation.preVerificationGas),
-    maxFeePerGas: BigInt(userOperation.maxFeePerGas),
-    maxPriorityFeePerGas: BigInt(userOperation.maxPriorityFeePerGas),
-    paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit
-      ? BigInt(userOperation.paymasterVerificationGasLimit)
-      : undefined,
-    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit
-      ? BigInt(userOperation.paymasterPostOpGasLimit)
-      : undefined,
-  };
+  return deserialize(userOperation);
 }
 
-export class EvmTargetChain extends AbstractTargetChain<
-  EvmChainId,
+export class Eip155TargetChain extends AbstractTargetChain<
+  Eip155ChainId,
   HexEncodedStringWithPrefix
 > {
-  public readonly chainData: EvmChainData;
+  public readonly chainData: Eip155ChainData;
 
-  public constructor(chainId: EvmChainId) {
+  public constructor(chainId: Eip155ChainId) {
     super(chainId);
-    this.chainData = EvmChains[chainId];
+    this.chainData = Eip155Chains[chainId];
   }
 
   public get label(): string {
@@ -110,7 +86,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     return this.chainData.disabled ?? false;
   }
 
-  public get evmChainId() {
+  public get eip155ChainId() {
     return this.chainData.chain.id;
   }
 
@@ -124,10 +100,10 @@ export class EvmTargetChain extends AbstractTargetChain<
   protected async obiAccountAddressQueryFn(
     publicKey: Secp256k1PublicKey,
   ): Promise<HexEncodedStringWithPrefix> {
-    if (this.chainId === EvmChainId.BscTestnet) {
-      return await new EvmTargetChain(EvmChainId.Bsc).obiAccountAddressQueryFn(
-        publicKey,
-      );
+    if (this.chainId === Eip155ChainId.BscTestnet) {
+      return await new Eip155TargetChain(
+        Eip155ChainId.Bsc,
+      ).obiAccountAddressQueryFn(publicKey);
     }
 
     const account = toAccount({
@@ -242,7 +218,7 @@ export class EvmTargetChain extends AbstractTargetChain<
   }
 
   public async signerFromWallet(wallet: MpcWallet) {
-    return await EvmMpcSigner.fromWallet(wallet, this.chainId);
+    return await Eip155MpcSigner.fromWallet(wallet, this.chainId);
   }
 
   public async localAccountFromWallet(wallet: MpcWallet) {
@@ -257,7 +233,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     wallet: MpcWallet;
     userOperation: EvmUserOperation;
   }) {
-    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+    const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
 
     const account = toAccount(signer.accountSource);
     const kernelAccount = await this.kernelAccount(account);
@@ -278,7 +254,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     intentionsPayload: IntentionsPayload;
     intentionsResults: IntentionsResults;
   }) {
-    const signer = await EvmMpcSigner.fromWallet(wallet, this.chainData.id);
+    const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
     signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
@@ -310,7 +286,7 @@ export class EvmTargetChain extends AbstractTargetChain<
     });
     const response = await fetch("/api/evm/send-user-operation", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         targetChainId: this.chainData.id,
         userOperation: serializeUserOperation(userOperation),
       }),
@@ -325,7 +301,7 @@ export class EvmTargetChain extends AbstractTargetChain<
   public async waitForUserOperationReceipt(hash: HexEncodedStringWithPrefix) {
     const response = await fetch("/api/evm/wait-for-user-operation-receipt", {
       method: "POST",
-      body: JSON.stringify({
+      body: serialize({
         targetChainId: this.chainData.id,
         hash,
       }),
@@ -336,5 +312,91 @@ export class EvmTargetChain extends AbstractTargetChain<
       txHash: HexEncodedStringWithPrefix,
     });
     return schema.parse(await response.json());
+  }
+
+  public static async getSupportedWalletConnectNamespaces() {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const eip155Chains = allEip155Chains
+      .map((targetChainId) => {
+        return new Eip155TargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    return {
+      eip155: {
+        chains: eip155Chains.map((chain) => {
+          return chain.chainId;
+        }),
+        methods: [
+          "eth_sendTransaction",
+          "personal_sign",
+          "wallet_switchEthereumChain",
+        ],
+        accounts: await Promise.all(
+          eip155Chains.map(async (chain) => {
+            const address = await chain.obiAccountAddressQueryFn(publicKey);
+            return `${chain.chainId}:${address}`;
+          }),
+        ),
+        events: ["chainChanged", "accountsChanged"],
+      },
+    };
+  }
+
+  public async handleWalletConnectSessionRequest({
+    request,
+  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    if (!wallet) {
+      return { error: getSdkError("USER_DISCONNECTED") };
+    }
+
+    switch (request.method) {
+      case "eth_sendTransaction": {
+        const payload = request.params[0];
+
+        const account = await this.localAccountFromWallet(wallet);
+        const kernelAccount = await this.kernelAccount(account);
+        const callData = HexEncodedStringWithPrefix.parse(
+          await kernelAccount.encodeCallData({
+            to: payload.to,
+            data: payload.data,
+            value: hexToBigInt(payload.value),
+          }),
+        );
+        const response = await SignAndBroadcastEvm.start({
+          callData,
+          cancelable: true,
+          targetChainId: this.chainId,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+        });
+        if (response.approved) {
+          const receipt = await this.waitForUserOperationReceipt(response.hash);
+          return { result: receipt.txHash };
+        } else {
+          return {
+            error: getSdkError("USER_REJECTED"),
+          };
+        }
+      }
+      case "personal_sign": {
+        const _payload = request.params[0];
+        // TODO:
+        return { error: getSdkError("USER_REJECTED") };
+      }
+      case "wallet_switchEthereumChain":
+        return { result: true };
+      default:
+        return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
   }
 }

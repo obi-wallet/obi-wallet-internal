@@ -1,3 +1,5 @@
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
+
 import { AbstractKVStore } from "./abstract";
 
 export class MockKVStore implements AbstractKVStore {
@@ -11,14 +13,14 @@ export class MockKVStore implements AbstractKVStore {
 
   public async get<T = unknown>(key: string): Promise<T | undefined> {
     const data = MockKVStore.storage.get(this.getKey(key));
-    return data ? JSON.parse(data) : undefined;
+    return data ? deserialize(data) : undefined;
   }
 
   public async set<T = unknown>(key: string, data: T | null): Promise<void> {
     if (data === null || data === undefined) {
       MockKVStore.storage.delete(this.getKey(key));
     } else {
-      MockKVStore.storage.set(this.getKey(key), JSON.stringify(data));
+      MockKVStore.storage.set(this.getKey(key), serialize(data));
     }
   }
 

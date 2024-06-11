@@ -1,4 +1,4 @@
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Asset } from "@chain-registry/types";
 import { assets, chains } from "chain-registry";
 
@@ -7,27 +7,27 @@ import astroportTokensNeutron from "./astroport-token-lists/neutron.json";
 import astroportTokensOsmosis from "./astroport-token-lists/osmosis.json";
 import astroportTokensSei from "./astroport-token-lists/sei.json";
 
-export class CosmosSdkTokenRegistry {
-  protected static instance: CosmosSdkTokenRegistry | null = null;
+export class CosmosTokenRegistry {
+  protected static instance: CosmosTokenRegistry | null = null;
   protected assets: Record<string, Asset>;
 
   protected constructor() {
     this.assets = this.buildAssets();
   }
 
-  public static getInstance(): CosmosSdkTokenRegistry {
-    if (!CosmosSdkTokenRegistry.instance) {
-      CosmosSdkTokenRegistry.instance = new CosmosSdkTokenRegistry();
+  public static getInstance(): CosmosTokenRegistry {
+    if (!CosmosTokenRegistry.instance) {
+      CosmosTokenRegistry.instance = new CosmosTokenRegistry();
     }
 
-    return CosmosSdkTokenRegistry.instance;
+    return CosmosTokenRegistry.instance;
   }
 
   public getAsset({
     chainId,
     denom,
   }: {
-    chainId: CosmosSdkChainId;
+    chainId: CosmosChainId;
     denom: string;
   }) {
     return this.assets[`${chainId}:${denom}`];
@@ -47,15 +47,15 @@ export class CosmosSdkTokenRegistry {
       });
     });
 
-    addAstroportTokens(CosmosSdkChainId.Inj, astroportTokensInjective);
-    addAstroportTokens(CosmosSdkChainId.Neutron, astroportTokensNeutron);
-    addAstroportTokens(CosmosSdkChainId.Osmosis, astroportTokensOsmosis);
-    addAstroportTokens(CosmosSdkChainId.Sei, astroportTokensSei);
+    addAstroportTokens(CosmosChainId.Inj, astroportTokensInjective);
+    addAstroportTokens(CosmosChainId.Neutron, astroportTokensNeutron);
+    addAstroportTokens(CosmosChainId.Osmosis, astroportTokensOsmosis);
+    addAstroportTokens(CosmosChainId.Sei, astroportTokensSei);
 
     return result;
 
     function addAstroportTokens(
-      chainId: CosmosSdkChainId,
+      chainId: CosmosChainId,
       tokens: { token: string; originDenom?: string; originChainId?: string }[],
     ) {
       tokens.forEach(({ token, originDenom, originChainId }) => {

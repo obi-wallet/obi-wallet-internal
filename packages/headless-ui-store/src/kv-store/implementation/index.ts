@@ -1,3 +1,4 @@
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import Dexie, { Table } from "dexie";
 import * as R from "ramda";
 
@@ -56,14 +57,14 @@ export class KVStore implements AbstractKVStore {
     if (R.has("encrypted", entry)) {
       try {
         const decrypted = await decrypt(entry.encrypted);
-        return JSON.parse(decrypted);
+        return deserialize(decrypted);
       } catch (e) {
         console.error(e);
         return undefined;
       }
     }
 
-    return JSON.parse(entry.value);
+    return deserialize(entry.value);
   }
 
   public async set<T = unknown>(key: string, data: T | null) {
@@ -72,7 +73,7 @@ export class KVStore implements AbstractKVStore {
       await this.db.entries.delete(key);
       return;
     } else {
-      const encrypted = await encrypt(JSON.stringify(data));
+      const encrypted = await encrypt(serialize(data));
       await this.db.entries.put({
         key,
         encrypted,

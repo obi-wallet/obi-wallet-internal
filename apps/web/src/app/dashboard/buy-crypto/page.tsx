@@ -2,8 +2,8 @@
 
 import { usePublicKey } from "@/hooks/use-public-key";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
-import { EvmChainId } from "@/target-chain/evm/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
@@ -69,37 +69,37 @@ async function computeKadoUrl(publicKey: Secp256k1PublicKey): Promise<string> {
 
 function toKadoNetwork(targetChainId: TargetChainId): string | null {
   switch (targetChainId) {
-    case CosmosSdkChainId.Sei:
+    case CosmosChainId.Sei:
       return "SEI";
-    case CosmosSdkChainId.Osmosis:
+    case CosmosChainId.Osmosis:
       return "OSMOSIS";
-    case CosmosSdkChainId.Neutron:
+    case CosmosChainId.Neutron:
       return "NEUTRON";
-    case CosmosSdkChainId.Stargaze:
+    case CosmosChainId.Stargaze:
       return "STARGAZE";
-    case CosmosSdkChainId.Tia:
+    case CosmosChainId.Tia:
       return "CELESTIA";
-    case CosmosSdkChainId.Inj:
+    case CosmosChainId.Inj:
       return "INJECTIVE";
-    case EvmChainId.Arbitrum:
+    case Eip155ChainId.Arbitrum:
       return "ARBITRUM";
-    case EvmChainId.Avalanche:
+    case Eip155ChainId.Avalanche:
       return "AVALANCHE";
-    case EvmChainId.Base:
+    case Eip155ChainId.Base:
       return "BASE";
-    case EvmChainId.Ethereum:
+    case Eip155ChainId.Ethereum:
       return "ETHEREUM";
-    case EvmChainId.Optimism:
+    case Eip155ChainId.Optimism:
       return "OPTIMISM";
-    case EvmChainId.Polygon:
+    case Eip155ChainId.Polygon:
       return "POLYGON";
-    case EvmChainId.ArbitrumTestnet:
-    case EvmChainId.BaseTestnet:
-    case EvmChainId.Bsc:
-    case EvmChainId.BscTestnet:
-    case EvmChainId.Cronos:
-    case EvmChainId.EthereumTestnet:
-    case EvmChainId.Zora:
+    case Eip155ChainId.ArbitrumTestnet:
+    case Eip155ChainId.BaseTestnet:
+    case Eip155ChainId.Bsc:
+    case Eip155ChainId.BscTestnet:
+    case Eip155ChainId.Cronos:
+    case Eip155ChainId.EthereumTestnet:
+    case Eip155ChainId.Zora:
       return null;
   }
 }

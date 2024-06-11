@@ -1,10 +1,8 @@
 "use client";
 
 import { useStore } from "@/contexts";
-import {
-  CosmosSignAminoUserInteraction,
-  CosmosSignDirectUserInteraction,
-} from "@obi-wallet/wallet-connect";
+import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
+import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 

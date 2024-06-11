@@ -9,6 +9,7 @@ import {
   WalletDataStateType,
 } from "@/wallet-data-backup/sync-wallet-data";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   skipToken,
   useMutation,
@@ -99,7 +100,7 @@ export function useWalletBackupMutation() {
         homeChainId: wallet.homeChainId,
         owner: wallet.owner.toJSON()!,
         keyMetaData: keyMetaData,
-        serializedWalletData: JSON.stringify(walletData),
+        serializedWalletData: serialize(walletData),
       });
       if (response.approved) {
         wallet.setPreviousWalletData(walletData);
@@ -174,8 +175,8 @@ export function useWalletBackupCheck(): WalletHealthCheck {
 
                 if (backupKey.type !== actualKey.type) return false;
                 if (
-                  JSON.stringify(backupKey.publicKey) !==
-                  JSON.stringify(actualKey.publicKey)
+                  serialize(backupKey.publicKey) !==
+                  serialize(actualKey.publicKey)
                 ) {
                   return false;
                 }

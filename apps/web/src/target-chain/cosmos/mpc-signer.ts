@@ -1,6 +1,6 @@
 import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { MpcSigner } from "@/target-chain/mpc-signer";
 import {
   AminoSignResponse,
@@ -25,7 +25,7 @@ import {
 } from "@obi-wallet/sdk-secp256k1";
 import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-export class CosmosSdkMpcSigner
+export class CosmosMpcSigner
   implements OfflineDirectSigner, OfflineAminoSigner
 {
   public readonly mpcSigner: MpcSigner;
@@ -41,20 +41,20 @@ export class CosmosSdkMpcSigner
   protected constructor(
     protected wallet: MpcWallet,
     protected publicKey: Secp256k1PublicKey,
-    protected targetChainId: CosmosSdkChainId,
+    protected targetChainId: CosmosChainId,
   ) {
     this.mpcSigner = new MpcSigner(wallet);
   }
 
   public static async fromWallet(
     wallet: MpcWallet,
-    targetChainId: CosmosSdkChainId,
-  ): Promise<CosmosSdkMpcSigner> {
+    targetChainId: CosmosChainId,
+  ): Promise<CosmosMpcSigner> {
     const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
       wallet.userEntryAddress,
     );
 
-    return new CosmosSdkMpcSigner(wallet, publicKey, targetChainId);
+    return new CosmosMpcSigner(wallet, publicKey, targetChainId);
   }
 
   public async getAccounts(): Promise<readonly AccountData[]> {

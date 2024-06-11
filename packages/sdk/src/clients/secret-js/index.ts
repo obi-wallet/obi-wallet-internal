@@ -10,6 +10,7 @@ import {
   createStakingAminoConverters,
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   BroadcastMode,
   Msg,
@@ -197,7 +198,7 @@ export class SecretJsClient {
           setTimeout(resolve, 10_000);
         });
       }
-      console.warn("Broadcast response: " + JSON.stringify(txResponse));
+      console.warn("Broadcast response: ", serialize(txResponse));
       let rawResult;
       if (broadcastMode !== BroadcastMode.Block || !txResponse.rawLog) {
         rawResult = await client.query.getTx(txResponse.transactionHash);

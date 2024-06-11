@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@obi-wallet/sdk": "workspace:*",
+    "@obi-wallet/sdk-json": "workspace:*",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "dexie": "^4.0.4",
     "mobx": "^6.12.3",

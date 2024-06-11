@@ -1,5 +1,9 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import {
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
 
 export interface AssetInfo {
   name: string;
@@ -82,4 +86,8 @@ export abstract class AbstractTargetChain<
   public abstract priceQueryFn(id: AssetId): Promise<PriceInfo>;
 
   public abstract assetInfo(id: AssetId): AssetInfo | null;
+
+  public abstract handleWalletConnectSessionRequest(
+    payload: SessionRequestPayload,
+  ): Promise<SessionRequestResponse>;
 }

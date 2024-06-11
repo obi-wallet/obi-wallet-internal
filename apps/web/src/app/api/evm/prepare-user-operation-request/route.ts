@@ -1,7 +1,7 @@
 import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
-import { serializeUserOperation } from "@/target-chain/evm";
-import { EvmChainIdSchema } from "@/target-chain/evm/chains";
+import { serializeUserOperation } from "@/target-chain/eip-155";
+import { Eip155ChainIdSchema } from "@/target-chain/eip-155/chains";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { HomeChainIdSchema } from "@obi-wallet/sdk";
 import { createSmartAccountClient } from "permissionless";
@@ -17,7 +17,7 @@ export const maxDuration = 45;
 
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
-  targetChainId: EvmChainIdSchema,
+  targetChainId: Eip155ChainIdSchema,
   userEntryAddress: z.string(),
   callData: HexEncodedStringWithPrefix,
 });
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     await HomeChain.chainId(homeChainId).publicKey(userEntryAddress);
   const targetChain = TargetChain.chainId(targetChainId);
 
-  const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.evmChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
+  const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.eip155ChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
 
   const account = toAccount({
     address: targetChain.computeAddress(publicKey),

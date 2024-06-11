@@ -1,5 +1,6 @@
 import { Base64EncodedString } from "@obi-wallet/encoding";
 import { BackupShare, EasyShare, MultisigKey } from "@obi-wallet/sdk";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 
 import { MultisigKeyEncryption } from "./multisig-key";
@@ -18,7 +19,7 @@ export class EasyShareDecryption {
 
   public async decrypt(share: Base64EncodedString) {
     return EasyShare.parse(
-      JSON.parse(await this.primaryKeyDecryption.decrypt(share)),
+      deserialize(await this.primaryKeyDecryption.decrypt(share)),
     );
   }
 }
@@ -35,7 +36,7 @@ export class EasyShareEncryption {
   }
 
   public async encrypt(share: EasyShare): Promise<Base64EncodedString> {
-    return await this.primaryKeyEncryption.encrypt(JSON.stringify(share));
+    return await this.primaryKeyEncryption.encrypt(serialize(share));
   }
 }
 
@@ -59,7 +60,7 @@ export class SharesLocalEncryption {
   public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
     const [easy, backup] = await Promise.all([
       shares.easy ? this.easyEncryption.encrypt(shares.easy) : undefined,
-      this.backupEncryption.encrypt(JSON.stringify(shares.backup)),
+      this.backupEncryption.encrypt(serialize(shares.backup)),
     ]);
     return {
       easy,
@@ -88,7 +89,7 @@ export class SharesBackupEncryption {
   public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
     const [easy, backup] = await Promise.all([
       shares.easy ? this.encryptEasyShare(shares.easy) : undefined,
-      this.backupEncryption.encrypt(JSON.stringify(shares.backup)),
+      this.backupEncryption.encrypt(serialize(shares.backup)),
     ]);
     return {
       easy,
@@ -97,6 +98,6 @@ export class SharesBackupEncryption {
   }
 
   public async encryptEasyShare(share: EasyShare) {
-    return await this.easyEncryption.encrypt(JSON.stringify(share));
+    return await this.easyEncryption.encrypt(serialize(share));
   }
 }

@@ -3,6 +3,7 @@ import {
   Secp256k1PrivateKeySigner,
   SecretJsHomeChainId,
 } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { Wallet } from "secretjs";
 import invariant from "tiny-invariant";
 
@@ -14,7 +15,7 @@ export function getFeeLender(
   switch (chainId) {
     case SecretJsHomeChainId.PULSAR_TESTNET: {
       invariant(process.env.FEE_LENDERS_PULSAR_3, "No fee lenders");
-      const feeLenders = JSON.parse(process.env.FEE_LENDERS_PULSAR_3);
+      const feeLenders = deserialize(process.env.FEE_LENDERS_PULSAR_3);
       const lenderIndex =
         knownLenderIndex ?? Math.floor(Math.random() * feeLenders.length);
       const feeLender = feeLenders[lenderIndex];

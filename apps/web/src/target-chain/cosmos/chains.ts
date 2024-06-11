@@ -1,29 +1,27 @@
-export enum CosmosSdkChainId {
-  Sei = "pacific-1",
-  Osmosis = "osmosis-1",
-  Neutron = "neutron-1",
-  Stargaze = "stargaze-1",
-  Tia = "celestia",
-  Inj = "injective-1",
+export enum CosmosChainId {
+  Sei = "cosmos:pacific-1",
+  Osmosis = "cosmos:osmosis-1",
+  Neutron = "cosmos:neutron-1",
+  Stargaze = "cosmos:stargaze-1",
+  Tia = "cosmos:celestia",
+  Inj = "cosmos:injective-1",
 }
 
-export const allCosmosSdkChainIds = [
-  CosmosSdkChainId.Sei,
-  CosmosSdkChainId.Osmosis,
-  CosmosSdkChainId.Neutron,
-  CosmosSdkChainId.Stargaze,
-  CosmosSdkChainId.Tia,
-  CosmosSdkChainId.Inj,
+export const allCosmosChains = [
+  CosmosChainId.Sei,
+  CosmosChainId.Osmosis,
+  CosmosChainId.Neutron,
+  CosmosChainId.Stargaze,
+  CosmosChainId.Tia,
+  CosmosChainId.Inj,
 ];
 
-export function isCosmosSdkChainId(
-  chainId: string,
-): chainId is CosmosSdkChainId {
-  return Object.values<string>(CosmosSdkChainId).includes(chainId);
+export function isCosmosChainId(chainId: string): chainId is CosmosChainId {
+  return Object.values<string>(CosmosChainId).includes(chainId);
 }
 
-export interface CosmosSdkChainData {
-  id: CosmosSdkChainId;
+export interface CosmosChainData {
+  id: CosmosChainId;
   name: string;
   prefix: string;
   rpcs: string[];
@@ -31,49 +29,49 @@ export interface CosmosSdkChainData {
   disabled?: boolean;
 }
 
-export const CosmosSdkChains: Record<CosmosSdkChainId, CosmosSdkChainData> = {
-  [CosmosSdkChainId.Sei]: {
-    id: CosmosSdkChainId.Sei,
+export const CosmosChains: Record<CosmosChainId, CosmosChainData> = {
+  [CosmosChainId.Sei]: {
+    id: CosmosChainId.Sei,
     name: "Sei",
     rpcs: ["https://sei-rpc.polkachu.com"],
     prefix: "sei",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/sei/images/sei.svg",
   },
-  [CosmosSdkChainId.Osmosis]: {
-    id: CosmosSdkChainId.Osmosis,
+  [CosmosChainId.Osmosis]: {
+    id: CosmosChainId.Osmosis,
     name: "Osmosis",
     rpcs: ["https://rpc.osmosis.zone"],
     prefix: "osmo",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
   },
-  [CosmosSdkChainId.Neutron]: {
-    id: CosmosSdkChainId.Neutron,
+  [CosmosChainId.Neutron]: {
+    id: CosmosChainId.Neutron,
     name: "Neutron",
     rpcs: ["https://rpc-lb.neutron.org"],
     prefix: "neutron",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/neutron/images/ntrn.svg",
   },
-  [CosmosSdkChainId.Stargaze]: {
-    id: CosmosSdkChainId.Stargaze,
+  [CosmosChainId.Stargaze]: {
+    id: CosmosChainId.Stargaze,
     name: "Stargaze",
     rpcs: ["https://rpc.stargaze-apis.com/"],
     prefix: "stars",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/stargaze/images/stars.svg",
   },
-  [CosmosSdkChainId.Tia]: {
-    id: CosmosSdkChainId.Tia,
+  [CosmosChainId.Tia]: {
+    id: CosmosChainId.Tia,
     name: "Celestia",
     rpcs: ["https://celestia-rpc.publicnode.com:443"],
     prefix: "celestia",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/celestia/images/celestia.svg",
   },
-  [CosmosSdkChainId.Inj]: {
-    id: CosmosSdkChainId.Inj,
+  [CosmosChainId.Inj]: {
+    id: CosmosChainId.Inj,
     name: "Injective",
     rpcs: ["https://injective-rpc.publicnode.com:443"],
     prefix: "inj",

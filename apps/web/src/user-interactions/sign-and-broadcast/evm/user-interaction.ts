@@ -1,4 +1,4 @@
-import { EvmChainId } from "@/target-chain/evm/chains";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import {
   createUserInteractionType,
@@ -9,7 +9,7 @@ export interface SignAndBroadcastEvmPayload {
   readonly walletMeta: {
     userEntryAddress: string;
   };
-  readonly targetChainId: EvmChainId;
+  readonly targetChainId: Eip155ChainId;
   readonly cancelable: boolean;
   readonly callData: HexEncodedStringWithPrefix;
   readonly mockOnly?: boolean;
