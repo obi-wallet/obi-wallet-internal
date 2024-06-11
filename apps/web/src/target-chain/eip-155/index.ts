@@ -16,7 +16,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
-import { serialize } from "@obi-wallet/sdk-json";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
   Secp256k1PublicKey,
@@ -43,64 +43,24 @@ import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
 export type EvmUserOperation = UserOperation<"v0.7">;
-// Replace all bigints with strings
-export interface SerializedEvmUserOperation
-  extends Omit<
-    EvmUserOperation,
-    | "nonce"
-    | "callGasLimit"
-    | "verificationGasLimit"
-    | "preVerificationGas"
-    | "maxFeePerGas"
-    | "maxPriorityFeePerGas"
-    | "paymasterVerificationGasLimit"
-    | "paymasterPostOpGasLimit"
-  > {
-  nonce: string;
-  callGasLimit: string;
-  verificationGasLimit: string;
-  preVerificationGas: string;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-  paymasterVerificationGasLimit?: string;
-  paymasterPostOpGasLimit?: string;
-}
+
+export const SerializedEvmUserOperation = z
+  .string()
+  .brand("SerializedEvmUserOperation");
+export type SerializedEvmUserOperation = z.infer<
+  typeof SerializedEvmUserOperation
+>;
 
 export function serializeUserOperation(
   userOperation: EvmUserOperation,
 ): SerializedEvmUserOperation {
-  return {
-    ...userOperation,
-    nonce: userOperation.nonce.toString(),
-    callGasLimit: userOperation.callGasLimit.toString(),
-    verificationGasLimit: userOperation.verificationGasLimit.toString(),
-    preVerificationGas: userOperation.preVerificationGas.toString(),
-    maxFeePerGas: userOperation.maxFeePerGas.toString(),
-    maxPriorityFeePerGas: userOperation.maxPriorityFeePerGas.toString(),
-    paymasterVerificationGasLimit:
-      userOperation.paymasterVerificationGasLimit?.toString(),
-    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit?.toString(),
-  };
+  return SerializedEvmUserOperation.parse(serialize(userOperation));
 }
 
 export function deserializeUserOperation(
   userOperation: SerializedEvmUserOperation,
 ): EvmUserOperation {
-  return {
-    ...userOperation,
-    nonce: BigInt(userOperation.nonce),
-    callGasLimit: BigInt(userOperation.callGasLimit),
-    verificationGasLimit: BigInt(userOperation.verificationGasLimit),
-    preVerificationGas: BigInt(userOperation.preVerificationGas),
-    maxFeePerGas: BigInt(userOperation.maxFeePerGas),
-    maxPriorityFeePerGas: BigInt(userOperation.maxPriorityFeePerGas),
-    paymasterVerificationGasLimit: userOperation.paymasterVerificationGasLimit
-      ? BigInt(userOperation.paymasterVerificationGasLimit)
-      : undefined,
-    paymasterPostOpGasLimit: userOperation.paymasterPostOpGasLimit
-      ? BigInt(userOperation.paymasterPostOpGasLimit)
-      : undefined,
-  };
+  return deserialize(userOperation);
 }
 
 export class Eip155TargetChain extends AbstractTargetChain<

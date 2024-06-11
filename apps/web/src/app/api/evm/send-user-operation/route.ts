@@ -12,10 +12,7 @@ export const maxDuration = 45;
 
 const schema = z.object({
   targetChainId: Eip155ChainIdSchema,
-  // TODO: be more specific
-  userOperation: z.custom<SerializedEvmUserOperation>(() => {
-    return true;
-  }),
+  userOperation: SerializedEvmUserOperation,
 });
 
 export async function POST(request: Request) {

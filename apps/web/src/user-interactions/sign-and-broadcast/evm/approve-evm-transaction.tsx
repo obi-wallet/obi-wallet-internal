@@ -75,9 +75,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             );
             const schema = z.object({
               success: z.boolean(),
-              userOperation: z.custom<SerializedEvmUserOperation>(() => {
-                return true;
-              }),
+              userOperation: SerializedEvmUserOperation,
             });
             const { success, userOperation } = schema.parse(
               await response.json(),
