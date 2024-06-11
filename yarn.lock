@@ -3353,6 +3353,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@obi-wallet/sdk-json@workspace:*, @obi-wallet/sdk-json@workspace:packages/sdk-json":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-json@workspace:packages/sdk-json"
+  dependencies:
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    "@types/ramda": "npm:^0.30.0"
+    eslint: "npm:^8.57.0"
+    ramda: "npm:^0.30.0"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
+
 "@obi-wallet/sdk-secp256k1@workspace:*, @obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-secp256k1@workspace:packages/sdk-secp256k1"
@@ -3453,6 +3466,7 @@ __metadata:
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
+    "@obi-wallet/sdk-json": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@playwright/test": "npm:^1.44.0"
