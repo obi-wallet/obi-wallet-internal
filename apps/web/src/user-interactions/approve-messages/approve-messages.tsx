@@ -2,10 +2,7 @@ import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
-import {
-  CosmosSdkChainId,
-  isCosmosSdkChainId,
-} from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -63,7 +60,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       queryKey: ["simulate", { walletMeta, targetChainId, messages }],
       queryFn: async () => {
         invariant(wallet, "Wallet not found");
-        invariant(isCosmosSdkChainId(targetChainId), "Invalid chainId");
+        invariant(isCosmosChainId(targetChainId), "Invalid chainId");
 
         const targetChain = TargetChain.chainId(targetChainId);
 
@@ -189,12 +186,12 @@ const PrettyPrint = observer(function PrettyPrint({
   fee: unknown;
   memo: string;
 }) {
-  if (!isCosmosSdkChainId(targetChainId)) {
+  if (!isCosmosChainId(targetChainId)) {
     return null;
   }
 
   return (
-    <PrettyPrintCosmosSdk
+    <PrettyPrintCosmos
       messages={messages}
       rawData={rawData}
       targetChainId={targetChainId}
@@ -204,7 +201,7 @@ const PrettyPrint = observer(function PrettyPrint({
   );
 });
 
-const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
+const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
   messages,
   rawData,
   targetChainId,
@@ -213,7 +210,7 @@ const PrettyPrintCosmosSdk = observer(function PrettyPrintCosmosSdk({
 }: {
   messages: unknown[];
   rawData: unknown;
-  targetChainId: CosmosSdkChainId;
+  targetChainId: CosmosChainId;
   fee: unknown | undefined;
   memo: string;
 }) {
@@ -297,7 +294,7 @@ function messageToDescription({
   targetChainId,
 }: {
   message: EncodeObject;
-  targetChainId: CosmosSdkChainId;
+  targetChainId: CosmosChainId;
 }): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
@@ -322,7 +319,7 @@ function prettyPrintCoin({
   targetChainId,
 }: {
   coin: Coin;
-  targetChainId: CosmosSdkChainId;
+  targetChainId: CosmosChainId;
 }): {
   amount: string;
   denom: string;

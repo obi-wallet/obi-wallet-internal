@@ -11,6 +11,7 @@ import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-dat
 import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { createHash, MultisigKey, WalletData } from "@obi-wallet/sdk";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useState } from "react";
@@ -41,7 +42,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
   );
   const keyMetaData = interaction.payload.keyMetaData;
   const walletData = WalletData.parse(
-    JSON.parse(interaction.payload.serializedWalletData),
+    deserialize(interaction.payload.serializedWalletData),
   );
 
   const [results, setResults] = useState<IntentionsResults | undefined>(
@@ -80,7 +81,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
 
       const response = await fetch("/api/set-wallet-data", {
         method: "POST",
-        body: JSON.stringify({
+        body: serialize({
           serializedWalletData: interaction.payload.serializedWalletData,
           signatures,
           userAccountAddress: userAccount.data.userAccountAddress,

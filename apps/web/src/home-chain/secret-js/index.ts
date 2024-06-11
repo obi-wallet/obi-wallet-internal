@@ -22,6 +22,7 @@ import {
   UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -131,7 +132,7 @@ export class SecretJsHomeChain {
 
     const encryptedKeyMetaData = await new MultisigKeyEncryption(
       w.owner.publicKey,
-    ).encrypt(JSON.stringify(keyMetaData));
+    ).encrypt(serialize(keyMetaData));
 
     const data: WalletData = {
       homeChainId: wallet.homeChain,
@@ -169,7 +170,7 @@ export class SecretJsHomeChain {
 
     const encryptedKeyMetaData = await new MultisigKeyEncryption(
       w.owner.publicKey,
-    ).encrypt(JSON.stringify(keyMetaData));
+    ).encrypt(serialize(keyMetaData));
 
     return LegacyWalletDataBackup.parse({
       chainId: wallet.homeChain,
@@ -197,7 +198,7 @@ export class SecretJsHomeChain {
               };
             }
 
-            throw new Error(`Invalid key: ${JSON.stringify(key)}`);
+            throw new Error(`Invalid key: ${serialize(key)}`);
           }),
         },
         encryptedEasyShare,
@@ -231,7 +232,7 @@ export class SecretJsHomeChain {
       "https://proxy-wallets.obiwallet.workers.dev",
       {
         method: "POST",
-        body: JSON.stringify({
+        body: serialize({
           chainId: this.chainId,
           publicKey: publicKey.value,
         }),
@@ -253,7 +254,7 @@ export class SecretJsHomeChain {
     const result = schema.safeParse(await response.json());
     if (!result.success) {
       throw new Error(
-        `Failed to parse proxy wallets: ${JSON.stringify(result.error)}`,
+        `Failed to parse proxy wallets: ${serialize(result.error)}`,
       );
     }
     return result.data;

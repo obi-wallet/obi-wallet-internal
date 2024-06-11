@@ -1,12 +1,17 @@
+import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { rootStore } from "@/stores";
 import {
-  CosmosSdkChainData,
-  CosmosSdkChainId,
-  CosmosSdkChains,
-} from "@/target-chain/cosmos-sdk/chains";
-import { CosmosSdkMpcSigner } from "@/target-chain/cosmos-sdk/mpc-signer";
-import { CosmosSdkTokenRegistry } from "@/target-chain/cosmos-sdk/token-registry";
+  allCosmosChains,
+  CosmosChainData,
+  CosmosChainId,
+  CosmosChains,
+} from "@/target-chain/cosmos/chains";
+import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
+import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
+import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -32,15 +37,23 @@ import {
   StargateClient,
   StdFee,
 } from "@cosmjs/stargate";
+import { Encoding } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { parseCaip2ChainId } from "@obi-wallet/sdk-caip";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
+import {
+  SessionRequestPayload,
+  SessionRequestResponse,
+} from "@obi-wallet/wallet-connect";
+import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
@@ -66,20 +79,23 @@ function isStdFee(fee: unknown): fee is StdFee {
   return StdFeeSchema.safeParse(fee).success;
 }
 
-export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> {
-  protected readonly chainData: CosmosSdkChainData;
+export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
+  public readonly cosmosChainId: string;
+  protected readonly chainData: CosmosChainData;
   protected readonly chain: Chain;
-  protected readonly tokenRegistry: CosmosSdkTokenRegistry;
+  protected readonly tokenRegistry: CosmosTokenRegistry;
 
-  public constructor(chainId: CosmosSdkChainId) {
+  public constructor(chainId: CosmosChainId) {
     super(chainId);
-    this.chainData = CosmosSdkChains[chainId];
+    this.chainData = CosmosChains[chainId];
+    const { reference } = parseCaip2ChainId(chainId);
+    this.cosmosChainId = reference;
     const chain = chains.find((c) => {
-      return c.chain_id === chainId;
+      return c.chain_id === reference;
     });
-    invariant(chain, `Chain not found for ${chainId}`);
+    invariant(chain, `Chain not found for ${reference}`);
     this.chain = chain;
-    this.tokenRegistry = CosmosSdkTokenRegistry.getInstance();
+    this.tokenRegistry = CosmosTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -131,7 +147,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
 
   public async priceQueryFn(id: AssetId) {
     if (
-      [CosmosSdkChainId.Neutron, CosmosSdkChainId.Sei].includes(this.chainId) &&
+      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
       !["untrn", "usei"].includes(id)
     ) {
       const url = "https://api.skip.money/v2/fungible/route";
@@ -142,12 +158,12 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
         .toFixed(0);
 
       const data = {
-        source_asset_chain_id: this.chainId,
+        source_asset_chain_id: this.cosmosChainId,
         amount_in: amountIn,
         source_asset_denom: id,
         dest_asset_denom:
           "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.chainId,
+        dest_asset_chain_id: this.cosmosChainId,
         allow_unsafe: true,
       };
       try {
@@ -156,7 +172,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: serialize(data),
         });
         const json = await res.json();
 
@@ -167,7 +183,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
       }
     }
 
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainId}&tokenAddress=${id}`;
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${id}`;
     try {
       const response = await fetch(url);
       const schema = z.object({
@@ -375,7 +391,7 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
   }
 
   public async getSigner(wallet: MpcWallet) {
-    return await CosmosSdkMpcSigner.fromWallet(wallet, this.chainData.id);
+    return await CosmosMpcSigner.fromWallet(wallet, this.chainData.id);
   }
 
   public validateMessages(messages: unknown[]): messages is EncodeObject[] {
@@ -428,5 +444,110 @@ export class CosmosSdkTargetChain extends AbstractTargetChain<CosmosSdkChainId> 
 
   public get registry() {
     return new Registry([...defaultRegistryTypes, ...wasmTypes]);
+  }
+
+  public static async getSupportedWalletConnectNamespaces() {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const cosmosChains = allCosmosChains
+      .map((targetChainId) => {
+        return new CosmosTargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    return {
+      cosmos: {
+        chains: cosmosChains.map((chain) => {
+          return chain.chainId;
+        }),
+        methods: [
+          "cosmos_getAccounts",
+          "cosmos_signAmino",
+          "cosmos_signDirect",
+        ],
+        accounts: await Promise.all(
+          cosmosChains.map(async (chain) => {
+            const address = await chain.obiAccountAddressQueryFn(publicKey);
+            return `${chain.chainId}:${address}`;
+          }),
+        ),
+        events: ["chainChanged", "accountsChanged"],
+      },
+    };
+  }
+
+  public async handleWalletConnectSessionRequest({
+    request,
+  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    if (!wallet) {
+      return { error: getSdkError("USER_DISCONNECTED") };
+    }
+
+    switch (request.method) {
+      case "cosmos_getAccounts": {
+        const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+          wallet.userEntryAddress,
+        );
+        const cosmosChains = allCosmosChains
+          .map((targetChainId) => {
+            return new CosmosTargetChain(targetChainId);
+          })
+          .filter((chain) => {
+            return !chain.disabled;
+          });
+
+        const result = await Promise.all(
+          cosmosChains.map(async (targetChain) => {
+            return {
+              algo: "secp256k1",
+              address: await targetChain.obiAccountAddress(publicKey),
+              pubkey: Encoding.fromBytes(
+                getSec256k1CompressedPublicKey(publicKey),
+              ).toBase64(),
+            };
+          }),
+        );
+        return { result };
+      }
+      case "cosmos_signAmino": {
+        const response = await CosmosSignAminoUserInteraction.start({
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
+        if (response.approved) {
+          return { result: response.payload };
+        } else {
+          return { error: getSdkError("USER_REJECTED") };
+        }
+      }
+      case "cosmos_signDirect": {
+        const response = await CosmosSignDirectUserInteraction.start({
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          cancelable: true,
+          signerAddress: request.params.signerAddress,
+          signDoc: request.params.signDoc,
+        });
+        if (response.approved) {
+          return { result: response.payload };
+        } else {
+          return { error: getSdkError("USER_REJECTED") };
+        }
+      }
+      default:
+        return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
   }
 }

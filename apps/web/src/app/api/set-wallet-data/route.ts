@@ -11,6 +11,7 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { NextResponse } from "next/server";
 import * as secp256k1 from "secp256k1";
 import { z } from "zod";
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   } = result.data;
 
   const walletDataResult = WalletData.safeParse(
-    JSON.parse(serializedWalletData),
+    deserialize(serializedWalletData),
   );
 
   if (!walletDataResult.success) {

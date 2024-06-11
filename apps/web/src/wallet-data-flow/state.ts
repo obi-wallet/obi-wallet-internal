@@ -12,6 +12,7 @@ import {
   Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { action, observable, toJS } from "mobx";
 import { Dispatch, useReducer } from "react";
 
@@ -28,9 +29,7 @@ export class KeyMetaDataContainer {
   }
 
   public equals(other: this): boolean {
-    return (
-      JSON.stringify(toJS(this.value)) === JSON.stringify(toJS(other.value))
-    );
+    return serialize(toJS(this.value)) === serialize(toJS(other.value));
   }
 
   public get value() {

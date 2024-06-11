@@ -10,6 +10,7 @@ import { SendingAnimation } from "@/user-interactions/approve-messages/sending-a
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
 import { BackupShare, EasyShare, WalletData } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -44,9 +45,9 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
         });
 
       if (keyMetaDataRaw && firstShareRaw && secondShareRaw) {
-        const easyShare = EasyShare.parse(JSON.parse(firstShareRaw));
-        const backupShare = BackupShare.parse(JSON.parse(secondShareRaw));
-        const keyMetaData = KeyMetaData.parse(JSON.parse(keyMetaDataRaw));
+        const easyShare = EasyShare.parse(deserialize(firstShareRaw));
+        const backupShare = BackupShare.parse(deserialize(secondShareRaw));
+        const keyMetaData = KeyMetaData.parse(deserialize(keyMetaDataRaw));
 
         if (state.ownerDraft.value.primaryKey) {
           await finishFlow({

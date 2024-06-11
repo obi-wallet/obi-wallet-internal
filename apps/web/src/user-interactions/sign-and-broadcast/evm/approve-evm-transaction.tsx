@@ -5,8 +5,8 @@ import { TargetChain } from "@/target-chain";
 import {
   deserializeUserOperation,
   SerializedEvmUserOperation,
-} from "@/target-chain/evm";
-import { EvmChainId } from "@/target-chain/evm/chains";
+} from "@/target-chain/eip-155";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -15,6 +15,7 @@ import { SendingAnimation } from "@/user-interactions/approve-messages/sending-a
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { skipToken, useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -27,7 +28,7 @@ export interface ApproveEvmTransactionProps {
   walletMeta: {
     userEntryAddress: string;
   };
-  targetChainId: EvmChainId;
+  targetChainId: Eip155ChainId;
   callData: HexEncodedStringWithPrefix;
   onReject(): void;
   onApprove(args: {
@@ -64,7 +65,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
               "/api/evm/prepare-user-operation-request",
               {
                 method: "POST",
-                body: JSON.stringify({
+                body: serialize({
                   homeChainId: wallet.homeChainId,
                   targetChainId,
                   userEntryAddress: wallet.userEntryAddress,
@@ -74,9 +75,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             );
             const schema = z.object({
               success: z.boolean(),
-              userOperation: z.custom<SerializedEvmUserOperation>(() => {
-                return true;
-              }),
+              userOperation: SerializedEvmUserOperation,
             });
             const { success, userOperation } = schema.parse(
               await response.json(),
@@ -196,7 +195,7 @@ const PrettyPrint = observer(function PrettyPrint({
 }: {
   callData: HexEncodedStringWithPrefix;
   userOperation?: SerializedEvmUserOperation;
-  targetChainId: EvmChainId;
+  targetChainId: Eip155ChainId;
 }) {
   // TODO: copy-pasted from permissionless
   const KernelV3ExecuteAbi = [

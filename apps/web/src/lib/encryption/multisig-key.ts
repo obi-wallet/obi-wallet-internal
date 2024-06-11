@@ -1,5 +1,6 @@
 import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
 import { MultisigPublicKey } from "@obi-wallet/sdk";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { SHA256, Word32Array } from "jscrypto";
 import * as sss from "sss-wasm";
 
@@ -35,7 +36,7 @@ export class MultisigKeyEncryption {
       ["encrypt", "decrypt"],
     );
 
-    return JSON.stringify([
+    return serialize([
       await new AesGcmEncryption(key).encrypt(data),
       ...encryptedShares,
     ]);
@@ -49,7 +50,7 @@ export class MultisigKeyDecryption {
 
   public async decrypt(data: string): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encrypted, ..._encryptedShares] = JSON.parse(data) as [
+    const [encrypted, ..._encryptedShares] = deserialize(data) as [
       Base64EncodedString,
       ...string[],
     ];

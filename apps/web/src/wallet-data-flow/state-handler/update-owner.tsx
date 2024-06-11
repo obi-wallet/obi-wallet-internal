@@ -17,6 +17,7 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { skipToken, useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
 import { observer } from "mobx-react-lite";
@@ -103,7 +104,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
         return await fetch("/api/propose-update-owner", {
           method: "POST",
-          body: JSON.stringify({
+          body: serialize({
             homeChainId: newOwner.chainId,
             newOwner: newOwner.toJSON(),
             userAccountAddress: userAccount.data.userAccountAddress,
@@ -130,7 +131,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
         return await fetch("/api/confirm-update-owner", {
           method: "POST",
-          body: JSON.stringify({
+          body: serialize({
             homeChainId: newOwner.chainId,
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
@@ -161,7 +162,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           );
 
           return EasyShare.parse(
-            JSON.parse(
+            deserialize(
               await easyShareDecryption.decrypt(
                 state.locallyEncryptedSharesByPreviousOwner.easy,
               ),
@@ -232,7 +233,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           results,
           index: 0,
         });
-        return BackupShare.parse(JSON.parse(response));
+        return BackupShare.parse(deserialize(response));
       }
 
       setBackupShare(await getBackupShare());
@@ -275,7 +276,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
                 : `Propose new key schema`,
             ]}
             memo=""
-            rawData={`Changes:\n\n${diffString(previousOwner.toJSON(), newOwner.toJSON())}\n\nProposed Owner:\n\n${JSON.stringify(newOwner.toJSON(), null, 2)}\n\nCurrent Owner:\n\n${JSON.stringify(previousOwner.toJSON(), null, 2)}
+            rawData={`Changes:\n\n${diffString(previousOwner.toJSON(), newOwner.toJSON())}\n\nProposed Owner:\n\n${serialize(newOwner.toJSON(), null, 2)}\n\nCurrent Owner:\n\n${serialize(previousOwner.toJSON(), null, 2)}
               `}
           />
 

@@ -3,8 +3,8 @@ import {
   useWalletDataFlowState,
   WalletDataFlowStatePayload,
 } from "@/wallet-data-flow/state";
+import { WalletDataFlowStateHandler } from "@/wallet-data-flow/state-handler";
 import { observer } from "mobx-react-lite";
-import { WalletDataFlowStateHandler } from "src/wallet-data-flow/state-handler";
 
 export const WalletDataFlow = observer<WalletDataFlowStatePayload>(
   function WalletDataFlow(props) {

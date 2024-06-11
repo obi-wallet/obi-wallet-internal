@@ -2,7 +2,7 @@
 
 import { useStore } from "@/contexts";
 import { TargetChain } from "@/target-chain";
-import { deserializeUserOperation } from "@/target-chain/evm";
+import { deserializeUserOperation } from "@/target-chain/eip-155";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 

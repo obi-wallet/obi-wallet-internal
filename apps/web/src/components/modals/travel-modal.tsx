@@ -6,13 +6,19 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
 import { cn, fromChains, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { nonEmptyString } from "@/validation-helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@obi-wallet/headless-ui";
+import {
+  Caip2ChainId,
+  Caip2ChainIdSchema,
+  parseCaip2ChainId,
+} from "@obi-wallet/sdk-caip";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
@@ -28,6 +34,7 @@ import {
   FaExclamation,
   FaSpinner,
 } from "react-icons/fa6";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Box, Button, Text } from "..";
@@ -59,7 +66,7 @@ type Errors = ErrorsObject | SingleError;
 
 const schema = z.object({
   fromChain: nonEmptyString("FromChain"),
-  toChain: nonEmptyString("ToChain"),
+  toChain: Caip2ChainIdSchema,
   fromAsset: z
     .object({
       // amount should be undefined or number
@@ -110,11 +117,13 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
   const alert = useAlert();
 
-  const getChainFromAsset = () => {
+  const getChainFromAsset = (): Caip2ChainId => {
     if (targetAsset === "usdc") {
-      return CosmosSdkChainId.Neutron;
+      return CosmosChainId.Neutron;
     } else {
-      return toAssets[targetAsset]?.chainId ?? "";
+      const toAsset = toAssets[targetAsset];
+      invariant(toAsset, "toAsset not found");
+      return toAsset.chainId;
     }
   };
 
@@ -165,7 +174,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                 typeof simulation.skip_simulation !== "string" &&
                 simulation.skip_simulation.msgs.length > 0
               ) {
-                const skipMsg = JSON.parse(
+                const skipMsg = deserialize(
                   simulation.skip_simulation.msgs[0].multi_chain_msg.msg,
                 );
                 const skipAmount =
@@ -984,7 +993,7 @@ const simulateTravel = async (
       amount: fromAmount,
     },
     to: {
-      chainId: data.toChain,
+      chainId: parseCaip2ChainId(data.toChain).reference,
       asset: toAsset?.denom,
       address: toAddress,
     },
@@ -995,7 +1004,7 @@ const simulateTravel = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(requestData),
+    body: serialize(requestData),
   });
   const responseData = await res.json();
 
