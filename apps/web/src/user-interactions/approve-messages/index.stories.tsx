@@ -2,7 +2,7 @@ import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { TargetChain } from "@/target-chain";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { ApproveMessages } from ".";
@@ -36,7 +36,7 @@ export const SendMessage: Story = {
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },
-    targetChainId: CosmosSdkChainId.Sei,
+    targetChainId: CosmosChainId.Sei,
     messages: [sendMessage],
     memo: "",
     rawData: [sendMessage],
@@ -72,7 +72,7 @@ const executeMessage = {
     ],
   },
 };
-const targetChain = TargetChain.chainId(CosmosSdkChainId.Sei);
+const targetChain = TargetChain.chainId(CosmosChainId.Sei);
 const encodeObject = targetChain.aminoTypes.fromAmino(executeMessage);
 
 export const AstroportSwapMessage: Story = {
@@ -80,7 +80,7 @@ export const AstroportSwapMessage: Story = {
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },
-    targetChainId: CosmosSdkChainId.Sei,
+    targetChainId: CosmosChainId.Sei,
     messages: [encodeObject],
     memo: "",
     rawData: [executeMessage],

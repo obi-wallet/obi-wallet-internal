@@ -2,7 +2,7 @@
 
 import { useStore } from "@/contexts";
 import { TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { ApproveMessages } from "@/user-interactions/approve-messages";
 import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
@@ -34,7 +34,7 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
 }) {
   const chainId = interaction.payload.targetChainId;
 
-  if (!isCosmosSdkChainId(chainId)) {
+  if (!isCosmosChainId(chainId)) {
     console.error("Unsupported chainId: ", chainId);
     return null;
   }

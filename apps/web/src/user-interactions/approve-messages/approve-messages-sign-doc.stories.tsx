@@ -1,7 +1,7 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
-import { CosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { fromHex } from "@cosmjs/encoding";
 import { makeSignDoc } from "@cosmjs/proto-signing";
 import type { Meta, StoryObj } from "@storybook/react";
@@ -38,7 +38,7 @@ export const TestTx: Story = {
       fromHex(
         "0a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c7029012040a02080112130a0d0a0575636f736d12043230303010c09a0c",
       ),
-      CosmosSdkChainId.Sei,
+      CosmosChainId.Sei,
       1,
     ),
     onReject: () => {},

@@ -2,6 +2,7 @@
 
 import { Button, Text } from "@/components";
 import { useStore } from "@/contexts";
+import { serialize } from "@obi-wallet/sdk-json";
 import { WalletConnectPairingUserInteraction } from "@obi-wallet/wallet-connect";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
@@ -43,7 +44,7 @@ export const WalletConnectPairingUserInteractionHandlerInner = observer<{
           <div className="mt-6 w-full space-y-3">
             <Text color="gray">Raw Data</Text>
             <pre className="text-gray-400">
-              {JSON.stringify(interaction.payload, null, 2)}
+              {serialize(interaction.payload, null, 2)}
             </pre>
           </div>
 

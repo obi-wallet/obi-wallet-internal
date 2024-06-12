@@ -1,5 +1,6 @@
 import { create, get } from "@github/webauthn-json";
 import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";
+import { serialize } from "@obi-wallet/sdk-json";
 import {
   Sec256k1PrivateKey,
   Secp256k1KeyPair,
@@ -113,7 +114,7 @@ function generateWebAuthnPubKey() {
 
     return publicKey;
   } catch (e) {
-    console.error("WebAuthn Public Key creation error:", JSON.stringify(e));
+    console.error("WebAuthn Public Key creation error:", serialize(e));
     throw new Error("Failed to generate WebAuthn Credential");
   }
 }

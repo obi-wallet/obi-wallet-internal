@@ -1,3 +1,4 @@
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AbstractKVStore } from "../abstract";
@@ -7,7 +8,7 @@ export class KVStore implements AbstractKVStore {
 
   public async get<T = unknown>(key: string): Promise<T | undefined> {
     const data = await AsyncStorage.getItem(this.getKey(key));
-    return data === null ? undefined : JSON.parse(data);
+    return data === null ? undefined : deserialize(data);
   }
 
   public async set<T = unknown>(key: string, data: T | null) {
@@ -15,7 +16,7 @@ export class KVStore implements AbstractKVStore {
     if (data === null || data === undefined) {
       return await AsyncStorage.removeItem(this.getKey(key));
     } else {
-      return await AsyncStorage.setItem(this.getKey(key), JSON.stringify(data));
+      return await AsyncStorage.setItem(this.getKey(key), serialize(data));
     }
   }
 

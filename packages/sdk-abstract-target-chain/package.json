@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@obi-wallet/query-client": "workspace:*",
-    "@obi-wallet/sdk-secp256k1": "workspace:*"
+    "@obi-wallet/sdk-secp256k1": "workspace:*",
+    "@obi-wallet/wallet-connect": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

@@ -123,6 +123,13 @@ module.exports = {
 
     "arrow-body-style": ["error", "always"],
     curly: ["error", "multi-line"],
+    "no-restricted-globals": [
+      "error",
+      {
+        name: "JSON",
+        message: "Use @obi-wallet/sdk-json instead.",
+      },
+    ],
     "no-restricted-imports": [
       "error",
       {

@@ -1,6 +1,7 @@
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { Base64EncodedString } from "@obi-wallet/encoding";
 import { Key, MultisigKey } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { fromPairs, splitAt } from "ramda";
 
 interface MultisigKeyEncryptedMessage {
@@ -80,7 +81,7 @@ export abstract class IntentionsHandler {
     message: string,
   ): MultisigKeyEncryptedMessage {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
+    const [encryptedMessage, ...encryptedShares] = deserialize(message) as [
       Base64EncodedString,
       ...Base64EncodedString[],
     ];
@@ -139,7 +140,7 @@ export abstract class NewIntentionsHandler {
     message: string,
   ): NewMultisigKeyEncryptedMessage {
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encryptedMessage, ...encryptedShares] = JSON.parse(message) as [
+    const [encryptedMessage, ...encryptedShares] = deserialize(message) as [
       Base64EncodedString,
       ...Base64EncodedString[],
     ];

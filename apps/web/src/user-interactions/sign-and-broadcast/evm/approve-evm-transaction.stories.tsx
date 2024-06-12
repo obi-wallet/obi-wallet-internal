@@ -1,7 +1,7 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
-import { EvmChainId } from "@/target-chain/evm/chains";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { Meta, StoryObj } from "@storybook/react";
 import { http as mswHttp, HttpResponse } from "msw";
@@ -50,7 +50,7 @@ export const SendMessage: Story = {
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },
-    targetChainId: EvmChainId.EthereumTestnet,
+    targetChainId: Eip155ChainId.EthereumTestnet,
     callData,
     onReject: () => {},
     onApprove: async () => {

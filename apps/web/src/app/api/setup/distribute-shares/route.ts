@@ -6,6 +6,7 @@ import {
   SecretJsClient,
   SecretJsHomeChains,
 } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { MsgExecuteContract } from "secretjs";
 import { z } from "zod";
 
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
   });
   const broadcastTransactionResult =
     await client.broadcastSignedTransaction(signedTransaction);
-  console.warn(JSON.stringify(broadcastTransactionResult));
+  console.warn(serialize(broadcastTransactionResult));
 
   if (!broadcastTransactionResult.success) {
     return new Response("TX failed", {

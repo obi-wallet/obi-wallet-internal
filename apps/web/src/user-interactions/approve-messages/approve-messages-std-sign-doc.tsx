@@ -1,5 +1,5 @@
 import { TargetChain } from "@/target-chain";
-import { isCosmosSdkChainId } from "@/target-chain/cosmos-sdk/chains";
+import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { AminoSignResponse, StdSignDoc } from "@cosmjs/amino";
 import { observer } from "mobx-react-lite";
 
@@ -24,7 +24,7 @@ export const ApproveMessagesStdSignDoc =
   }) {
     const chainId = signDoc.chain_id;
 
-    if (!isCosmosSdkChainId(chainId)) {
+    if (!isCosmosChainId(chainId)) {
       console.error("Unsupported chainId: ", chainId);
       return null;
     }
