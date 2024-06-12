@@ -1,3 +1,4 @@
+import { Button, Text } from "@/components";
 import { toAssets } from "@/dashboard/assets";
 import { usePendingTXs } from "@/hooks/balances";
 import { usePublicKey } from "@/hooks/use-public-key";
@@ -23,6 +24,7 @@ import {
   StepStatus,
   Transaction,
 } from "./schema";
+import { TransactionStatusType } from "./transaction-status";
 
 type StepAndTx = StepStatus & {
   transaction: Transaction;
@@ -37,8 +39,8 @@ export const PendingAssets = observer(function PendingAssets() {
   if (!pendingTXs.data) return null;
   const onlyPending = pendingTXs.data.filter((t) => {
     return (
-      t.transaction.status.includes("InProgress") ||
-      t.transaction.status.includes("LowBalance")
+      t.transaction.status.includes(TransactionStatusType.InProgress) ||
+      t.transaction.status.includes(TransactionStatusType.LowBalance)
     );
   });
   return (
@@ -75,10 +77,40 @@ const PendingAsset = observer<{
       }) ?? ""
     ];
 
+  const isShowFixButton = !tx.transaction.status.includes(
+    TransactionStatusType.InProgress,
+  );
+
   return (
-    <>
+    <div className="relative mb-3 mt-3">
+      <svg
+        aria-hidden="true"
+        className="absolute z-10 h-full w-full opacity-10"
+      >
+        <defs>
+          <pattern
+            id=":S2:"
+            width="10"
+            height="10"
+            patternUnits="userSpaceOnUse"
+            x="100%"
+            y="100%"
+            // patternTransform="translate(10 10)"
+          >
+            <path d="M0 128V.5H128" fill="none" stroke="currentColor"></path>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#:S2:)"></rect>
+      </svg>
       <div
-        className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between   rounded-lg bg-blue-950 p-5 hover:bg-gray-600"
+        className={cn(
+          " flex h-full w-full cursor-pointer flex-row items-center justify-between rounded-lg p-5 hover:bg-gray-600",
+          "z-20 bg-gradient-to-r",
+          !tx.transaction.status.includes(TransactionStatusType.InProgress) &&
+            "from-red-500 via-red-400 to-red-700",
+          tx.transaction.status.includes(TransactionStatusType.InProgress) &&
+            "from-blue-500 via-indigo-500 to-blue-800",
+        )}
         key={tx.transaction.deposit_address}
         onClick={() => {
           const status = tx.transaction.status;
@@ -89,29 +121,34 @@ const PendingAsset = observer<{
           return;
         }}
       >
-        <div className="flex flex-row items-center">
-          <div className="mr-3">
-            <img
-              src={asset?.image ?? ""}
-              alt={asset?.label}
-              className="h-8 w-8"
-            />
-          </div>
-          <div className="flex flex-row">
-            <div className="flex flex-col">
-              <div className="mr-5 text-lg">{asset?.label} </div>
-              <div className="mr-5 text-xs  opacity-60">Pending tx</div>
-            </div>
-          </div>
+        <div className="z-30 flex flex-row items-center">
+          <img
+            src={asset?.image ?? ""}
+            alt={asset?.label}
+            className="h-12 w-12"
+          />
+          <Text fontWeight="semibold" className="ml-3" size="2xl">
+            {asset?.label}
+          </Text>
+          <Text fontWeight="semibold" className="ml-14" size="md">
+            {tx.transaction.status}
+          </Text>
+          {/* <div className="mr-5 text-lg"> </div>
+          <div className="mr-5 text-xs  opacity-60">Pending tx</div> */}
         </div>
-        <Status status={tx.transaction.status} />
-
+        {/* <Status status={tx.transaction.status} /> */}
+        {isShowFixButton && (
+          <Button className="z-30 rounded-lg border-none bg-slate-900 px-4 py-1.5">
+            Fix
+          </Button>
+        )}
         <PendingAmount tx={tx} />
       </div>
       {opened && <PendingStepList tx={tx} />}
-    </>
+    </div>
   );
 });
+
 const renderSVG = (status: string) => {
   switch (status) {
     case "success":
