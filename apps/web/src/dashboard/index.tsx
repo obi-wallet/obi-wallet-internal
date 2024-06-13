@@ -130,7 +130,7 @@ const AssetBalance = observer(function AssetBalance({
       const balanceBValueSum = balanceB.prettyData.reduce((acc, curr) => {
         return acc.plus(curr.usdBalance);
       }, new BigNumber(0));
-      if (balanceAValueSum < balanceBValueSum) return 1;
+      if (balanceAValueSum.lt(balanceBValueSum)) return 1;
       return -1;
     });
 
