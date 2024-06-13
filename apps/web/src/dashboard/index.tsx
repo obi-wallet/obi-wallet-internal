@@ -106,10 +106,12 @@ const AssetBalance = observer(function AssetBalance({
             prettyAmount: amount,
             assetInfo,
           };
-        }) || []
+        }) ?? []
       )
         .filter((asset) => {
-          return asset.assetInfo?.symbol.toLowerCase().includes(searchAsset);
+          return (asset.assetInfo?.symbol.toLowerCase() ?? "").includes(
+            searchAsset,
+          );
         })
         .sort((assetA, assetB) => {
           if (assetA.usdBalance < assetB.usdBalance) return 1;
@@ -128,7 +130,7 @@ const AssetBalance = observer(function AssetBalance({
       const balanceBValueSum = balanceB.prettyData.reduce((acc, curr) => {
         return acc.plus(curr.usdBalance);
       }, new BigNumber(0));
-      if (balanceAValueSum < balanceBValueSum) return 1;
+      if (balanceAValueSum.lt(balanceBValueSum)) return 1;
       return -1;
     });
 
