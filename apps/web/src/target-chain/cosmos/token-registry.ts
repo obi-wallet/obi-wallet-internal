@@ -42,7 +42,7 @@ export class CosmosTokenRegistry {
           return a.chain_name === chain.chain_name;
         })?.assets ?? [];
       assetList.forEach((asset) => {
-        const key = `${chain.chain_id}:${asset.base}`;
+        const key = `cosmos:${chain.chain_id}:${asset.base}`;
         result[key] = asset;
       });
     });
@@ -61,7 +61,7 @@ export class CosmosTokenRegistry {
       tokens.forEach(({ token, originDenom, originChainId }) => {
         if (token && originDenom && originChainId) {
           const key = `${chainId}:${token}`;
-          const originKey = `${originChainId}:${originDenom}`;
+          const originKey = `cosmos:${originChainId}:${originDenom}`;
           const origin = result[originKey];
           if (origin) {
             result[key] = origin;

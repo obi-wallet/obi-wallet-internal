@@ -106,10 +106,12 @@ const AssetBalance = observer(function AssetBalance({
             prettyAmount: amount,
             assetInfo,
           };
-        }) || []
+        }) ?? []
       )
         .filter((asset) => {
-          return asset.assetInfo?.symbol.toLowerCase().includes(searchAsset);
+          return (asset.assetInfo?.symbol.toLowerCase() ?? "").includes(
+            searchAsset,
+          );
         })
         .sort((assetA, assetB) => {
           if (assetA.usdBalance < assetB.usdBalance) return 1;
