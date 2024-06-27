@@ -207,7 +207,7 @@ function PendingStepItem({
         }
         const fromChain = getFromChain(step.chainId);
         const chainId = step.transaction.intent.destination_chain_id;
-        const chain = TargetChain.chainId(chainId);
+        const chain = TargetChain.chainId(`cosmos:${chainId}`);
         if (chainId === "neutron-1") {
           return `Swap to USDC on ${fromChain?.label} (Squid)`;
         }
@@ -221,7 +221,7 @@ function PendingStepItem({
       }
       case "Skip": {
         const chainId = step.transaction.intent.destination_chain_id;
-        const chain = TargetChain.chainId(chainId);
+        const chain = TargetChain.chainId(`cosmos:${chainId}`);
         const denom = step.transaction.intent.destination_asset;
         const asset = toPairs(toAssets).find(([, v]) => {
           return v.denom === denom;
