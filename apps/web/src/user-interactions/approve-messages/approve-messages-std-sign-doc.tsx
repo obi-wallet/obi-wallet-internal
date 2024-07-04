@@ -22,7 +22,7 @@ export const ApproveMessagesStdSignDoc =
     onApprove,
     ...rest
   }) {
-    const chainId = signDoc.chain_id;
+    const chainId = `cosmos:${signDoc.chain_id}`;
 
     if (!isCosmosChainId(chainId)) {
       console.error("Unsupported chainId: ", chainId);
