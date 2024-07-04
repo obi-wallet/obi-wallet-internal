@@ -23,7 +23,7 @@ export const ApproveMessagesSignDoc = observer<ApproveMessagesSignDocProps>(
     onApprove,
     ...rest
   }) {
-    const chainId = signDoc.chainId;
+    const chainId = `cosmos:${signDoc.chainId}`;
 
     if (!isCosmosChainId(chainId)) {
       console.error("Unsupported chainId: ", chainId);
