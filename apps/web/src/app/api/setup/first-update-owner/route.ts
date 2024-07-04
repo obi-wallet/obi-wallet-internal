@@ -107,6 +107,8 @@ export async function POST(request: Request) {
     }
   }
 
+  // TODO: trigger event here
+
   return NextResponse.json({
     success: broadcastTransactionResult.success,
   });

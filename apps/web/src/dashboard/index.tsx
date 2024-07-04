@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import { CiSearch } from "react-icons/ci";
+import { useEffectOnceWhen } from "rooks";
 
 import { PendingAssets } from "./pending";
 
@@ -21,7 +22,24 @@ interface PrettyAssetData extends AssetWithPrice {
 }
 
 export const DashboardPage = observer(function Dashboard() {
-  useCurrentWallet({ redirectTo: "/" });
+  const wallet = useCurrentWallet({ redirectTo: "/" });
+
+  useEffectOnceWhen(async () => {
+    if (wallet) {
+      // Comment in to trigger a debug event
+      // See https://points.obiwallet.workers.dev/ for a list of persisted events
+      // const { triggerEvent } = await import("@/points");
+      // await triggerEvent({
+      //   userEntryAddress: wallet.userEntryAddress,
+      //   event: {
+      //     type: "dashboard-view",
+      //     payload: {
+      //       wallet: wallet?.userEntryAddress,
+      //     },
+      //   },
+      // });
+    }
+  }, !!wallet);
 
   return (
     <div className="flex w-full flex-col text-white">

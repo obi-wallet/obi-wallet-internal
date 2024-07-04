@@ -526,6 +526,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
+          // TODO: trigger client-side event here
           return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };
@@ -541,6 +542,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
+          // TODO: trigger client-side event here
           return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };
