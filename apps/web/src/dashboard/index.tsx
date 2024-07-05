@@ -38,12 +38,12 @@ const Assets = observer(function Assets() {
         <Account />
         <Button
           href="/dashboard/import-new-asset/"
-          className="flex-1 rounded-lg border-dashed border-blue-500 bg-transparent justify-center text-sm font-normal p-2 mb-2"
+          className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"
         >
           Import New Asset
         </Button>
       </div>
-      <div className="hidden flex-row gap-3 md:flex items-center">
+      <div className="hidden flex-row items-center gap-3 md:flex">
         <Input
           className="mt-0 px-3 py-1.5"
           leftComponent={<CiSearch className="h-6 w-6" color="white" />}
@@ -57,7 +57,7 @@ const Assets = observer(function Assets() {
         />
         <Button
           href="/dashboard/import-new-asset/"
-          className="rounded-lg border-dashed border-blue-500 bg-transparent justify-center text-sm font-normal w-64 h-9"
+          className="h-9 w-64 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"
         >
           Import New Asset
         </Button>
