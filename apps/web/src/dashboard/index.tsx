@@ -1,6 +1,6 @@
 "use client";
 
-import { Account, Divider, Text } from "@/components";
+import { Account, Divider, Text, Button } from "@/components";
 import { AssetWithPrice, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
@@ -36,8 +36,14 @@ const Assets = observer(function Assets() {
     <>
       <div className="hidden w-full flex-1 flex-col max-md:flex">
         <Account />
+        <Button
+          href="/dashboard/import-new-asset/"
+          className="flex-1 rounded-lg border-dashed border-blue-500 bg-transparent justify-center text-sm font-normal p-2 mb-2"
+        >
+          Import New Asset
+        </Button>
       </div>
-      <div className="hidden flex-row gap-3 md:flex">
+      <div className="hidden flex-row gap-3 md:flex items-center">
         <Input
           className="mt-0 px-3 py-1.5"
           leftComponent={<CiSearch className="h-6 w-6" color="white" />}
@@ -49,6 +55,12 @@ const Assets = observer(function Assets() {
           }}
           inputClassName="ml-2"
         />
+        <Button
+          href="/dashboard/import-new-asset/"
+          className="rounded-lg border-dashed border-blue-500 bg-transparent justify-center text-sm font-normal w-64 h-9"
+        >
+          Import New Asset
+        </Button>
       </div>
 
       <Divider className="mt-5 hidden md:block" />
