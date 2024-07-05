@@ -1,7 +1,7 @@
 "use client";
 
-import { observer } from "mobx-react-lite";
 import { Box, Input, Button } from "@/components";
+import { observer } from "mobx-react-lite";
 
 export default observer(function ImportNewAsset() {
   return (
