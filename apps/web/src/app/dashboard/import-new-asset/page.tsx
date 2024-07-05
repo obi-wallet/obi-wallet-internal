@@ -1,6 +1,6 @@
 "use client";
 
-import { DropDown, TabUi, Box, Input, Button } from "@/components";
+import { Box, Input, Button } from "@/components";
 import { observer } from "mobx-react-lite";
 
 export default observer(function ImportNewAsset() {
