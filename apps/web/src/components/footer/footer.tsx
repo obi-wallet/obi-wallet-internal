@@ -22,7 +22,7 @@ export function Footer({ className }: FooterProps) {
       <div className="bg-background-primary h-5 w-5 rounded-full" />
       <Text className="ml-3">Obi v2.1.0</Text>
       <div className="ml-4 flex flex-row space-x-4">
-        <Link href="https://twitter.com/Obi_Money_" target="_blank">
+        <Link href="https://twitter.com/obidotmoney" target="_blank">
           <FaXTwitter width={28} height={28} color="white" />
         </Link>
         <Link href="https://t.me/obi_money" target="_blank">
