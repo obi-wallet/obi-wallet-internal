@@ -2,6 +2,7 @@
 
 import { Box, Button, Divider, Modal, renderModal, Text } from "@/components";
 import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,12 +11,23 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
+import { useEffectOnceWhen } from "rooks";
 
 export default observer(function AppConnect() {
+  useCurrentWallet({ redirectTo: "/" });
+
   const { walletConnectStore } = useStore();
   const searchParams = useSearchParams();
-  const [uri, setUri] = useState(searchParams.get("uri") ?? "");
+  const [uri, setUri] = useState("");
   const [showExplanationModal, setShowExplanationModal] = useState(false);
+
+  useEffectOnceWhen(() => {
+    const uri = searchParams.get("uri");
+
+    if (uri) {
+      walletConnectStore.queueUri(uri);
+    }
+  });
 
   const queryClient = useQueryClient();
   const sessions = useQuery({
