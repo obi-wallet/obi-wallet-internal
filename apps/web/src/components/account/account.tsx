@@ -31,9 +31,9 @@ export const Account = observer(function Account() {
     <>
       <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
         <div className="relative px-4 pb-3.5 pt-1.5">
-          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
-            <img src="/points.svg" alt="points" className="h-5" />
-          </div>
+          <a className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5" href="/dashboard/view-points">
+            <img src="/points.svg" alt="points" className="h-5"/>
+          </a>
           <div className="flex flex-row gap-3 ">
             <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
               {userData.avatar ? (
