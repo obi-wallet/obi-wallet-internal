@@ -4,6 +4,7 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
+import { Query } from "@tanstack/query-core";
 
 export interface AssetInfo {
   name: string;
@@ -68,7 +69,13 @@ export abstract class AbstractTargetChain<
     return this.queryNamespace.createQuery({
       name: "balances",
       fn: this.balancesQueryFn.bind(this),
-      staleTime: { seconds: 5 },
+      staleTime: (query: Query<Asset<TChainId>[]>) => {
+        if (!query.state.data || query.state.data.length > 0) {
+          return { seconds: 5 };
+        }
+
+        return { minutes: 5 };
+      },
     });
   }
   public abstract balancesQueryFn(address: string): Promise<Asset<TChainId>[]>;

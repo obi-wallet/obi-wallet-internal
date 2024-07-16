@@ -26,7 +26,14 @@ export class TargetChain {
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
   public static chainId(chainId: string): AbstractTargetChain;
-  public static chainId(chainId: string): AbstractTargetChain {
+
+  public static chainId(
+    chainId: string,
+  ):
+    | CosmosTargetChain
+    | Eip155TargetChain
+    | AbstractTargetChain<TargetChainId>
+    | AbstractTargetChain {
     if (isCosmosChainId(chainId)) {
       return new CosmosTargetChain(chainId);
     }

@@ -34,7 +34,6 @@ async function fetchBalances({
       const price = (await targetChain.price(asset.assetId)).usdValue;
       return {
         ...asset,
-
         price,
       };
     }),
