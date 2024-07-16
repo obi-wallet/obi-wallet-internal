@@ -1,9 +1,11 @@
 "use client";
 
 import { DropDown, TabUi } from "@/components";
+import { useStore } from "@/contexts";
 import { useAddressQuery } from "@/hooks/address";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
-import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { InputContainer } from "@/ui/container";
 import copy from "copy-to-clipboard";
@@ -93,14 +95,21 @@ const ChainDropdown = observer(function ChainDropdown({
   chainId: TargetChainId;
   onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = allTargetChainIds
-    .map((chainId) => {
-      const targetChain = TargetChain.chainId(chainId);
+  const wallet = useCurrentWallet({});
+  const { targetChainsStore } = useStore();
+
+  if (!wallet) {
+    return null;
+  }
+
+  const chainOptions = targetChainsStore
+    .getTargetChains(wallet.userEntryAddress)
+    .map((chain) => {
       return {
-        label: targetChain.label,
-        value: chainId,
-        image: targetChain.image,
-        disabled: targetChain.disabled,
+        label: chain.targetChain.label,
+        value: chain.id,
+        image: chain.targetChain.image,
+        disabled: !chain.enabled,
       };
     })
     .filter((chain) => {

@@ -1,5 +1,7 @@
+import { useStore } from "@/contexts";
 import { SimulationEntry } from "@/dashboard/schema";
-import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
@@ -47,26 +49,32 @@ export function useInvalidateBalancesQueries() {
 }
 
 export function useBalances() {
+  const wallet = useCurrentWallet({});
+  const { targetChainsStore } = useStore();
+
   const publicKey = usePublicKey();
   return useQueries({
-    queries: publicKey
-      ? allTargetChainIds.map((targetChainId) => {
-          return {
-            queryKey: ["balances", targetChainId, publicKey],
-            queryFn: async (): Promise<AssetWithPrice[]> => {
-              invariant(publicKey, "Expected publicKey to be set.");
-              const targetChain = TargetChain.chainId(targetChainId);
-              if (targetChain.disabled) {
-                return [];
-              }
-              return await fetchBalances({
-                address: await targetChain.obiAccountAddress(publicKey),
-                targetChainId,
-              });
-            },
-          };
-        })
-      : [],
+    queries:
+      wallet && publicKey
+        ? targetChainsStore
+            .getTargetChains(wallet.userEntryAddress)
+            .map((chain) => {
+              return {
+                queryKey: ["balances", chain.id, publicKey],
+                queryFn: async (): Promise<AssetWithPrice[]> => {
+                  invariant(publicKey, "Expected publicKey to be set.");
+                  if (!chain.enabled) {
+                    return [];
+                  }
+                  return await fetchBalances({
+                    address:
+                      await chain.targetChain.obiAccountAddress(publicKey),
+                    targetChainId: chain.id,
+                  });
+                },
+              };
+            })
+        : [],
   });
 }
 
