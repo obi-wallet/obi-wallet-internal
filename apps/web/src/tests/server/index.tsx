@@ -1,6 +1,7 @@
 import { runTests } from "@/tests";
 import { ClientSideTests } from "@/tests/client";
-import { testSuite } from "@/tests/server/lib/stackup";
+import { testSuite as feeLenderTestSuite } from "@/tests/server/lib/fee-lender";
+import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
 import { notFound } from "next/navigation";
 
 export async function ServerSideTests() {
@@ -9,7 +10,8 @@ export async function ServerSideTests() {
   if (process.env.VERCEL_ENV === "production") return notFound();
 
   const serverResults = await runTests((context) => {
-    testSuite(context);
+    feeLenderTestSuite(context);
+    stackupTestSuite(context);
   });
 
   return <ClientSideTests serverResults={serverResults} />;
