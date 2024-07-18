@@ -1,4 +1,5 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
 import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
   });
   const broadcastTransactionResult =
     await client.broadcastSignedTransaction(signedTransaction);
-  console.log(broadcastTransactionResult);
+  console.log("broadcastTransactionResult", broadcastTransactionResult);
 
   if (broadcastTransactionResult.success) {
     const response = await setWalletData(walletData);
@@ -108,6 +109,15 @@ export async function POST(request: Request) {
   }
 
   // TODO: trigger event here
+  await triggerEvent({
+    userEntryAddress: userEntryAddress,
+    event: {
+      type: "create-wallet",
+      payload: {
+        blockHeight: broadcastTransactionResult.rawResult?.height,
+      },
+    },
+  });
 
   return NextResponse.json({
     success: broadcastTransactionResult.success,

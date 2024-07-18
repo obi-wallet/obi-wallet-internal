@@ -52,6 +52,7 @@ import {
 import {
   SessionRequestPayload,
   SessionRequestResponse,
+  SessionVerifyContent,
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
@@ -60,6 +61,7 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { triggerEvent } from "@/points";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -482,16 +484,22 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     };
   }
 
-  public async handleWalletConnectSessionRequest({
-    request,
-  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+  public async handleWalletConnectSessionRequest(
+      { request }: SessionRequestPayload, 
+      { verified }: SessionVerifyContent,
+    ): Promise<SessionRequestResponse> 
+  {
+    console.log("verified", verified)
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     if (!wallet) {
       return { error: getSdkError("USER_DISCONNECTED") };
     }
 
+    console.log("request", request)
+
     switch (request.method) {
       case "cosmos_getAccounts": {
+        console.log("cosmos_getAccounts")
         const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
           wallet.userEntryAddress,
         );
@@ -517,6 +525,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         return { result };
       }
       case "cosmos_signAmino": {
+        console.log("cosmos_signAmino")
         const response = await CosmosSignAminoUserInteraction.start({
           walletMeta: {
             userEntryAddress: wallet.userEntryAddress,
@@ -525,14 +534,29 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signerAddress: request.params.signerAddress,
           signDoc: request.params.signDoc,
         });
+        console.log("response", response)
         if (response.approved) {
           // TODO: trigger client-side event here
-          return { result: response.payload };
+          console.log("event is triggered!")
+          await triggerEvent({
+            userEntryAddress: wallet.userEntryAddress,
+            event: {
+              type: "app-connect",
+              payload: {
+                dApp: verified.origin,
+                targetChain: response.payload.signed.chain_id,
+                txHash: ""
+              },
+            },
+          });
+          
+          // return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };
         }
       }
       case "cosmos_signDirect": {
+        console.log("cosmos_signDirect")
         const response = await CosmosSignDirectUserInteraction.start({
           walletMeta: {
             userEntryAddress: wallet.userEntryAddress,
@@ -543,6 +567,16 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         });
         if (response.approved) {
           // TODO: trigger client-side event here
+          // const res = await triggerEvent({
+          //   userEntryAddress: wallet.userEntryAddress,
+          //   event: {
+          //     type: "remove-key",
+          //     payload: {
+          //     },
+          //   },
+          // });
+
+          // console.log("res", res)
           return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };

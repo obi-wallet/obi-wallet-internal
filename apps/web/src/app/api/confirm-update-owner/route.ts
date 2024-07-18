@@ -11,6 +11,7 @@ import {
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { triggerEvent } from "@/points";
 
 export const maxDuration = 45;
 
@@ -75,6 +76,44 @@ export async function POST(request: Request) {
         },
       );
     }
+    // trigger key evnet : "add-key" or "remove-key" event will be triggered
+    const previousKeys: object[] = previousOwner.keys;
+    const currentKeys: object[] = walletData.owner.keys;
+    
+    while (previousKeys[0]?.type === currentKeys[0]?.type && previousKeys[0]?.payload.publicKey.value === currentKeys[0]?.publicKey.value) {
+      previousKeys.shift();
+      currentKeys.shift();
+    }
+  
+    console.log("previousKeys and currentKeys", previousKeys, currentKeys)
+
+    // trigger "remove-key" events
+    previousKeys.forEach(async (key) => {
+      console.log("remove-key event triggered", key.type)
+      await triggerEvent({
+        userEntryAddress: walletData.userEntryAddress,
+        event: {
+          type: "remove-key",
+          payload: {
+            type: key.type,
+          },
+        },
+      });
+    })
+    
+    // trigger "add-key" events
+    currentKeys.forEach(async (key) => {
+      console.log("add-key event triggered", key.type)
+      await triggerEvent({
+        userEntryAddress: walletData.userEntryAddress,
+        event: {
+          type: "add-key",
+          payload: {
+            type: key.type,
+          },
+        },
+      });
+    })
   }
 
   return NextResponse.json({

@@ -24,6 +24,8 @@ export async function triggerEvent({
           return 2;
         case "remove-key":
           return 3;
+        case "app-connect":
+          return 4;
         default:
           // Fake event ID
           return 999;

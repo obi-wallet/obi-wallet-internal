@@ -3,6 +3,7 @@ import { MpcWallets } from "@obi-wallet/sdk";
 import {
   SessionRequestPayload,
   SessionRequestResponse,
+  SessionVerifyContent,
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
@@ -74,9 +75,9 @@ export class WalletConnectStore {
   }
 
   protected async handleSessionRequest(
-    payload: SessionRequestPayload,
+    payload: SessionRequestPayload, verified: SessionVerifyContent,
   ): Promise<SessionRequestResponse> {
     const targetChain = TargetChain.chainId(payload.chainId);
-    return await targetChain.handleWalletConnectSessionRequest(payload);
+    return await targetChain.handleWalletConnectSessionRequest(payload, verified);
   }
 }

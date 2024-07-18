@@ -3,6 +3,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
   SessionRequestPayload,
   SessionRequestResponse,
+  SessionVerifyContent,
 } from "@obi-wallet/wallet-connect";
 
 export interface AssetInfo {
@@ -88,6 +89,6 @@ export abstract class AbstractTargetChain<
   public abstract assetInfo(id: AssetId): AssetInfo | null;
 
   public abstract handleWalletConnectSessionRequest(
-    payload: SessionRequestPayload,
+    payload: SessionRequestPayload, verified: SessionVerifyContent,
   ): Promise<SessionRequestResponse>;
 }
