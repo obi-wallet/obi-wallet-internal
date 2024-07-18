@@ -1,3 +1,4 @@
+import { HomeChain } from "@/home-chain";
 import { KeyPairIntentionsHandler } from "@/keys/intentions-handler";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
@@ -7,8 +8,16 @@ import {
   ApproveIntentionsProps,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
-import { ApproveMessagesProps } from "@/user-interactions/approve-messages";
+import {
+  ApproveMessagesProps,
+  cosmosSignAminoToApproveMessagesProps,
+  cosmosSignDirectUserInteractionToApproveMessagesProps,
+} from "@/user-interactions/approve-messages";
+import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
+import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { signAndBroadcastTransactionUserInteractionToApproveMessagesProps } from "@/user-interactions/sign-and-broadcast-transaction-handler";
+import { fromHex } from "@cosmjs/encoding";
+import { makeSignDoc } from "@cosmjs/proto-signing";
 import { calculateFee } from "@cosmjs/stargate";
 import { Encoding } from "@obi-wallet/encoding";
 import {
@@ -42,6 +51,7 @@ async function mockApproveMessages({
   messages,
   memo,
   onApprove,
+  calculateHashToSign,
 }: ApproveMessagesProps) {
   const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
   invariant(isCosmosChainId(targetChainId), "Invalid chainId");
@@ -55,12 +65,14 @@ async function mockApproveMessages({
     // @ts-expect-error accessing protected property
     targetChain.gasPrice!,
   );
-  const hash = await targetChain.calculateHashToSign({
-    wallet,
-    fee,
-    messages,
-    memo,
-  });
+  const hash = calculateHashToSign
+    ? await calculateHashToSign({ wallet, fee })
+    : await targetChain.calculateHashToSign({
+        wallet,
+        fee,
+        messages,
+        memo,
+      });
   const txInfo = {
     fee,
     hash: Encoding.fromBytes(hash).toHex(),
@@ -127,6 +139,82 @@ export const testSuite = createTestSuite(({ test }) => {
       signAndBroadcastTransactionUserInteractionToApproveMessagesProps(
         interaction,
       );
+
+    await mockApproveMessages(props);
+  });
+
+  test("CosmosSignAminoUserInteraction", async () => {
+    const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const interaction: CosmosSignAminoUserInteraction = {
+      payload: {
+        walletMeta: {
+          userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+        },
+        signerAddress: await TargetChain.chainId(
+          CosmosChainId.Sei,
+        ).obiAccountAddress(publicKey),
+        signDoc: {
+          chain_id: "pacific-1",
+          account_number: "1",
+          sequence: "",
+          fee: {
+            amount: [],
+            gas: "2",
+          },
+          msgs: [],
+          memo: "",
+        },
+        cancelable: true,
+      },
+      resolve(result) {
+        console.log(result);
+      },
+      reject: () => {},
+    };
+
+    const props = cosmosSignAminoToApproveMessagesProps(interaction);
+
+    await mockApproveMessages(props);
+  });
+
+  test("CosmosSignDirectUserInteraction", async () => {
+    const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const interaction: CosmosSignDirectUserInteraction = {
+      payload: {
+        walletMeta: {
+          userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+        },
+        signerAddress: await TargetChain.chainId(
+          CosmosChainId.Sei,
+        ).obiAccountAddress(publicKey),
+        signDoc: makeSignDoc(
+          fromHex(
+            "0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637",
+          ),
+          fromHex(
+            "0a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c7029012040a02080112130a0d0a0575636f736d12043230303010c09a0c",
+          ),
+          "pacific-1",
+          1,
+        ),
+        cancelable: true,
+      },
+      resolve(result) {
+        console.log(result);
+      },
+      reject: () => {},
+    };
+
+    const props =
+      cosmosSignDirectUserInteractionToApproveMessagesProps(interaction);
 
     await mockApproveMessages(props);
   });

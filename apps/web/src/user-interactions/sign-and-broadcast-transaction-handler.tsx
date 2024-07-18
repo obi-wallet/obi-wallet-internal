@@ -54,7 +54,6 @@ export function signAndBroadcastTransactionUserInteractionToApproveMessagesProps
   interaction: SignAndBroadcastTransactionUserInteraction,
 ): ApproveMessagesProps {
   const chainId = interaction.payload.targetChainId;
-
   invariant(isCosmosChainId(chainId), "Invalid chainId");
 
   return {

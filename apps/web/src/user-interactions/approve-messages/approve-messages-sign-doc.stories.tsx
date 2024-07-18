@@ -1,6 +1,7 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
+import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { fromHex } from "@cosmjs/encoding";
 import { makeSignDoc } from "@cosmjs/proto-signing";
 import type { Meta, StoryObj } from "@storybook/react";
@@ -24,11 +25,12 @@ BigInt.prototype.toJSON = function () {
   return this.toString();
 };
 
-export const TestTx: Story = {
-  args: {
+const interaction: CosmosSignDirectUserInteraction = {
+  payload: {
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },
+    cancelable: false,
     signerAddress: "sei1rptyr50v9sdythznd46vvml5wpp3uzvhdyfwqf",
     signDoc: makeSignDoc(
       fromHex(
@@ -40,7 +42,13 @@ export const TestTx: Story = {
       "pacific-1",
       1,
     ),
-    onReject: () => {},
-    onApprove: async () => {},
+  },
+  resolve: () => {},
+  reject: () => {},
+};
+
+export const TestTx: Story = {
+  args: {
+    interaction,
   },
 };
