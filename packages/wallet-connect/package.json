@@ -11,7 +11,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@cosmjs/proto-signing": "^0.32.3",
+    "@cosmjs/proto-signing": "^0.32.4",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@walletconnect/core": "^2.13.0",

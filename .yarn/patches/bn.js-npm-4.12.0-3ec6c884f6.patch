@@ -1,0 +1,13 @@
+diff --git a/lib/bn.js b/lib/bn.js
+index 3a4371ea29688d216480d68af653c52b8b7beb10..9c134b51d791dabfa0a55cc7a1f5abcb810ab087 100644
+--- a/lib/bn.js
++++ b/lib/bn.js
+@@ -542,7 +542,7 @@
+ 
+     this.strip();
+     var littleEndian = endian === 'le';
+-    var res = new ArrayType(reqLength);
++    var res = ArrayType === Buffer ? Buffer.alloc(reqLength) : new ArrayType(reqLength);
+ 
+     var b, i;
+     var q = this.clone();

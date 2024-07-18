@@ -29,6 +29,10 @@ export interface ApproveMessagesProps {
   messages: unknown[];
   memo: string;
   rawData: unknown;
+  calculateHashToSign?: (args: {
+    wallet: MpcWallet;
+    fee: StdFee;
+  }) => Promise<Uint8Array>;
   onReject(): void;
   onApprove(args: {
     wallet: MpcWallet;
@@ -47,6 +51,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     rawData,
     onApprove,
     onReject,
+    calculateHashToSign,
   }) {
     const { keyMetaDataStore, mpcWalletsStore } = useStore();
     const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
@@ -72,12 +77,14 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
 
         invariant(fee, "Fee could not be calculated");
 
-        const hash = await targetChain.calculateHashToSign({
-          wallet,
-          fee,
-          messages,
-          memo,
-        });
+        const hash = calculateHashToSign
+          ? await calculateHashToSign({ wallet, fee })
+          : await targetChain.calculateHashToSign({
+              wallet,
+              fee,
+              messages,
+              memo,
+            });
 
         return {
           fee,
