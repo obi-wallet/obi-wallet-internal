@@ -90,7 +90,7 @@ const AssetBalance = observer(function AssetBalance({
       return b.isLoading;
     })
   ) {
-    return <span className="font-extrabold  text-white"> loading </span>;
+    return <span className="font-extrabold  text-white"> No Assets </span>;
   }
 
   const prettyBalances = balances
