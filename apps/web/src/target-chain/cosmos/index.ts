@@ -484,6 +484,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public async handleWalletConnectSessionRequest({
     request,
+    chainId,
   }: SessionRequestPayload): Promise<SessionRequestResponse> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     if (!wallet) {
@@ -498,6 +499,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
+          })
+          .filter((chain) => {
+            return chain.chainId === chainId;
           })
           .filter((chain) => {
             return !chain.disabled;
