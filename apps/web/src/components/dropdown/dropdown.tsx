@@ -111,7 +111,7 @@ export function DropDown<
           )}
         >
           <ul
-            className="  py-2 text-sm text-white dark:text-gray-200"
+            className="py-2 text-sm text-white dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton"
           >
             {options.map((option) => {
