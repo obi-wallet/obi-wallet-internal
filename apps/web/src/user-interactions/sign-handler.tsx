@@ -39,28 +39,8 @@ const CosmosSignAminoSignUserInteractionHandler = observer<{
   );
 });
 
-const CosmosSignAminoSignUserInteractionHandlerInner = observer<{
-  interaction: CosmosSignAminoUserInteraction;
-}>(function CosmosSignAminoSignUserInteractionHandlerInner({ interaction }) {
-  return (
-    <ApproveMessagesStdSignDoc
-      walletMeta={interaction.payload.walletMeta}
-      signerAddress={interaction.payload.signerAddress}
-      signDoc={interaction.payload.signDoc}
-      onReject={() => {
-        interaction.resolve({
-          approved: false,
-        });
-      }}
-      onApprove={async (signResponse) => {
-        interaction.resolve({
-          approved: true,
-          payload: signResponse,
-        });
-      }}
-    />
-  );
-});
+const CosmosSignAminoSignUserInteractionHandlerInner =
+  ApproveMessagesStdSignDoc;
 
 const CosmosSignDirectUserInteractionHandler = observer<{
   children: ReactNode;
@@ -78,25 +58,4 @@ const CosmosSignDirectUserInteractionHandler = observer<{
   );
 });
 
-const CosmosSignDirectUserInteractionHandlerInner = observer<{
-  interaction: CosmosSignDirectUserInteraction;
-}>(function CosmosSignDirectUserInteractionHandlerInner({ interaction }) {
-  return (
-    <ApproveMessagesSignDoc
-      walletMeta={interaction.payload.walletMeta}
-      signerAddress={interaction.payload.signerAddress}
-      signDoc={interaction.payload.signDoc}
-      onReject={() => {
-        interaction.resolve({
-          approved: false,
-        });
-      }}
-      onApprove={async (signResponse) => {
-        interaction.resolve({
-          approved: true,
-          payload: signResponse,
-        });
-      }}
-    />
-  );
-});
+const CosmosSignDirectUserInteractionHandlerInner = ApproveMessagesSignDoc;

@@ -6,8 +6,11 @@ import {
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
+import { action, autorun, observable } from "mobx";
 
 export class WalletConnectStore {
+  @observable protected accessor queuedUri: string | null = null;
+
   protected readonly walletsStore: MpcWallets;
   protected web3Wallet: Web3Wallet | null = null;
 
@@ -16,6 +19,18 @@ export class WalletConnectStore {
 
     // Make sure we set up WalletConnect on all pages
     void this.getActiveSessions();
+
+    autorun(async () => {
+      if (this.queuedUri && this.walletsStore.currentWallet) {
+        await this.pair(this.queuedUri);
+        this.queuedUri = null;
+      }
+    });
+  }
+
+  @action
+  public queueUri(uri: string) {
+    this.queuedUri = uri;
   }
 
   public async pair(uri: string) {

@@ -36,8 +36,14 @@ const Assets = observer(function Assets() {
     <>
       <div className="hidden w-full flex-1 flex-col max-md:flex">
         <Account />
+        {/*<Button*/}
+        {/*  href="/dashboard/import-new-asset/"*/}
+        {/*  className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"*/}
+        {/*>*/}
+        {/*  Import New Asset*/}
+        {/*</Button>*/}
       </div>
-      <div className="hidden flex-row gap-3 md:flex">
+      <div className="hidden flex-row items-center gap-3 md:flex">
         <Input
           className="mt-0 px-3 py-1.5"
           leftComponent={<CiSearch className="h-6 w-6" color="white" />}
@@ -49,6 +55,12 @@ const Assets = observer(function Assets() {
           }}
           inputClassName="ml-2"
         />
+        {/*<Button*/}
+        {/*  href="/dashboard/import-new-asset/"*/}
+        {/*  className="h-9 w-64 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"*/}
+        {/*>*/}
+        {/*  Import New Asset*/}
+        {/*</Button>*/}
       </div>
 
       <Divider className="mt-5 hidden md:block" />
@@ -78,7 +90,15 @@ const AssetBalance = observer(function AssetBalance({
       return b.isLoading;
     })
   ) {
-    return <span className="font-extrabold  text-white"> loading </span>;
+    return <span className="font-extrabold text-white">Loading</span>;
+  }
+
+  if (
+    balances.every((b) => {
+      return b.data && b.data.length === 0;
+    })
+  ) {
+    return <span className="font-extrabold text-white">No Assets</span>;
   }
 
   const prettyBalances = balances
