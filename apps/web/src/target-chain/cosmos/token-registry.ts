@@ -1,5 +1,6 @@
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Asset } from "@chain-registry/types";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { assets, chains } from "chain-registry";
 
 import astroportTokensInjective from "./astroport-token-lists/injective.json";
@@ -33,6 +34,16 @@ export class CosmosTokenRegistry {
     return this.assets[`${chainId}:${denom}`];
   }
 
+  public getNewAsset(id: Caip19AssetId) {
+    if (id.includes("/factory:")) {
+      const key = id.replace("/factory:", ":factory/").replace("%2F", "/");
+      console.log(key);
+      return this.assets[key];
+    }
+
+    return this.assets[id];
+  }
+
   protected buildAssets(): Record<string, Asset> {
     const result: Record<string, Asset> = {};
 
@@ -42,9 +53,19 @@ export class CosmosTokenRegistry {
           return a.chain_name === chain.chain_name;
         })?.assets ?? [];
       assetList.forEach((asset) => {
-        const key = `cosmos:${chain.chain_id}:${asset.base}`;
-        result[key] = asset;
+        const legacyKey = `cosmos:${chain.chain_id}:${asset.base}`;
+        result[legacyKey] = asset;
       });
+
+      const slip44 = chain.slip44;
+      const nativeTokenId = `cosmos:${chain.chain_id}/slip44:${slip44}`;
+      const nativeTokenDenom = chain.fees?.fee_tokens?.[0]?.denom;
+      const nativeTokenInfo =
+        result[`cosmos:${chain.chain_id}:${nativeTokenDenom}`];
+
+      if (nativeTokenInfo) {
+        result[nativeTokenId] = nativeTokenInfo;
+      }
     });
 
     addAstroportTokens(CosmosChainId.Inj, astroportTokensInjective);

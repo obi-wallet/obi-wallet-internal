@@ -33,17 +33,25 @@ import {
   createVestingAminoConverters,
   defaultRegistryTypes,
   GasPrice,
+  QueryClient,
+  setupBankExtension,
   SigningStargateClient,
   StargateClient,
   StdFee,
 } from "@cosmjs/stargate";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { Encoding } from "@obi-wallet/encoding";
+import { queryClient } from "@obi-wallet/query-client";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
-import { parseCaip2ChainId } from "@obi-wallet/sdk-caip";
+import {
+  Caip19AssetId,
+  parseCaip19AssetId,
+  parseCaip2ChainId,
+} from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1CompressedPublicKey,
@@ -198,6 +206,35 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     }
   }
 
+  public denomMetadata(denom: string) {
+    return queryClient.fetchQuery(this.denomMetadataQuery(denom));
+  }
+  public get denomMetadataQuery() {
+    return this.queryNamespace.createQuery({
+      name: "denomMetadata",
+      fn: this.denomMetadataQueryFn.bind(this),
+      staleTime: { day: 1 },
+    });
+  }
+  public async denomMetadataQueryFn(denom: string) {
+    return await this.withTendermint34Client(async (client) => {
+      const queryClient = new QueryClient(client);
+      const bankExtension = setupBankExtension(queryClient);
+      return await bankExtension.bank.denomMetadata(denom);
+    });
+  }
+
+  public async withTendermint34Client<T>(
+    f: (client: Tendermint34Client) => Promise<T>,
+  ) {
+    const client = await this.createTendermint34Client();
+    try {
+      return await f(client);
+    } finally {
+      client.disconnect();
+    }
+  }
+
   public async withSigningStargateClient<T>(
     signer: OfflineSigner,
     f: (client: SigningStargateClient) => Promise<T>,
@@ -231,6 +268,18 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     } finally {
       client.disconnect();
     }
+  }
+
+  protected async createTendermint34Client() {
+    const rpcs = this.chainData.rpcs;
+    for (const rpc of rpcs) {
+      try {
+        return await Tendermint34Client.connect(rpc);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    throw new Error("No RPC connected");
   }
 
   protected async createStargateClient() {
@@ -420,6 +469,44 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       decimals: denomUnit?.exponent ?? 0,
       image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
     };
+  }
+
+  public async newAssetInfo(id: Caip19AssetId) {
+    const asset = this.tokenRegistry.getNewAsset(id);
+    if (asset) {
+      const denomUnit = asset.denom_units.find((value) => {
+        return value.denom === asset.display;
+      });
+
+      return {
+        name: asset.name,
+        symbol: asset.symbol,
+        decimals: denomUnit?.exponent ?? 0,
+        image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
+      };
+    }
+
+    const { namespace, reference } = parseCaip19AssetId(id);
+    switch (namespace) {
+      case "factory": {
+        const denom = `factory/${reference.replace("%2F", "/")}`;
+        const metadata = await this.denomMetadata(denom);
+        if (!metadata) return null;
+
+        const denomUnit = metadata.denomUnits.find((value) => {
+          return value.denom === metadata.display;
+        });
+
+        return {
+          name: metadata.name,
+          symbol: metadata.symbol,
+          decimals: denomUnit?.exponent ?? 0,
+          image: null,
+        };
+      }
+    }
+
+    return asset;
   }
 
   public validateAddress(address: string): boolean {

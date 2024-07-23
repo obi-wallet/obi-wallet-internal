@@ -24,6 +24,7 @@
     "@cosmjs/encoding": "^0.32.4",
     "@cosmjs/proto-signing": "^0.32.4",
     "@cosmjs/stargate": "^0.32.4",
+    "@cosmjs/tendermint-rpc": "^0.32.4",
     "@hookform/resolvers": "^3.3.4",
     "@obi-wallet/config": "workspace:*",
     "@obi-wallet/encoding": "workspace:*",

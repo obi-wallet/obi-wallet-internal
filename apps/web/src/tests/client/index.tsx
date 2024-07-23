@@ -3,6 +3,7 @@
 import { Text } from "@/components";
 import { hasSucceeded, runTests, TestResults } from "@/tests";
 import { testSuite as cosmosMpcSignerTestSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
+import { testSuite as cosmosTokensTestSuite } from "@/tests/client/target-chain/cosmos-sdk/tokens";
 import { testSuite as evmMpcSignerTestSuite } from "@/tests/client/target-chain/evm/mpc-signer";
 import { testSuite as approveMessagesTestSuite } from "@/tests/client/user-interactions/approve-messages";
 import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
@@ -19,6 +20,7 @@ export function ClientSideTests({
   useEffectOnceWhen(async () => {
     const clientResults = await runTests((context) => {
       cosmosMpcSignerTestSuite(context);
+      cosmosTokensTestSuite(context);
       evmMpcSignerTestSuite(context);
       stackupTestSuite(context);
       approveMessagesTestSuite(context);
