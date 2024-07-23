@@ -51,9 +51,21 @@ export const testSuite = createTestSuite(({ test }) => {
     );
   });
 
-  test("TODO: CW20 Token (CAIP-19, chain registry)", async () => {});
+  test("CW20 Token (CAIP-19, chain registry)", async () => {
+    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
+    const assetId =
+      "cosmos:pacific-1/cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed";
+    const tokenInfo = await targetChain.newAssetInfo(assetId);
+    expect(tokenInfo?.symbol).to.equal("SEIYAN");
+  });
 
-  test("TODO: CW20 Token (CAIP-19, unknown)", async () => {});
+  test("CW20 Token (CAIP-19, unknown)", async () => {
+    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
+    const tokenInfo = await targetChain.tokenInfo(
+      "sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed",
+    );
+    expect(tokenInfo?.symbol).to.equal("SEIYAN");
+  });
 
   test("TODO: balance fetching for all of above test cases", async () => {});
 });

@@ -224,6 +224,22 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     });
   }
 
+  public tokenInfo(contract: string) {
+    return queryClient.fetchQuery(this.tokenInfoQuery(contract));
+  }
+  public get tokenInfoQuery() {
+    return this.queryNamespace.createQuery({
+      name: "tokenInfo",
+      fn: this.tokenInfoQueryFn.bind(this),
+      staleTime: { day: 1 },
+    });
+  }
+  public async tokenInfoQueryFn(contract: string) {
+    return await this.withCosmWasmClient(async (client) => {
+      return await client.queryContractSmart(contract, { token_info: {} });
+    });
+  }
+
   public async withTendermint34Client<T>(
     f: (client: Tendermint34Client) => Promise<T>,
   ) {
@@ -501,6 +517,17 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           name: metadata.name,
           symbol: metadata.symbol,
           decimals: denomUnit?.exponent ?? 0,
+          image: null,
+        };
+      }
+      case "cw20": {
+        const tokenInfo = await this.tokenInfo(reference);
+        if (!tokenInfo) return null;
+
+        return {
+          name: tokenInfo.name,
+          symbol: tokenInfo.symbol,
+          decimals: tokenInfo.decimals,
           image: null,
         };
       }
