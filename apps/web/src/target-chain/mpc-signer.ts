@@ -4,6 +4,7 @@ import { rootStore } from "@/stores";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -76,7 +77,10 @@ export class MpcSigner {
 
     const bytes = Encoding.fromBytes(hash).toHex();
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
-    invariant(bytesSignedBySigners, `Hash ${bytes} has not been signed`);
+    invariant(
+      bytesSignedBySigners,
+      `Hash ${bytes} has not been signed, but ${serialize([...this.bytesSignedBySignersPerHash.keys()])} have`,
+    );
 
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
 

@@ -106,12 +106,12 @@ export function DropDown<
         <div
           id="dropdown"
           className={cn(
-            "z-1000 relative right-0 w-full rounded-lg bg-gray-700 shadow",
+            "z-1000 absolute right-0 max-h-80 w-full overflow-y-auto rounded-lg bg-gray-700 shadow",
             contentContainerClassname,
           )}
         >
           <ul
-            className="  py-2 text-sm text-gray-700 dark:text-gray-200"
+            className="py-2 text-sm text-white dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton"
           >
             {options.map((option) => {
