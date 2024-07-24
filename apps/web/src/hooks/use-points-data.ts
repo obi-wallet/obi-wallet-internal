@@ -89,10 +89,10 @@ export default function usePointsData() {
   }
 
   useEffect(() => {
-    if (wallet?.userEntryAddress) {
+    if (wallet && wallet.userEntryAddress) {
       fetchData();
     }
-  }, [wallet?.userEntryAddress]);
+  }, [wallet?.userEntryAddress, totalPoints]);
 
   return { createWalletPoints, addKeyPoints, appConnectPoints, loading, totalPoints, eventsToPoints };
 }

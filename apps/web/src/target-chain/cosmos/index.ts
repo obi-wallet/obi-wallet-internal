@@ -568,7 +568,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
               type: "app-connect",
               payload: {
                 dApp: verified.origin,
-                targetChain: response.payload.signed.chain_id,
+                targetChain: response.payload.signed.chainId,
                 txHash: "",
               },
             },
