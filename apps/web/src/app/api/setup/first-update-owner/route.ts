@@ -10,6 +10,7 @@ import {
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { triggerEvent } from "@/points";
 
 export const maxDuration = 45;
 
@@ -105,6 +106,17 @@ export async function POST(request: Request) {
         },
       );
     }
+
+    // trigger event for "create-wallet"
+    await triggerEvent({
+      userEntryAddress: userEntryAddress,
+      event: {
+        type: "create-wallet",
+        payload: {
+          blockHeight: broadcastTransactionResult.rawResult?.height,
+        },
+      },
+    });
   }
 
   return NextResponse.json({
