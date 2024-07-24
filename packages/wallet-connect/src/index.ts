@@ -18,6 +18,7 @@ export interface Account {
 }
 
 export type SessionRequestPayload = Web3WalletTypes.SessionRequest["params"];
+export type SessionVerifyContext = Web3WalletTypes.SessionRequest["verifyContext"];
 export type SessionRequestResponse =
   | { result: unknown }
   | { error: ErrorResponse };
@@ -39,7 +40,7 @@ export async function setupWalletConnect({
     BuildApprovedNamespacesParams["supportedNamespaces"]
   >;
   handleSessionRequest: (
-    payload: SessionRequestPayload,
+    payload: SessionRequestPayload, verified: SessionVerifyContext,
   ) => Promise<SessionRequestResponse>;
 }) {
   const core = new Core({
@@ -58,8 +59,8 @@ export async function setupWalletConnect({
   web3wallet.on("session_request", async (event) => {
     console.log("incoming session_request", event);
 
-    const { topic, params, id } = event;
-    const response = await handleSessionRequest(params);
+    const { topic, params, id, verifyContext } = event;
+    const response = await handleSessionRequest(params, verifyContext);
     await web3wallet.respondSessionRequest({
       topic,
       response: {

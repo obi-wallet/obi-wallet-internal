@@ -52,6 +52,7 @@ import {
 import {
   SessionRequestPayload,
   SessionRequestResponse,
+  SessionVerifyContext,
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
@@ -60,6 +61,7 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { triggerEvent } from "@/points";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -484,7 +486,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public async handleWalletConnectSessionRequest({
     request,
-  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+  }: SessionRequestPayload, { verified }: SessionVerifyContext): Promise<SessionRequestResponse> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     if (!wallet) {
       return { error: getSdkError("USER_DISCONNECTED") };
@@ -526,6 +528,20 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
+          console.log("response", response)
+          // TODO: trigger client-side event here
+          await triggerEvent({
+            userEntryAddress: wallet.userEntryAddress,
+            event: {
+              type: "app-connect",
+              payload: {
+                dApp: verified.origin,
+                targetChain: response.payload.signed.chain_id,
+                txHash: ""
+              },
+            },
+          });
+
           return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };
@@ -541,6 +557,18 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
+          console.log("response", response)
+          await triggerEvent({
+            userEntryAddress: wallet.userEntryAddress,
+            event: {
+              type: "app-connect",
+              payload: {
+                dApp: verified.origin,
+                targetChain: response.payload.signed.chain_id,
+                txHash: "",
+              },
+            },
+          });
           return { result: response.payload };
         } else {
           return { error: getSdkError("USER_REJECTED") };
