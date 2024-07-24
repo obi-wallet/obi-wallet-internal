@@ -61,6 +61,7 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
+import { Query } from "@tanstack/react-query";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import BigNumber from "bignumber.js";
@@ -151,6 +152,50 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         };
       });
     });
+  }
+
+  public newBalance({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    return queryClient.fetchQuery(this.newBalanceQuery({ address, assetId }));
+  }
+  public get newBalanceQuery() {
+    return this.queryNamespace.createQuery({
+      name: "newBalance",
+      fn: this.newBalanceQueryFn.bind(this),
+      staleTime: (query: Query<string>) => {
+        if (!query.state.data || query.state.data !== "0") {
+          return { seconds: 5 };
+        }
+
+        return { minutes: 5 };
+      },
+    });
+  }
+  public async newBalanceQueryFn({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "cw20": {
+        return await this.withCosmWasmClient(async (client) => {
+          const response = await client.queryContractSmart(reference, {
+            balance: {
+              address,
+            },
+          });
+          return response.balance;
+        });
+      }
+    }
   }
 
   public async priceQueryFn(id: AssetId) {

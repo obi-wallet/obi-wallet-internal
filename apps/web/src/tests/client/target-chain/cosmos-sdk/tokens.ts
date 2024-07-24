@@ -67,5 +67,17 @@ export const testSuite = createTestSuite(({ test }) => {
     expect(tokenInfo?.symbol).to.equal("SEIYAN");
   });
 
+  test("CW20 token balance fetching", async () => {
+    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
+    const address = "sei1000qtmc2p4fcup8y57aue4a9s6ya8aszt8j9qd";
+    const assetId =
+      "cosmos:pacific-1/cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed";
+    const balance = await targetChain.newBalance({
+      address,
+      assetId,
+    });
+    expect(balance).to.equal("100000000");
+  });
+
   test("TODO: balance fetching for all of above test cases", async () => {});
 });
