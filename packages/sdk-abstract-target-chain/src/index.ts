@@ -68,24 +68,6 @@ export abstract class AbstractTargetChain<
 
   public abstract validateAddress(address: string): boolean;
 
-  public balances(address: string) {
-    return queryClient.fetchQuery(this.balancesQuery(address));
-  }
-  public get balancesQuery() {
-    return this.queryNamespace.createQuery({
-      name: "balances",
-      fn: this.balancesQueryFn.bind(this),
-      staleTime: (query: Query<Asset<TChainId>[]>) => {
-        if (!query.state.data || query.state.data.length > 0) {
-          return { seconds: 5 };
-        }
-
-        return { minutes: 5 };
-      },
-    });
-  }
-  public abstract balancesQueryFn(address: string): Promise<Asset<TChainId>[]>;
-
   public nativeBalances(address: string) {
     return queryClient.fetchQuery(this.nativeBalancesQuery(address));
   }

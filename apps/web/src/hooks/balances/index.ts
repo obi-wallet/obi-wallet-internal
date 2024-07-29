@@ -3,11 +3,7 @@ import { SimulationEntry } from "@/dashboard/schema";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
-import {
-  Asset,
-  AssetInfo,
-  Caip19Asset,
-} from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetInfo, Caip19Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import invariant from "tiny-invariant";
@@ -15,40 +11,11 @@ import { z } from "zod";
 
 import { usePublicKey } from "../use-public-key";
 
-export interface AssetWithPrice extends Asset<TargetChainId> {
-  price: string;
-}
-
 export interface PrettyCaip19Asset extends Caip19Asset {
   price: string;
   usdBalance: string;
   prettyAmount: string;
   assetInfo: AssetInfo | null;
-}
-
-async function fetchBalances({
-  address,
-  targetChainId,
-}: {
-  address?: string;
-  targetChainId: TargetChainId;
-}): Promise<AssetWithPrice[]> {
-  if (!address) {
-    return [];
-  }
-
-  const targetChain = TargetChain.chainId(targetChainId);
-  const balances = await targetChain.balances(address);
-
-  return await Promise.all(
-    balances.map(async (asset): Promise<AssetWithPrice> => {
-      const price = (await targetChain.price(asset.assetId)).usdValue;
-      return {
-        ...asset,
-        price,
-      };
-    }),
-  );
 }
 
 async function fetchNewBalances({
@@ -95,36 +62,6 @@ export function useInvalidateBalancesQueries() {
   return async (chainId: TargetChainId) => {
     await queryClient.invalidateQueries({ queryKey: ["balances", chainId] });
   };
-}
-
-export function useBalances() {
-  const wallet = useCurrentWallet({});
-  const { targetChainsStore } = useStore();
-
-  const publicKey = usePublicKey();
-  return useQueries({
-    queries:
-      wallet && publicKey
-        ? targetChainsStore
-            .getTargetChains(wallet.userEntryAddress)
-            .map((chain) => {
-              return {
-                queryKey: ["balances", chain.id, publicKey],
-                queryFn: async (): Promise<AssetWithPrice[]> => {
-                  invariant(publicKey, "Expected publicKey to be set.");
-                  if (!chain.enabled) {
-                    return [];
-                  }
-                  return await fetchBalances({
-                    address:
-                      await chain.targetChain.obiAccountAddress(publicKey),
-                    targetChainId: chain.id,
-                  });
-                },
-              };
-            })
-        : [],
-  });
 }
 
 export function useNewBalances() {

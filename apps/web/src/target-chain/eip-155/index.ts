@@ -124,24 +124,6 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return HexEncodedStringWithPrefix.parse(kernelAccount.address);
   }
 
-  public async balancesQueryFn(address: string) {
-    if (this.validateAddress(address)) {
-      const balance = await this.publicClient.getBalance({
-        address,
-      });
-      if (balance > 0) {
-        return [
-          {
-            chainId: this.chainId,
-            assetId: this.nativeCurrency.symbol,
-            rawAmount: balance.toString(10),
-          },
-        ];
-      }
-    }
-    return [];
-  }
-
   public async nativeBalancesQueryFn(address: string) {
     if (this.validateAddress(address)) {
       const balance = await this.publicClient.getBalance({

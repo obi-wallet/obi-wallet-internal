@@ -141,19 +141,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     }
   }
 
-  public async balancesQueryFn(address: string) {
-    return await this.withStargateClient(async (client) => {
-      const balances = await client.getAllBalances(address);
-      return balances.map((balance) => {
-        return {
-          chainId: this.chainId,
-          assetId: balance.denom,
-          rawAmount: balance.amount,
-        };
-      });
-    });
-  }
-
   public async nativeBalancesQueryFn(address: string) {
     return await this.withStargateClient(async (client) => {
       const balances = await client.getAllBalances(address);
