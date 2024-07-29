@@ -5,7 +5,7 @@ import { useAlert } from "@/hooks/alert";
 import {
   PrettyCaip19Asset,
   useInvalidateBalancesQueries,
-  useNewBalances,
+  useBalances,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -81,7 +81,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const balances = useNewBalances();
+  const balances = useBalances();
   const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 

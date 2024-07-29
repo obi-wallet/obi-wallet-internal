@@ -1,7 +1,7 @@
 "use client";
 
 import { Account, Divider, Text } from "@/components";
-import { PrettyCaip19Asset, useNewBalances } from "@/hooks/balances";
+import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { Input } from "@/ui/input";
@@ -78,7 +78,7 @@ const AssetBalance = observer(function AssetBalance({
 }: {
   searchAsset: string;
 }) {
-  const balances = useNewBalances();
+  const balances = useBalances();
 
   if (
     balances.every((b) => {

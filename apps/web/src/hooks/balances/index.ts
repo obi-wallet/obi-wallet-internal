@@ -18,7 +18,7 @@ export interface PrettyCaip19Asset extends Caip19Asset {
   assetInfo: AssetInfo | null;
 }
 
-async function fetchNewBalances({
+async function fetchBalances({
   address,
   targetChainId,
 }: {
@@ -64,7 +64,7 @@ export function useInvalidateBalancesQueries() {
   };
 }
 
-export function useNewBalances() {
+export function useBalances() {
   const wallet = useCurrentWallet({});
   const { targetChainsStore } = useStore();
 
@@ -82,7 +82,7 @@ export function useNewBalances() {
                   if (!chain.enabled) {
                     return [];
                   }
-                  return await fetchNewBalances({
+                  return await fetchBalances({
                     address:
                       await chain.targetChain.obiAccountAddress(publicKey),
                     targetChainId: chain.id,
@@ -98,7 +98,7 @@ export function useUsdTotalValue(): {
   total: string;
   loading: boolean;
 } {
-  const balances = useNewBalances();
+  const balances = useBalances();
 
   if (
     balances.every((balance) => {
