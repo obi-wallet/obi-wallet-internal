@@ -141,14 +141,27 @@ export abstract class AbstractTargetChain<
   }
   public get priceQuery() {
     return this.queryNamespace.createQuery({
-      name: "prices",
+      name: "price",
       fn: this.priceQueryFn.bind(this),
       staleTime: { minute: 1 },
     });
   }
   public abstract priceQueryFn(id: AssetId): Promise<PriceInfo>;
 
+  public newPrice(id: Caip19AssetId) {
+    return queryClient.fetchQuery(this.newPriceQuery(id));
+  }
+  public get newPriceQuery() {
+    return this.queryNamespace.createQuery({
+      name: "newPrice",
+      fn: this.newPriceQueryFn.bind(this),
+      staleTime: { minute: 1 },
+    });
+  }
+  public abstract newPriceQueryFn(id: Caip19AssetId): Promise<PriceInfo>;
+
   public abstract assetInfo(id: AssetId): AssetInfo | null;
+  public abstract newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null>;
 
   public abstract handleWalletConnectSessionRequest(
     payload: SessionRequestPayload,

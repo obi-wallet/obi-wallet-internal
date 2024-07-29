@@ -40,6 +40,11 @@ export class CosmosTokenRegistry {
       return this.assets[key];
     }
 
+    if (id.includes("/ibc:")) {
+      const key = id.replace("/ibc:", ":ibc/").replace("%2F", "/");
+      return this.assets[key];
+    }
+
     if (id.includes("/cw20:")) {
       // TODO:
       // const key = id.replace("/cw20", ":cw20");
