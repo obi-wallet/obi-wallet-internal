@@ -78,7 +78,7 @@ export class TargetChainsStore {
     this.config = {
       ...this.config,
       [address]: {
-        ...this.config[address],
+        ...this.getTargetChainsConfig(address),
         [chainId]: config,
       },
     };

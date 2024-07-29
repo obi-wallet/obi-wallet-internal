@@ -1,11 +1,13 @@
 import { useStore } from "@/contexts";
 import { SimulationEntry } from "@/dashboard/schema";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { TokensConfig } from "@/stores/tokens";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { AssetInfo, Caip19Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
+import { flatten } from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -21,9 +23,11 @@ export interface PrettyCaip19Asset extends Caip19Asset {
 async function fetchBalances({
   address,
   targetChainId,
+  tokensConfig,
 }: {
   address?: string;
   targetChainId: TargetChainId;
+  tokensConfig: TokensConfig;
 }): Promise<PrettyCaip19Asset[]> {
   if (!address) {
     return [];
@@ -32,26 +36,37 @@ async function fetchBalances({
   const targetChain = TargetChain.chainId(targetChainId);
   const balances = await targetChain.nativeBalances(address);
 
-  return await Promise.all(
-    balances.map(async (asset): Promise<PrettyCaip19Asset> => {
-      const price = (await targetChain.newPrice(asset.assetId)).usdValue;
-      const assetInfo = await targetChain.newAssetInfo(asset.assetId);
+  return flatten(
+    await Promise.all(
+      balances.map(async (asset): Promise<PrettyCaip19Asset[]> => {
+        const price = (await targetChain.newPrice(asset.assetId)).usdValue;
+        const tokenConfig = tokensConfig[asset.assetId] ?? {
+          enabled: true,
+          assetInfo: await targetChain.newAssetInfo(asset.assetId),
+        };
 
-      const amount = new BigNumber(asset.rawAmount).dividedBy(
-        10 ** (assetInfo?.decimals ?? 0),
-      );
+        if (!tokenConfig.enabled) return [];
 
-      const priceBn = new BigNumber(price);
-      const usdBalance = priceBn.times(amount);
+        const assetInfo = tokenConfig.assetInfo ?? null;
 
-      return {
-        ...asset,
-        price,
-        usdBalance: usdBalance.toString(),
-        prettyAmount: amount.toString(),
-        assetInfo,
-      };
-    }),
+        const amount = new BigNumber(asset.rawAmount).dividedBy(
+          10 ** (assetInfo?.decimals ?? 0),
+        );
+
+        const priceBn = new BigNumber(price);
+        const usdBalance = priceBn.times(amount);
+
+        return [
+          {
+            ...asset,
+            price,
+            usdBalance: usdBalance.toString(),
+            prettyAmount: amount.toString(),
+            assetInfo,
+          },
+        ];
+      }),
+    ),
   );
 }
 
@@ -66,32 +81,38 @@ export function useInvalidateBalancesQueries() {
 
 export function useBalances() {
   const wallet = useCurrentWallet({});
-  const { targetChainsStore } = useStore();
-
+  const { targetChainsStore, tokensStore } = useStore();
   const publicKey = usePublicKey();
+
   return useQueries({
-    queries:
-      wallet && publicKey
-        ? targetChainsStore
-            .getTargetChains(wallet.userEntryAddress)
-            .map((chain) => {
-              return {
-                queryKey: ["newBalances", chain.id, publicKey],
-                queryFn: async (): Promise<PrettyCaip19Asset[]> => {
-                  invariant(publicKey, "Expected publicKey to be set.");
-                  if (!chain.enabled) {
-                    return [];
-                  }
-                  return await fetchBalances({
-                    address:
-                      await chain.targetChain.obiAccountAddress(publicKey),
-                    targetChainId: chain.id,
-                  });
-                },
-              };
-            })
-        : [],
+    queries: getQueries(),
   });
+
+  function getQueries() {
+    if (!wallet || !publicKey) return [];
+
+    const targetChains = targetChainsStore.getTargetChains(
+      wallet.userEntryAddress,
+    );
+    const tokensConfig = tokensStore.getTokensConfig(wallet.userEntryAddress);
+
+    return targetChains.map((chain) => {
+      return {
+        queryKey: ["balances", chain.id, publicKey],
+        queryFn: async (): Promise<PrettyCaip19Asset[]> => {
+          invariant(publicKey, "Expected publicKey to be set.");
+          if (!chain.enabled) {
+            return [];
+          }
+          return await fetchBalances({
+            address: await chain.targetChain.obiAccountAddress(publicKey),
+            targetChainId: chain.id,
+            tokensConfig,
+          });
+        },
+      };
+    });
+  }
 }
 
 export function useUsdTotalValue(): {

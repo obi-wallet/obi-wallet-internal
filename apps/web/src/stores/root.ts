@@ -1,4 +1,5 @@
 import { TargetChainsStore } from "@/stores/target-chains";
+import { TokensStore } from "@/stores/tokens";
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
@@ -37,6 +38,7 @@ export class RootStore {
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
   public readonly targetChainsStore: TargetChainsStore;
+  public readonly tokensStore: TokensStore;
   public readonly userDataStore: UserDataStore;
   public readonly walletConnectStore: WalletConnectStore;
   public readonly wasmStore: WasmStore;
@@ -57,6 +59,7 @@ export class RootStore {
     this.targetChainsStore = new TargetChainsStore(
       new KVStore("target-chains-store"),
     );
+    this.tokensStore = new TokensStore(new KVStore("tokens-store"));
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
     this.wasmStore = new WasmStore();
 
