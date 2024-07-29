@@ -35,6 +35,11 @@ export class CosmosTokenRegistry {
   }
 
   public getNewAsset(id: Caip19AssetId) {
+    if (id.includes("/native:")) {
+      const key = id.replace("/native:", ":").replace("%2F", "/");
+      return this.assets[key];
+    }
+
     if (id.includes("/factory:")) {
       const key = id.replace("/factory:", ":factory/").replace("%2F", "/");
       return this.assets[key];

@@ -1,24 +1,19 @@
 "use client";
 
 import { Account, Divider, Text } from "@/components";
-import { AssetWithPrice, useBalances } from "@/hooks/balances";
+import { PrettyCaip19Asset, useNewBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { Input } from "@/ui/input";
-import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
+import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { Fragment, useState } from "react";
 import { CiSearch } from "react-icons/ci";
+import invariant from "tiny-invariant";
 
 import { PendingAssets } from "./pending";
-
-interface PrettyAssetData extends AssetWithPrice {
-  usdBalance: BigNumber;
-  prettyAmount: BigNumber;
-  assetInfo: AssetInfo | null;
-}
 
 export const DashboardPage = observer(function Dashboard() {
   useCurrentWallet({ redirectTo: "/" });
@@ -83,7 +78,7 @@ const AssetBalance = observer(function AssetBalance({
 }: {
   searchAsset: string;
 }) {
-  const balances = useBalances();
+  const balances = useNewBalances();
 
   if (
     balances.every((b) => {
@@ -103,31 +98,17 @@ const AssetBalance = observer(function AssetBalance({
 
   const prettyBalances = balances
     .map((balance) => {
-      const chain: { label: string; image: string } = {
-        label: "",
-        image: "",
-      };
-      const prettyData: PrettyAssetData[] = (
-        balance.data?.map((asset) => {
-          const targetChain = TargetChain.chainId(asset.chainId);
-          chain.label = targetChain.label;
-          chain.image = targetChain.image;
-
-          const assetInfo = targetChain.assetInfo(asset.assetId);
-          const amount = new BigNumber(asset.rawAmount).dividedBy(
-            10 ** (assetInfo?.decimals ?? 0),
-          );
-
-          const priceBn = new BigNumber(asset.price);
-          const usdBalance = priceBn.times(amount);
-          return {
-            ...asset,
-            usdBalance,
-            prettyAmount: amount,
-            assetInfo,
-          };
-        }) ?? []
-      )
+      return balance.data ?? [];
+    })
+    .filter((balance) => {
+      return balance.length > 0;
+    })
+    .map((balance) => {
+      const [firstAsset] = balance;
+      invariant(firstAsset, "Expected first asset to be set.");
+      const { chainId } = parseCaip19AssetId(firstAsset.assetId);
+      const chain = TargetChain.chainId(chainId);
+      const prettyData = balance
         .filter((asset) => {
           return (asset.assetInfo?.symbol.toLowerCase() ?? "").includes(
             searchAsset,
@@ -138,10 +119,13 @@ const AssetBalance = observer(function AssetBalance({
           return -1;
         });
 
-      return { ...balance, prettyData, chain };
-    })
-    .filter((balance) => {
-      return balance.prettyData.length > 0;
+      return {
+        prettyData,
+        chain: {
+          label: chain.label,
+          image: chain.image,
+        },
+      };
     })
     .sort((balanceA, balanceB) => {
       const balanceAValueSum = balanceA.prettyData.reduce((acc, curr) => {
@@ -157,8 +141,6 @@ const AssetBalance = observer(function AssetBalance({
   return (
     <div className="flex flex-col gap-10">
       {prettyBalances.map((chainBalance) => {
-        if (!chainBalance.data || chainBalance.data.length === 0) return null;
-
         return (
           <Fragment key={chainBalance.chain.label}>
             <NetworkAssets assets={chainBalance} />
@@ -173,7 +155,7 @@ function NetworkAssets({
   assets,
 }: {
   assets: {
-    prettyData: PrettyAssetData[];
+    prettyData: PrettyCaip19Asset[];
     chain: {
       label: string;
       image: string;
@@ -228,7 +210,7 @@ function NetworkAssets({
   );
 }
 
-function AssetItem({ asset }: { asset: PrettyAssetData }) {
+function AssetItem({ asset }: { asset: PrettyCaip19Asset }) {
   const router = useRouter();
 
   return (
@@ -236,9 +218,7 @@ function AssetItem({ asset }: { asset: PrettyAssetData }) {
       className="hover:bg-asset-hover-gradient flex w-full cursor-pointer justify-between gap-5  py-1.5  pl-4  hover:rounded-lg"
       onClick={() => {
         router.push(
-          `/dashboard/transaction/send/${encodeURIComponent(
-            `${asset.chainId}:${asset.assetId}`,
-          )}`,
+          `/dashboard/transaction/send/${encodeURIComponent(asset.assetId)}`,
         );
       }}
     >
@@ -262,7 +242,7 @@ function AssetItem({ asset }: { asset: PrettyAssetData }) {
         {asset.prettyAmount.toString()}
       </Text>
       <Text fontWeight="bold" className=" max-sm:text-sm">
-        ${asset.usdBalance.toFixed(2)}
+        ${new BigNumber(asset.usdBalance).toFixed(2)}
       </Text>
     </div>
   );

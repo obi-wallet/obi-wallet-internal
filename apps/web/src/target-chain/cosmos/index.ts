@@ -279,17 +279,18 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         allow_unsafe: true,
       };
       try {
-        const res = await fetch(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: serialize(data),
         });
-        const json = await res.json();
-
-        const number = Number(json.usd_amount_out);
-        return { usdValue: number.toString(10) };
+        const schema = z.object({
+          usd_amount_out: z.string(),
+        });
+        const { usd_amount_out } = schema.parse(await response.json());
+        return { usdValue: usd_amount_out };
       } catch (e) {
         console.log("SKIP ERROR", e);
       }
@@ -301,8 +302,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       const schema = z.object({
         price: z.number(),
       });
-      const data = await response.json();
-      const { price } = schema.parse(data);
+      const { price } = schema.parse(await response.json());
       return { usdValue: price.toString(10) };
     } catch (e) {
       console.error("Error fetching price", e);
