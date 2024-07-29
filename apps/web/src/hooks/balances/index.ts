@@ -161,7 +161,7 @@ export function useUsdTotalValue(): {
   total: string;
   loading: boolean;
 } {
-  const balances = useBalances();
+  const balances = useNewBalances();
 
   if (
     balances.every((balance) => {
@@ -178,23 +178,14 @@ export function useUsdTotalValue(): {
     .map((balance) => {
       return balance.data;
     })
-    .filter((balance): balance is AssetWithPrice[] => {
+    .filter((balance): balance is PrettyCaip19Asset[] => {
       return !!balance;
     })
     .flat();
 
   const total = flatBalances
     .reduce((acc, balance) => {
-      const targetChain = TargetChain.chainId(balance.chainId);
-      const asset = targetChain.assetInfo(balance.assetId);
-
-      if (!asset) {
-        return acc;
-      }
-      const amount = new BigNumber(balance.rawAmount);
-      const decimalAmount = amount.dividedBy(10 ** asset.decimals);
-      const price = new BigNumber(balance.price);
-      return acc.plus(price.times(decimalAmount));
+      return acc.plus(balance.usdBalance);
     }, new BigNumber(0))
     .toFixed(2);
 
