@@ -16,6 +16,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
@@ -139,6 +140,31 @@ export class Eip155TargetChain extends AbstractTargetChain<
       }
     }
     return [];
+  }
+
+  public async nativeBalancesQueryFn(address: string) {
+    if (this.validateAddress(address)) {
+      const balance = await this.publicClient.getBalance({
+        address,
+      });
+      if (balance > 0) {
+        const assetId: Caip19AssetId = `${this.chainId}/native:${this.nativeCurrency.symbol}`;
+        return [
+          {
+            assetId,
+            rawAmount: balance.toString(10),
+          },
+        ];
+      }
+    }
+    return [];
+  }
+
+  public async tokenBalanceQueryFn(_: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    return "0";
   }
 
   public async priceQueryFn(id: AssetId) {

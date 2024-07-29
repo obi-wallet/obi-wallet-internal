@@ -61,7 +61,6 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
-import { Query } from "@tanstack/react-query";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import BigNumber from "bignumber.js";
@@ -154,29 +153,31 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     });
   }
 
-  public newBalance({
-    address,
-    assetId,
-  }: {
-    address: string;
-    assetId: Caip19AssetId;
-  }) {
-    return queryClient.fetchQuery(this.newBalanceQuery({ address, assetId }));
-  }
-  public get newBalanceQuery() {
-    return this.queryNamespace.createQuery({
-      name: "newBalance",
-      fn: this.newBalanceQueryFn.bind(this),
-      staleTime: (query: Query<string>) => {
-        if (!query.state.data || query.state.data !== "0") {
-          return { seconds: 5 };
-        }
+  public async nativeBalancesQueryFn(address: string) {
+    return await this.withStargateClient(async (client) => {
+      const balances = await client.getAllBalances(address);
+      return balances.map((balance) => {
+        const getCaip19AssetId = (): Caip19AssetId => {
+          if (balance.denom.startsWith("factory/")) {
+            return `${this.chainId}/factory:${balance.denom.replace("factory/", "").replace("/", "%2F")}`;
+          }
 
-        return { minutes: 5 };
-      },
+          if (balance.denom.startsWith("ibc/")) {
+            return `${this.chainId}/ibc:${balance.denom.replace("ibc/", "").replace("/", "%2F")}`;
+          }
+
+          return `${this.chainId}/native:${balance.denom}`;
+        };
+
+        return {
+          assetId: getCaip19AssetId(),
+          rawAmount: balance.amount,
+        };
+      });
     });
   }
-  public async newBalanceQueryFn({
+
+  public async tokenBalanceQueryFn({
     address,
     assetId,
   }: {

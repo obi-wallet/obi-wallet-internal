@@ -5,7 +5,7 @@ import { createTestSuite, expect } from "@/tests";
 export const testSuite = createTestSuite(({ test }) => {
   test("balance of factory token", async () => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
-    const balances = await targetChain.balances(
+    const balances = await targetChain.nativeBalancesQueryFn(
       "sei1qegt2xqndqlf53csypt4pm2dm497elr63lc9j7",
     );
     console.log(balances);
@@ -72,7 +72,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const address = "sei1000qtmc2p4fcup8y57aue4a9s6ya8aszt8j9qd";
     const assetId =
       "cosmos:pacific-1/cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed";
-    const balance = await targetChain.newBalance({
+    const balance = await targetChain.tokenBalance({
       address,
       assetId,
     });

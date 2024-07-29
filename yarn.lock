@@ -3319,6 +3319,7 @@ __metadata:
   resolution: "@obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain"
   dependencies:
     "@obi-wallet/query-client": "workspace:*"
+    "@obi-wallet/sdk-caip": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@repo/eslint-config": "workspace:*"

@@ -1,4 +1,5 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
   SessionRequestPayload,
@@ -18,6 +19,11 @@ export type AssetId = string;
 export interface Asset<T extends string = string> {
   chainId: T;
   assetId: AssetId;
+  rawAmount: string;
+}
+
+export interface Caip19Asset {
+  assetId: Caip19AssetId;
   rawAmount: string;
 }
 
@@ -79,6 +85,56 @@ export abstract class AbstractTargetChain<
     });
   }
   public abstract balancesQueryFn(address: string): Promise<Asset<TChainId>[]>;
+
+  public nativeBalances(address: string) {
+    return queryClient.fetchQuery(this.nativeBalancesQuery(address));
+  }
+  public get nativeBalancesQuery() {
+    return this.queryNamespace.createQuery({
+      name: "nativeBalances",
+      fn: this.nativeBalancesQueryFn.bind(this),
+      staleTime: (query: Query<Caip19Asset[]>) => {
+        if (!query.state.data || query.state.data.length > 0) {
+          return { seconds: 5 };
+        }
+
+        return { minutes: 5 };
+      },
+    });
+  }
+  public abstract nativeBalancesQueryFn(
+    address: string,
+  ): Promise<Caip19Asset[]>;
+
+  public tokenBalance({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    return queryClient.fetchQuery(this.tokenBalanceQuery({ address, assetId }));
+  }
+  public get tokenBalanceQuery() {
+    return this.queryNamespace.createQuery({
+      name: "tokenBalance",
+      fn: this.tokenBalanceQueryFn.bind(this),
+      staleTime: (query: Query<string>) => {
+        if (!query.state.data || query.state.data.length > 0) {
+          return { seconds: 5 };
+        }
+
+        return { minutes: 5 };
+      },
+    });
+  }
+  public abstract tokenBalanceQueryFn({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }): Promise<string>;
 
   public price(id: AssetId) {
     return queryClient.fetchQuery(this.priceQuery(id));
