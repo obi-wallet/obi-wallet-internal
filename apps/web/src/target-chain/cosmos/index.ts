@@ -127,7 +127,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    return "sei1qegt2xqndqlf53csypt4pm2dm497elr63lc9j7";
     return this.computeAddress(publicKey);
   }
 

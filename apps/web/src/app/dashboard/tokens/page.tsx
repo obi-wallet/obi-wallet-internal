@@ -58,6 +58,17 @@ export default observer(function Tokens() {
                 href={`/dashboard/tokens/edit/${encodeURIComponent(id)}`}
               >
                 Edit
+              </Button>{" "}
+              <Button
+                variant="outline"
+                onClick={() => {
+                  tokensStore.removeTokenConfig({
+                    address: currentWallet.userEntryAddress,
+                    assetId: id,
+                  });
+                }}
+              >
+                Delete
               </Button>
             </li>
           );

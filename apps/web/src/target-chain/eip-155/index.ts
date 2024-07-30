@@ -33,6 +33,7 @@ import invariant from "tiny-invariant";
 import {
   Address,
   createPublicClient,
+  erc20Abi,
   getAddress,
   hexToBigInt,
   http,
@@ -130,9 +131,8 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public isTokenAsset(assetId: Caip19AssetId) {
-    const { chainId } = parseCaip19AssetId(assetId);
-    // TODO:
-    return chainId === this.chainId && false;
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "erc20";
   }
 
   public async nativeBalancesQueryFn(address: string) {
@@ -153,10 +153,30 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return [];
   }
 
-  public async tokenBalanceQueryFn(_: {
+  public async tokenBalanceQueryFn({
+    address,
+    assetId,
+  }: {
     address: string;
     assetId: Caip19AssetId;
   }) {
+    if (!this.validateAddress(address)) return "0";
+
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "erc20": {
+        if (this.validateAddress(reference)) {
+          const rawAmount = await this.publicClient.readContract({
+            address: reference,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [address],
+          });
+          return rawAmount.toString(10);
+        }
+      }
+    }
+
     return "0";
   }
 
@@ -230,10 +250,11 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return null;
   }
 
-  public async newAssetInfo(id: AssetId) {
-    if (id === `${this.chainId}/native:${this.nativeCurrency.symbol}`) {
+  public async newAssetInfo(id: Caip19AssetId) {
+    const { namespace, reference } = parseCaip19AssetId(id);
+    if (namespace === "native" && reference === this.nativeCurrency.symbol) {
       const getImage = () => {
-        switch (id) {
+        switch (reference) {
           case "AVAX":
             return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
           case "ETH":
@@ -258,6 +279,34 @@ export class Eip155TargetChain extends AbstractTargetChain<
       };
     }
 
+    if (namespace === "erc20" && this.validateAddress(reference)) {
+      const response = await this.publicClient.multicall({
+        contracts: [
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "decimals",
+          },
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "name",
+          },
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "symbol",
+          },
+        ],
+      });
+      console.log(response);
+      return {
+        name: response[1].result ?? "",
+        symbol: response[2].result ?? "",
+        decimals: response[0].result ?? 0,
+        image: "",
+      };
+    }
     return null;
   }
 
@@ -471,12 +520,18 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
+    if (denom.startsWith("0x")) {
+      return `${this.chainId}/erc20:${denom.toLowerCase()}`;
+    }
+
     return `${this.chainId}/native:${denom}`;
   }
 
   public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
+      case "erc20":
+        return reference.replace("%2F", "/");
       case "native":
         return reference.replace("%2F", "/");
       default:

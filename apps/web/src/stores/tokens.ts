@@ -1,7 +1,7 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
-import { toPairs } from "ramda";
+import { omit, toPairs } from "ramda";
 import { z } from "zod";
 
 const tokenConfigSchema = z.object({
@@ -73,13 +73,14 @@ export class TokensStore {
     return config[assetId] ?? null;
   }
 
-  @action setTokenConfig({
+  @action
+  public setTokenConfig({
     address,
     assetId,
     config,
   }: {
     address: string;
-    assetId: string;
+    assetId: Caip19AssetId;
     config: TokenConfig;
   }) {
     this.config = {
@@ -88,6 +89,20 @@ export class TokensStore {
         ...this.getTokensConfig(address),
         [assetId]: config,
       },
+    };
+  }
+
+  @action
+  public removeTokenConfig({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    this.config = {
+      ...this.config,
+      [address]: omit([assetId], this.getTokensConfig(address)),
     };
   }
 
