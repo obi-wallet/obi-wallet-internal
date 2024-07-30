@@ -127,6 +127,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+    return "sei1qegt2xqndqlf53csypt4pm2dm497elr63lc9j7";
     return this.computeAddress(publicKey);
   }
 
@@ -597,19 +598,23 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     switch (namespace) {
       case "factory": {
         const denom = `factory/${reference.replace("%2F", "/")}`;
-        const metadata = await this.denomMetadata(denom);
-        if (!metadata) return null;
+        try {
+          const metadata = await this.denomMetadata(denom);
 
-        const denomUnit = metadata.denomUnits.find((value) => {
-          return value.denom === metadata.display;
-        });
+          const denomUnit = metadata.denomUnits.find((value) => {
+            return value.denom === metadata.display;
+          });
 
-        return {
-          name: metadata.name,
-          symbol: metadata.symbol,
-          decimals: denomUnit?.exponent ?? 0,
-          image: null,
-        };
+          return {
+            name: metadata.name,
+            symbol: metadata.symbol,
+            decimals: denomUnit?.exponent ?? 0,
+            image: null,
+          };
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
       }
       case "cw20": {
         const tokenInfo = await this.tokenInfo(reference);
@@ -757,6 +762,38 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       }
       default:
         return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
+  }
+
+  public denomToCaip19AssetId(denom: string) {
+    if (denom.startsWith("factory/")) {
+      return `${this.chainId}/factory:${denom.replace("factory/", "").replace("/", "%2F")}`;
+    }
+
+    if (denom.startsWith("ibc/")) {
+      return `${this.chainId}/ibc:${denom.replace("ibc/", "").replace("/", "%2F")}`;
+    }
+
+    if (denom.startsWith(this.chainData.prefix)) {
+      return `${this.chainId}/cw20:${denom.replace("/", "%2F")}`;
+    }
+
+    return `${this.chainId}/native:${denom}`;
+  }
+
+  public caip19AssetIdToDenom(assetId: Caip19AssetId) {
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "native":
+        return reference.replace("%2F", "/");
+      case "factory":
+        return `factory/${reference.replace("%2F", "/")}`;
+      case "ibc":
+        return `ibc/${reference.replace("%2F", "/")}`;
+      case "cw20":
+        return `cw20/${reference.replace("%2F", "/")}`;
+      default:
+        return null;
     }
   }
 }

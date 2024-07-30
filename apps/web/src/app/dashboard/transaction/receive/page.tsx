@@ -88,7 +88,7 @@ export default observer(function Receive() {
   );
 });
 
-const ChainDropdown = observer(function ChainDropdown({
+export const ChainDropdown = observer(function ChainDropdown({
   onChange,
   chainId,
 }: {
