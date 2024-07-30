@@ -142,6 +142,19 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     }
   }
 
+  public isNativeAsset(assetId: Caip19AssetId) {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return (
+      chainId === this.chainId &&
+      (namespace === "native" || namespace === "factory" || namespace === "ibc")
+    );
+  }
+
+  public isTokenAsset(assetId: Caip19AssetId) {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "cw20";
+  }
+
   public async nativeBalancesQueryFn(address: string) {
     return await this.withStargateClient(async (client) => {
       const balances = await client.getAllBalances(address);
@@ -765,7 +778,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     }
   }
 
-  public denomToCaip19AssetId(denom: string) {
+  public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
     if (denom.startsWith("factory/")) {
       return `${this.chainId}/factory:${denom.replace("factory/", "").replace("/", "%2F")}`;
     }
@@ -781,7 +794,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     return `${this.chainId}/native:${denom}`;
   }
 
-  public caip19AssetIdToDenom(assetId: Caip19AssetId) {
+  public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "native":

@@ -1,7 +1,6 @@
 "use client";
 
-import { ChainDropdown } from "@/app/dashboard/transaction/receive/page";
-import { Box, Button, Input } from "@/components";
+import { Box, Button, ChainDropdown, Input } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
@@ -52,7 +51,8 @@ export default observer(function TokenAdd() {
               const targetChain = TargetChain.chainId(chainId);
               const assetId =
                 TargetChain.chainId(chainId).denomToCaip19AssetId(address);
-              const assetInfo = await targetChain.newAssetInfo(assetId);
+              const assetInfo =
+                assetId && (await targetChain.newAssetInfo(assetId));
               if (assetInfo) {
                 router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,
@@ -63,7 +63,7 @@ export default observer(function TokenAdd() {
             }}
             className="flex-1 justify-center rounded-lg p-2"
           >
-            Save
+            Add
           </Button>
         </div>
       </Box>

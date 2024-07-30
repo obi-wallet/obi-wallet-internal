@@ -7,7 +7,7 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { AssetInfo, Caip19Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
-import { flatten } from "ramda";
+import { flatten, toPairs } from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -36,8 +36,12 @@ async function fetchBalances({
   const targetChain = TargetChain.chainId(targetChainId);
   const balances = await targetChain.nativeBalances(address);
 
-  return flatten(
-    await Promise.all(
+  const tokens = toPairs(tokensConfig).filter(([id, config]) => {
+    return config?.enabled && targetChain.isTokenAsset(id);
+  });
+
+  return flatten([
+    ...(await Promise.all(
       balances.map(async (asset): Promise<PrettyCaip19Asset[]> => {
         const price = (await targetChain.newPrice(asset.assetId)).usdValue;
         const tokenConfig = tokensConfig[asset.assetId] ?? {
@@ -66,8 +70,39 @@ async function fetchBalances({
           },
         ];
       }),
-    ),
-  );
+    )),
+    ...(await Promise.all(
+      tokens.map(async ([id, tokenConfig]): Promise<PrettyCaip19Asset[]> => {
+        const price = (await targetChain.newPrice(id)).usdValue;
+        const rawAmount = await targetChain.tokenBalance({
+          address,
+          assetId: id,
+        });
+
+        if (!tokenConfig?.enabled) return [];
+
+        const assetInfo = tokenConfig.assetInfo ?? null;
+
+        const amount = new BigNumber(rawAmount).dividedBy(
+          10 ** (assetInfo?.decimals ?? 0),
+        );
+
+        const priceBn = new BigNumber(price);
+        const usdBalance = priceBn.times(amount);
+
+        return [
+          {
+            assetId: id,
+            rawAmount,
+            price,
+            usdBalance: usdBalance.toString(),
+            prettyAmount: amount.toString(),
+            assetInfo,
+          },
+        ];
+      }),
+    )),
+  ]);
 }
 
 export function useInvalidateBalancesQueries() {

@@ -22,9 +22,9 @@ export default observer(function Tokens() {
         mapObjIndexed((config, id) => {
           return (
             <li key={id}>
-              <code>{id}</code> {config.assetInfo?.symbol}{" "}
+              <code>{id}</code> {config?.assetInfo?.symbol}{" "}
               <Button
-                variant={config.enabled === true ? "primary" : "outline"}
+                variant={config?.enabled === true ? "primary" : "outline"}
                 onClick={() => {
                   tokensStore.setTokenConfig({
                     address: currentWallet.userEntryAddress,
@@ -39,7 +39,7 @@ export default observer(function Tokens() {
                 Enable
               </Button>
               <Button
-                variant={config.enabled !== true ? "primary" : "outline"}
+                variant={config?.enabled !== true ? "primary" : "outline"}
                 onClick={() => {
                   tokensStore.setTokenConfig({
                     address: currentWallet.userEntryAddress,

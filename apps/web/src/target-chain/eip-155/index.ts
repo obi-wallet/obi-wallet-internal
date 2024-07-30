@@ -124,6 +124,17 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return HexEncodedStringWithPrefix.parse(kernelAccount.address);
   }
 
+  public isNativeAsset(assetId: Caip19AssetId) {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "native";
+  }
+
+  public isTokenAsset(assetId: Caip19AssetId) {
+    const { chainId } = parseCaip19AssetId(assetId);
+    // TODO:
+    return chainId === this.chainId && false;
+  }
+
   public async nativeBalancesQueryFn(address: string) {
     if (this.validateAddress(address)) {
       const balance = await this.publicClient.getBalance({
@@ -456,6 +467,20 @@ export class Eip155TargetChain extends AbstractTargetChain<
         return { result: true };
       default:
         return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
+  }
+
+  public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
+    return `${this.chainId}/native:${denom}`;
+  }
+
+  public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "native":
+        return reference.replace("%2F", "/");
+      default:
+        return null;
     }
   }
 }

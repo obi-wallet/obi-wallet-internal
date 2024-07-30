@@ -3,8 +3,8 @@
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { TokenConfig } from "@/stores/tokens";
 import { TargetChain } from "@/target-chain";
+import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,18 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   const router = useRouter();
   const { tokensStore } = useStore();
 
-  const [state, setState] = useState<TokenConfig>({});
+  const [state, setState] = useState<{
+    enabled: boolean;
+    assetInfo: AssetInfo;
+  }>({
+    enabled: true,
+    assetInfo: {
+      name: "",
+      symbol: "",
+      decimals: 0,
+      image: "",
+    },
+  });
   useEffectOnceWhen(async () => {
     if (wallet) {
       const persistedAssetInfo = tokensStore.getTokenConfig({
@@ -28,7 +39,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
         assetId,
       });
       if (persistedAssetInfo) {
-        setState(persistedAssetInfo);
+        setState({
+          enabled: persistedAssetInfo.enabled ?? true,
+          assetInfo: persistedAssetInfo.assetInfo ?? {
+            name: "",
+            symbol: "",
+            decimals: 0,
+            image: "",
+          },
+        });
       } else {
         const { chainId } = parseCaip19AssetId(assetId);
         const assetInfo =
@@ -58,6 +77,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           <Input
             className="mt-2 px-3 py-3 text-sm"
             value={state.assetInfo?.symbol ?? ""}
+            onChange={(value) => {
+              setState({
+                ...state,
+                assetInfo: {
+                  ...state.assetInfo,
+                  symbol: value,
+                },
+              });
+            }}
           />
         </div>
         <div className="my-4">
@@ -65,6 +93,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           <Input
             className="mt-2 px-3 py-3 text-sm"
             value={state.assetInfo?.name ?? ""}
+            onChange={(value) => {
+              setState({
+                ...state,
+                assetInfo: {
+                  ...state.assetInfo,
+                  name: value,
+                },
+              });
+            }}
           />
         </div>
         <div className="my-4">
@@ -72,6 +109,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           <Input
             className="mt-2 px-3 py-3 text-sm"
             value={state.assetInfo?.decimals.toString() ?? ""}
+            onChange={(value) => {
+              setState({
+                ...state,
+                assetInfo: {
+                  ...state.assetInfo,
+                  decimals: parseInt(value, 10) ?? 0,
+                },
+              });
+            }}
           />
         </div>
         <div className="my-4">
@@ -79,6 +125,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           <Input
             className="mt-2 px-3 py-3 text-sm"
             value={state.assetInfo?.image ?? ""}
+            onChange={(value) => {
+              setState({
+                ...state,
+                assetInfo: {
+                  ...state.assetInfo,
+                  image: value,
+                },
+              });
+            }}
           />
         </div>
         <div className="mb-4 mt-0.5 flex gap-8 text-white">

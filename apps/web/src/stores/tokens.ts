@@ -1,7 +1,7 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
-import { action, observable } from "mobx";
-import { fromPairs, toPairs } from "ramda";
+import { action, autorun, observable, runInAction, toJS } from "mobx";
+import { toPairs } from "ramda";
 import { z } from "zod";
 
 const tokenConfigSchema = z.object({
@@ -18,7 +18,10 @@ const tokenConfigSchema = z.object({
 
 export type TokenConfig = z.infer<typeof tokenConfigSchema>;
 
-export const tokensConfigSchema = z.record(z.string(), tokenConfigSchema);
+export const tokensConfigSchema = z.record(
+  z.custom<Caip19AssetId>(),
+  tokenConfigSchema,
+);
 
 export type TokensConfig = z.infer<typeof tokensConfigSchema>;
 
@@ -36,26 +39,26 @@ export class TokensStore {
   }
 
   protected async init() {
-    // TODO:
+    const currentConfig = await this.getFromKVStore();
+
+    runInAction(() => {
+      this.config = currentConfig;
+    });
+
+    autorun(async () => {
+      const data = tokensConfigPerWalletSchema.parse(toJS(this.config));
+      await this.kvStore.set("tokens-config", data);
+    });
   }
 
-  public getTokensConfig(address: string) {
-    // TODO: debug statement
+  public async getFromKVStore(): Promise<TokensConfigPerWallet> {
+    const data = await this.kvStore.get("tokens-config");
+    const result = tokensConfigPerWalletSchema.safeParse(data);
+    if (!result.success) return {};
+    return result.data;
+  }
 
-    return {
-      "cosmos:pacific-1/factory:sei1lwp83awd5d2gt4sfet47khj8cwav2lmqn904fe%2FOIN":
-        {
-          enabled: false,
-          assetInfo: {
-            name: "OIN",
-            symbol: "OIN",
-            decimals: 6,
-            image:
-              "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
-          },
-        },
-    };
-
+  public getTokensConfig(address: string): TokensConfig {
     return this.config[address] ?? {};
   }
 
@@ -64,7 +67,7 @@ export class TokensStore {
     assetId,
   }: {
     address: string;
-    assetId: string;
+    assetId: Caip19AssetId;
   }): TokenConfig | null {
     const config = this.getTokensConfig(address);
     return config[assetId] ?? null;
@@ -91,14 +94,12 @@ export class TokensStore {
   // TODO: do we even need this?
   public getTokens(address: string): Caip19AssetId[] {
     const config = this.getTokensConfig(address);
-    const keys = Object.keys(
-      fromPairs(
-        toPairs(config).filter(([_, config]) => {
-          return config.enabled;
-        }),
-      ),
-    );
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    return keys as Caip19AssetId[];
+    return toPairs(config)
+      .filter(([_, config]) => {
+        return config?.enabled;
+      })
+      .map(([key]) => {
+        return key;
+      });
   }
 }

@@ -68,6 +68,9 @@ export abstract class AbstractTargetChain<
 
   public abstract validateAddress(address: string): boolean;
 
+  public abstract isNativeAsset(assetId: Caip19AssetId): boolean;
+  public abstract isTokenAsset(assetId: Caip19AssetId): boolean;
+
   public nativeBalances(address: string) {
     return queryClient.fetchQuery(this.nativeBalancesQuery(address));
   }
@@ -148,4 +151,7 @@ export abstract class AbstractTargetChain<
   public abstract handleWalletConnectSessionRequest(
     payload: SessionRequestPayload,
   ): Promise<SessionRequestResponse>;
+
+  public abstract denomToCaip19AssetId(denom: string): Caip19AssetId | null;
+  public abstract caip19AssetIdToDenom(assetId: Caip19AssetId): string | null;
 }
