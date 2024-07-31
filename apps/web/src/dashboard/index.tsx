@@ -1,6 +1,6 @@
 "use client";
 
-import { Account, Divider, Text } from "@/components";
+import { Account, Button, Divider, Text } from "@/components";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
@@ -31,12 +31,12 @@ const Assets = observer(function Assets() {
     <>
       <div className="hidden w-full flex-1 flex-col max-md:flex">
         <Account />
-        {/*<Button*/}
-        {/*  href="/dashboard/import-new-asset/"*/}
-        {/*  className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"*/}
-        {/*>*/}
-        {/*  Import New Asset*/}
-        {/*</Button>*/}
+        <Button
+          href="/dashboard/tokens/add"
+          className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"
+        >
+          Import New Asset
+        </Button>
       </div>
       <div className="hidden flex-row items-center gap-3 md:flex">
         <Input
@@ -50,12 +50,12 @@ const Assets = observer(function Assets() {
           }}
           inputClassName="ml-2"
         />
-        {/*<Button*/}
-        {/*  href="/dashboard/import-new-asset/"*/}
-        {/*  className="h-9 w-64 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"*/}
-        {/*>*/}
-        {/*  Import New Asset*/}
-        {/*</Button>*/}
+        <Button
+          href="/dashboard/tokens/add"
+          className="h-9 w-64 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"
+        >
+          Import New Asset
+        </Button>
       </div>
 
       <Divider className="mt-5 hidden md:block" />
