@@ -1,6 +1,3 @@
-import { getFeeLender } from "@/lib/fee-lender";
-import { triggerEvent } from "@/points";
-import { updateOwner } from "@/wallet-data-backup/worker-client";
 import { HexEncodedString } from "@obi-wallet/encoding";
 import {
   HomeChainIdSchema,
@@ -13,6 +10,10 @@ import { get } from "lodash";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+
+import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
+import { updateOwner } from "@/wallet-data-backup/worker-client";
 
 export const maxDuration = 45;
 
@@ -82,9 +83,13 @@ export async function POST(request: Request) {
     const previousKeys = previousOwner.keys;
     const currentKeys = walletData.owner.keys;
 
-    if (previousKeys[0] !== undefined && currentKeys[0] !== undefined) {
+    if (
+      previousKeys[0] !== undefined &&
+      currentKeys[0] !== undefined &&
+      "type" in previousKeys[0]
+    ) {
       while (
-        get(previousKeys[0], "type") === currentKeys[0].type &&
+        previousKeys[0].type === currentKeys[0].type &&
         previousKeys[0].payload.publicKey.value ===
           currentKeys[0].publicKey.value
       ) {
@@ -94,7 +99,7 @@ export async function POST(request: Request) {
 
       // "remove-key" promises
       const removeKeyPromises = previousKeys.map((key) => {
-        return triggerEvent({
+        triggerEvent({
           userEntryAddress: walletData.userEntryAddress,
           event: {
             type: "remove-key",
@@ -102,6 +107,8 @@ export async function POST(request: Request) {
               type: get(key, "type"),
             },
           },
+        }).catch((e) => {
+          console.error("trigger event error", e);
         });
       });
 
@@ -115,6 +122,8 @@ export async function POST(request: Request) {
               type: key.type,
             },
           },
+        }).catch((e) => {
+          console.error("trigger event error", e);
         });
       });
 

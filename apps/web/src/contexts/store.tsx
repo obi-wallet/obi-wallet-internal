@@ -1,7 +1,7 @@
+import { RootStore } from "@/stores";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
 
-import { RootStore } from "@/stores";
 
 export const StoreContext = createContext<RootStore | null>(null);
 

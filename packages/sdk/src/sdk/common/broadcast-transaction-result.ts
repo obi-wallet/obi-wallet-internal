@@ -1,3 +1,5 @@
+import { TxResponse } from "secretjs";
+
 /**
  * Generic interface for broadcast results
  */
@@ -17,5 +19,5 @@ export interface BroadcastTransactionResult {
   /**
    * The raw result of the transaction. Contains a chain-specific data structure.
    */
-  rawResult: unknown;
+  rawResult: TxResponse;
 }

@@ -1,3 +1,6 @@
+import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
+import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
   Messages,
@@ -5,14 +8,9 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
-import { TxResponse } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-
-import { getFeeLender } from "@/lib/fee-lender";
-import { triggerEvent } from "@/points";
-import { setWalletData } from "@/wallet-data-backup/worker-client";
 
 export const maxDuration = 45;
 
@@ -110,7 +108,7 @@ export async function POST(request: Request) {
     }
 
     // trigger event for "create-wallet"
-    const rawResult = broadcastTransactionResult.rawResult as TxResponse;
+    const rawResult = broadcastTransactionResult.rawResult;
     await triggerEvent({
       userEntryAddress: userEntryAddress,
       event: {
