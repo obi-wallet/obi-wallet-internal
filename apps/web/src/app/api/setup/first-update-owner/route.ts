@@ -5,6 +5,7 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
+import { TxResponse } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -109,12 +110,13 @@ export async function POST(request: Request) {
     }
 
     // trigger event for "create-wallet"
+    const rawResult = broadcastTransactionResult.rawResult as TxResponse;
     await triggerEvent({
       userEntryAddress: userEntryAddress,
       event: {
         type: "create-wallet",
         payload: {
-          blockHeight: broadcastTransactionResult.rawResult?.height,
+          blockHeight: rawResult.height,
         },
       },
     });

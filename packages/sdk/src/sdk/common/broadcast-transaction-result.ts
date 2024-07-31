@@ -19,5 +19,5 @@ export interface BroadcastTransactionResult {
   /**
    * The raw result of the transaction. Contains a chain-specific data structure.
    */
-  rawResult: TxResponse;
+  rawResult: unknown;
 }
