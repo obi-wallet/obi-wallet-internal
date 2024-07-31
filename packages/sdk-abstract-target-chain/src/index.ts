@@ -40,7 +40,7 @@ export abstract class AbstractTargetChain<
     { chainId: TChainId }
   >;
 
-  protected constructor(protected chainId: TChainId) {
+  protected constructor(public chainId: TChainId) {
     this.queryNamespace = new QueryClientNamespace("target-chain", {
       chainId,
     });
