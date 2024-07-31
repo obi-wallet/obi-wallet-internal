@@ -18,6 +18,7 @@ export type CosmosSignAminoUserInteraction = UserInteraction<
   | {
       approved: true;
       payload: AminoSignResponse;
+      txHash: string;
     }
   | {
       approved: false;

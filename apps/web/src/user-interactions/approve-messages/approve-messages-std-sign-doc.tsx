@@ -121,8 +121,8 @@ export function cosmosSignAminoToApproveMessagesProps(
         approved: true,
         payload: {
           ...signResponse,
-          txHash,
         },
+        txHash,
       });
     },
     onReject: () => {

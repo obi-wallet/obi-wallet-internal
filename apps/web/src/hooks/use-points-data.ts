@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 import { useCurrentWallet } from "./use-current-wallet";
 
 interface EventType {
@@ -115,7 +114,8 @@ export default function usePointsData() {
       fetchData();
     }
   }, [
-    wallet?.userEntryAddress,
+    fetchData,
+    wallet,
     createWalletPoints,
     addKeyPoints,
     appConnectPoints,
