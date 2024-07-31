@@ -37,19 +37,25 @@ const calculatePointsFromEvents = (
   switch (eventType) {
     case 1:
       return (
-        events.filter((event) => {return event.eventType === 1}).length *
-        eventsToPoints.createWallet.event_point
+        events.filter((event) => {
+          return event.eventType === 1;
+        }).length * eventsToPoints.createWallet.event_point
       );
     case 2:
-      if (events.filter((event) => {return event.eventType === 2}).length > 0) {
+      if (
+        events.filter((event) => {
+          return event.eventType === 2;
+        }).length > 0
+      ) {
         return eventsToPoints.addKey.event_point;
       } else {
         return 0;
       }
     case 4:
       return (
-        events.filter((event) => {return event.eventType === 4}).length *
-        eventsToPoints.appConnect.event_point
+        events.filter((event) => {
+          return event.eventType === 4;
+        }).length * eventsToPoints.appConnect.event_point
       );
     default:
       return 0;
@@ -82,9 +88,9 @@ export default function usePointsData() {
         };
       }
       if (wallet.userEntryAddress) {
-        const pointsList = result.filter(
-          (item) => {return item.userEntryAddress === wallet.userEntryAddress},
-        );
+        const pointsList = result.filter((item) => {
+          return item.userEntryAddress === wallet.userEntryAddress;
+        });
         if (pointsList.length > 0 && pointsList[0]) {
           const data = pointsList[0].events;
           setCreateWalletPoints(calculatePointsFromEvents(data, 1));

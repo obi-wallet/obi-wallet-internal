@@ -62,10 +62,12 @@ export function cosmosSignAminoToApproveMessagesProps(
       gas: signDoc.fee.gas,
     };
 
-    const aminoMsgs = signDoc.msgs.map((msg) => {return {
-      type: msg.type,
-      value: msg.value,
-    }});
+    const aminoMsgs = signDoc.msgs.map((msg) => {
+      return {
+        type: msg.type,
+        value: msg.value,
+      };
+    });
 
     const aminoSignDoc = makeSignDoc(
       aminoMsgs,

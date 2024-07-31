@@ -76,7 +76,9 @@ export default observer(function ViewPoints() {
         </div>
         <Button
           className="absolute right-4 top-2 border-0 bg-transparent p-0 text-[14px] hover:bg-transparent active:bg-transparent"
-          onClick={() => {return router.back()}}
+          onClick={() => {
+            return router.back();
+          }}
         >
           x
         </Button>
