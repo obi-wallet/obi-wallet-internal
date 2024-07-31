@@ -108,13 +108,18 @@ export async function POST(request: Request) {
     }
 
     // trigger event for "create-wallet"
-    const rawResult = broadcastTransactionResult.rawResult;
+    const blockHeight =
+      broadcastTransactionResult.rawResult &&
+      "height" in broadcastTransactionResult.rawResult
+        ? broadcastTransactionResult.rawResult.height
+        : "";
+
     await triggerEvent({
       userEntryAddress: userEntryAddress,
       event: {
         type: "create-wallet",
         payload: {
-          blockHeight: rawResult.height,
+          blockHeight,
         },
       },
     });

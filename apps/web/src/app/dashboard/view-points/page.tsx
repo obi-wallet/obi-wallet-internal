@@ -6,7 +6,6 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-
 export default observer(function ViewPoints() {
   const pointsData = usePointsData();
   const router = useRouter();

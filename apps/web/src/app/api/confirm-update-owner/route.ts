@@ -1,3 +1,6 @@
+import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
+import { updateOwner } from "@/wallet-data-backup/worker-client";
 import { HexEncodedString } from "@obi-wallet/encoding";
 import {
   HomeChainIdSchema,
@@ -6,14 +9,10 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
-import { get } from "lodash";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { getFeeLender } from "@/lib/fee-lender";
-import { triggerEvent } from "@/points";
-import { updateOwner } from "@/wallet-data-backup/worker-client";
 
 export const maxDuration = 45;
 
