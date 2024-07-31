@@ -1,5 +1,3 @@
-import { TxResponse } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
-
 /**
  * Generic interface for broadcast results
  */

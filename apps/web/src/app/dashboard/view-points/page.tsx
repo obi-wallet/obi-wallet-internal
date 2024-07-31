@@ -1,10 +1,11 @@
 "use client";
 
-import { Box, Button } from "@/components";
-import usePointsData from "@/hooks/use-points-data";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+import { Box, Button } from "@/components";
+import { usePointsData } from "@/hooks/use-points-data";
 export default observer(function ViewPoints() {
   const pointsData = usePointsData();
   const router = useRouter();

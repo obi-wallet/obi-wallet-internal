@@ -1,10 +1,5 @@
 "use client";
 
-import { Button, Text } from "@/components";
-import { useStore } from "@/contexts";
-import { useUsdTotalValue } from "@/hooks/balances";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import usePointsData from "@/hooks/use-points-data";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +7,11 @@ import { useEffect, useState } from "react";
 import { FaCircleUser, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 import { PrimaryLink } from "../links";
+import { Button, Text } from "@/components";
+import { useStore } from "@/contexts";
+import { useUsdTotalValue } from "@/hooks/balances";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { usePointsData } from "@/hooks/use-points-data";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
@@ -38,7 +38,7 @@ export const Account = observer(function Account() {
     if (points !== totalPoints) {
       setPoints(totalPoints);
     }
-  }, [totalPoints]);
+  }, [totalPoints, points]);
 
   return (
     <>
