@@ -13,7 +13,6 @@ import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-
 export const maxDuration = 45;
 
 const schema = z.object({
@@ -97,19 +96,19 @@ export async function POST(request: Request) {
       }
 
       // "remove-key" promises
-      const removeKeyPromises = previousKeys.map((key) => {
-        triggerEvent({
-          userEntryAddress: walletData.userEntryAddress,
-          event: {
-            type: "remove-key",
-            payload: {
-              type: get(key, "type"),
-            },
-          },
-        }).catch((e) => {
-          console.error("trigger event error", e);
-        });
-      });
+      // const removeKeyPromises = previousKeys.map((key) => {
+      //   triggerEvent({
+      //     userEntryAddress: walletData.userEntryAddress,
+      //     event: {
+      //       type: "remove-key",
+      //       payload: {
+      //         type: key.type,
+      //       },
+      //     },
+      //   }).catch((e) => {
+      //     console.error("trigger event error", e);
+      //   });
+      // });
 
       // "add-key" promises
       const addKeyPromises = currentKeys.map((key) => {
@@ -128,7 +127,7 @@ export async function POST(request: Request) {
 
       // trigger events
       try {
-        await Promise.all(removeKeyPromises);
+        // await Promise.all(removeKeyPromises);
         await Promise.all(addKeyPromises);
       } catch (e) {
         console.error(e);
