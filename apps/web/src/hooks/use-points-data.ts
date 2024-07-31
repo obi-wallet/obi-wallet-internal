@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import { useCurrentWallet } from "./use-current-wallet";
 
 interface EventType {
@@ -61,7 +62,7 @@ const calculatePointsFromEvents = (
   }
 };
 
-export default function usePointsData() {
+export function usePointsData() {
   const wallet = useCurrentWallet({});
   const [createWalletPoints, setCreateWalletPoints] = useState<number>(0);
   const [addKeyPoints, setAddKeyPoints] = useState<number>(0);
@@ -69,57 +70,53 @@ export default function usePointsData() {
   const [totalPoints, setTotalPoints] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("https://points.obiwallet.workers.dev/");
-      if (!response.ok) {
-        throw new Error("Points Response Failed");
-      }
-      const result: PointType[] = await response.json();
-      if (!wallet) {
-        return {
-          createWalletPoints: 0,
-          addKeyPoints: 0,
-          appConnectPoints: 0,
-          loading: 0,
-          totalPoints: 0,
-        };
-      }
-      if (wallet.userEntryAddress) {
-        const pointsList = result.filter((item) => {
-          return item.userEntryAddress === wallet.userEntryAddress;
-        });
-        if (pointsList.length > 0 && pointsList[0]) {
-          const data = pointsList[0].events;
-          setCreateWalletPoints(calculatePointsFromEvents(data, 1));
-          setAddKeyPoints(calculatePointsFromEvents(data, 2));
-          setAppConnectPoints(calculatePointsFromEvents(data, 4));
-          setTotalPoints(
-            calculatePointsFromEvents(data, 1) +
-              calculatePointsFromEvents(data, 2) +
-              calculatePointsFromEvents(data, 4),
-          );
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("https://points.obiwallet.workers.dev/");
+        if (!response.ok) {
+          throw new Error("Points Response Failed");
+        }
+        const result: PointType[] = await response.json();
+        if (!wallet) {
+          return {
+            createWalletPoints: 0,
+            addKeyPoints: 0,
+            appConnectPoints: 0,
+            loading: 0,
+            totalPoints: 0,
+          };
+        }
+        if (wallet.userEntryAddress) {
+          const pointsList = result.filter((item) => {
+            return item.userEntryAddress === wallet.userEntryAddress;
+          });
+          if (pointsList.length > 0 && pointsList[0]) {
+            const data = pointsList[0].events;
+            setCreateWalletPoints(calculatePointsFromEvents(data, 1));
+            setAddKeyPoints(calculatePointsFromEvents(data, 2));
+            setAppConnectPoints(calculatePointsFromEvents(data, 4));
+            setTotalPoints(
+              calculatePointsFromEvents(data, 1) +
+                calculatePointsFromEvents(data, 2) +
+                calculatePointsFromEvents(data, 4),
+            );
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (wallet && wallet.userEntryAddress) {
-      fetchData();
+      fetchData().catch((e) => {
+        console.error("Error fetching data", e);
+      });
     }
-  }, [
-    fetchData,
-    wallet,
-    createWalletPoints,
-    addKeyPoints,
-    appConnectPoints,
-  ]);
+  }, [wallet, createWalletPoints, addKeyPoints, appConnectPoints]);
 
   return {
     createWalletPoints,

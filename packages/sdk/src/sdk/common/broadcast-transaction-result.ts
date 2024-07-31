@@ -1,3 +1,5 @@
+import { TxResponse } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
+
 /**
  * Generic interface for broadcast results
  */
@@ -17,8 +19,5 @@ export interface BroadcastTransactionResult {
   /**
    * The raw result of the transaction. Contains a chain-specific data structure.
    */
-  rawResult: {
-    height: string;
-    [key: string]: unknown;
-  };
+  rawResult: TxResponse;
 }
