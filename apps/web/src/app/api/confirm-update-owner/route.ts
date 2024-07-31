@@ -1,6 +1,7 @@
 import { getFeeLender } from "@/lib/fee-lender";
 import { updateOwner } from "@/wallet-data-backup/worker-client";
 import { HexEncodedString } from "@obi-wallet/encoding";
+import { get } from 'lodash'
 import {
   HomeChainIdSchema,
   Messages,
@@ -78,41 +79,52 @@ export async function POST(request: Request) {
     }
 
     // trigger key evnet : "add-key" or "remove-key" event will be triggered
-    const previousKeys: object[] = previousOwner.keys;
-    const currentKeys: object[] = walletData.owner.keys;
+    const previousKeys = previousOwner.keys;
+    const currentKeys = walletData.owner.keys;
 
-    while (previousKeys[0]?.type === currentKeys[0]?.type && previousKeys[0]?.payload.publicKey.value === currentKeys[0]?.publicKey.value) {
-      previousKeys.shift();
-      currentKeys.shift();
+    if (previousKeys[0] !== undefined && currentKeys[0] !== undefined) {
+      while (
+        (get(previousKeys[0], 'type') === currentKeys[0].type) &&
+        (previousKeys[0].payload.publicKey.value === currentKeys[0].publicKey.value)
+      ) {
+        previousKeys.shift();
+        currentKeys.shift();
+      }
+  
+      // "remove-key" promises
+      const removeKeyPromises = previousKeys.map((key) => {
+        return triggerEvent({
+          userEntryAddress: walletData.userEntryAddress,
+          event: {
+            type: "remove-key",
+            payload: {
+              type: get(key, 'type'),
+            },
+          },
+        });
+      });
+
+      // "add-key" promises 
+      const addKeyPromises = currentKeys.map((key) => {
+        triggerEvent({
+          userEntryAddress: walletData.userEntryAddress,
+          event: {
+            type: "add-key",
+            payload: {
+              type: key.type,
+            },
+          },
+        });
+      });
+
+      // trigger events
+      try {
+        await Promise.all(removeKeyPromises);
+        await Promise.all(addKeyPromises);
+      } catch(e) {
+        console.error(e)
+      }
     }
-
-    // trigger "remove-key" events
-    previousKeys.forEach(async (key) => {
-      console.log("remove-key event triggered", key.type)
-      await triggerEvent({
-        userEntryAddress: walletData.userEntryAddress,
-        event: {
-          type: "remove-key",
-          payload: {
-            type: key.type,
-          },
-        },
-      });
-    })
-
-    // trigger "add-key" events
-    currentKeys.forEach(async (key) => {
-      console.log("add-key event triggered", key.type)
-      await triggerEvent({
-        userEntryAddress: walletData.userEntryAddress,
-        event: {
-          type: "add-key",
-          payload: {
-            type: key.type,
-          },
-        },
-      });
-    })
   }
 
   return NextResponse.json({

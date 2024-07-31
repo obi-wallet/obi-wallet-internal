@@ -48,10 +48,10 @@ const calculatePointsFromEvents = (events: EventType[], eventType: number): numb
 
 export default function usePointsData() {
   const wallet = useCurrentWallet({});
-  const [createWalletPoints, setCreateWalletPoints] = useState<number>(0); 
+  const [createWalletPoints, setCreateWalletPoints] = useState<number>(0);
   const [addKeyPoints, setAddKeyPoints] = useState<number>(0); 
   const [appConnectPoints, setAppConnectPoints] = useState<number>(0);
-  const [totalPoints, setTotalPoints] = useState<number>(0); 
+  const [totalPoints, setTotalPoints] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
@@ -92,7 +92,7 @@ export default function usePointsData() {
     if (wallet && wallet.userEntryAddress) {
       fetchData();
     }
-  }, [wallet?.userEntryAddress, totalPoints]);
+  }, [wallet?.userEntryAddress, createWalletPoints, addKeyPoints, appConnectPoints]);
 
   return { createWalletPoints, addKeyPoints, appConnectPoints, loading, totalPoints, eventsToPoints };
 }

@@ -7,6 +7,11 @@ import { observer } from "mobx-react-lite";
 import invariant from "tiny-invariant";
 
 import { ApproveMessages, ApproveMessagesProps } from "./approve-messages";
+import { makeSignDoc, serializeSignDoc, StdSignDoc } from "@cosmjs/amino";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { fromBase64 } from "secretjs";
+import { AminoSignResponse } from "secretjs/dist/wallet_amino";
+import { Sha256 } from "@cosmjs/crypto";
 
 export interface ApproveMessagesStdSignDocProps {
   interaction: CosmosSignAminoUserInteraction;
@@ -47,6 +52,48 @@ export function cosmosSignAminoToApproveMessagesProps(
     });
   };
 
+  const getTxHashFromSignDoc = (
+    signDoc: StdSignDoc, 
+    { signature }: AminoSignResponse,
+  ) => {
+    // get bodyBytes and authInfoBytes
+    const fee: StdFee = {
+      amount: signDoc.fee.amount,
+      gas: signDoc.fee.gas,
+    }
+
+    const aminoMsgs = signDoc.msgs.map((msg) => ({
+      type: msg.type,
+      value: msg.value,
+    }));
+
+    const aminoSignDoc = makeSignDoc(
+      aminoMsgs,
+      fee,
+      signDoc.chain_id,
+      signDoc.memo,
+      signDoc.account_number,
+      signDoc.sequence,
+    )
+
+    const bodyBytes = serializeSignDoc(aminoSignDoc);
+    const authInfoBytes = new Uint8Array();
+
+    // get txHash
+    const txRaw = TxRaw.fromPartial({
+      bodyBytes,
+      authInfoBytes,
+      signatures: [fromBase64(signature.signature)]
+    });
+
+    const txRawBytes = Uint8Array.from(TxRaw.encode(txRaw).finish());
+
+    const hash = new Sha256();
+    hash.update(txRawBytes);
+    const txHash = Buffer.from(hash.digest()).toString('hex');
+    return txHash;
+  }
+
   return {
     walletMeta: interaction.payload.walletMeta,
     targetChainId: chainId,
@@ -65,9 +112,15 @@ export function cosmosSignAminoToApproveMessagesProps(
         results: intentionsResults,
       });
       const signResponse = await sign({ fee, signer });
+      const txHash = getTxHashFromSignDoc(signDoc, signResponse);
+
+      // TODO: we are now gettign wrong hash from this code
       interaction.resolve({
         approved: true,
-        payload: signResponse,
+        payload: {
+          ...signResponse,
+          txHash,
+        },
       });
     },
     onReject: () => {
