@@ -1,5 +1,6 @@
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { triggerEvent } from "@/points";
 import { rootStore } from "@/stores";
 import {
   allCosmosChains,
@@ -61,7 +62,6 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { triggerEvent } from "@/points";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -484,10 +484,10 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     };
   }
 
-  public async handleWalletConnectSessionRequest({
-    request,
-    chainId,
-  }: SessionRequestPayload, { verified }: SessionVerifyContext): Promise<SessionRequestResponse> {
+  public async handleWalletConnectSessionRequest(
+    { request, chainId }: SessionRequestPayload,
+    { verified }: SessionVerifyContext,
+  ): Promise<SessionRequestResponse> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     if (!wallet) {
       return { error: getSdkError("USER_DISCONNECTED") };
@@ -532,7 +532,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
-          console.log("response", response)
+          console.log("response", response);
           // TODO: trigger client-side event here
           await triggerEvent({
             userEntryAddress: wallet.userEntryAddress,
@@ -541,7 +541,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
               payload: {
                 dApp: verified.origin,
                 targetChain: response.payload.signed.chain_id,
-                txHash: ""
+                txHash: "",
               },
             },
           });
@@ -561,7 +561,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           signDoc: request.params.signDoc,
         });
         if (response.approved) {
-          console.log("response", response)
+          console.log("response", response);
           await triggerEvent({
             userEntryAddress: wallet.userEntryAddress,
             event: {

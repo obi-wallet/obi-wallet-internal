@@ -1,7 +1,7 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
 import { updateOwner } from "@/wallet-data-backup/worker-client";
 import { HexEncodedString } from "@obi-wallet/encoding";
-import { get } from 'lodash'
 import {
   HomeChainIdSchema,
   Messages,
@@ -9,10 +9,10 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
+import { get } from "lodash";
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { triggerEvent } from "@/points";
 
 export const maxDuration = 45;
 
@@ -84,13 +84,14 @@ export async function POST(request: Request) {
 
     if (previousKeys[0] !== undefined && currentKeys[0] !== undefined) {
       while (
-        (get(previousKeys[0], 'type') === currentKeys[0].type) &&
-        (previousKeys[0].payload.publicKey.value === currentKeys[0].publicKey.value)
+        get(previousKeys[0], "type") === currentKeys[0].type &&
+        previousKeys[0].payload.publicKey.value ===
+          currentKeys[0].publicKey.value
       ) {
         previousKeys.shift();
         currentKeys.shift();
       }
-  
+
       // "remove-key" promises
       const removeKeyPromises = previousKeys.map((key) => {
         return triggerEvent({
@@ -98,13 +99,13 @@ export async function POST(request: Request) {
           event: {
             type: "remove-key",
             payload: {
-              type: get(key, 'type'),
+              type: get(key, "type"),
             },
           },
         });
       });
 
-      // "add-key" promises 
+      // "add-key" promises
       const addKeyPromises = currentKeys.map((key) => {
         triggerEvent({
           userEntryAddress: walletData.userEntryAddress,
@@ -121,8 +122,8 @@ export async function POST(request: Request) {
       try {
         await Promise.all(removeKeyPromises);
         await Promise.all(addKeyPromises);
-      } catch(e) {
-        console.error(e)
+      } catch (e) {
+        console.error(e);
       }
     }
   }

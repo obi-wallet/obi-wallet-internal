@@ -75,9 +75,13 @@ export class WalletConnectStore {
   }
 
   protected async handleSessionRequest(
-    payload: SessionRequestPayload, verified: SessionVerifyContext,
+    payload: SessionRequestPayload,
+    verified: SessionVerifyContext,
   ): Promise<SessionRequestResponse> {
     const targetChain = TargetChain.chainId(payload.chainId);
-    return await targetChain.handleWalletConnectSessionRequest(payload, verified);
+    return await targetChain.handleWalletConnectSessionRequest(
+      payload,
+      verified,
+    );
   }
 }

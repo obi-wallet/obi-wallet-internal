@@ -89,6 +89,7 @@ export abstract class AbstractTargetChain<
   public abstract assetInfo(id: AssetId): AssetInfo | null;
 
   public abstract handleWalletConnectSessionRequest(
-    payload: SessionRequestPayload, verified: SessionVerifyContext,
+    payload: SessionRequestPayload,
+    verified: SessionVerifyContext,
   ): Promise<SessionRequestResponse>;
 }

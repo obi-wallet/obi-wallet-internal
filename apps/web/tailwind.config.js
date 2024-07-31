@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       dropShadow: {
-        "dropScore": '0 35px 35px rgba(0, 0, 0, 0.25)'
+        dropScore: "0 35px 35px rgba(0, 0, 0, 0.25)",
       },
       colors: {
         "background-main": "var(--background-main)",

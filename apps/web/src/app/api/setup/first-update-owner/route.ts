@@ -1,4 +1,5 @@
 import { getFeeLender } from "@/lib/fee-lender";
+import { triggerEvent } from "@/points";
 import { setWalletData } from "@/wallet-data-backup/worker-client";
 import {
   HomeChainIdSchema,
@@ -10,7 +11,6 @@ import {
 import { NextResponse } from "next/server";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { triggerEvent } from "@/points";
 
 export const maxDuration = 45;
 

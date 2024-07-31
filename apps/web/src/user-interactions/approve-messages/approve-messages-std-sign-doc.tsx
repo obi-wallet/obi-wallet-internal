@@ -2,16 +2,16 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
+import { makeSignDoc, serializeSignDoc, StdSignDoc } from "@cosmjs/amino";
+import { Sha256 } from "@cosmjs/crypto";
 import { StdFee } from "@cosmjs/stargate";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { observer } from "mobx-react-lite";
+import { fromBase64 } from "secretjs";
+import { AminoSignResponse } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 
 import { ApproveMessages, ApproveMessagesProps } from "./approve-messages";
-import { makeSignDoc, serializeSignDoc, StdSignDoc } from "@cosmjs/amino";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { fromBase64 } from "secretjs";
-import { AminoSignResponse } from "secretjs/dist/wallet_amino";
-import { Sha256 } from "@cosmjs/crypto";
 
 export interface ApproveMessagesStdSignDocProps {
   interaction: CosmosSignAminoUserInteraction;
@@ -53,19 +53,19 @@ export function cosmosSignAminoToApproveMessagesProps(
   };
 
   const getTxHashFromSignDoc = (
-    signDoc: StdSignDoc, 
+    signDoc: StdSignDoc,
     { signature }: AminoSignResponse,
   ) => {
     // get bodyBytes and authInfoBytes
     const fee: StdFee = {
       amount: signDoc.fee.amount,
       gas: signDoc.fee.gas,
-    }
+    };
 
-    const aminoMsgs = signDoc.msgs.map((msg) => ({
+    const aminoMsgs = signDoc.msgs.map((msg) => {return {
       type: msg.type,
       value: msg.value,
-    }));
+    }});
 
     const aminoSignDoc = makeSignDoc(
       aminoMsgs,
@@ -74,7 +74,7 @@ export function cosmosSignAminoToApproveMessagesProps(
       signDoc.memo,
       signDoc.account_number,
       signDoc.sequence,
-    )
+    );
 
     const bodyBytes = serializeSignDoc(aminoSignDoc);
     const authInfoBytes = new Uint8Array();
@@ -83,16 +83,16 @@ export function cosmosSignAminoToApproveMessagesProps(
     const txRaw = TxRaw.fromPartial({
       bodyBytes,
       authInfoBytes,
-      signatures: [fromBase64(signature.signature)]
+      signatures: [fromBase64(signature.signature)],
     });
 
     const txRawBytes = Uint8Array.from(TxRaw.encode(txRaw).finish());
 
     const hash = new Sha256();
     hash.update(txRawBytes);
-    const txHash = Buffer.from(hash.digest()).toString('hex');
+    const txHash = Buffer.from(hash.digest()).toString("hex");
     return txHash;
-  }
+  };
 
   return {
     walletMeta: interaction.payload.walletMeta,

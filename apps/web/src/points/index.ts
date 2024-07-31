@@ -16,7 +16,7 @@ export async function triggerEvent({
     // We are on the server, directly call the worker
     // TODO: @inyono: authorize requests (e.g., by signing events)
 
-    console.log("triggered! event's payload", event.payload)
+    console.log("triggered! event's payload", event.payload);
     const getEventId = () => {
       switch (event.type) {
         case "create-wallet":
@@ -44,7 +44,7 @@ export async function triggerEvent({
       },
     );
   } else {
-    console.log("this is client event", serialize({ userEntryAddress, event }))
+    console.log("this is client event", serialize({ userEntryAddress, event }));
     // We are on the client, use our API route that validates the event
     return await fetch("/api/trigger-event", {
       method: "POST",

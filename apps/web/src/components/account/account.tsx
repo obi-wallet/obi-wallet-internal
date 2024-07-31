@@ -7,11 +7,11 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import usePointsData from "@/hooks/use-points-data";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { FaCircleUser, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 import { PrimaryLink } from "../links";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
@@ -19,8 +19,10 @@ export const Account = observer(function Account() {
   const totalData = useUsdTotalValue();
   const { loading, totalPoints } = usePointsData();
   const [points, setPoints] = useState<number>(0);
-  
-  const userData = userDataStore.getUserData(currentWallet?.userEntryAddress || '');
+
+  const userData = userDataStore.getUserData(
+    currentWallet?.userEntryAddress || "",
+  );
   const name = userData?.name || "My Account";
 
   const handleHideBalance = (hide: boolean) => {
@@ -42,8 +44,21 @@ export const Account = observer(function Account() {
     <>
       <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
         <div className="relative px-4 pb-3.5 pt-1.5">
-          <Link className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5 z-10" href="/dashboard/view-points">
-            { loading === false && (<p className="flex items-center gap-1 text-white font-press-start-2p text-[12px]"><Image src="/Clip path group.png" height={14} width={16} alt="star"/>{ points }</p>) }
+          <Link
+            className="z-10 flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5"
+            href="/dashboard/view-points"
+          >
+            {loading === false && (
+              <p className="font-press-start-2p flex items-center gap-1 text-[12px] text-white">
+                <Image
+                  src="/Clip path group.png"
+                  height={14}
+                  width={16}
+                  alt="star"
+                />
+                {points}
+              </p>
+            )}
           </Link>
           <div className="flex flex-row gap-3 ">
             <div className="h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">

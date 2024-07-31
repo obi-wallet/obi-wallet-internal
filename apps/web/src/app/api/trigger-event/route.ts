@@ -30,7 +30,6 @@ export async function POST(request: Request) {
 
   // app connect validation
 
-
   await triggerEvent({ userEntryAddress, event });
 
   return new Response("Event triggered", {
