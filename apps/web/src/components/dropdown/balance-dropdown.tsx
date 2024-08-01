@@ -1,8 +1,10 @@
 "use client";
 
+import { PrettyCaip19Asset } from "@/hooks/balances";
 import { cn } from "@/lib/utils";
 import { TargetChainId } from "@/target-chain";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -15,11 +17,12 @@ import { Text } from "../text";
 export interface IBalanceOption {
   image: string | undefined;
   targetChainId: TargetChainId;
-  denom: string;
+  denom: Caip19AssetId;
   network: string;
   assetUnit: string;
   balance: BigNumber;
-  asset: AssetInfo;
+  asset: PrettyCaip19Asset;
+  assetInfo: AssetInfo;
   disabled?: boolean;
 }
 
@@ -116,7 +119,7 @@ export const BalanceDropDown = observer<{
           {options.map((option) => {
             return (
               <li
-                key={`dropdown-${option.network}-${option.asset.symbol}`}
+                key={`dropdown-${option.network}-${option.asset.assetInfo?.symbol}`}
                 onClick={() => {
                   return handleClickOption(option);
                 }}

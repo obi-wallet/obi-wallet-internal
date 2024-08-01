@@ -16,6 +16,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1UncompressedPublicKey,
@@ -32,6 +33,7 @@ import invariant from "tiny-invariant";
 import {
   Address,
   createPublicClient,
+  erc20Abi,
   getAddress,
   hexToBigInt,
   http,
@@ -123,16 +125,26 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return HexEncodedStringWithPrefix.parse(kernelAccount.address);
   }
 
-  public async balancesQueryFn(address: string) {
+  public isNativeAsset(assetId: Caip19AssetId) {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "native";
+  }
+
+  public isTokenAsset(assetId: Caip19AssetId) {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "erc20";
+  }
+
+  public async nativeBalancesQueryFn(address: string) {
     if (this.validateAddress(address)) {
       const balance = await this.publicClient.getBalance({
         address,
       });
       if (balance > 0) {
+        const assetId: Caip19AssetId = `${this.chainId}/native:${this.nativeCurrency.symbol}`;
         return [
           {
-            chainId: this.chainId,
-            assetId: this.nativeCurrency.symbol,
+            assetId,
             rawAmount: balance.toString(10),
           },
         ];
@@ -141,8 +153,55 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return [];
   }
 
+  public async tokenBalanceQueryFn({
+    address,
+    assetId,
+  }: {
+    address: string;
+    assetId: Caip19AssetId;
+  }) {
+    if (!this.validateAddress(address)) return "0";
+
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "erc20": {
+        if (this.validateAddress(reference)) {
+          const rawAmount = await this.publicClient.readContract({
+            address: reference,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [address],
+          });
+          return rawAmount.toString(10);
+        }
+      }
+    }
+
+    return "0";
+  }
+
   public async priceQueryFn(id: AssetId) {
     if (id !== "ETH") {
+      return { usdValue: "0" };
+    }
+
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
+    }
+  }
+
+  public async newPriceQueryFn(id: Caip19AssetId) {
+    const { reference } = parseCaip19AssetId(id);
+    if (reference !== "ETH") {
       return { usdValue: "0" };
     }
 
@@ -188,6 +247,66 @@ export class Eip155TargetChain extends AbstractTargetChain<
       };
     }
 
+    return null;
+  }
+
+  public async newAssetInfo(id: Caip19AssetId) {
+    const { namespace, reference } = parseCaip19AssetId(id);
+    if (namespace === "native" && reference === this.nativeCurrency.symbol) {
+      const getImage = () => {
+        switch (reference) {
+          case "AVAX":
+            return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
+          case "ETH":
+            return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
+          case "BNB":
+          case "tBNB":
+            return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
+          case "CRO":
+            return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
+          case "MATIC":
+            return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
+          default:
+            return null;
+        }
+      };
+
+      return {
+        name: this.nativeCurrency.name,
+        symbol: this.nativeCurrency.symbol,
+        decimals: this.nativeCurrency.decimals,
+        image: getImage(),
+      };
+    }
+
+    if (namespace === "erc20" && this.validateAddress(reference)) {
+      const response = await this.publicClient.multicall({
+        contracts: [
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "decimals",
+          },
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "name",
+          },
+          {
+            address: reference,
+            abi: erc20Abi,
+            functionName: "symbol",
+          },
+        ],
+      });
+      console.log(response);
+      return {
+        name: response[1].result ?? "",
+        symbol: response[2].result ?? "",
+        decimals: response[0].result ?? 0,
+        image: "",
+      };
+    }
     return null;
   }
 
@@ -397,6 +516,26 @@ export class Eip155TargetChain extends AbstractTargetChain<
         return { result: true };
       default:
         return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
+  }
+
+  public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
+    if (denom.startsWith("0x")) {
+      return `${this.chainId}/erc20:${denom.toLowerCase()}`;
+    }
+
+    return `${this.chainId}/native:${denom}`;
+  }
+
+  public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "erc20":
+        return reference.replace("%2F", "/");
+      case "native":
+        return reference.replace("%2F", "/");
+      default:
+        return null;
     }
   }
 }
