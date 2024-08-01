@@ -18,11 +18,13 @@ import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
+import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
+import { serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
@@ -166,8 +168,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const firstAccount = accounts[0];
       invariant(firstAccount, "No account found");
 
+      const { namespace, reference } = parseCaip19AssetId(asset.denom);
       const getDenom = () => {
-        const { namespace, reference } = parseCaip19AssetId(asset.denom);
         switch (namespace) {
           case "native":
             return reference.replace("%2F", "/");
@@ -184,21 +186,56 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const denom = getDenom();
       invariant(denom, "Expected valid denom");
 
-      const tokens: Coin[] = [
-        {
-          amount: rawAmount,
-          denom,
-        },
-      ];
+      const getMessage = () => {
+        switch (namespace) {
+          case "native":
+          case "factory":
+          case "ibc": {
+            const tokens: Coin[] = [
+              {
+                amount: rawAmount,
+                denom,
+              },
+            ];
+            const message: MsgSendEncodeObject = {
+              typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+              value: {
+                fromAddress: firstAccount.address,
+                toAddress: recipient,
+                amount: tokens,
+              },
+            };
+            return message;
+          }
 
-      const message: MsgSendEncodeObject = {
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: firstAccount.address,
-          toAddress: recipient,
-          amount: tokens,
-        },
+          case "cw20": {
+            const transferMsg = {
+              transfer: {
+                recipient: recipient,
+                amount: rawAmount,
+              },
+            };
+
+            const message: MsgExecuteContractEncodeObject = {
+              typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+              value: {
+                sender: firstAccount.address,
+                contract: reference,
+                msg: Encoding.fromUtf8(serialize(transferMsg)).toBytes(),
+              },
+            };
+            return message;
+          }
+        }
       };
+
+      const message = getMessage();
+
+      if (!message) {
+        alert.showError("Unsupported asset");
+        return;
+      }
+
       const response = await SignAndBroadcastTransactionUserInteraction.start({
         messages: [message],
         memo,
