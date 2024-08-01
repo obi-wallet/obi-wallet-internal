@@ -162,31 +162,19 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         return;
       }
 
+      const targetChain = TargetChain.chainId(chainId);
       const signer = await CosmosMpcSigner.fromWallet(wallet, chainId);
 
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
       invariant(firstAccount, "No account found");
 
-      const { namespace, reference } = parseCaip19AssetId(asset.denom);
-      const getDenom = () => {
-        switch (namespace) {
-          case "native":
-            return reference.replace("%2F", "/");
-          case "factory":
-            return `factory/${reference.replace("%2F", "/")}`;
-          case "ibc":
-            return `ibc/${reference.replace("%2F", "/")}`;
-          case "cw20":
-            // TODO:
-            return `cw20/${reference.replace("%2F", "/")}`;
-        }
-      };
+      const denom = targetChain.caip19AssetIdToDenom(asset.denom);
 
-      const denom = getDenom();
       invariant(denom, "Expected valid denom");
 
       const getMessage = () => {
+        const { namespace, reference } = parseCaip19AssetId(asset.denom);
         switch (namespace) {
           case "native":
           case "factory":

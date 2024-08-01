@@ -51,10 +51,8 @@ export class CosmosTokenRegistry {
     }
 
     if (id.includes("/cw20:")) {
-      // TODO:
-      // const key = id.replace("/cw20", ":cw20");
-      // return this.assets[key];
-      return null;
+      const key = id.replace("/cw20", ":cw20");
+      return this.assets[key];
     }
 
     return this.assets[id];
