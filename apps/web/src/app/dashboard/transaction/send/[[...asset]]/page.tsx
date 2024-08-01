@@ -4,8 +4,8 @@ import { Button, IBalanceOption, Text } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import {
   PrettyCaip19Asset,
-  useInvalidateBalancesQueries,
   useBalances,
+  useInvalidateBalancesQueries,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
+import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
 
 const schema = z
@@ -102,13 +103,48 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         invariant(targetChain.validateAddress(recipient), "Invalid address");
         const account = await targetChain.localAccountFromWallet(wallet);
         const kernelAccount = await targetChain.kernelAccount(account);
-        const callData = HexEncodedStringWithPrefix.parse(
-          await kernelAccount.encodeCallData({
-            to: recipient,
-            data: "0x",
-            value: BigInt(rawAmount),
-          }),
-        );
+
+        const { namespace, reference } = parseCaip19AssetId(asset.denom);
+
+        const getCallData = async () => {
+          if (namespace === "native") {
+            return HexEncodedStringWithPrefix.parse(
+              await kernelAccount.encodeCallData({
+                to: recipient,
+                data: "0x",
+                value: BigInt(rawAmount),
+              }),
+            );
+          }
+
+          if (namespace === "erc20") {
+            if (!targetChain.validateAddress(reference)) {
+              return null;
+            }
+
+            return HexEncodedStringWithPrefix.parse(
+              await kernelAccount.encodeCallData({
+                to: reference,
+                data: encodeFunctionData({
+                  abi: erc20Abi,
+                  functionName: "transfer",
+                  args: [recipient, BigInt(rawAmount)],
+                }),
+                value: 0n,
+              }),
+            );
+          }
+
+          return null;
+        };
+
+        const callData = await getCallData();
+
+        if (!callData) {
+          alert.showError("Unsupported asset");
+          return;
+        }
+
         const response = await SignAndBroadcastEvm.start({
           callData,
           cancelable: true,
