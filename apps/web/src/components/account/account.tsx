@@ -40,7 +40,7 @@ export const Account = observer(function Account() {
                 <Image
                   width={70}
                   height={70}
-                  className="h-full w-full rounded-full object-cover"
+                  className="h-[70px] w-[70px] rounded-full object-cover"
                   src={userData.avatar}
                   alt={name}
                 />
