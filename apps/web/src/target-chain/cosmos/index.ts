@@ -127,6 +127,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
+    if (this.chainId === CosmosChainId.Secret) {
+      return "secret15jjvm6gqlc8jhdsfw0888h2wwp75nkv55rdgwl";
+    }
     return this.computeAddress(publicKey);
   }
 
@@ -189,12 +192,18 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     switch (namespace) {
       case "cw20": {
         return await this.withCosmWasmClient(async (client) => {
-          const response = await client.queryContractSmart(reference, {
-            balance: {
-              address,
-            },
-          });
-          return response.balance;
+          try {
+            const response = await client.queryContractSmart(reference, {
+              balance: {
+                key: "123",
+                address,
+              },
+            });
+            return response.balance;
+          } catch (e) {
+            console.log("ERROR", e);
+            return "0";
+          }
         });
       }
     }
@@ -576,7 +585,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       chainId: this.chainData.id,
       denom,
     });
-
     if (!asset) return null;
 
     const denomUnit = asset.denom_units.find((value) => {
@@ -593,6 +601,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const asset = this.tokenRegistry.getNewAsset(id);
+
     if (asset) {
       const denomUnit = asset.denom_units.find((value) => {
         return value.denom === asset.display;
