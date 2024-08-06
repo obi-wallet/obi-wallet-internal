@@ -5,7 +5,6 @@ export enum CosmosChainId {
   Stargaze = "cosmos:stargaze-1",
   Tia = "cosmos:celestia",
   Inj = "cosmos:injective-1",
-  Secret = "cosmos:secret-4",
 }
 
 export const allCosmosChains = [
@@ -15,7 +14,6 @@ export const allCosmosChains = [
   CosmosChainId.Stargaze,
   CosmosChainId.Tia,
   CosmosChainId.Inj,
-  CosmosChainId.Secret,
 ];
 
 export function isCosmosChainId(chainId: string): chainId is CosmosChainId {
@@ -79,13 +77,5 @@ export const CosmosChains: Record<CosmosChainId, CosmosChainData> = {
     prefix: "inj",
     image:
       "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
-  },
-  [CosmosChainId.Secret]: {
-    id: CosmosChainId.Secret,
-    name: "Secret Network",
-    rpcs: ["https://scrt.public-rpc.com"],
-    prefix: "secret",
-    image:
-      "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/stkd-scrt.svg",
   },
 };
