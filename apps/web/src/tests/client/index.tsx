@@ -6,6 +6,7 @@ import { testSuite as cosmosMpcSignerTestSuite } from "@/tests/client/target-cha
 import { testSuite as cosmosTokensTestSuite } from "@/tests/client/target-chain/cosmos-sdk/tokens";
 import { testSuite as evmMpcSignerTestSuite } from "@/tests/client/target-chain/evm/mpc-signer";
 import { testSuite as evmTokensTestSuite } from "@/tests/client/target-chain/evm/tokens";
+import { testSuite as secretTestSuite } from "@/tests/client/target-chain/secret/target-chain";
 import { testSuite as approveMessagesTestSuite } from "@/tests/client/user-interactions/approve-messages";
 import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
 import { useState } from "react";
@@ -24,6 +25,7 @@ export function ClientSideTests({
       cosmosTokensTestSuite(context);
       evmMpcSignerTestSuite(context);
       evmTokensTestSuite(context);
+      secretTestSuite(context);
       stackupTestSuite(context);
       approveMessagesTestSuite(context);
     });

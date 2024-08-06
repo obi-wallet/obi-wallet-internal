@@ -1,4 +1,5 @@
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import { Asset } from "@chain-registry/types";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { assets, chains } from "chain-registry";
@@ -28,7 +29,7 @@ export class CosmosTokenRegistry {
     chainId,
     denom,
   }: {
-    chainId: CosmosChainId;
+    chainId: CosmosChainId | SecretChainId;
     denom: string;
   }) {
     return this.assets[`${chainId}:${denom}`];

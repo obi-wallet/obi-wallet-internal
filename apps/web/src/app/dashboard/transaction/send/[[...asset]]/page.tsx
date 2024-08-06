@@ -13,6 +13,7 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
+import { isSecretChainId } from "@/target-chain/secret/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
@@ -159,6 +160,11 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         if (response.approved) {
           alert.showSuccess("TX sent");
         }
+        return;
+      }
+
+      if (isSecretChainId(chainId)) {
+        alert.showError("Sending on Secret Network not implemented yet");
         return;
       }
 

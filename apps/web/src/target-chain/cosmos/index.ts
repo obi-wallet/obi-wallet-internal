@@ -174,7 +174,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           try {
             const response = await client.queryContractSmart(reference, {
               balance: {
-                key: "123",
                 address,
               },
             });
