@@ -9,7 +9,6 @@ import {
   CosmosChains,
 } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
-import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
@@ -92,7 +91,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public readonly cosmosChainId: string;
   protected readonly chainData: CosmosChainData;
   protected readonly chain: Chain;
-  protected readonly tokenRegistry: CosmosTokenRegistry;
 
   public constructor(chainId: CosmosChainId) {
     super(chainId);
@@ -104,7 +102,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     });
     invariant(chain, `Chain not found for ${reference}`);
     this.chain = chain;
-    this.tokenRegistry = CosmosTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -516,26 +513,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public validateFee(fee: unknown): fee is StdFee {
     return isStdFee(fee);
-  }
-
-  public assetInfo(denom: string) {
-    const asset = this.tokenRegistry.getAsset({
-      chainId: this.chainData.id,
-      denom,
-    });
-
-    if (!asset) return null;
-
-    const denomUnit = asset.denom_units.find((value) => {
-      return value.denom === asset.display;
-    });
-
-    return {
-      name: asset.name,
-      symbol: asset.symbol,
-      decimals: denomUnit?.exponent ?? 0,
-      image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
-    };
   }
 
   public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
