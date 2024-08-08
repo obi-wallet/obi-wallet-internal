@@ -1,3 +1,4 @@
+import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
@@ -8,7 +9,6 @@ import {
   CosmosChains,
 } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
-import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
@@ -45,7 +45,6 @@ import { queryClient } from "@obi-wallet/query-client";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
-  AssetId,
   AssetInfo,
 } from "@obi-wallet/sdk-abstract-target-chain";
 import {
@@ -92,7 +91,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public readonly cosmosChainId: string;
   protected readonly chainData: CosmosChainData;
   protected readonly chain: Chain;
-  protected readonly tokenRegistry: CosmosTokenRegistry;
 
   public constructor(chainId: CosmosChainId) {
     super(chainId);
@@ -104,7 +102,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     });
     invariant(chain, `Chain not found for ${reference}`);
     this.chain = chain;
-    this.tokenRegistry = CosmosTokenRegistry.getInstance();
   }
 
   public get label() {
@@ -197,59 +194,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           return response.balance;
         });
       }
-    }
-  }
-
-  public async priceQueryFn(id: AssetId) {
-    if (
-      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
-      !["untrn", "usei"].includes(id)
-    ) {
-      const url = "https://api.skip.money/v2/fungible/route";
-      const asset = this.assetInfo(id);
-
-      const amountIn = new BigNumber(1)
-        .multipliedBy(10 ** (asset?.decimals ?? 0))
-        .toFixed(0);
-
-      const data = {
-        source_asset_chain_id: this.cosmosChainId,
-        amount_in: amountIn,
-        source_asset_denom: id,
-        dest_asset_denom:
-          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.cosmosChainId,
-        allow_unsafe: true,
-      };
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: serialize(data),
-        });
-        const json = await res.json();
-
-        const number = Number(json.usd_amount_out);
-        return { usdValue: number.toString(10) };
-      } catch (e) {
-        console.log("SKIP ERROR", e);
-      }
-    }
-
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${id}`;
-    try {
-      const response = await fetch(url);
-      const schema = z.object({
-        price: z.number(),
-      });
-      const data = await response.json();
-      const { price } = schema.parse(data);
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      console.error("Error fetching price", e);
-      return { usdValue: "0" };
     }
   }
 
@@ -571,40 +515,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     return isStdFee(fee);
   }
 
-  public assetInfo(denom: string) {
-    const asset = this.tokenRegistry.getAsset({
-      chainId: this.chainData.id,
-      denom,
-    });
-
-    if (!asset) return null;
-
-    const denomUnit = asset.denom_units.find((value) => {
-      return value.denom === asset.display;
-    });
-
-    return {
-      name: asset.name,
-      symbol: asset.symbol,
-      decimals: denomUnit?.exponent ?? 0,
-      image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
-    };
-  }
-
   public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
-    const asset = this.tokenRegistry.getNewAsset(id);
-    if (asset) {
-      const denomUnit = asset.denom_units.find((value) => {
-        return value.denom === asset.display;
-      });
-
-      return {
-        name: asset.name,
-        symbol: asset.symbol,
-        decimals: denomUnit?.exponent ?? 0,
-        image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
-      };
-    }
+    const asset = await AssetProvider.getInstance().assetInfo(id);
+    if (asset) return asset;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
