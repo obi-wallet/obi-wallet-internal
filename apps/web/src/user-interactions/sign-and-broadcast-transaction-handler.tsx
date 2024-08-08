@@ -3,6 +3,7 @@
 import { useStore } from "@/contexts";
 import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
+import { isSecretChainId } from "@/target-chain/secret/chains";
 import {
   ApproveMessages,
   ApproveMessagesProps,
@@ -11,6 +12,7 @@ import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
+import { TxResultCode } from "secretjs";
 import invariant from "tiny-invariant";
 
 export const SignAndBroadcastTransactionUserInteractionHandler = observer<{
@@ -38,7 +40,7 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
 }) {
   const chainId = interaction.payload.targetChainId;
 
-  if (!isCosmosChainId(chainId)) {
+  if (!isCosmosChainId(chainId) && !isSecretChainId(chainId)) {
     console.error("Unsupported chainId: ", chainId);
     return null;
   }
@@ -54,7 +56,10 @@ export function signAndBroadcastTransactionUserInteractionToApproveMessagesProps
   interaction: SignAndBroadcastTransactionUserInteraction,
 ): ApproveMessagesProps {
   const chainId = interaction.payload.targetChainId;
-  invariant(isCosmosChainId(chainId), "Invalid chainId");
+  invariant(
+    isCosmosChainId(chainId) || isSecretChainId(chainId),
+    "Invalid chainId",
+  );
 
   return {
     walletMeta: interaction.payload.walletMeta,
@@ -68,32 +73,61 @@ export function signAndBroadcastTransactionUserInteractionToApproveMessagesProps
       intentionsPayload,
       intentionsResults,
     }) => {
-      const targetChain = TargetChain.chainId(chainId);
-      const payload = {
-        wallet,
-        messages: interaction.payload.messages,
-        fee,
-        memo: interaction.payload.memo,
-        intentionsPayload,
-        intentionsResults,
-      };
+      if (isCosmosChainId(chainId)) {
+        const targetChain = TargetChain.chainId(chainId);
+        const payload = {
+          wallet,
+          messages: interaction.payload.messages,
+          fee,
+          memo: interaction.payload.memo,
+          intentionsPayload,
+          intentionsResults,
+        };
 
-      if (interaction.payload.mockOnly) {
-        const response = await targetChain.sign(payload);
-        console.log(response);
-        return;
+        if (interaction.payload.mockOnly) {
+          const response = await targetChain.sign(payload);
+          console.log(response);
+          return;
+        }
+
+        const response = await targetChain.signAndBroadcast(payload);
+        interaction.resolve({
+          approved: true,
+          payload: {
+            success: isDeliverTxSuccess(response),
+            rawLog: response.rawLog,
+            transactionHash: response.transactionHash,
+            rawResult: response,
+          },
+        });
+      } else {
+        const targetChain = TargetChain.chainId(chainId);
+        const payload = {
+          wallet,
+          messages: interaction.payload.messages,
+          fee,
+          memo: interaction.payload.memo,
+          intentionsPayload,
+          intentionsResults,
+        };
+
+        if (interaction.payload.mockOnly) {
+          const response = await targetChain.sign(payload);
+          console.log(response);
+          return;
+        }
+
+        const response = await targetChain.signAndBroadcast(payload);
+        interaction.resolve({
+          approved: true,
+          payload: {
+            success: response.code === TxResultCode.Success,
+            rawLog: response.rawLog,
+            transactionHash: response.transactionHash,
+            rawResult: response,
+          },
+        });
       }
-
-      const response = await targetChain.signAndBroadcast(payload);
-      interaction.resolve({
-        approved: true,
-        payload: {
-          success: isDeliverTxSuccess(response),
-          rawLog: response.rawLog,
-          transactionHash: response.transactionHash,
-          rawResult: response,
-        },
-      });
     },
     onReject: () => {
       interaction.resolve({
