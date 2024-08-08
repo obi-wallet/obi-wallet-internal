@@ -69,6 +69,7 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
+import { AssetProvider } from "@/asset-provider";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -592,19 +593,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
-    const asset = this.tokenRegistry.getNewAsset(id);
-    if (asset) {
-      const denomUnit = asset.denom_units.find((value) => {
-        return value.denom === asset.display;
-      });
-
-      return {
-        name: asset.name,
-        symbol: asset.symbol,
-        decimals: denomUnit?.exponent ?? 0,
-        image: asset.images?.[0]?.svg ?? asset.images?.[0]?.png ?? null,
-      };
-    }
+    const asset = await AssetProvider.getInstance().assetInfo(id);
+    if (asset) return asset;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
