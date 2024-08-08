@@ -1,3 +1,4 @@
+import { AstroportAssetProvider } from "@/astroport";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 
 import { AbstractAssetProvider } from "./abstract";
@@ -8,7 +9,10 @@ export class AssetProvider implements AbstractAssetProvider {
   protected sources: AbstractAssetProvider[];
 
   protected constructor() {
-    this.sources = [new ChainRegistryAssetProvider()];
+    this.sources = [
+      new AstroportAssetProvider(),
+      new ChainRegistryAssetProvider(),
+    ];
   }
 
   public static getInstance(): AssetProvider {

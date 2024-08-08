@@ -10,7 +10,7 @@ import { assets, chains } from "chain-registry";
 import { AbstractAssetProvider } from "./abstract";
 
 export class ChainRegistryAssetProvider extends AbstractAssetProvider {
-  protected assets: Record<string, Asset>;
+  protected assets: Record<Caip19AssetId, Asset>;
 
   public constructor() {
     super();
@@ -33,9 +33,9 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
     };
   }
 
-  protected initAssets(): Record<string, Asset> {
+  protected initAssets(): Record<Caip19AssetId, Asset> {
     const chainNameToId: Record<string, Caip19ChainId> = {};
-    const result: Record<string, Asset> = {};
+    const result: Record<Caip19AssetId, Asset> = {};
 
     chains.forEach((chain) => {
       chainNameToId[chain.chain_name] = `cosmos:${chain.chain_id}`;
@@ -48,16 +48,16 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
       assetList.assets.forEach((asset) => {
         const getCaip19AssetIdPartial =
           (): `${Caip19AssetNamespace}:${Caip19AssetReference}` => {
-            if (asset.base.includes("cw20:")) {
-              return `cw20:${asset.base.replace("cw20:", "")}`;
+            if (asset.base.startsWith("cw20:")) {
+              return `cw20:${asset.base.substring("cw20:".length)}`;
             }
 
-            if (asset.base.includes("ibc/")) {
-              return `ibc:${asset.base.replace("ibc/", "").replace("%2F", "/")}`;
+            if (asset.base.startsWith("ibc/")) {
+              return `ibc:${asset.base.substring("ibc/".length).replace("%2F", "/")}`;
             }
 
-            if (asset.base.includes("factory/")) {
-              return `factory:${asset.base.replace("factory/", "").replace("%2F", "/")}`;
+            if (asset.base.startsWith("factory/")) {
+              return `factory:${asset.base.substring("factory/".length).replace("%2F", "/")}`;
             }
 
             return `native:${asset.base.replace("%2F", "/")}`;

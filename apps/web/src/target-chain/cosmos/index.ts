@@ -1,3 +1,4 @@
+import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
@@ -45,7 +46,6 @@ import { queryClient } from "@obi-wallet/query-client";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
-  AssetId,
   AssetInfo,
 } from "@obi-wallet/sdk-abstract-target-chain";
 import {
@@ -69,7 +69,6 @@ import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
-import { AssetProvider } from "@/asset-provider";
 
 const EncodeObjectSchema = z.object({
   typeUrl: z.string(),
@@ -198,59 +197,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           return response.balance;
         });
       }
-    }
-  }
-
-  public async priceQueryFn(id: AssetId) {
-    if (
-      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
-      !["untrn", "usei"].includes(id)
-    ) {
-      const url = "https://api.skip.money/v2/fungible/route";
-      const asset = this.assetInfo(id);
-
-      const amountIn = new BigNumber(1)
-        .multipliedBy(10 ** (asset?.decimals ?? 0))
-        .toFixed(0);
-
-      const data = {
-        source_asset_chain_id: this.cosmosChainId,
-        amount_in: amountIn,
-        source_asset_denom: id,
-        dest_asset_denom:
-          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.cosmosChainId,
-        allow_unsafe: true,
-      };
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: serialize(data),
-        });
-        const json = await res.json();
-
-        const number = Number(json.usd_amount_out);
-        return { usdValue: number.toString(10) };
-      } catch (e) {
-        console.log("SKIP ERROR", e);
-      }
-    }
-
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${id}`;
-    try {
-      const response = await fetch(url);
-      const schema = z.object({
-        price: z.number(),
-      });
-      const data = await response.json();
-      const { price } = schema.parse(data);
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      console.error("Error fetching price", e);
-      return { usdValue: "0" };
     }
   }
 

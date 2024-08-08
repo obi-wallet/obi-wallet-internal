@@ -180,25 +180,6 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return "0";
   }
 
-  public async priceQueryFn(id: AssetId) {
-    if (id !== "ETH") {
-      return { usdValue: "0" };
-    }
-
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
-    const response = await fetch(url);
-
-    try {
-      const schema = z.object({
-        price: z.number(),
-      });
-      const { price } = schema.parse(await response.json());
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      return { usdValue: "0" };
-    }
-  }
-
   public async newPriceQueryFn(id: Caip19AssetId) {
     const { reference } = parseCaip19AssetId(id);
     if (reference !== "ETH") {

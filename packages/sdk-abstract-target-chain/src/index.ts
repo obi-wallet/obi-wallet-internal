@@ -121,18 +121,6 @@ export abstract class AbstractTargetChain<
     assetId: Caip19AssetId;
   }): Promise<string>;
 
-  public price(id: AssetId) {
-    return queryClient.fetchQuery(this.priceQuery(id));
-  }
-  public get priceQuery() {
-    return this.queryNamespace.createQuery({
-      name: "price",
-      fn: this.priceQueryFn.bind(this),
-      staleTime: { minute: 1 },
-    });
-  }
-  public abstract priceQueryFn(id: AssetId): Promise<PriceInfo>;
-
   public newPrice(id: Caip19AssetId) {
     return queryClient.fetchQuery(this.newPriceQuery(id));
   }
