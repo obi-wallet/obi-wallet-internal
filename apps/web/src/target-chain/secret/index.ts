@@ -122,6 +122,16 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     assetId: Caip19AssetId;
   }) {
     // TODO: here we also need to fetch the viewing key, probably via store
+    // const { viewingKeysStore } = useStore();
+    // console.log("1");
+    // const viewingKey = viewingKeysStore.getViewingKey({
+    //   address: _.address,
+    //   assetId: _.assetId,
+    // });
+    // console.log("viewing key", viewingKey);
+    // console.log("address", _.address);
+    // console.log("assetId", _.assetId);
+
     return "0";
   }
 

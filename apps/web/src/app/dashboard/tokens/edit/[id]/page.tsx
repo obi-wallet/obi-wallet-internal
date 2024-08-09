@@ -2,23 +2,37 @@
 
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
+import { useAddressQuery } from "@/hooks/address";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
+import { SecretChainId } from "@/target-chain/secret/chains";
+import { SignAndBroadcastTransactionUserInteractionHandler } from "@/user-interactions/sign-and-broadcast-transaction-handler";
+import {
+  ChainId,
+  SignAndBroadcastTransactionUserInteraction,
+} from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
+import { MsgExecuteContract } from "secretjs";
 
-export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
-  params,
-}) {
+export default observer<{
+  params: { id: Caip19AssetId };
+}>(function TokenEdit({ params }) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const assetId = decodeURIComponent(params.id) as Caip19AssetId;
+  const parts = assetId.split(":");
+  const contract_address = parts[parts.length - 1];
+  const chainId = assetId.split("/")[0] as SecretChainId.Secret;
+
+  const { data: address } = useAddressQuery(chainId);
+  console.log("wallet address", address);
   const wallet = useCurrentWallet({});
   const router = useRouter();
-  const { tokensStore } = useStore();
+  const { tokensStore, viewingKeysStore } = useStore();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -32,6 +46,9 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
       image: "",
     },
   });
+
+  const [secretTokenViewingKey, setSecretTokenViewingKey] =
+    useState<string>("");
   useEffectOnceWhen(async () => {
     if (wallet) {
       const persistedAssetInfo = tokensStore.getTokenConfig({
@@ -58,6 +75,14 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             enabled: true,
           });
         }
+      }
+      const persistedViewingKey = viewingKeysStore.getViewingKey({
+        address: wallet.userEntryAddress,
+        assetId,
+      });
+      if (persistedViewingKey) {
+        setSecretTokenViewingKey(persistedViewingKey);
+      } else {
       }
     }
   }, !!wallet);
@@ -146,11 +171,50 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             Cancel
           </Button>
           <Button
-            onClick={() => {
+            onClick={async () => {
               tokensStore.setTokenConfig({
                 address: wallet.userEntryAddress,
                 assetId,
                 config: state,
+              });
+
+              if (contract_address && chainId && address) {
+                const message = new MsgExecuteContract({
+                  sender: address,
+                  contract_address: contract_address,
+                  msg: {
+                    create_viewing_key: {
+                      key: "sample viewing key",
+                    },
+                  },
+                });
+
+                const response =
+                  await SignAndBroadcastTransactionUserInteraction.start({
+                    messages: [message],
+                    memo: "",
+                    cancelable: true,
+                    targetChainId: chainId,
+                    walletMeta: {
+                      userEntryAddress: wallet.userEntryAddress,
+                    },
+                  });
+
+                if (response.approved) {
+                  const broadcastResult = response.payload;
+                  console.log("broadcastResult", broadcastResult);
+                  if (broadcastResult.success) {
+                    console.log("broadcast success");
+                  } else {
+                    console.log("broadcast failed");
+                  }
+                }
+              }
+
+              viewingKeysStore.setViewingKey({
+                address: wallet.userEntryAddress,
+                assetId,
+                key: secretTokenViewingKey,
               });
               router.back();
             }}
