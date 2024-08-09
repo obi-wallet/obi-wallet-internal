@@ -53,14 +53,14 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
             }
 
             if (asset.base.startsWith("ibc/")) {
-              return `ibc:${asset.base.substring("ibc/".length).replace("%2F", "/")}`;
+              return `ibc:${asset.base.substring("ibc/".length).replace("/", "%2F")}`;
             }
 
             if (asset.base.startsWith("factory/")) {
-              return `factory:${asset.base.substring("factory/".length).replace("%2F", "/")}`;
+              return `factory:${asset.base.substring("factory/".length).replace("/", "%2F")}`;
             }
 
-            return `native:${asset.base.replace("%2F", "/")}`;
+            return `native:${asset.base.replace("/", "%2F")}`;
           };
         result[`${chainId}/${getCaip19AssetIdPartial()}`] = asset;
       });

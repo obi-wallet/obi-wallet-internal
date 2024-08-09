@@ -54,18 +54,18 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
         const getCaip19AssetIdPartial =
           (): `${Caip19AssetNamespace}:${Caip19AssetReference}` => {
             if (token.token.startsWith("ibc/")) {
-              return `ibc:${token.token.substring("ibc/".length).replace("%2F", "/")}`;
+              return `ibc:${token.token.substring("ibc/".length).replace("/", "%2F")}`;
             }
 
             if (token.token.startsWith("factory/")) {
-              return `factory:${token.token.substring("factory/".length).replace("%2F", "/")}`;
+              return `factory:${token.token.substring("factory/".length).replace("/", "%2F")}`;
             }
 
             if (token.token.startsWith(prefix)) {
               return `cw20:${token.token.replace("cw20:", "")}`;
             }
 
-            return `native:${token.token.replace("%2F", "/")}`;
+            return `native:${token.token.replace("/", "%2F")}`;
           };
 
         result[`${chainId}/${getCaip19AssetIdPartial()}`] = {
