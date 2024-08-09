@@ -68,11 +68,16 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
             return `native:${token.token.replace("/", "%2F")}`;
           };
 
+        let image = token.icon ?? null;
+        if (image && image.startsWith("/")) {
+          image = `https://raw.githubusercontent.com/astroport-fi/astroport-token-lists/main${image}`;
+        }
+
         result[`${chainId}/${getCaip19AssetIdPartial()}`] = {
           name: token.symbol,
           symbol: token.symbol,
           decimals: token.decimals,
-          image: `https://raw.githubusercontent.com/astroport-fi/astroport-token-lists/main${token.icon}`,
+          image,
         };
       });
     });
