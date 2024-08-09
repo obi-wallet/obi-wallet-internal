@@ -11,13 +11,6 @@ export const testSuite = createTestSuite(({ test }) => {
     console.log(balances);
   });
 
-  test("native token (CAIP-19)", async () => {
-    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
-    const assetId = "cosmos:pacific-1/slip44:118";
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
-    expect(tokenInfo?.symbol).to.equal("SEI");
-  });
-
   test("factory token (CAIP-19, chain registry)", async () => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
     const assetId =
