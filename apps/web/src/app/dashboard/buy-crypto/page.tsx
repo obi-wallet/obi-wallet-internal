@@ -1,7 +1,9 @@
 "use client";
 
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKey } from "@/hooks/use-public-key";
-import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { rootStore } from "@/stores";
+import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -9,34 +11,39 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
-async function computeKadoUrl(publicKey: Secp256k1PublicKey): Promise<string> {
+async function computeKadoUrl({
+  publicKey,
+  userEntryAddress,
+}: {
+  publicKey: Secp256k1PublicKey;
+  userEntryAddress: string;
+}): Promise<string> {
   interface KadoNetwork {
     network: string;
     address: string;
   }
 
+  const targetChains =
+    rootStore.current?.targetChainsStore.getTargetChains(userEntryAddress) ??
+    [];
   const networks = (
     await Promise.all(
-      allTargetChainIds.map(
-        async (targetChainId): Promise<KadoNetwork | null> => {
-          const targetChain = TargetChain.chainId(targetChainId);
+      targetChains.map(async (chain): Promise<KadoNetwork | null> => {
+        if (!chain.enabled) {
+          return null;
+        }
 
-          if (targetChain.disabled) {
-            return null;
-          }
+        const kadoNetwork = toKadoNetwork(chain.id);
 
-          const kadoNetwork = toKadoNetwork(targetChainId);
+        if (!kadoNetwork) {
+          return null;
+        }
 
-          if (!kadoNetwork) {
-            return null;
-          }
-
-          return {
-            network: kadoNetwork,
-            address: await targetChain.obiAccountAddress(publicKey),
-          };
-        },
-      ),
+        return {
+          network: kadoNetwork,
+          address: await chain.targetChain.obiAccountAddress(publicKey),
+        };
+      }),
     )
   ).filter((network): network is KadoNetwork => {
     return !!network;
@@ -105,15 +112,20 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
 }
 
 export default observer(function BuyCrypto() {
+  const wallet = useCurrentWallet({});
   const publicKey = usePublicKey();
 
   const kadoUrl = useQuery({
     queryKey: ["kado-url", publicKey],
-    queryFn: publicKey
-      ? async () => {
-          return await computeKadoUrl(publicKey);
-        }
-      : skipToken,
+    queryFn:
+      wallet && publicKey
+        ? async () => {
+            return await computeKadoUrl({
+              publicKey,
+              userEntryAddress: wallet.userEntryAddress,
+            });
+          }
+        : skipToken,
   });
 
   if (!kadoUrl.data) {

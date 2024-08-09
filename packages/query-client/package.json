@@ -11,7 +11,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@tanstack/query-core": "^5.36.0",
+    "@tanstack/query-core": "^5.51.1",
     "luxon": "^3.4.4",
     "ramda": "^0.30.0"
   },

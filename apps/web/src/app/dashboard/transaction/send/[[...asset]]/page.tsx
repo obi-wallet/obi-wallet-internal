@@ -3,13 +3,14 @@
 import { Button, IBalanceOption, Text } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import {
-  AssetWithPrice,
+  PrettyCaip19Asset,
   useBalances,
   useInvalidateBalancesQueries,
 } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
+import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
@@ -17,16 +18,20 @@ import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
+import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
+import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
+import { serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import invariant from "tiny-invariant";
+import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
 
 const schema = z
@@ -92,7 +97,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       const chainId = asset.targetChainId;
 
       const rawAmount = new BigNumber(coin.amount)
-        .multipliedBy(10 ** asset.asset.decimals)
+        .multipliedBy(10 ** asset.assetInfo.decimals)
         .toFixed(0, BigNumber.ROUND_DOWN);
 
       if (isEip155ChainId(chainId)) {
@@ -100,13 +105,48 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         invariant(targetChain.validateAddress(recipient), "Invalid address");
         const account = await targetChain.localAccountFromWallet(wallet);
         const kernelAccount = await targetChain.kernelAccount(account);
-        const callData = HexEncodedStringWithPrefix.parse(
-          await kernelAccount.encodeCallData({
-            to: recipient,
-            data: "0x",
-            value: BigInt(rawAmount),
-          }),
-        );
+
+        const { namespace, reference } = parseCaip19AssetId(asset.denom);
+
+        const getCallData = async () => {
+          if (namespace === "native") {
+            return HexEncodedStringWithPrefix.parse(
+              await kernelAccount.encodeCallData({
+                to: recipient,
+                data: "0x",
+                value: BigInt(rawAmount),
+              }),
+            );
+          }
+
+          if (namespace === "erc20") {
+            if (!targetChain.validateAddress(reference)) {
+              return null;
+            }
+
+            return HexEncodedStringWithPrefix.parse(
+              await kernelAccount.encodeCallData({
+                to: reference,
+                data: encodeFunctionData({
+                  abi: erc20Abi,
+                  functionName: "transfer",
+                  args: [recipient, BigInt(rawAmount)],
+                }),
+                value: 0n,
+              }),
+            );
+          }
+
+          return null;
+        };
+
+        const callData = await getCallData();
+
+        if (!callData) {
+          alert.showError("Unsupported asset");
+          return;
+        }
+
         const response = await SignAndBroadcastEvm.start({
           callData,
           cancelable: true,
@@ -122,27 +162,68 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         return;
       }
 
+      const targetChain = TargetChain.chainId(chainId);
       const signer = await CosmosMpcSigner.fromWallet(wallet, chainId);
 
       const accounts = await signer.getAccounts();
       const firstAccount = accounts[0];
       invariant(firstAccount, "No account found");
 
-      const tokens: Coin[] = [
-        {
-          amount: rawAmount,
-          denom: asset.denom,
-        },
-      ];
+      const denom = targetChain.caip19AssetIdToDenom(asset.denom);
 
-      const message: MsgSendEncodeObject = {
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: {
-          fromAddress: firstAccount.address,
-          toAddress: recipient,
-          amount: tokens,
-        },
+      invariant(denom, "Expected valid denom");
+
+      const getMessage = () => {
+        const { namespace, reference } = parseCaip19AssetId(asset.denom);
+        switch (namespace) {
+          case "native":
+          case "factory":
+          case "ibc": {
+            const tokens: Coin[] = [
+              {
+                amount: rawAmount,
+                denom,
+              },
+            ];
+            const message: MsgSendEncodeObject = {
+              typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+              value: {
+                fromAddress: firstAccount.address,
+                toAddress: recipient,
+                amount: tokens,
+              },
+            };
+            return message;
+          }
+
+          case "cw20": {
+            const transferMsg = {
+              transfer: {
+                recipient: recipient,
+                amount: rawAmount,
+              },
+            };
+
+            const message: MsgExecuteContractEncodeObject = {
+              typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+              value: {
+                sender: firstAccount.address,
+                contract: reference,
+                msg: Encoding.fromUtf8(serialize(transferMsg)).toBytes(),
+              },
+            };
+            return message;
+          }
+        }
       };
+
+      const message = getMessage();
+
+      if (!message) {
+        alert.showError("Unsupported asset");
+        return;
+      }
+
       const response = await SignAndBroadcastTransactionUserInteraction.start({
         messages: [message],
         memo,
@@ -175,28 +256,31 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     .map((b) => {
       return b.data;
     })
-    .filter((b): b is AssetWithPrice[] => {
-      return Array.isArray(b);
+    .filter((b): b is PrettyCaip19Asset[] => {
+      return !!b;
     });
 
   const withChainId = balance.flat();
 
   const balanceOptions = withChainId
     .map((b) => {
-      const assetData = TargetChain.chainId(b.chainId).assetInfo(b.assetId);
-      if (!assetData) return null;
+      const { chainId } = parseCaip19AssetId(b.assetId);
+      if (!b.assetInfo) return null;
 
-      const amount = new BigNumber(b.rawAmount);
-      const decimalAmount = amount.dividedBy(10 ** assetData.decimals);
+      invariant(
+        isCosmosChainId(chainId) || isEip155ChainId(chainId),
+        "Expected valid targetChainId",
+      );
 
       const result: IBalanceOption = {
-        image: assetData.image ?? undefined,
-        targetChainId: b.chainId,
+        image: b.assetInfo.image ?? undefined,
+        targetChainId: chainId,
         denom: b.assetId,
-        network: TargetChain.chainId(b.chainId).label,
-        assetUnit: assetData?.symbol,
-        balance: decimalAmount,
-        asset: assetData,
+        network: TargetChain.chainId(chainId).label,
+        assetUnit: b.assetInfo.symbol,
+        balance: new BigNumber(b.prettyAmount),
+        asset: b,
+        assetInfo: b.assetInfo,
       };
       return result;
     })
@@ -213,11 +297,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     function getInitialAsset() {
       if (!initialAssetParam) return;
 
-      const [chainId, denom] = initialAssetParam.split(":");
-      if (!chainId || !denom) return;
-
       return balanceOptions.find((balance) => {
-        return balance.targetChainId === chainId && balance.denom === denom;
+        return balance.asset.assetId === initialAssetParam;
       });
     }
 
@@ -301,7 +382,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 >
                   {coin.asset
                     ? `${coin.asset.balance.toString()} ${
-                        coin.asset.asset.symbol
+                        coin.asset.assetInfo.symbol
                       }`
                     : ""}
                 </div>
@@ -339,7 +420,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-white">
                           <div>
-                            {`${item.asset.symbol.toUpperCase()} (on ${item.network})`}
+                            {`${item.assetInfo.symbol.toUpperCase()} (on ${item.network})`}
                           </div>
                           <div>{item.balance.toString()}</div>
                         </div>
@@ -368,7 +449,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                         </div>
                         <div className="text-md flex flex-col items-end font-normal">
                           <div>
-                            {`${selected.item.asset.symbol.toUpperCase()} (on ${selected.item.network})`}
+                            {`${selected.item.assetInfo.symbol.toUpperCase()} (on ${selected.item.network})`}
                           </div>
                         </div>
                       </div>

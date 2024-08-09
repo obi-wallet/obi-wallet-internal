@@ -512,9 +512,9 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
       const simulation = squidSimulation.data;
       const intent = tx.transaction.intent;
       const toChain = intent.destination_chain_id;
-      const priceInfo = await TargetChain.chainId(toChain).price(
-        intent.destination_asset,
-      );
+      const targetChain = TargetChain.chainId(toChain);
+      const id = targetChain.denomToCaip19AssetId(intent.destination_asset);
+      const priceInfo = id ? await targetChain.newPrice(id) : { usdValue: "0" };
       const price = parseFloat(priceInfo.usdValue);
       const decimals = Math.min(simulation.params.toToken.decimals, 8);
       const amount = new BigNumber(simulation.estimate.toAmountUSD)

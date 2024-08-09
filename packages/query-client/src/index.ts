@@ -1,5 +1,6 @@
 import {
   FetchQueryOptions,
+  Query,
   QueryClient,
   skipToken,
   WithRequired,
@@ -29,6 +30,7 @@ export type NamespacedQuery<TFnParams, TFnReturn> = (
 export function makeNamespacedQueryParamsOptional<TFnParams, TFnReturn>(
   query: NamespacedQuery<TFnParams, TFnReturn>,
 ): NamespacedQuery<TFnParams | undefined, TFnReturn | undefined> {
+  // @ts-expect-error This should be fine
   return (params: TFnParams | undefined) => {
     // This type assertion is safe since we only call queryFn if params is defined.
     const queryResult = query(params!);
@@ -50,7 +52,9 @@ export class QueryClientNamespace<
 
   public createQuery<TFnParams, TFnReturn>(queryInfo: {
     name: string;
-    staleTime?: DurationLikeObject;
+    staleTime?:
+      | DurationLikeObject
+      | ((query: Query<TFnReturn>) => DurationLikeObject);
     fn: (args: TFnParams) => Promise<TFnReturn>;
   }): NamespacedQuery<TFnParams, TFnReturn> {
     return (params: TFnParams) => {
@@ -69,7 +73,13 @@ export class QueryClientNamespace<
           return queryInfo.fn(params);
         },
         staleTime: queryInfo.staleTime
-          ? queryClientDuration(queryInfo.staleTime)
+          ? (query) => {
+              const staleTime =
+                typeof queryInfo.staleTime === "function"
+                  ? queryInfo.staleTime(query)
+                  : queryInfo.staleTime!;
+              return queryClientDuration(staleTime);
+            }
           : undefined,
       };
     };

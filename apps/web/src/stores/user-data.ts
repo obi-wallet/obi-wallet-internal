@@ -18,8 +18,8 @@ export class UserDataStore {
   @observable protected accessor userDataPerWallet: UserDataPerWallet = {};
   protected readonly kvStore: AbstractKVStore;
 
-  public constructor(KVStore: AbstractKVStore) {
-    this.kvStore = KVStore;
+  public constructor(kvStore: AbstractKVStore) {
+    this.kvStore = kvStore;
     void this.init();
   }
 
