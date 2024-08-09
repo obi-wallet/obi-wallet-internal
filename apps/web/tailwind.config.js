@@ -3,6 +3,9 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      height: {
+        revertLayer: "revert-layer",
+      },
       colors: {
         "background-main": "var(--background-main)",
         "background-primary": "var(--background-primary)",

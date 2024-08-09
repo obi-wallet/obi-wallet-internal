@@ -35,12 +35,12 @@ export const Account = observer(function Account() {
             <img src="/points.svg" alt="points" className="h-5" />
           </div>
           <div className="flex flex-row gap-3 ">
-            <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
+            <div className="flex h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
               {userData.avatar ? (
                 <Image
                   width={70}
                   height={70}
-                  className="h-[70px] w-[70px] rounded-full object-cover"
+                  className="h-revertLayer rounded-full object-cover max-sm:h-[37px]"
                   src={userData.avatar}
                   alt={name}
                 />
