@@ -5,6 +5,7 @@ import { hasSucceeded, runTests, TestResults } from "@/tests";
 import { testSuite as skipAssetProviderTestSuite } from "@/tests/client/skip/asset-provider";
 import { testSuite as skipPriceProviderTestSuite } from "@/tests/client/skip/price-provider";
 import { testSuite as squidAssetProviderTestSuite } from "@/tests/client/squid/asset-provider";
+import { testSuite as squidPriceProviderTestSuite } from "@/tests/client/squid/price-provider";
 import { testSuite as cosmosMpcSignerTestSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
 import { testSuite as cosmosTokensTestSuite } from "@/tests/client/target-chain/cosmos-sdk/tokens";
 import { testSuite as evmMpcSignerTestSuite } from "@/tests/client/target-chain/evm/mpc-signer";
@@ -26,6 +27,7 @@ export function ClientSideTests({
       skipAssetProviderTestSuite(context);
       skipPriceProviderTestSuite(context);
       squidAssetProviderTestSuite(context);
+      squidPriceProviderTestSuite(context);
       cosmosMpcSignerTestSuite(context);
       cosmosTokensTestSuite(context);
       evmMpcSignerTestSuite(context);

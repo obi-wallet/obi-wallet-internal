@@ -1,5 +1,4 @@
 import { AbstractPriceProvider, PriceInfo } from "@/price-provider/abstract";
-import { SkipAssetProvider } from "@/skip/asset-provider";
 import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
@@ -12,6 +11,8 @@ import {
 import { serialize } from "@obi-wallet/sdk-json";
 import BigNumber from "bignumber.js";
 import { z } from "zod";
+
+import { SkipAssetProvider } from "./asset-provider";
 
 export class SkipPriceProvider extends AbstractPriceProvider {
   protected queryNamespace: QueryClientNamespace<"skip-price-provider">;

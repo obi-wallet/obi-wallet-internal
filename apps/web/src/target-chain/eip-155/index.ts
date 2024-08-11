@@ -1,5 +1,7 @@
+import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
 import {
   allEip155Chains,
@@ -181,23 +183,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public async newPriceQueryFn(id: Caip19AssetId) {
-    const { reference } = parseCaip19AssetId(id);
-    if (reference !== "ETH") {
-      return { usdValue: "0" };
-    }
+    const priceInfo = await PriceProvider.getInstance().priceInfo(id);
+    if (priceInfo) return priceInfo;
 
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
-    const response = await fetch(url);
-
-    try {
-      const schema = z.object({
-        price: z.number(),
-      });
-      const { price } = schema.parse(await response.json());
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      return { usdValue: "0" };
-    }
+    return { usdValue: "0" };
   }
 
   public assetInfo(id: AssetId) {
@@ -232,6 +221,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public async newAssetInfo(id: Caip19AssetId) {
+    const asset = await AssetProvider.getInstance().assetInfo(id);
+    if (asset) return asset;
+
     const { namespace, reference } = parseCaip19AssetId(id);
     if (namespace === "native" && reference === this.nativeCurrency.symbol) {
       const getImage = () => {
@@ -280,7 +272,6 @@ export class Eip155TargetChain extends AbstractTargetChain<
           },
         ],
       });
-      console.log(response);
       return {
         name: response[1].result ?? "",
         symbol: response[2].result ?? "",
@@ -505,7 +496,11 @@ export class Eip155TargetChain extends AbstractTargetChain<
       return `${this.chainId}/erc20:${denom.toLowerCase()}`;
     }
 
-    return `${this.chainId}/native:${denom}`;
+    if (denom === this.nativeCurrency.symbol) {
+      return `${this.chainId}/native:0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    }
+
+    return null;
   }
 
   public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
@@ -514,7 +509,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
       case "erc20":
         return reference.replace("%2F", "/");
       case "native":
-        return reference.replace("%2F", "/");
+        return this.nativeCurrency.symbol;
       default:
         return null;
     }

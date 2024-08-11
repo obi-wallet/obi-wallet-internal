@@ -197,23 +197,10 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   public async newPriceQueryFn(id: Caip19AssetId) {
-    const { reference } = parseCaip19AssetId(id);
-
     const priceInfo = await PriceProvider.getInstance().priceInfo(id);
     if (priceInfo) return priceInfo;
 
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${reference}`;
-    try {
-      const response = await fetch(url);
-      const schema = z.object({
-        price: z.number(),
-      });
-      const { price } = schema.parse(await response.json());
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      console.error("Error fetching price", e);
-      return { usdValue: "0" };
-    }
+    return { usdValue: "0" };
   }
 
   public denomMetadata(denom: string) {

@@ -1,4 +1,5 @@
 import { SkipPriceProvider } from "@/skip";
+import { SquidPriceProvider } from "@/squid";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 
 import { AbstractPriceProvider } from "./abstract";
@@ -8,7 +9,7 @@ export class PriceProvider implements AbstractPriceProvider {
   protected sources: AbstractPriceProvider[];
 
   protected constructor() {
-    this.sources = [new SkipPriceProvider()];
+    this.sources = [new SkipPriceProvider(), new SquidPriceProvider()];
   }
 
   public static getInstance(): PriceProvider {
