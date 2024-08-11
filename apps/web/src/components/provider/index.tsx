@@ -21,17 +21,10 @@ const Provider = observer<ProviderProps>(function Provider({
   QueryClientProvider,
 }) {
   const rootStore = useCreateRootStore({ config: obiModalConfig });
-  const buster = useRef<string>();
-  if (!buster.current) {
-    buster.current =
-      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? new Date().toISOString();
-  }
+  const buster = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA;
 
   return (
-    <SdkProvider
-      QueryClientProvider={QueryClientProvider}
-      buster={buster.current}
-    >
+    <SdkProvider QueryClientProvider={QueryClientProvider} buster={buster}>
       <StoreContext.Provider value={rootStore}>
         <MultiThemeProvider>{children}</MultiThemeProvider>
       </StoreContext.Provider>
