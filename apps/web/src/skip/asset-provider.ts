@@ -24,6 +24,10 @@ const skipFungibleAssetsResponse = z.object({
   ),
 });
 
+export type SkipFungibleAssetsResponse = z.infer<
+  typeof skipFungibleAssetsResponse
+>;
+
 export class SkipAssetProvider extends AbstractAssetProvider {
   protected queryNamespace: QueryClientNamespace<"skip-asset-provider">;
 
@@ -52,8 +56,8 @@ export class SkipAssetProvider extends AbstractAssetProvider {
     return null;
   }
 
-  public assets() {
-    return queryClient.fetchQuery(this.assetsQuery(undefined));
+  public async assets(): Promise<SkipFungibleAssetsResponse> {
+    return await queryClient.fetchQuery(this.assetsQuery(undefined));
   }
 
   protected get assetsQuery() {
