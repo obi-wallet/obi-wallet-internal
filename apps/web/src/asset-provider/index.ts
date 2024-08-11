@@ -1,4 +1,5 @@
 import { AstroportAssetProvider } from "@/astroport";
+import { SkipAssetProvider } from "@/skip";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 
 import { AbstractAssetProvider } from "./abstract";
@@ -12,6 +13,7 @@ export class AssetProvider implements AbstractAssetProvider {
     this.sources = [
       new AstroportAssetProvider(),
       new ChainRegistryAssetProvider(),
+      new SkipAssetProvider(),
     ];
   }
 

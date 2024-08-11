@@ -9,7 +9,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useRef } from "react";
+import { ReactNode } from "react";
 
 export interface ProviderProps {
   children: ReactNode;
