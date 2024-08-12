@@ -30,9 +30,9 @@ export default observer(function Receive() {
 
   return (
     <TabUi.Main>
-      <div className="flex w-full flex-col items-center justify-center space-y-7  py-4">
+      <div className="flex w-full flex-col items-center justify-center space-y-7 py-4">
         <InputContainer
-          className="relative z-10  w-80"
+          className="relative z-10 w-80"
           label="Chain"
           labelClassname="bg-background-secondary"
         >
@@ -43,9 +43,9 @@ export default observer(function Receive() {
             label="Address"
             labelClassname="bg-background-secondary"
             onClick={handleClickQRCode}
-            className="relative z-0  flex w-80 flex-col"
+            className="relative z-0 flex w-80 flex-col"
           >
-            <div className="flex flex-1 items-center justify-center transition duration-300  group-hover:scale-105 group-active:scale-100">
+            <div className="flex flex-1 items-center justify-center transition duration-300 group-hover:scale-105 group-active:scale-100">
               <Canvas
                 text={address}
                 options={{
@@ -58,13 +58,13 @@ export default observer(function Receive() {
             </div>
 
             <div
-              className={`absolute  bottom-0 left-1/2   flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white transition duration-200 ease-in-out ${
+              className={`absolute bottom-0 left-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white transition duration-200 ease-in-out ${
                 isCopied
-                  ? "visible bottom-1/2  opacity-100"
+                  ? "visible bottom-1/2 opacity-100"
                   : "invisible bottom-0 opacity-0"
-              } transition-visibility  `}
+              } transition-visibility`}
             >
-              <span className=" text-green-500">
+              <span className="text-green-500">
                 <FaCheck />
               </span>
               <p>Copied</p>
@@ -74,7 +74,7 @@ export default observer(function Receive() {
               <span className="mt-5 text-center text-xs text-white">
                 {address}
               </span>
-              <span className="mt-1  text-center text-sm font-bold  uppercase text-blue-600 transition duration-300  group-hover:scale-105 group-active:scale-100">
+              <span className="mt-1 text-center text-sm font-bold uppercase text-blue-600 transition duration-300 group-hover:scale-105 group-active:scale-100">
                 Click to Copy
               </span>
             </div>

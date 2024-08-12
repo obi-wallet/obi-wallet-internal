@@ -20,8 +20,7 @@ function TabUiLink({
     <UnstyledLink
       className={`${
         active ? "rounded-xl bg-slate-950" : ""
-      } flex-1 py-2 text-center text-base
-            font-normal text-white`}
+      } flex-1 py-2 text-center text-base font-normal text-white`}
       href={href}
     >
       {children}

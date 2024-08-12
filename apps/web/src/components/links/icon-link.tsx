@@ -6,17 +6,11 @@ import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 import { IconType } from "react-icons";
 
-const IconLinkVariant = [
-  "primary",
-  "outline",
-  "ghost",
-  "light",
-  "dark",
-] as const;
+type IconLinkVariant = "primary" | "outline" | "ghost" | "light" | "dark";
 
 type IconLinkProps = {
   isDarkBg?: boolean;
-  variant?: (typeof IconLinkVariant)[number];
+  variant?: IconLinkVariant;
   icon?: IconType;
   classNames?: {
     icon?: string;
@@ -32,7 +26,7 @@ export const IconLink = forwardRef<HTMLAnchorElement, IconLinkProps>(
       isDarkBg = false,
       classNames,
       ...rest
-    },
+    }: IconLinkProps,
     ref,
   ) {
     return (

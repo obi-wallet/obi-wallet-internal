@@ -78,15 +78,13 @@ const PendingAsset = observer<{
   return (
     <>
       <div
-        className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between   rounded-lg bg-blue-950 p-5 hover:bg-gray-600"
+        className="mb-3 mt-3 flex cursor-pointer flex-row items-center justify-between rounded-lg bg-blue-950 p-5 hover:bg-gray-600"
         key={tx.transaction.deposit_address}
         onClick={() => {
           const status = tx.transaction.status;
           if (status.includes("InProgress") || status.includes("Done")) {
-            onOpen && onOpen(tx.transaction.deposit_address);
-            return;
+            onOpen(tx.transaction.deposit_address);
           }
-          return;
         }}
       >
         <div className="flex flex-row items-center">
@@ -100,7 +98,7 @@ const PendingAsset = observer<{
           <div className="flex flex-row">
             <div className="flex flex-col">
               <div className="mr-5 text-lg">{asset?.label} </div>
-              <div className="mr-5 text-xs  opacity-60">Pending tx</div>
+              <div className="mr-5 text-xs opacity-60">Pending tx</div>
             </div>
           </div>
         </div>
@@ -236,13 +234,13 @@ function PendingStepItem({
     <li className="mb-10 ms-6">
       <span
         className={cn(
-          "absolute -start-4 flex h-8 w-8 items-center justify-center rounded-full ring-4  ring-white  dark:ring-gray-900",
-          " bg-blue-950",
+          "absolute -start-4 flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-white dark:ring-gray-900",
+          "bg-blue-950",
         )}
       >
         {renderSTEPIcon()}
       </span>
-      <h3 className="font-medium  leading-tight">{getStepTitle()}</h3>
+      <h3 className="font-medium leading-tight">{getStepTitle()}</h3>
       <StepDetailsList step={step} simulations={simulations} />
     </li>
   );
@@ -262,22 +260,22 @@ function StepDetailsList({
       case "Squid": {
         const isEmpty = EmptyObject.safeParse(step.status);
         if (isEmpty.success) {
-          return <div className=" text-md">Not started</div>;
+          return <div className="text-md">Not started</div>;
         }
 
         const squidStatus = SquidStatus.safeParse(step.status);
         if (squidStatus.success) {
           return (
             <>
-              <div className=" text-md uppercase">
+              <div className="text-md uppercase">
                 {squidStatus.data.squidTransactionStatus}
               </div>
-              <div className="text-ellipsis  text-sm">
+              <div className="text-ellipsis text-sm">
                 TX hash:{" "}
                 <a
                   href={squidStatus.data.axelarTransactionUrl}
                   target="_blank"
-                  className="font-semibold hover:underline "
+                  className="font-semibold hover:underline"
                   rel="noreferrer"
                 >
                   {step.txHash}
@@ -324,7 +322,7 @@ function SkipDetailsItem({ step }: { step: StepAndTx }) {
     }
   };
 
-  return <div className=" text-md"> {getSkipStatus()}</div>;
+  return <div className="text-md"> {getSkipStatus()}</div>;
 }
 
 function StepDetailsItem({
@@ -398,8 +396,8 @@ function StepDetailsItem({
               <li className="mb-7 ms-6">
                 <span
                   className={cn(
-                    " absolute -start-3 flex  h-6 w-6 items-center justify-center rounded-full bg-blue-950 ring-4  ring-white  dark:ring-gray-900",
-                    routeStatus?.status === "success" && " bg-green-800",
+                    "absolute -start-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-950 ring-4 ring-white dark:ring-gray-900",
+                    routeStatus?.status === "success" && "bg-green-800",
                   )}
                 >
                   {renderSVG(
@@ -442,7 +440,7 @@ function SuccessSVG() {
 function FailedSVG() {
   return (
     <svg
-      className="h-3.5 w-3.5 text-white "
+      className="h-3.5 w-3.5 text-white"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -512,9 +510,9 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
       const simulation = squidSimulation.data;
       const intent = tx.transaction.intent;
       const toChain = intent.destination_chain_id;
-      const priceInfo = await TargetChain.chainId(toChain).price(
-        intent.destination_asset,
-      );
+      const targetChain = TargetChain.chainId(toChain);
+      const id = targetChain.denomToCaip19AssetId(intent.destination_asset);
+      const priceInfo = id ? await targetChain.newPrice(id) : { usdValue: "0" };
       const price = parseFloat(priceInfo.usdValue);
       const decimals = Math.min(simulation.params.toToken.decimals, 8);
       const amount = new BigNumber(simulation.estimate.toAmountUSD)
@@ -534,8 +532,8 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
 
   return (
     <AmountEstimate
-      amount={loading ? "0" : data?.amount ?? ""}
-      estimate={loading ? "0" : data?.estimate ?? ""}
+      amount={loading ? "0" : (data?.amount ?? "")}
+      estimate={loading ? "0" : (data?.estimate ?? "")}
     />
   );
 }
@@ -579,7 +577,7 @@ function Status({ status }: { status: string }) {
   return (
     <div
       className={cn(
-        " capitalize ",
+        "capitalize",
         getStatus() === "In Progress" ? "text-yellow-500" : "text-green-500",
       )}
     >

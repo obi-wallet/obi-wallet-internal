@@ -19,7 +19,7 @@ export function Divider({
         <div
           className={cn(
             "flex items-center text-xs uppercase text-gray-700 before:flex-[1_1_0%] before:border-t-2 before:border-gray-700 after:flex-[1_1_0%] after:border-t-2 after:border-gray-700",
-            text !== "" && "before:me-6 after:ms-6 ",
+            text !== "" && "before:me-6 after:ms-6",
             className,
           )}
         >

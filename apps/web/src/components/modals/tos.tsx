@@ -26,7 +26,7 @@ export function TOSModal() {
           Please check the boxes below to confirm your agreement to the{" "}
           <Link
             href="https://docs.google.com/document/d/1mqCHAYghjEQJQaW5lnTY6w9690Znr6qQlOH34KEEzkE/edit?usp=sharing"
-            className=" text-blue-600"
+            className="text-blue-600"
             target="_blank"
           >
             Obi Terms and Conditions
@@ -42,8 +42,8 @@ export function TOSModal() {
             <div>
               <div
                 className={cn(
-                  " m-6 mt-0 flex h-6 w-6 items-center justify-center rounded-md",
-                  firstCheckbox ? "bg-green-600 " : "bg-white",
+                  "m-6 mt-0 flex h-6 w-6 items-center justify-center rounded-md",
+                  firstCheckbox ? "bg-green-600" : "bg-white",
                 )}
               >
                 {firstCheckbox && <FaCheck className="text-sm" />}
@@ -67,12 +67,12 @@ export function TOSModal() {
             </div>
           </li>
         </ul>
-        <div className=" mt-8 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <Button
             onClick={acceptTOS}
             variant="primary"
             disabled={!firstCheckbox}
-            className=" w-32 items-center justify-center"
+            className="w-32 items-center justify-center"
           >
             Confirm
           </Button>

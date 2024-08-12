@@ -139,7 +139,7 @@ export default observer(function BuyCrypto() {
     <div className="h-full w-full">
       <iframe
         src={kadoUrl.data.toString()}
-        className=" h-full w-[500px] max-md:w-full"
+        className="h-full w-[500px] max-md:w-full"
       />
     </div>
   );

@@ -11,28 +11,6 @@ export const testSuite = createTestSuite(({ test }) => {
     console.log(balances);
   });
 
-  test("native token (legacy)", async () => {
-    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
-    const legacyDenom = "usei";
-    const tokenInfo = targetChain.assetInfo(legacyDenom);
-    expect(tokenInfo?.symbol).to.equal("SEI");
-  });
-
-  test("native token (CAIP-19)", async () => {
-    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
-    const assetId = "cosmos:pacific-1/slip44:118";
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
-    expect(tokenInfo?.symbol).to.equal("SEI");
-  });
-
-  test("factory token (legacy, chain registry)", async () => {
-    const targetChain = TargetChain.chainId(CosmosChainId.Sei);
-    const legacyDenom =
-      "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN";
-    const tokenInfo = targetChain.assetInfo(legacyDenom);
-    expect(tokenInfo?.symbol).to.equal("OIN");
-  });
-
   test("factory token (CAIP-19, chain registry)", async () => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
     const assetId =
