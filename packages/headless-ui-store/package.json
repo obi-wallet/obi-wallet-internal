@@ -14,7 +14,7 @@
     "@obi-wallet/sdk": "workspace:*",
     "@obi-wallet/sdk-json": "workspace:*",
     "@react-native-async-storage/async-storage": "^1.23.1",
-    "dexie": "^4.0.4",
+    "dexie": "^4.0.8",
     "mobx": "^6.12.3",
     "ramda": "^0.30.0"
   },

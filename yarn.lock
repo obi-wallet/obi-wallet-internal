@@ -3318,7 +3318,7 @@ __metadata:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/ramda": "npm:^0.30.1"
-    dexie: "npm:^4.0.4"
+    dexie: "npm:^4.0.8"
     eslint: "npm:^8.57.0"
     mobx: "npm:^6.12.3"
     ramda: "npm:^0.30.0"
@@ -10314,10 +10314,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dexie@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "dexie@npm:4.0.4"
-  checksum: 10c0/e278b4533112c0af1f90363c25eda3715c4f05bcdd13cee32f5124e1dadce4ea1996ba1f15d4d74d5aba8f7fa2be39c4a8968e3bea925ae16c76655b688bea2b
+"dexie@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "dexie@npm:4.0.8"
+  checksum: 10c0/d35a817d986c334a2de5f1a0d5ef373b3d9464de7b520f9af50c00ea2f974386632a3f949add83ba1fce9e929908d96db19726377f641f4768c137a554969a2d
   languageName: node
   linkType: hard
 
