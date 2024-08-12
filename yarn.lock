@@ -3629,7 +3629,7 @@ __metadata:
     nanoid: "npm:^5.0.7"
     next: "patch:next@npm%3A14.2.5#~/.yarn/patches/next-npm-14.2.5-ce63d89d89.patch"
     next-qrcode: "npm:^2.5.1"
-    next-test-api-route-handler: "npm:^4.0.7"
+    next-test-api-route-handler: "npm:^4.0.8"
     next-themes: "npm:^0.3.0"
     permissionless: "npm:^0.1.44"
     playwright: "npm:^1.46.0"
@@ -7726,43 +7726,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@whatwg-node/events@npm:^0.1.0":
-  version: 0.1.1
-  resolution: "@whatwg-node/events@npm:0.1.1"
-  checksum: 10c0/7e4678c8c092484dc248f4a229a398de30d21190b94ebebc333c2187180207a18e257c4588d0910e872251b3089007f4a2a3ff8b9a4d057fae94db8da28be467
-  languageName: node
-  linkType: hard
-
-"@whatwg-node/fetch@npm:^0.9.17":
-  version: 0.9.17
-  resolution: "@whatwg-node/fetch@npm:0.9.17"
+"@whatwg-node/fetch@npm:^0.9.19":
+  version: 0.9.19
+  resolution: "@whatwg-node/fetch@npm:0.9.19"
   dependencies:
-    "@whatwg-node/node-fetch": "npm:^0.5.7"
+    "@whatwg-node/node-fetch": "npm:^0.5.16"
     urlpattern-polyfill: "npm:^10.0.0"
-  checksum: 10c0/6638f1d456d17c9eab55f6278aa8045157ceb43a27acc65def1b7a2a3b80ef1b79f4c203e523865c9bcf1236ef64e1378ab0627e91932c97e9f1f3a129b17195
+  checksum: 10c0/df446e2348c1ac795f6dd241f5c4c89dc303bfcc44ab27fa85c959d40b542deb6335d19bf5ad8271a40c1d2be66987932bfe83a7fce11831a33dbd97c7d5711e
   languageName: node
   linkType: hard
 
-"@whatwg-node/node-fetch@npm:^0.5.7":
-  version: 0.5.11
-  resolution: "@whatwg-node/node-fetch@npm:0.5.11"
+"@whatwg-node/node-fetch@npm:^0.5.16":
+  version: 0.5.21
+  resolution: "@whatwg-node/node-fetch@npm:0.5.21"
   dependencies:
     "@kamilkisiela/fast-url-parser": "npm:^1.1.4"
-    "@whatwg-node/events": "npm:^0.1.0"
     busboy: "npm:^1.6.0"
     fast-querystring: "npm:^1.1.1"
-    tslib: "npm:^2.3.1"
-  checksum: 10c0/08fadd64eb54ce14b17d85769869c1d5a98bd166f97ed6d08a802980c8546dbf409f4b9374bee2f8ee140c4649f2a7d3bfa069d90697b810150fb938fc4df1ab
+    tslib: "npm:^2.6.3"
+  checksum: 10c0/2ec53e82d271ffd3fa43641ffb1a8cb215d5cf5b04368242e35c74bb49a7a57acedbfa08fbfcb7672e2743e477b408e9fa85e5c7a7c6331c21ab47ca1d48d53a
   languageName: node
   linkType: hard
 
-"@whatwg-node/server@npm:^0.9.33":
-  version: 0.9.34
-  resolution: "@whatwg-node/server@npm:0.9.34"
+"@whatwg-node/server@npm:^0.9.34":
+  version: 0.9.46
+  resolution: "@whatwg-node/server@npm:0.9.46"
   dependencies:
-    "@whatwg-node/fetch": "npm:^0.9.17"
-    tslib: "npm:^2.3.1"
-  checksum: 10c0/6f2f651d8b1a95c81244b5b61d19f8eedccb66dcc50c7a9fc7c3ef8baa47ce756e07e3ca50f8c61e729f1dbde9e3282f7eedf3357aa75aa132f458138484cc4d
+    "@whatwg-node/fetch": "npm:^0.9.19"
+    tslib: "npm:^2.6.3"
+  checksum: 10c0/af4eea053e4e0ba7283f9ef93cf17811633660bc04ed7bcd6f3ef63a375f03d7936f84bf3b657a46cd500f5fee4df4a3ed598d32ce66ffbcee86187f2eec6aab
   languageName: node
   linkType: hard
 
@@ -9760,10 +9752,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"core-js@npm:^3.37.0":
-  version: 3.37.0
-  resolution: "core-js@npm:3.37.0"
-  checksum: 10c0/7e00331f346318ca3f595c08ce9e74ddae744715aef137486c1399163afd79792fb94c3161280863adfdc3e30f8026912d56bd3036f93cacfc689d33e185f2ee
+"core-js@npm:^3.37.1":
+  version: 3.38.0
+  resolution: "core-js@npm:3.38.0"
+  checksum: 10c0/3218ae19bfe0c6560663012cbd3e7f3dc1b36d50fc71e8c365f3b119185e8a35ac4e8bb9698ae510b3c201ef93f40bdc29f9215716ccf31aca28f77969bb4ed0
   languageName: node
   linkType: hard
 
@@ -16208,16 +16200,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-test-api-route-handler@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "next-test-api-route-handler@npm:4.0.7"
+"next-test-api-route-handler@npm:^4.0.8":
+  version: 4.0.8
+  resolution: "next-test-api-route-handler@npm:4.0.8"
   dependencies:
-    "@whatwg-node/server": "npm:^0.9.33"
+    "@whatwg-node/server": "npm:^0.9.34"
     cookie: "npm:^0.6.0"
-    core-js: "npm:^3.37.0"
+    core-js: "npm:^3.37.1"
   peerDependencies:
     next: ">=9"
-  checksum: 10c0/ca759fbab6c2b4f68cdab6e9fce6829d1ac6e4694435ebe4f0d5a288aea991d1c4018ba74466457cf2964add3821dc509afa8e748764dee53c740f0eca717991
+  checksum: 10c0/01c08de784c00633c76683b58eaefc2777b5e770dd0e0e6ea9a95651e6de8e8fc34a4d2d7d0f515f5f1bdd651dc0d3a2e47a8cf5c1ca0b9c79e45a121572689e
   languageName: node
   linkType: hard
 
@@ -20770,10 +20762,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.6.2":
+"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.4.0, tslib@npm:^2.6.2":
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: 10c0/e03a8a4271152c8b26604ed45535954c0a45296e32445b4b87f8a5abdb2421f40b59b4ca437c4346af0f28179780d604094eb64546bee2019d903d01c6c19bdb
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.6.3":
+  version: 2.6.3
+  resolution: "tslib@npm:2.6.3"
+  checksum: 10c0/2598aef53d9dbe711af75522464b2104724d6467b26a60f2bdac8297d2b5f1f6b86a71f61717384aa8fd897240467aaa7bcc36a0700a0faf751293d1331db39a
   languageName: node
   linkType: hard
 
