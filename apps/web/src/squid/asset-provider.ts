@@ -7,7 +7,7 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
-import { fromPairs } from "ramda";
+import { fromPairs, uniq } from "ramda";
 import { undefined, z } from "zod";
 
 const squidChainsResponse = z.object({
@@ -42,17 +42,19 @@ export class SquidAssetProvider extends AbstractAssetProvider {
 
   public async supportedAssets(): Promise<Caip19AssetId[]> {
     const assets = await this.assets();
-    return allTargetChainIds.flatMap((chainId) => {
-      return (assets[chainId]?.tokens ?? [])
-        .map((asset) => {
-          return TargetChain.chainId(chainId).denomToCaip19AssetId(
-            asset.address,
-          );
-        })
-        .filter((id): id is Caip19AssetId => {
-          return id !== null;
-        });
-    });
+    return uniq(
+      allTargetChainIds.flatMap((chainId) => {
+        return (assets[chainId]?.tokens ?? [])
+          .map((asset) => {
+            return TargetChain.chainId(chainId).denomToCaip19AssetId(
+              asset.address,
+            );
+          })
+          .filter((id): id is Caip19AssetId => {
+            return id !== null;
+          });
+      }),
+    );
   }
 
   public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
