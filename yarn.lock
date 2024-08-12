@@ -3611,7 +3611,7 @@ __metadata:
     next-qrcode: "npm:^2.5.1"
     next-test-api-route-handler: "npm:^4.0.7"
     next-themes: "npm:^0.3.0"
-    permissionless: "npm:^0.1.29"
+    permissionless: "npm:^0.1.44"
     playwright: "npm:^1.46.0"
     postcss: "npm:^8.4.38"
     ramda: "npm:^0.30.0"
@@ -17301,12 +17301,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"permissionless@npm:^0.1.29":
-  version: 0.1.29
-  resolution: "permissionless@npm:0.1.29"
+"permissionless@npm:^0.1.44":
+  version: 0.1.44
+  resolution: "permissionless@npm:0.1.44"
   peerDependencies:
-    viem: ^2.9.17
-  checksum: 10c0/b57d2af6c45b45b20371fb7840e63cd0ba2ede81111db7e7fe59a92a197446cb9ee4651c59405b05bdf2a4a515b15411f3412d6bd2f3e16a662376e1266c5b1e
+    viem: ">=2.14.1 <2.18.0"
+  checksum: 10c0/f8e9ddc0060719a89a29fd37ab854ea9c816cc89d88cb27fe8d901d41b7c26adf05be65eec935f8fe706ea6c7ba3abe3804892a38b1a0fc9a22e0bf8b6f48827
   languageName: node
   linkType: hard
 
