@@ -124,7 +124,7 @@
     "storybook": "^8.2.8",
     "tailwindcss": "^3.4.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.4",
     "vercel": "^34.1.14",
     "webpack-hook-plugin": "^1.0.7",
     "zora": "^5.2.0"
