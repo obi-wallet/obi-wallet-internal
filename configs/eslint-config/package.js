@@ -32,6 +32,7 @@ module.exports = {
         checksSpreads: true,
       },
     ],
+    "@typescript-eslint/no-unnecessary-template-expression": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -41,7 +42,6 @@ module.exports = {
         varsIgnorePattern: "^_",
       },
     ],
-    "@typescript-eslint/no-useless-template-literals": "error",
     "@typescript-eslint/prefer-as-const": "error",
     "@typescript-eslint/prefer-function-type": "error",
     "@typescript-eslint/prefer-reduce-type-parameter": "error",

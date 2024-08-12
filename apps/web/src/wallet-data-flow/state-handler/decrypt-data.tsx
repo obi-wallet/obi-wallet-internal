@@ -127,7 +127,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
             }}
           />
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 flex w-full flex-row space-x-6">
             <Button
               block
               variant="outline"

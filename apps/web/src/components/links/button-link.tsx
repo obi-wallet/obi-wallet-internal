@@ -6,18 +6,12 @@ import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 import { IconType } from "react-icons";
 
-const ButtonLinkVariant = [
-  "primary",
-  "outline",
-  "ghost",
-  "light",
-  "dark",
-] as const;
-const ButtonLinkSize = ["sm", "base"] as const;
+type ButtonLinkVariant = "primary" | "outline" | "ghost" | "light" | "dark";
+type ButtonLinkSize = "sm" | "base";
 
 type ButtonLinkProps = {
-  variant?: (typeof ButtonLinkVariant)[number];
-  size?: (typeof ButtonLinkSize)[number];
+  variant?: ButtonLinkVariant;
+  size?: ButtonLinkSize;
   leftIcon?: IconType;
   rightIcon?: IconType;
   classNames?: {
@@ -38,7 +32,7 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
       classNames,
 
       ...rest
-    },
+    }: ButtonLinkProps,
     ref,
   ) {
     return (

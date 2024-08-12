@@ -4,21 +4,20 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const ButtonVariant = [
-  "primary",
-  "outline",
-  "confirmed",
-  "secondary",
-  "variant",
-  "detail",
-] as const;
-const ButtonSize = ["sm", "base"] as const;
+type ButtonVariant =
+  | "primary"
+  | "outline"
+  | "confirmed"
+  | "secondary"
+  | "variant"
+  | "detail";
+type ButtonSize = "sm" | "base";
 
 type ButtonProps = {
   isLoading?: boolean;
   isDarkBg?: boolean;
-  variant?: (typeof ButtonVariant)[number];
-  size?: (typeof ButtonSize)[number];
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   leftIcon?: IconType;
   rightIcon?: IconType;
   classNames?: {
@@ -45,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       block,
       href,
       ...rest
-    },
+    }: ButtonProps,
     ref,
   ) {
     const disabled = isLoading || buttonDisabled;

@@ -1,6 +1,7 @@
 import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
 import {
   allCosmosChains,
@@ -52,7 +53,6 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
-import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -63,7 +63,6 @@ import {
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
-import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -198,60 +197,10 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   public async newPriceQueryFn(id: Caip19AssetId) {
-    const { namespace, reference } = parseCaip19AssetId(id);
+    const priceInfo = await PriceProvider.getInstance().priceInfo(id);
+    if (priceInfo) return priceInfo;
 
-    if (
-      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
-      !["untrn", "usei"].includes(reference)
-    ) {
-      const url = "https://api.skip.money/v2/fungible/route";
-      const asset = await this.newAssetInfo(id);
-
-      const amountIn = new BigNumber(1)
-        .multipliedBy(10 ** (asset?.decimals ?? 0))
-        .toFixed(0);
-
-      const sourceAssetDenom =
-        namespace === "ibc" ? `ibc/${reference}` : reference;
-      const data = {
-        source_asset_chain_id: this.cosmosChainId,
-        amount_in: amountIn,
-        source_asset_denom: sourceAssetDenom,
-        dest_asset_denom:
-          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.cosmosChainId,
-        allow_unsafe: true,
-      };
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: serialize(data),
-        });
-        const schema = z.object({
-          usd_amount_out: z.string(),
-        });
-        const { usd_amount_out } = schema.parse(await response.json());
-        return { usdValue: usd_amount_out };
-      } catch (e) {
-        console.log("SKIP ERROR", e);
-      }
-    }
-
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${reference}`;
-    try {
-      const response = await fetch(url);
-      const schema = z.object({
-        price: z.number(),
-      });
-      const { price } = schema.parse(await response.json());
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      console.error("Error fetching price", e);
-      return { usdValue: "0" };
-    }
+    return { usdValue: "0" };
   }
 
   public denomMetadata(denom: string) {
@@ -558,8 +507,12 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   public validateAddress(address: string): boolean {
-    const { prefix } = bech32.decode(address);
-    return prefix === this.chainData.prefix;
+    try {
+      const { prefix } = bech32.decode(address);
+      return prefix === this.chainData.prefix;
+    } catch {
+      return false;
+    }
   }
 
   public get aminoTypes() {
@@ -699,7 +652,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       return `${this.chainId}/ibc:${denom.replace("ibc/", "").replace("/", "%2F")}`;
     }
 
-    if (denom.startsWith(this.chainData.prefix)) {
+    if (this.validateAddress(denom)) {
       return `${this.chainId}/cw20:${denom.replace("/", "%2F")}`;
     }
 
@@ -716,7 +669,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "ibc":
         return `ibc/${reference.replace("%2F", "/")}`;
       case "cw20":
-        return `cw20/${reference.replace("%2F", "/")}`;
+        return reference.replace("%2F", "/");
       default:
         return null;
     }

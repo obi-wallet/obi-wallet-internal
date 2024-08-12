@@ -36,7 +36,7 @@ export const CustomAlert = observer<CustomAlertProps>(function CustomAlert({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="min-w-56 max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
-        <div className={cn("m-0 ml-auto mr-auto w-20 ")}>
+        <div className={cn("m-0 ml-auto mr-auto w-20")}>
           <Lottie animationData={getIcon()} loop={false} />
         </div>
         <p className="mb-4 p-5 text-white">{alert.message}</p>

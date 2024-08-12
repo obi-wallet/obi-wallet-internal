@@ -65,8 +65,8 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   if (!wallet) return null;
 
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <div className="my-4 flex-1 text-center text-white">Edit Asset</div>
         <div className="my-4">
           <label className="text-sm text-white">Token ID</label>

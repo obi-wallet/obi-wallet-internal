@@ -156,7 +156,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             />
           ) : null}
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 flex w-full flex-row space-x-6">
             <Button block variant="outline" onClick={onReject}>
               Reject
             </Button>

@@ -115,7 +115,7 @@ export function Navbar() {
                             ? "font-bold opacity-100"
                             : ""
                         }`,
-                        "hover:font-bold  hover:opacity-100",
+                        "hover:font-bold hover:opacity-100",
                       )}
                       target={navItem.target || "_self"}
                     >
@@ -142,9 +142,9 @@ export function Navbar() {
         </div>
         <Footer className="!px-0" />
       </div>
-      <div className="flex  h-20 w-full md:hidden">
-        <div className="flex w-full flex-row items-center justify-center px-4 ">
-          <ul role="list" className="flex w-full flex-row justify-between p-3 ">
+      <div className="flex h-20 w-full md:hidden">
+        <div className="flex w-full flex-row items-center justify-center px-4">
+          <ul role="list" className="flex w-full flex-row justify-between p-3">
             {navMenu
               .filter((item) => {
                 return item.showOnMobile;
@@ -187,18 +187,18 @@ export function AccountAndCTA() {
   return (
     <>
       <Account />
-      <div className="mb-4 mt-4 flex  gap-5 text-white">
+      <div className="mb-4 mt-4 flex gap-5 text-white">
         <Link
           href="/dashboard/transaction/send"
-          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          className="flex flex-1 justify-center rounded-md bg-blue-600 p-3"
         >
-          <span className=" text-sm">Send</span>
+          <span className="text-sm">Send</span>
         </Link>
         <Link
           href="/dashboard/transaction/receive"
-          className="flex flex-1  justify-center rounded-md bg-blue-600 p-3"
+          className="flex flex-1 justify-center rounded-md bg-blue-600 p-3"
         >
-          <span className=" text-sm">Receive</span>
+          <span className="text-sm">Receive</span>
         </Link>
       </div>
     </>

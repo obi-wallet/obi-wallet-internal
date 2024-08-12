@@ -1,4 +1,5 @@
 import { AbstractAssetProvider, AssetInfo } from "@/asset-provider/abstract";
+import { TargetChain } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import {
   Caip19AssetId,
@@ -19,6 +20,11 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
     this.assets = this.initAssets();
   }
 
+  public async supportedAssets() {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return Object.keys(this.assets) as Caip19AssetId[];
+  }
+
   public async assetInfo(id: Caip19AssetId) {
     return this.assets[id] ?? null;
   }
@@ -30,27 +36,24 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
       {
         chainId: CosmosChainId.Inj,
         tokens: tokensInjective,
-        prefix: "inj",
       },
       {
         chainId: CosmosChainId.Neutron,
         tokens: tokensNeutron,
-        prefix: "neutron",
       },
       {
         chainId: CosmosChainId.Osmosis,
         tokens: tokensOsmosis,
-        prefix: "osmo",
       },
       {
         chainId: CosmosChainId.Sei,
         tokens: tokensSei,
-        prefix: "sei",
       },
     ];
 
-    tokenLists.forEach(({ chainId, tokens, prefix }) => {
+    tokenLists.forEach(({ chainId, tokens }) => {
       tokens.forEach((token) => {
+        const targetChain = TargetChain.chainId(chainId);
         const getCaip19AssetIdPartial =
           (): `${Caip19AssetNamespace}:${Caip19AssetReference}` => {
             if (token.token.startsWith("ibc/")) {
@@ -61,8 +64,11 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
               return `factory:${token.token.substring("factory/".length).replace("/", "%2F")}`;
             }
 
-            if (token.token.startsWith(prefix)) {
-              return `cw20:${token.token.replace("cw20:", "")}`;
+            const contractAddress = token.token.startsWith("cw20:")
+              ? token.token.substring("cw20:".length)
+              : token.token;
+            if (targetChain.validateAddress(contractAddress)) {
+              return `cw20:${contractAddress}`;
             }
 
             return `native:${token.token.replace("/", "%2F")}`;

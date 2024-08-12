@@ -1,5 +1,8 @@
 import { AstroportAssetProvider } from "@/astroport";
+import { SkipAssetProvider } from "@/skip";
+import { SquidAssetProvider } from "@/squid";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
+import { uniq } from "ramda";
 
 import { AbstractAssetProvider } from "./abstract";
 import { ChainRegistryAssetProvider } from "./chain-registry-asset-provider";
@@ -12,6 +15,8 @@ export class AssetProvider implements AbstractAssetProvider {
     this.sources = [
       new AstroportAssetProvider(),
       new ChainRegistryAssetProvider(),
+      new SkipAssetProvider(),
+      new SquidAssetProvider(),
     ];
   }
 
@@ -21,6 +26,15 @@ export class AssetProvider implements AbstractAssetProvider {
     }
 
     return AssetProvider.instance;
+  }
+
+  public async supportedAssets() {
+    const assets = await Promise.all(
+      this.sources.map((source) => {
+        return source.supportedAssets();
+      }),
+    );
+    return uniq(assets.flat());
   }
 
   public async assetInfo(id: Caip19AssetId) {
