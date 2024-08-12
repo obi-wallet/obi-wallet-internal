@@ -62,7 +62,7 @@
     "json-diff": "^1.0.6",
     "lottie-react": "^2.4.0",
     "luxon": "^3.5.0",
-    "mobx": "^6.12.3",
+    "mobx": "^6.13.1",
     "mobx-react-lite": "^4.0.7",
     "nanoid": "^5.0.7",
     "next": "patch:next@npm%3A14.2.5#~/.yarn/patches/next-npm-14.2.5-ce63d89d89.patch",
