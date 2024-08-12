@@ -17,6 +17,11 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
     this.assets = this.initAssets();
   }
 
+  public async supportedAssets(): Promise<Caip19AssetId[]> {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return Object.keys(this.assets) as Caip19AssetId[];
+  }
+
   public async assetInfo(id: Caip19AssetId) {
     const asset = this.assets[id];
     if (!asset) return null;

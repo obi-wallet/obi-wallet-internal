@@ -36,6 +36,22 @@ export class SkipAssetProvider extends AbstractAssetProvider {
     this.queryNamespace = new QueryClientNamespace("skip-asset-provider", {});
   }
 
+  public async supportedAssets(): Promise<Caip19AssetId[]> {
+    const assets = await this.assets();
+    return allTargetChainIds.flatMap((chainId) => {
+      return (
+        assets.chain_to_assets_map[parseCaip2ChainId(chainId).reference]
+          ?.assets ?? []
+      )
+        .map((asset) => {
+          return TargetChain.chainId(chainId).denomToCaip19AssetId(asset.denom);
+        })
+        .filter((id): id is Caip19AssetId => {
+          return id !== null;
+        });
+    });
+  }
+
   public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const { chainId: caip2ChainId } = parseCaip19AssetId(id);
     const { reference } = parseCaip2ChainId(caip2ChainId);

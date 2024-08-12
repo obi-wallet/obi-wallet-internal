@@ -8,5 +8,6 @@ export interface AssetInfo {
 }
 
 export abstract class AbstractAssetProvider {
+  public abstract supportedAssets(): Promise<Caip19AssetId[]>;
   public abstract assetInfo(id: Caip19AssetId): Promise<AssetInfo | null>;
 }

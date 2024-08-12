@@ -40,6 +40,21 @@ export class SquidAssetProvider extends AbstractAssetProvider {
     this.queryNamespace = new QueryClientNamespace("squid-asset-provider", {});
   }
 
+  public async supportedAssets(): Promise<Caip19AssetId[]> {
+    const assets = await this.assets();
+    return allTargetChainIds.flatMap((chainId) => {
+      return (assets[chainId]?.tokens ?? [])
+        .map((asset) => {
+          return TargetChain.chainId(chainId).denomToCaip19AssetId(
+            asset.address,
+          );
+        })
+        .filter((id): id is Caip19AssetId => {
+          return id !== null;
+        });
+    });
+  }
+
   public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const { chainId: caip2ChainId } = parseCaip19AssetId(id);
     const denom = TargetChain.chainId(caip2ChainId).caip19AssetIdToDenom(id);

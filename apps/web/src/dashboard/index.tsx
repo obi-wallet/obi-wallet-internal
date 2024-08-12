@@ -11,7 +11,7 @@ import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import invariant from "tiny-invariant";
 
@@ -212,6 +212,50 @@ const AssetBalance = observer(function AssetBalance({
   );
 });
 
+export const AssetsContainer = observer(function AssetsContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <ul role="list">
+      <li className="relative flex py-1.5">
+        <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400"
+          >
+            Asset
+          </Text>
+
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
+          >
+            Balance
+          </Text>
+        </div>
+
+        <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
+          <Text
+            fontWeight="light"
+            className="pr-4 text-[10px] uppercase text-slate-400 sm:hidden"
+          >
+            Balance
+          </Text>
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
+          >
+            Value
+          </Text>
+        </div>
+      </li>
+      {children}
+    </ul>
+  );
+});
+
 const Network = observer(function NetworkAssets({
   assets,
   editMode,
@@ -302,50 +346,18 @@ const Network = observer(function NetworkAssets({
           </div>
         </h3>
       </div>
-      <ul role="list">
-        <li className="relative flex py-1.5">
-          <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400"
-            >
-              Asset
-            </Text>
-
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400 max-sm:hidden"
-            >
-              Balance
-            </Text>
-          </div>
-
-          <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
-            <Text
-              fontWeight="light"
-              className="pr-4 text-[10px] uppercase text-slate-400 sm:hidden"
-            >
-              Balance
-            </Text>
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400 max-sm:hidden"
-            >
-              Value
-            </Text>
-          </div>
-        </li>
+      <AssetsContainer>
         {assets.prettyData.map((data) => {
           return (
             <AssetRow key={data.assetId} asset={data} editMode={editMode} />
           );
         })}
-      </ul>
+      </AssetsContainer>
     </div>
   );
 });
 
-function AssetRow({
+export function AssetRow({
   asset,
   editMode,
 }: {

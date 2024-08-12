@@ -19,6 +19,11 @@ export class AstroportAssetProvider extends AbstractAssetProvider {
     this.assets = this.initAssets();
   }
 
+  public async supportedAssets() {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return Object.keys(this.assets) as Caip19AssetId[];
+  }
+
   public async assetInfo(id: Caip19AssetId) {
     return this.assets[id] ?? null;
   }
