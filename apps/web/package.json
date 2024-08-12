@@ -17,7 +17,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@chain-registry/types": "^0.29.1",
+    "@chain-registry/types": "^0.45.46",
     "@cosmjs/amino": "^0.32.4",
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
     "@cosmjs/crypto": "^0.32.4",
@@ -49,7 +49,7 @@
     "axios": "^1.6.8",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
-    "chain-registry": "^1.47.7",
+    "chain-registry": "^1.63.56",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "cosmjs-types": "^0.9.0",
