@@ -54,7 +54,7 @@
     "copy-to-clipboard": "^3.3.3",
     "cosmjs-types": "^0.9.0",
     "crypto-js": "^4.2.0",
-    "downshift": "^9.0.4",
+    "downshift": "^9.0.7",
     "ecies-wasm": "^0.2.0",
     "elliptic": "^6.5.5",
     "ethers": "^6.12.1",
