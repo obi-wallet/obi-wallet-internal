@@ -22,8 +22,12 @@ export class PriceProvider implements AbstractPriceProvider {
 
   public async priceInfo(id: Caip19AssetId) {
     for (const source of this.sources) {
-      const price = await source.priceInfo(id);
-      if (price) return price;
+      try {
+        const price = await source.priceInfo(id);
+        if (price) return price;
+      } catch {
+        // Ignore errors
+      }
     }
 
     return null;

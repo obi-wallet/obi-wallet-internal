@@ -507,8 +507,12 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }
 
   public validateAddress(address: string): boolean {
-    const { prefix } = bech32.decode(address);
-    return prefix === this.chainData.prefix;
+    try {
+      const { prefix } = bech32.decode(address);
+      return prefix === this.chainData.prefix;
+    } catch {
+      return false;
+    }
   }
 
   public get aminoTypes() {
@@ -648,7 +652,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       return `${this.chainId}/ibc:${denom.replace("ibc/", "").replace("/", "%2F")}`;
     }
 
-    if (denom.startsWith(this.chainData.prefix)) {
+    if (this.validateAddress(denom)) {
       return `${this.chainId}/cw20:${denom.replace("/", "%2F")}`;
     }
 
@@ -665,7 +669,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "ibc":
         return `ibc/${reference.replace("%2F", "/")}`;
       case "cw20":
-        return `cw20/${reference.replace("%2F", "/")}`;
+        return reference.replace("%2F", "/");
       default:
         return null;
     }

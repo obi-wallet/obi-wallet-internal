@@ -143,10 +143,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
         address,
       });
       if (balance > 0) {
-        const assetId: Caip19AssetId = `${this.chainId}/native:${this.nativeCurrency.symbol}`;
         return [
           {
-            assetId,
+            assetId: this.nativeCaip19AssetId,
             rawAmount: balance.toString(10),
           },
         ];
@@ -225,9 +224,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
     if (asset) return asset;
 
     const { namespace, reference } = parseCaip19AssetId(id);
-    if (namespace === "native" && reference === this.nativeCurrency.symbol) {
+    if (id === this.nativeCaip19AssetId) {
       const getImage = () => {
-        switch (reference) {
+        switch (this.nativeCurrency.symbol) {
           case "AVAX":
             return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
           case "ETH":
@@ -492,12 +491,17 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
-    if (denom.startsWith("0x")) {
-      return `${this.chainId}/erc20:${denom.toLowerCase()}`;
+    if (this.validateAddress(denom)) {
+      const checksumAddress = getAddress(denom);
+      if (checksumAddress === this.nativeAddress) {
+        return this.nativeCaip19AssetId;
+      } else {
+        return `${this.chainId}/erc20:${checksumAddress}`;
+      }
     }
 
     if (denom === this.nativeCurrency.symbol) {
-      return `${this.chainId}/native:0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+      return this.nativeCaip19AssetId;
     }
 
     return null;
@@ -507,11 +511,19 @@ export class Eip155TargetChain extends AbstractTargetChain<
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "erc20":
-        return reference.replace("%2F", "/");
+        return reference;
       case "native":
         return this.nativeCurrency.symbol;
       default:
         return null;
     }
+  }
+
+  protected get nativeAddress(): Address {
+    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+  }
+
+  protected get nativeCaip19AssetId(): Caip19AssetId {
+    return `${this.chainId}/native:${this.nativeAddress}`;
   }
 }

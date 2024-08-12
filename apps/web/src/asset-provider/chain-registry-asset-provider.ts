@@ -1,10 +1,8 @@
+import { TargetChain } from "@/target-chain";
+import { isCosmosChainId } from "@/target-chain/cosmos/chains";
+import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { Asset } from "@chain-registry/types";
-import {
-  Caip19AssetId,
-  Caip19AssetNamespace,
-  Caip19AssetReference,
-  Caip19ChainId,
-} from "@obi-wallet/sdk-caip";
+import { Caip19AssetId, Caip19ChainId } from "@obi-wallet/sdk-caip";
 import { assets, chains } from "chain-registry";
 
 import { AbstractAssetProvider } from "./abstract";
@@ -43,7 +41,24 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
     const result: Record<Caip19AssetId, Asset> = {};
 
     chains.forEach((chain) => {
-      chainNameToId[chain.chain_name] = `cosmos:${chain.chain_id}`;
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const chainType = (chain as unknown as { chain_type: string }).chain_type;
+      switch (chainType) {
+        case "cosmos": {
+          const chainId = `cosmos:${chain.chain_id}`;
+          if (isCosmosChainId(chainId)) {
+            chainNameToId[chain.chain_name] = chainId;
+          }
+          break;
+        }
+        case "eip155": {
+          const chainId = `eip155:${chain.chain_id}`;
+          if (isEip155ChainId(chainId)) {
+            chainNameToId[chain.chain_name] = chainId;
+          }
+          break;
+        }
+      }
     });
 
     assets.forEach((assetList) => {
@@ -51,23 +66,11 @@ export class ChainRegistryAssetProvider extends AbstractAssetProvider {
       if (!chainId) return;
 
       assetList.assets.forEach((asset) => {
-        const getCaip19AssetIdPartial =
-          (): `${Caip19AssetNamespace}:${Caip19AssetReference}` => {
-            if (asset.base.startsWith("cw20:")) {
-              return `cw20:${asset.base.substring("cw20:".length)}`;
-            }
-
-            if (asset.base.startsWith("ibc/")) {
-              return `ibc:${asset.base.substring("ibc/".length).replace("/", "%2F")}`;
-            }
-
-            if (asset.base.startsWith("factory/")) {
-              return `factory:${asset.base.substring("factory/".length).replace("/", "%2F")}`;
-            }
-
-            return `native:${asset.base.replace("/", "%2F")}`;
-          };
-        result[`${chainId}/${getCaip19AssetIdPartial()}`] = asset;
+        const targetChain = TargetChain.chainId(chainId);
+        const id = targetChain.denomToCaip19AssetId(asset.base);
+        if (id) {
+          result[id] = asset;
+        }
       });
     });
 
