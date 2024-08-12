@@ -183,7 +183,7 @@ export default observer<{
                   sender: address,
                   contract_address: contract_address,
                   msg: {
-                    create_viewing_key: {
+                    set_viewing_key: {
                       key: "sample viewing key",
                     },
                   },
@@ -205,17 +205,17 @@ export default observer<{
                   console.log("broadcastResult", broadcastResult);
                   if (broadcastResult.success) {
                     console.log("broadcast success");
+                    viewingKeysStore.setViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId,
+                      key: secretTokenViewingKey,
+                    });
                   } else {
                     console.log("broadcast failed");
                   }
                 }
               }
 
-              viewingKeysStore.setViewingKey({
-                address: wallet.userEntryAddress,
-                assetId,
-                key: secretTokenViewingKey,
-              });
               router.back();
             }}
             className="flex-1 justify-center rounded-lg p-2"

@@ -372,6 +372,9 @@ function AssetItem({
       <Text className=" -ml-6 max-sm:text-sm ">
         {asset.prettyAmount.toString()}
       </Text>
+      <Button variant="primary" className="h-5">
+        View Balance
+      </Button>
       <Text fontWeight="bold" className=" max-sm:text-sm">
         ${new BigNumber(asset.usdBalance).toFixed(2)}
       </Text>
