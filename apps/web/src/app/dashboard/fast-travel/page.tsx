@@ -32,7 +32,7 @@ export default observer(function FastTravel() {
             <h1 className="mb-4 text-4xl font-bold text-white max-md:text-3xl max-sm:text-xl">
               Obi Fast Travel
             </h1>
-            <h2 className="text-xs font-bold text-white lg:text-sm">
+            <h2 className="text-xs font-bold text-white   lg:text-sm">
               Skip the research and hassle of migrating to new ecosystems.
               Select an asset below to receive it in your Obi account.
             </h2>
@@ -48,7 +48,7 @@ export default observer(function FastTravel() {
                   <Box
                     key={assetKey}
                     className={cn(
-                      "hover:bg-background-primary-hover col-span-1 flex w-full cursor-pointer flex-row bg-gray-700",
+                      " hover:bg-background-primary-hover col-span-1 flex w-full cursor-pointer flex-row bg-gray-700",
                       toAssets[assetKey]?.disabled &&
                         "cursor-not-allowed opacity-50 hover:bg-gray-700",
                     )}
@@ -95,14 +95,14 @@ export default observer(function FastTravel() {
           <div className="space-y-4">
             <Text size="xl">Vaults</Text>
             <Divider />
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 ">
               {vaults.map((asset) => {
                 return (
                   <Box
                     key={`vault-${asset.label}`}
-                    className="flex cursor-not-allowed flex-row bg-gray-700 opacity-50 max-lg:space-x-3"
+                    className="flex cursor-not-allowed flex-row bg-gray-700 opacity-50 max-lg:space-x-3  "
                   >
-                    <div className="relative mr-3 aspect-square w-full max-w-[35px]">
+                    <div className="relative mr-3 aspect-square w-full max-w-[35px] ">
                       <Image
                         alt={asset.label}
                         src={asset.image ?? ""}
@@ -126,11 +126,11 @@ export default observer(function FastTravel() {
                     key={`farm-${asset.label}`}
                     className={cn(
                       "flex flex-row space-x-3 bg-gray-700",
-                      "cursor-not-allowed opacity-50",
+                      "cursor-not-allowed opacity-50 ",
                     )}
                   >
                     {asset.image && (
-                      <div className="relative aspect-square w-full max-w-[35px]">
+                      <div className="relative aspect-square w-full max-w-[35px] ">
                         <Image
                           alt={asset.label}
                           src={asset.image ?? ""}

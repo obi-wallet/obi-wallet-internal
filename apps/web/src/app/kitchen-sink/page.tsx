@@ -60,7 +60,7 @@ const Homepage = observer(function Homepage() {
           Welcome to OBI
         </Text>
       </PrimaryLink>
-      <div className="grid w-full grid-cols-12 gap-4">
+      <div className="grid w-full grid-cols-12 gap-4 ">
         <div>
           <Switcher switched />
         </div>

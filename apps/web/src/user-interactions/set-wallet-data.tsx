@@ -147,7 +147,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
             }}
           />
 
-          <div className="mt-6 grid w-full grid-cols-2 gap-6">
+          <div className="mt-6 grid w-full grid-cols-2 gap-6 ">
             <Button
               block
               variant="outline"

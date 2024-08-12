@@ -3,12 +3,12 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-type IconButtonVariant = "primary" | "outline" | "confirmed";
+const IconButtonVariant = ["primary", "outline", "confirmed"] as const;
 
 type IconButtonProps = {
   isLoading?: boolean;
   isDarkBg?: boolean;
-  variant?: IconButtonVariant;
+  variant?: (typeof IconButtonVariant)[number];
   icon?: IconType;
   classNames?: {
     icon?: string;
@@ -26,7 +26,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       classNames,
       children,
       ...rest
-    }: IconButtonProps,
+    },
     ref,
   ) {
     const disabled = isLoading || buttonDisabled;

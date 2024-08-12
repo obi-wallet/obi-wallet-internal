@@ -74,7 +74,7 @@ export const WithLeftIconAndRightButton: Story = {
   },
   render: (args) => {
     return (
-      <div className="w-96">
+      <div className=" w-96">
         <Input
           {...args}
           leftComponent={<FaPhone className="mr-2 text-white" />}
@@ -125,8 +125,8 @@ export const WithTopComponent: Story = {
         <Input
           {...args}
           topComponent={
-            <div className="w-full text-left text-xs">
-              <span className="text-gray-500">100 SAT</span>
+            <div className="  w-full  text-left text-xs">
+              <span className=" text-gray-500">100 SAT</span>
             </div>
           }
           rightComponent={

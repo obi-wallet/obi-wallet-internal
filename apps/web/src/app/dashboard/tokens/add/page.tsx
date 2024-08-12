@@ -16,13 +16,13 @@ export default observer(function TokenAdd() {
   const [address, setAddress] = useState("");
 
   return (
-    <div className="w-full">
-      <Box className="w-full lg:w-1/2">
+    <div className="w-full ">
+      <Box className="w-full lg:w-1/2 ">
         <div className="my-4 flex-1 text-center text-white">
           Import New Asset
         </div>
         <InputContainer
-          className="relative z-10 w-80"
+          className="relative z-10  w-80"
           label="Chain"
           labelClassname="bg-background-secondary"
         >

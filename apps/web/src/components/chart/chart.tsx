@@ -41,7 +41,7 @@ interface ChartState {
 
 export function Chart({ series }: { series: ChartState[] }) {
   return (
-    <div className="pt-7.5 shadow-default h-96 w-full rounded-sm bg-transparent px-5 pb-5">
+    <div className="pt-7.5 shadow-default h-96 w-full rounded-sm bg-transparent px-5 pb-5 ">
       <ReactApexChart
         options={options}
         series={series}

@@ -36,7 +36,7 @@ export function Modal({
               onClose();
             }}
           >
-            <FaTimes className="text-white" />
+            <FaTimes className=" text-white" />
           </button>
         )}
       </Box>

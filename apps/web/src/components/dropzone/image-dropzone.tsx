@@ -43,9 +43,7 @@ export function ImageDropzone({
         "Expected reader result to be base64 string",
       );
 
-      if (typeof onChange === "function") {
-        onChange(file, reader.result);
-      }
+      onChange && onChange(file, reader.result);
       setFile(file);
     });
 
@@ -69,7 +67,7 @@ export function ImageDropzone({
     <div
       {...getRootProps({ className: "dropzone" })}
       className={cn(
-        "flex w-full cursor-pointer justify-center rounded bg-transparent py-5 text-gray-300",
+        "flex w-full cursor-pointer justify-center rounded  bg-transparent py-5 text-gray-300",
         !fileObjectUrl &&
           "border-foreground-primary-border border border-dashed",
       )}

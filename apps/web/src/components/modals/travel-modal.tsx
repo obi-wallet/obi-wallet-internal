@@ -349,19 +349,19 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
   return (
     <div
       className={cn(
-        "top-0 flex h-full w-full flex-1 justify-center rounded-md bg-black/30 backdrop-blur-sm",
+        "top-0 flex  h-full w-full flex-1 justify-center rounded-md bg-black/30 backdrop-blur-sm",
         modal ? "absolute" : "relative bg-transparent",
       )}
     >
       <Box
         className={cn(
-          "relative h-fit w-full sm:shadow-lg sm:shadow-neutral-600 md:m-10 md:max-w-[560px]",
-          "pt-10",
+          "relative   h-fit w-full sm:shadow-lg sm:shadow-neutral-600 md:m-10 md:max-w-[560px]",
+          "pt-10 ",
         )}
       >
         <div className="space-y-4">
           <Text size="xl">Obi Fast Travel</Text>
-          <Text size="sm" className="leading-5">
+          <Text size="sm" className=" leading-5">
             Deposit assets below from an external account to receive them in
             your Obi account.
           </Text>
@@ -407,8 +407,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             onMouseMove,
                           })}
                           className={cn(
-                            "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                            isSelected && "bg-gray-600",
+                            " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                            isSelected && "bg-gray-600 ",
                             item.disabled &&
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
@@ -437,7 +437,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                       }
                       return (
                         <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center justify-center">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -445,7 +445,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="flex flex-col items-center justify-center text-sm font-normal max-sm:text-xs">
-                            <div className="uppercase">
+                            <div className=" uppercase">
                               {selected.item.label}
                             </div>
                           </div>
@@ -456,7 +456,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                 );
               }}
             />
-            <div className="flex items-center justify-center p-2 sm:p-5">
+            <div className=" flex items-center justify-center p-2  sm:p-5">
               <FaArrowRight className="m-auto text-white" />
             </div>
             <Controller
@@ -503,7 +503,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               "cursor-not-allowed opacity-50 hover:bg-gray-600",
                           )}
                         >
-                          <div className="flex items-center justify-center">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={item.image}
                               alt={item.label}
@@ -512,7 +512,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                             />
                           </div>
                           <div className="text-white">
-                            <div className="uppercase">{item.label}</div>
+                            <div className=" uppercase">{item.label}</div>
                           </div>
                         </div>
                       );
@@ -532,7 +532,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                       }
                       return (
                         <div className="flex w-full cursor-pointer flex-col gap-2 font-normal">
-                          <div className="flex items-center justify-center">
+                          <div className="flex items-center justify-center ">
                             <img
                               src={selected.item.image}
                               alt={selected.item.label}
@@ -575,7 +575,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                     "z-20",
                     "relative",
                     fieldState.error &&
-                      "border-red-500 focus-within:border-red-500",
+                      " border-red-500 focus-within:border-red-500",
                   )}
                   onBlur={field.onBlur}
                   value={field.value.amount}
@@ -583,8 +583,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                   inputClassName="flex-4 md:flex-1 sm:flex-6"
                   rightContainerClassName=" flex-6 md:flex-1 sm:flex-4"
                   rightComponent={
-                    <div className="flex w-full flex-row gap-5 rounded bg-black/30 p-3 font-normal">
-                      <div className="flex items-center justify-between">
+                    <div className="flex w-full   flex-row  gap-5 rounded bg-black/30 p-3 font-normal">
+                      <div className="flex items-center   justify-between">
                         <img
                           src={fromAssets[field.value.asset]?.image}
                           alt={fromAssets[field.value.asset]?.label}
@@ -592,7 +592,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                         />
                       </div>
                       <div className="flex flex-col items-end text-sm font-normal">
-                        <div className="uppercase text-white">
+                        <div className=" uppercase text-white">
                           {fromAssets[field.value.asset]?.label}
                         </div>
                       </div>
@@ -618,7 +618,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                     "z-10",
                     "relative",
                     fieldState.error &&
-                      "border-red-500 focus-within:border-red-500",
+                      " border-red-500 focus-within:border-red-500",
                   )}
                   onBlur={field.onBlur}
                   value={depositAmount}
@@ -660,13 +660,13 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               onMouseMove,
                             })}
                             className={cn(
-                              "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                              isSelected && "bg-gray-600",
+                              " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                              isSelected && "bg-gray-600 ",
                               item.disabled &&
                                 "cursor-not-allowed opacity-50 hover:bg-gray-600",
                             )}
                           >
-                            <div className="flex items-center justify-center">
+                            <div className="flex items-center justify-center ">
                               <img
                                 src={item.image}
                                 alt={item.label}
@@ -675,7 +675,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               />
                             </div>
                             <div className="text-white">
-                              <div className="uppercase">{item.label}</div>
+                              <div className=" uppercase">{item.label}</div>
                             </div>
                           </div>
                         );
@@ -689,8 +689,8 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                           return <div>Select</div>;
                         }
                         return (
-                          <div className="flex w-full cursor-pointer flex-row gap-5 font-normal">
-                            <div className="flex items-center justify-between">
+                          <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                            <div className="flex items-center   justify-between">
                               <img
                                 src={selected.item.image}
                                 alt={selected.item.label}
@@ -698,7 +698,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                               />
                             </div>
                             <div className="flex flex-col items-end text-sm font-normal">
-                              <div className="uppercase">
+                              <div className=" uppercase">
                                 {selected.item.label}
                               </div>
                             </div>
@@ -734,8 +734,9 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
             <>
               <div
                 className={cn(
-                  "flex-column flex bg-black/30 bg-opacity-10 p-5",
-                  addressCopied && "rounded-md border-2 shadow-md shadow-white",
+                  "flex-column  flex  bg-black/30 bg-opacity-10 p-5",
+                  addressCopied &&
+                    "rounded-md  border-2 shadow-md shadow-white",
                 )}
               >
                 <div
@@ -745,9 +746,9 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
                     addressCopied && "border-2",
                   )}
                 >
-                  <FaExclamation className="m-auto text-white" />
+                  <FaExclamation className="m-auto text-white " />
                 </div>
-                <Text size={addressCopied ? "md" : "sm"} className="leading-5">
+                <Text size={addressCopied ? "md" : "sm"} className=" leading-5">
                   Execute with Metamask or deposit to the address shown below.
                   You may close this dialogue after depositing.
                 </Text>
@@ -787,7 +788,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
       {/* add a loader spinner */}
       {!currentWallet && (
         <div className="absolute top-0 z-30 flex h-full w-full flex-col items-center justify-center rounded-md bg-black/30 text-white backdrop-blur-sm">
-          <FaSpinner className="animate-spin text-2xl" />
+          <FaSpinner className=" animate-spin text-2xl" />
           Loading
         </div>
       )}
@@ -831,7 +832,7 @@ function ToleranceSetting({
       <Text color="zinc" size="xs">
         Slippage Tolerance
       </Text>
-      <div className="mb-10 flex flex-row space-x-3">
+      <div className="mb-10  flex flex-row space-x-3">
         {tolerances.map((tolerance) => {
           return (
             <Box
@@ -856,7 +857,7 @@ function ToleranceSetting({
 
             "bg-black/30",
             // border styles on focus (its an input container)
-            "focus-within:ring-background-primary-active focus-within:ring-1",
+            " focus-within:ring-background-primary-active focus-within:ring-1",
             // if toleranceNumber is not 1 or 2 then we are in custom mode and we need to show the border
             !tolerances.includes(Number(text) || 0) &&
               "ring-background-primary-active ring-2",
@@ -907,17 +908,15 @@ function AddressComponent({
       </Text>
       <div
         className={cn(
-          "mt-2 rounded-xl bg-black/30 p-3 text-center",
-          address && "cursor-pointer hover:bg-white/10",
+          "mt-2  rounded-xl bg-black/30 p-3 text-center",
+          address && "cursor-pointer hover:bg-white/10 ",
         )}
         onClick={() => {
           if (!address) return;
           // copy to clipboard
           copy(address);
           setIsCopied(true);
-          if (typeof onCopy === "function") {
-            onCopy();
-          }
+          onCopy && onCopy();
 
           setTimeout(() => {
             setIsCopied(false);
@@ -925,7 +924,7 @@ function AddressComponent({
         }}
       >
         <div className="relative">
-          <Text className="flex items-center justify-center text-sm">
+          <Text className="flex  items-center justify-center text-sm">
             {address}
           </Text>
           <div className="mt-2 text-xs font-medium uppercase text-blue-600">
@@ -933,7 +932,7 @@ function AddressComponent({
           </div>
           {isCopied && (
             <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white">
-              <span className="text-green-500">
+              <span className=" text-green-500">
                 <FaCheck />
               </span>
               <p>Copied</p>
@@ -966,7 +965,7 @@ function ErrorsComponent({ errors }: { errors: Errors }) {
     }
   };
   return (
-    <div className="absolute bottom-6 h-1 w-full text-sm text-red-800">
+    <div className=" absolute bottom-6 h-1 w-full  text-sm  text-red-800">
       {renderErrorMessage()}
     </div>
   );

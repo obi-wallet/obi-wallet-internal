@@ -60,7 +60,7 @@ const schema = z
         return TargetChain.chainId(
           data.coin.asset.targetChainId,
         ).validateAddress(data.recipient);
-      } catch {
+      } catch (_e) {
         return false;
       }
     },
@@ -387,7 +387,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   if (balanceOptions.length === 0) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <p className="text-white">No balances found</p>
+        <p className=" text-white">No balances found</p>
       </div>
     );
   }
@@ -443,7 +443,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 <div
                   className={cn(
                     "m-0 text-xs uppercase",
-                    "cursor-pointer text-slate-500 hover:text-blue-600",
+                    " cursor-pointer text-slate-500  hover:text-blue-600",
                   )}
                   onClick={() => {
                     if (!coin.asset) return;
@@ -477,13 +477,13 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                       <div
                         {...getItemProps({ item })}
                         className={cn(
-                          "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                          isSelected && "bg-gray-600",
+                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                          isSelected && "bg-gray-600 ",
                           item.disabled &&
                             "cursor-not-allowed opacity-50 hover:bg-gray-600",
                         )}
                       >
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center justify-center ">
                           <img
                             src={item.image}
                             alt={item.network}
@@ -512,8 +512,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                     }
 
                     return (
-                      <div className="flex w-full cursor-pointer flex-row gap-5 font-normal">
-                        <div className="flex items-center justify-between">
+                      <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
+                        <div className="flex items-center   justify-between">
                           <img
                             src={selected.item.image}
                             alt={selected.item.network}
@@ -533,7 +533,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
             >
               <div className="flex gap-3 text-slate-500">
                 <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  className=" cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -545,7 +545,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   25%
                 </span>
                 <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  className="cursor-pointer  text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -557,7 +557,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   50%
                 </span>
                 <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  className="cursor-pointer  text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -569,7 +569,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   75%
                 </span>
                 <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  className="cursor-pointer  text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount: coin.asset?.balance.toString() ?? "",

@@ -24,7 +24,7 @@ export function createMultisigKey(
     keysMapped = keys.map((key) => {
       return factories.Key.create(key);
     });
-  } catch {
+  } catch (e) {
     keysMapped = [];
   }
   return new MultisigKey(chain, keysMapped, primaryKeyIndex, threshold, {

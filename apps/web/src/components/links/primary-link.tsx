@@ -5,14 +5,14 @@ import {
 import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
-type PrimaryLinkVariant = "primary" | "basic";
+const PrimaryLinkVariant = ["primary", "basic"] as const;
 type PrimaryLinkProps = {
-  variant?: PrimaryLinkVariant;
+  variant?: (typeof PrimaryLinkVariant)[number];
 } & UnstyledLinkProps;
 
 export const PrimaryLink = forwardRef<HTMLAnchorElement, PrimaryLinkProps>(
   function PrimaryLink(
-    { className, children, variant = "primary", ...rest }: PrimaryLinkProps,
+    { className, children, variant = "primary", ...rest },
     ref,
   ) {
     return (

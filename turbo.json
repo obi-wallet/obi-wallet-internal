@@ -22,7 +22,7 @@
     "WALLETS_WORKER_SECRET_PRODUCTION",
     "WALLETS_WORKER_SECRET_STAGING"
   ],
-  "tasks": {
+  "pipeline": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]

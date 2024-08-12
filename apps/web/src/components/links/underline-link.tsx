@@ -6,10 +6,7 @@ import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
 export const UnderlineLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
-  function UnderlineLink(
-    { children, className, ...rest }: UnstyledLinkProps,
-    ref,
-  ) {
+  function UnderlineLink({ children, className, ...rest }, ref) {
     return (
       <UnstyledLink
         ref={ref}

@@ -1,11 +1,10 @@
 import { useStore } from "@/contexts";
 import { SimulationEntry } from "@/dashboard/schema";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { TokenConfig, TokensConfig } from "@/stores/tokens";
+import { TokensConfig } from "@/stores/tokens";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { AssetInfo, Caip19Asset } from "@obi-wallet/sdk-abstract-target-chain";
-import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { flatten, toPairs } from "ramda";
@@ -41,71 +40,66 @@ async function fetchBalances({
     return config?.enabled && targetChain.isTokenAsset(id);
   });
 
-  const handleBalance = async ({
-    id,
-    tokenConfig,
-    rawAmount,
-  }: {
-    id: Caip19AssetId;
-    tokenConfig?: TokenConfig;
-    rawAmount: string;
-  }) => {
-    if (!tokenConfig?.enabled) return [];
-
-    const price = (await targetChain.newPrice(id)).usdValue;
-    const defaultAssetInfo = await targetChain.newAssetInfo(id);
-    const assetInfo = tokenConfig.assetInfo ?? defaultAssetInfo ?? null;
-
-    const amount = new BigNumber(rawAmount).dividedBy(
-      10 ** (assetInfo?.decimals ?? 0),
-    );
-
-    const priceBn = new BigNumber(price);
-    const usdBalance = priceBn.times(amount);
-
-    return [
-      {
-        assetId: id,
-        rawAmount,
-        price,
-        usdBalance: usdBalance.toString(),
-        prettyAmount: amount.toString(),
-        assetInfo: assetInfo
-          ? {
-              ...assetInfo,
-              image: assetInfo?.image ?? defaultAssetInfo?.image ?? null,
-            }
-          : null,
-      },
-    ];
-  };
-
   return flatten([
     ...(await Promise.all(
       balances.map(async (asset): Promise<PrettyCaip19Asset[]> => {
-        const defaultAssetInfo = await targetChain.newAssetInfo(asset.assetId);
-        const tokenConfig: TokenConfig = tokensConfig[asset.assetId] ?? {
+        const price = (await targetChain.newPrice(asset.assetId)).usdValue;
+        const tokenConfig = tokensConfig[asset.assetId] ?? {
           enabled: true,
-          assetInfo: defaultAssetInfo ?? undefined,
+          assetInfo: await targetChain.newAssetInfo(asset.assetId),
         };
-        return await handleBalance({
-          id: asset.assetId,
-          tokenConfig,
-          rawAmount: asset.rawAmount,
-        });
+
+        if (!tokenConfig.enabled) return [];
+
+        const assetInfo = tokenConfig.assetInfo ?? null;
+
+        const amount = new BigNumber(asset.rawAmount).dividedBy(
+          10 ** (assetInfo?.decimals ?? 0),
+        );
+
+        const priceBn = new BigNumber(price);
+        const usdBalance = priceBn.times(amount);
+
+        return [
+          {
+            ...asset,
+            price,
+            usdBalance: usdBalance.toString(),
+            prettyAmount: amount.toString(),
+            assetInfo,
+          },
+        ];
       }),
     )),
     ...(await Promise.all(
       tokens.map(async ([id, tokenConfig]): Promise<PrettyCaip19Asset[]> => {
+        const price = (await targetChain.newPrice(id)).usdValue;
         const rawAmount = await targetChain.tokenBalance({
           address,
           assetId: id,
         });
-        return await handleBalance({
-          id,
-          tokenConfig,
-          rawAmount,
-        });
+
+        if (!tokenConfig?.enabled) return [];
+
+        const assetInfo = tokenConfig.assetInfo ?? null;
+
+        const amount = new BigNumber(rawAmount).dividedBy(
+          10 ** (assetInfo?.decimals ?? 0),
+        );
+
+        const priceBn = new BigNumber(price);
+        const usdBalance = priceBn.times(amount);
+
+        return [
+          {
+            assetId: id,
+            rawAmount,
+            price,
+            usdBalance: usdBalance.toString(),
+            prettyAmount: amount.toString(),
+            assetInfo,
+          },
+        ];
       }),
     )),
   ]);

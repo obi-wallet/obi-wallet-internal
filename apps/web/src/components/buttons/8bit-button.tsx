@@ -5,7 +5,7 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 type ButtonProps = ComponentPropsWithRef<"button"> & ComponentPropsWithRef<"a">;
 
 export const BitButton = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button({ children, className, href, ...rest }: ButtonProps, ref) {
+  function Button({ children, className, href, ...rest }, ref) {
     const style = cn(
       "font-press-start-2p cursor-pointer text-2xl text-white opacity-60",
       "hover:opacity-100",

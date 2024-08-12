@@ -1,7 +1,5 @@
-import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
 import {
   allEip155Chains,
@@ -143,9 +141,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
         address,
       });
       if (balance > 0) {
+        const assetId: Caip19AssetId = `${this.chainId}/native:${this.nativeCurrency.symbol}`;
         return [
           {
-            assetId: this.nativeCaip19AssetId,
+            assetId,
             rawAmount: balance.toString(10),
           },
         ];
@@ -181,11 +180,43 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return "0";
   }
 
-  public async newPriceQueryFn(id: Caip19AssetId) {
-    const priceInfo = await PriceProvider.getInstance().priceInfo(id);
-    if (priceInfo) return priceInfo;
+  public async priceQueryFn(id: AssetId) {
+    if (id !== "ETH") {
+      return { usdValue: "0" };
+    }
 
-    return { usdValue: "0" };
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
+    }
+  }
+
+  public async newPriceQueryFn(id: Caip19AssetId) {
+    const { reference } = parseCaip19AssetId(id);
+    if (reference !== "ETH") {
+      return { usdValue: "0" };
+    }
+
+    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.chainData.chain.id}&tokenAddress=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`;
+    const response = await fetch(url);
+
+    try {
+      const schema = z.object({
+        price: z.number(),
+      });
+      const { price } = schema.parse(await response.json());
+      return { usdValue: price.toString(10) };
+    } catch (e) {
+      return { usdValue: "0" };
+    }
   }
 
   public assetInfo(id: AssetId) {
@@ -220,13 +251,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public async newAssetInfo(id: Caip19AssetId) {
-    const asset = await AssetProvider.getInstance().assetInfo(id);
-    if (asset) return asset;
-
     const { namespace, reference } = parseCaip19AssetId(id);
-    if (id === this.nativeCaip19AssetId) {
+    if (namespace === "native" && reference === this.nativeCurrency.symbol) {
       const getImage = () => {
-        switch (this.nativeCurrency.symbol) {
+        switch (reference) {
           case "AVAX":
             return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
           case "ETH":
@@ -271,6 +299,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
           },
         ],
       });
+      console.log(response);
       return {
         name: response[1].result ?? "",
         symbol: response[2].result ?? "",
@@ -491,39 +520,22 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public denomToCaip19AssetId(denom: string): Caip19AssetId | null {
-    if (this.validateAddress(denom)) {
-      const checksumAddress = getAddress(denom);
-      if (checksumAddress === this.nativeAddress) {
-        return this.nativeCaip19AssetId;
-      } else {
-        return `${this.chainId}/erc20:${checksumAddress}`;
-      }
+    if (denom.startsWith("0x")) {
+      return `${this.chainId}/erc20:${denom.toLowerCase()}`;
     }
 
-    if (denom === this.nativeCurrency.symbol) {
-      return this.nativeCaip19AssetId;
-    }
-
-    return null;
+    return `${this.chainId}/native:${denom}`;
   }
 
   public caip19AssetIdToDenom(assetId: Caip19AssetId): string | null {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "erc20":
-        return reference;
+        return reference.replace("%2F", "/");
       case "native":
-        return this.nativeCurrency.symbol;
+        return reference.replace("%2F", "/");
       default:
         return null;
     }
-  }
-
-  protected get nativeAddress(): Address {
-    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-  }
-
-  protected get nativeCaip19AssetId(): Caip19AssetId {
-    return `${this.chainId}/native:${this.nativeAddress}`;
   }
 }

@@ -14,7 +14,7 @@ import { StdFee } from "@cosmjs/stargate";
 import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
-import { skipToken, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -186,7 +186,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             />
           ) : null}
 
-          <div className="mt-6 flex w-full flex-row space-x-6">
+          <div className="mt-6 flex w-full flex-row space-x-6 ">
             <Button block variant="outline" onClick={onReject}>
               Reject
             </Button>
@@ -254,58 +254,30 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
   const targetChain = TargetChain.chainId(targetChainId);
   invariant(targetChain.validateMessages(messages), "Invalid messages");
 
-  const feeInfoQuery = useQuery({
-    queryKey: ["feeInfo", { fee, targetChainId }],
-    queryFn:
-      fee && targetChain.validateFee(fee)
-        ? async () => {
-            return await Promise.all(
-              fee.amount.map((coin) => {
-                return prettyPrintCoin({ coin, targetChainId });
-              }),
-            );
-          }
-        : skipToken,
-  });
-
-  const feeInfo = feeInfoQuery.data ?? [
-    {
-      amount: "",
-      denom: "Simulating…",
-    },
-  ];
-
-  const amountsQuery = useQuery({
-    queryKey: ["amounts", { messages, targetChainId }],
-    queryFn: async () => {
-      return await Promise.all(
-        messages
-          .map((message) => {
-            return messageToAmount({ message, targetChainId });
-          })
-          .flat()
-          .map((coin) => {
-            return prettyPrintCoin({ coin, targetChainId });
-          }),
-      );
-    },
-  });
-  const amounts = amountsQuery.data ?? [];
-
-  const descriptionsQuery = useQuery({
-    queryKey: ["descriptions", { messages, targetChainId }],
-    queryFn: async () => {
-      return (
-        await Promise.all(
-          messages.map((message) => {
-            return messageToDescription({ message, targetChainId });
-          }),
-        )
-      ).flat();
-    },
-  });
-
-  const descriptions = descriptionsQuery.data ?? [];
+  const feeInfo =
+    fee && targetChain.validateFee(fee)
+      ? fee.amount.map((coin) => {
+          return prettyPrintCoin({ coin, targetChainId });
+        })
+      : [
+          {
+            amount: "",
+            denom: "Simulating…",
+          },
+        ];
+  const amounts = messages
+    .map((message) => {
+      return messageToAmount({ message, targetChainId });
+    })
+    .flat()
+    .map((coin) => {
+      return prettyPrintCoin({ coin, targetChainId });
+    });
+  const descriptions = messages
+    .map((message) => {
+      return messageToDescription({ message, targetChainId });
+    })
+    .flat();
   const addresses = messages
     .map((message) => {
       return messageToAddress({ message });
@@ -354,26 +326,24 @@ function messageToAddress({ message }: { message: EncodeObject }): string[] {
   }
 }
 
-async function messageToDescription({
+function messageToDescription({
   message,
   targetChainId,
 }: {
   message: EncodeObject;
   targetChainId: CosmosChainId;
-}): Promise<string[]> {
+}): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
       const amount = messageToAmount({ message, targetChainId });
-      return await Promise.all(
-        amount.map(async (amount) => {
-          const prettyAmount = await prettyPrintCoin({
-            coin: amount,
-            targetChainId,
-          });
-          return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
-        }),
-      );
+      return amount.map((amount) => {
+        const prettyAmount = prettyPrintCoin({
+          coin: amount,
+          targetChainId,
+        });
+        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
+      });
     }
     default:
       console.warn("Unknown message type: ", message.typeUrl);
@@ -381,28 +351,22 @@ async function messageToDescription({
   }
 }
 
-async function prettyPrintCoin({
+function prettyPrintCoin({
   coin,
   targetChainId,
 }: {
   coin: Coin;
   targetChainId: CosmosChainId;
-}): Promise<{
+}): {
   amount: string;
   denom: string;
-}> {
-  const fallback = {
-    amount: coin.amount,
-    denom: coin.denom,
-  };
-  const targetChain = TargetChain.chainId(targetChainId);
-  const id = targetChain.denomToCaip19AssetId(coin.denom);
-  if (!id) {
-    return fallback;
-  }
-  const asset = await targetChain.newAssetInfo(id);
+} {
+  const asset = TargetChain.chainId(targetChainId).assetInfo(coin.denom);
   if (!asset) {
-    return fallback;
+    return {
+      amount: coin.amount,
+      denom: coin.denom,
+    };
   }
   return {
     amount: new BigNumber(coin.amount)

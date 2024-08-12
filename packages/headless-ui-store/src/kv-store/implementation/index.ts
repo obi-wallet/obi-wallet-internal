@@ -48,7 +48,7 @@ export class KVStore implements AbstractKVStore {
           await this.legacy.set(key, null);
           return legacyData;
         }
-      } catch {
+      } catch (_e) {
         // Ignore errors
       }
       return undefined;

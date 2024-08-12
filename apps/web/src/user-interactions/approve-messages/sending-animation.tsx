@@ -18,7 +18,7 @@ export function SendingAnimation({
         className,
       )}
     >
-      <div className="w-60 rounded-xl">
+      <div className="w-60 rounded-xl ">
         <Lottie animationData={SendingAnimationJSON} />
         <Text size="xl" className="justify-center text-white">
           {text ?? "Broadcasting"}
