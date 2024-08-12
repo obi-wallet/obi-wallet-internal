@@ -41,7 +41,7 @@ export const BalanceInput = observer<BalanceInputProps>(function BalanceInput({
     <div className="relative w-full" aria-disabled>
       <Input
         placeholder={placeholder}
-        className="pr-72 "
+        className="pr-72"
         disabled={disabled}
         value={value.amount}
         onChange={(value) => {

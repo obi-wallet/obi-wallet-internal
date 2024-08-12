@@ -56,7 +56,7 @@ export function AssetsDropDown({
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="flex h-16 w-full items-center justify-between rounded-xl bg-slate-950 p-3 text-center font-medium text-white hover:bg-blue-700 focus:outline-none "
+        className="flex h-16 w-full items-center justify-between rounded-xl bg-slate-950 p-3 text-center font-medium text-white hover:bg-blue-700 focus:outline-none"
         type="button"
         onClick={() => {
           return setIsOpen(!isOpen);
@@ -82,7 +82,7 @@ export function AssetsDropDown({
       <div
         id="dropdown"
         className={cn(
-          "absolute  z-50  w-full rounded-lg bg-gray-700",
+          "absolute z-50 w-full rounded-lg bg-gray-700",
           !isOpen && "hidden",
         )}
       >
@@ -98,8 +98,8 @@ export function AssetsDropDown({
                   return handleClickOption(option);
                 }}
                 className={cn(
-                  " px-4 py-2 hover:bg-gray-600 ",
-                  option.label === selectedOption?.label && "bg-gray-600 ",
+                  "px-4 py-2 hover:bg-gray-600",
+                  option.label === selectedOption?.label && "bg-gray-600",
                 )}
               >
                 <div className="flex items-center space-x-3">

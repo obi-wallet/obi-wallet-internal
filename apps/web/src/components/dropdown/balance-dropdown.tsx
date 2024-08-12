@@ -76,7 +76,7 @@ export const BalanceDropDown = observer<{
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="bg-background-primary hover:bg-background-primary-hover flex h-16 w-full items-center justify-between rounded-xl p-3 text-center font-medium text-white focus:outline-none "
+        className="bg-background-primary hover:bg-background-primary-hover flex h-16 w-full items-center justify-between rounded-xl p-3 text-center font-medium text-white focus:outline-none"
         type="button"
         onClick={() => {
           return setIsOpen(!isOpen);
@@ -98,7 +98,7 @@ export const BalanceDropDown = observer<{
                 <Text size="xs">{`${selectedOption?.balance.toString(10)} ${selectedOption?.assetUnit}`}</Text>
               </>
             ) : (
-              <Text size="md" className="  ml-7 mr-7">
+              <Text size="md" className="ml-7 mr-7">
                 Select
               </Text>
             )}
@@ -126,8 +126,8 @@ export const BalanceDropDown = observer<{
                   return handleClickOption(option);
                 }}
                 className={cn(
-                  " px-4 py-2 hover:bg-gray-600 ",
-                  option.network === selectedOption?.network && "bg-gray-600 ",
+                  "px-4 py-2 hover:bg-gray-600",
+                  option.network === selectedOption?.network && "bg-gray-600",
                 )}
               >
                 <div className="flex items-center space-x-3">

@@ -19,8 +19,8 @@ export default function TransactionLayout({
 
   const activeTab = getActive(pathName);
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <TabUi.Links>
           <TabUi.Link
             href="/dashboard/transaction/send"

@@ -69,7 +69,7 @@ export function ImageDropzone({
     <div
       {...getRootProps({ className: "dropzone" })}
       className={cn(
-        "flex w-full cursor-pointer justify-center rounded  bg-transparent py-5 text-gray-300",
+        "flex w-full cursor-pointer justify-center rounded bg-transparent py-5 text-gray-300",
         !fileObjectUrl &&
           "border-foreground-primary-border border border-dashed",
       )}
