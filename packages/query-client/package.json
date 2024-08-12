@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@tanstack/query-core": "^5.51.21",
-    "luxon": "^3.4.4",
+    "luxon": "^3.5.0",
     "ramda": "^0.30.0"
   },
   "devDependencies": {

@@ -61,7 +61,7 @@
     "jscrypto": "^1.0.3",
     "json-diff": "^1.0.6",
     "lottie-react": "^2.4.0",
-    "luxon": "^3.4.4",
+    "luxon": "^3.5.0",
     "mobx": "^6.12.3",
     "mobx-react-lite": "^4.0.7",
     "nanoid": "^5.0.7",
