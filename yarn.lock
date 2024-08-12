@@ -3290,7 +3290,7 @@ __metadata:
     "@obi-wallet/sdk": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     eslint: "npm:^8.57.0"
     typescript: "npm:^5.5.4"
   languageName: unknown
@@ -3317,7 +3317,7 @@ __metadata:
     "@react-native-async-storage/async-storage": "npm:^1.23.1"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     dexie: "npm:^4.0.4"
     eslint: "npm:^8.57.0"
     mobx: "npm:^6.12.3"
@@ -3339,7 +3339,7 @@ __metadata:
     "@tanstack/query-async-storage-persister": "npm:^5.51.1"
     "@tanstack/react-query": "npm:^5.51.1"
     "@tanstack/react-query-persist-client": "npm:^5.51.1"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     eslint: "npm:^8.57.0"
     mobx: "npm:^6.12.3"
     mobx-react-lite: "npm:^4.0.7"
@@ -3380,7 +3380,7 @@ __metadata:
     "@repo/typescript-config": "workspace:*"
     "@tanstack/query-core": "npm:^5.51.1"
     "@types/luxon": "npm:^3.4.2"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     eslint: "npm:^8.57.0"
     luxon: "npm:^3.4.4"
     ramda: "npm:^0.30.0"
@@ -3436,7 +3436,7 @@ __metadata:
   dependencies:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     eslint: "npm:^8.57.0"
     ramda: "npm:^0.30.0"
     typescript: "npm:^5.5.4"
@@ -3478,7 +3478,7 @@ __metadata:
     "@simplewebauthn/typescript-types": "npm:^8.3.4"
     "@tanstack/query-core": "npm:^5.51.1"
     "@types/luxon": "npm:^3.4.2"
-    "@types/ramda": "npm:^0.30.0"
+    "@types/ramda": "npm:^0.30.1"
     "@types/secp256k1": "npm:^4.0.6"
     bignumber.js: "npm:^9.1.2"
     cosmjs-types: "npm:^0.9.0"
@@ -3566,14 +3566,14 @@ __metadata:
     "@tanstack/react-query-devtools": "npm:^5.51.1"
     "@types/crypto-js": "npm:^4.2.2"
     "@types/elliptic": "npm:^6.4.18"
-    "@types/eslint": "npm:^8.56.10"
+    "@types/eslint": "npm:^8.56.11"
     "@types/jest": "npm:^29.5.12"
     "@types/json-diff": "npm:^1.0.3"
     "@types/luxon": "npm:^3.4.2"
-    "@types/mocha": "npm:^10.0.6"
-    "@types/node": "npm:^20.12.12"
-    "@types/ramda": "npm:^0.30.0"
-    "@types/react": "npm:^18.3.2"
+    "@types/mocha": "npm:^10.0.7"
+    "@types/node": "npm:^20.14.15"
+    "@types/ramda": "npm:^0.30.1"
+    "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     "@types/secp256k1": "npm:^4.0.6"
     "@walletconnect/utils": "npm:^2.13.0"
@@ -6278,13 +6278,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:*, @types/eslint@npm:^8.56.10":
-  version: 8.56.10
-  resolution: "@types/eslint@npm:8.56.10"
+"@types/eslint@npm:*, @types/eslint@npm:^8.56.11":
+  version: 8.56.11
+  resolution: "@types/eslint@npm:8.56.11"
   dependencies:
     "@types/estree": "npm:*"
     "@types/json-schema": "npm:*"
-  checksum: 10c0/674349d6c342c3864d70f4d5a9965f96fb253801532752c8c500ad6a1c2e8b219e01ccff5dc8791dcb58b5483012c495708bb9f3ff929f5c9322b3da126c15d3
+  checksum: 10c0/e47d2b8e0ce1aa7e1f2564555576fa55343e942ae8cba5940b4e2566f842810c007beff80a01d74d48c60a45ecf28150cbc5cbd53324b1e55cf672b24ccf4667
   languageName: node
   linkType: hard
 
@@ -6513,10 +6513,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^10.0.6":
-  version: 10.0.6
-  resolution: "@types/mocha@npm:10.0.6"
-  checksum: 10c0/4526c9e88388f9e1004c6d3937c5488a39908810f26b927173c58d52b43057f3895627dc06538e96706e08b88158885f869ec6311f6b58fd72bdef715f26d6c3
+"@types/mocha@npm:^10.0.7":
+  version: 10.0.7
+  resolution: "@types/mocha@npm:10.0.7"
+  checksum: 10c0/48a2df4dd02b6e66a11129dca6a23cf0cc3995faf8525286eb851043685bd8b7444780f4bb29a1c42df7559ed63294e5308bfce3a6b862ad2e0359cb21c21329
   languageName: node
   linkType: hard
 
@@ -6538,12 +6538,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.12.12":
-  version: 20.12.12
-  resolution: "@types/node@npm:20.12.12"
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^20.12.12, @types/node@npm:^20.14.15":
+  version: 20.14.15
+  resolution: "@types/node@npm:20.14.15"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/f374b763c744e8f16e4f38cf6e2c0eef31781ec9228c9e43a6f267880fea420fab0a238b59f10a7cb3444e49547c5e3785787e371fc242307310995b21988812
+  checksum: 10c0/093713db52dc544f3931a3dec9d7d8ef661f323e57becd083a7918c778cef1eb6ec32d1017bf5ade06bb06dc5c7551f4f4d749a14e40868cce44d51e54acd8ed
   languageName: node
   linkType: hard
 
@@ -6643,12 +6643,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ramda@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "@types/ramda@npm:0.30.0"
+"@types/ramda@npm:^0.30.1":
+  version: 0.30.1
+  resolution: "@types/ramda@npm:0.30.1"
   dependencies:
-    types-ramda: "npm:^0.30.0"
-  checksum: 10c0/6ae8c9fb879cb48bd10a7e347f4652e7c659e9d52c659a37afe00a3b0220630aaa51ee9e6c13947b057f3df0eca20f15cc58d2c8e8e391fd19cbe9561ef14f2c
+    types-ramda: "npm:^0.30.1"
+  checksum: 10c0/ab3f00c1dc88a647159e3654d6c9ceadd01b91bb64c6cdff1a897ba91630fed345635ffc20f3a00a4981354ea7480d09eb5632c7e2198757e389d9846fffab20
   languageName: node
   linkType: hard
 
@@ -6668,13 +6668,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, @types/react@npm:^18.3.2":
-  version: 18.3.2
-  resolution: "@types/react@npm:18.3.2"
+"@types/react@npm:*, @types/react@npm:^16.8.0 || ^17.0.0 || ^18.0.0, @types/react@npm:^18.3.3":
+  version: 18.3.3
+  resolution: "@types/react@npm:18.3.3"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/9fb2f1fcf7e889ee4ea7c3c5978df595c66e770e5fd3a245dbdd2589b9b911524c11dab25a6275d8af4e336e4cb5fa850d447884b84c335a187a338c89df99ba
+  checksum: 10c0/fe455f805c5da13b89964c3d68060cebd43e73ec15001a68b34634604a78140e6fc202f3f61679b9d809dde6d7a7c2cb3ed51e0fd1462557911db09879b55114
   languageName: node
   linkType: hard
 
@@ -21074,12 +21074,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"types-ramda@npm:^0.30.0":
-  version: 0.30.0
-  resolution: "types-ramda@npm:0.30.0"
+"types-ramda@npm:^0.30.1":
+  version: 0.30.1
+  resolution: "types-ramda@npm:0.30.1"
   dependencies:
     ts-toolbelt: "npm:^9.6.0"
-  checksum: 10c0/8b0def1c98223ad2c16c0ffd2774a4e9363a5aaed9fd4be931db95bf10ee9dbb9408bb082fce49d2d2e73b93f99308f1cfe46315ab0fd91bb3c4e569af02c5ce
+  checksum: 10c0/4a8b230ae9772e6534f65b1a154dd5604bcd1d74e27b49686337a215e83aa8fc93e49f8c49af395418d2950cb9fb9b900662077c1d4b73ff6fe4f4bcb83ab2d6
   languageName: node
   linkType: hard
 
