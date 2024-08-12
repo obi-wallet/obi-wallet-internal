@@ -83,7 +83,9 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
 
     if (type === "number" && isNaN(Number(value))) return;
     setText(value.trim());
-    onChange && onChange(value.trim());
+    if (typeof onChange === "function") {
+      onChange(value.trim());
+    }
   };
 
   const renderErrorMessage = (message: string) => {
@@ -124,7 +126,9 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
           required
           value={text || ""}
           onChange={(e) => {
-            !disabled && handleChange(e);
+            if (!disabled) {
+              handleChange(e);
+            }
           }}
           disabled={disabled}
           placeholder={placeholder}

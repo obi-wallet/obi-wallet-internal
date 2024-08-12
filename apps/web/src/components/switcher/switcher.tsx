@@ -24,7 +24,9 @@ export function Switcher({
             onChange={() => {
               const nextState = !enabled;
               setEnabled(nextState);
-              onSwitch && onSwitch(nextState);
+              if (typeof onSwitch === "function") {
+                onSwitch(nextState);
+              }
             }}
           />
           <div className="bg-meta-9 block h-8 w-14 rounded-full border  border-zinc-800 bg-slate-950"></div>

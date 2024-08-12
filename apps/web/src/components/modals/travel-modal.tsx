@@ -916,7 +916,9 @@ function AddressComponent({
           // copy to clipboard
           copy(address);
           setIsCopied(true);
-          onCopy && onCopy();
+          if (typeof onCopy === "function") {
+            onCopy();
+          }
 
           setTimeout(() => {
             setIsCopied(false);

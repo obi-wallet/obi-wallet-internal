@@ -66,7 +66,9 @@ export const BalanceDropDown = observer<{
     setSelectedOption(option);
     setIsOpen(false);
 
-    onSelectOption && onSelectOption(option);
+    if (typeof onSelectOption === "function") {
+      onSelectOption(option);
+    }
   };
 
   return (

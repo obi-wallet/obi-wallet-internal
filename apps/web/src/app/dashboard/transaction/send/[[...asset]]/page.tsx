@@ -57,7 +57,7 @@ const schema = z
         return TargetChain.chainId(
           data.coin.asset.targetChainId,
         ).validateAddress(data.recipient);
-      } catch (_e) {
+      } catch {
         return false;
       }
     },

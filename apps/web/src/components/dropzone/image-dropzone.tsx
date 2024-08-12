@@ -43,7 +43,9 @@ export function ImageDropzone({
         "Expected reader result to be base64 string",
       );
 
-      onChange && onChange(file, reader.result);
+      if (typeof onChange === "function") {
+        onChange(file, reader.result);
+      }
       setFile(file);
     });
 

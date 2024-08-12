@@ -83,10 +83,8 @@ const PendingAsset = observer<{
         onClick={() => {
           const status = tx.transaction.status;
           if (status.includes("InProgress") || status.includes("Done")) {
-            onOpen && onOpen(tx.transaction.deposit_address);
-            return;
+            onOpen(tx.transaction.deposit_address);
           }
-          return;
         }}
       >
         <div className="flex flex-row items-center">

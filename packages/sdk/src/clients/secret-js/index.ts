@@ -220,7 +220,7 @@ export class SecretJsClient {
               rawLog: res.rawLog,
               rawResult: res,
             };
-          } catch (e) {
+          } catch {
             await new Promise((resolve) => {
               setTimeout(resolve, 5_000);
             });
