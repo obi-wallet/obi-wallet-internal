@@ -3655,7 +3655,6 @@ __metadata:
     viem: "npm:^2.19.3"
     webpack-hook-plugin: "npm:^1.0.7"
     zod: "npm:^3.23.8"
-    zora: "npm:^5.2.0"
   languageName: unknown
   linkType: soft
 
@@ -22240,12 +22239,5 @@ __metadata:
   version: 3.23.8
   resolution: "zod@npm:3.23.8"
   checksum: 10c0/8f14c87d6b1b53c944c25ce7a28616896319d95bc46a9660fe441adc0ed0a81253b02b5abdaeffedbeb23bdd25a0bf1c29d2c12dd919aef6447652dd295e3e69
-  languageName: node
-  linkType: hard
-
-"zora@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "zora@npm:5.2.0"
-  checksum: 10c0/9e32e787318ebfb1f860b30aa78ae6626f019567c611caab8366e316b3db0893f30da95e3ac928a338134d311d75a3c002735215316aefc0917e3aea8af700e2
   languageName: node
   linkType: hard
