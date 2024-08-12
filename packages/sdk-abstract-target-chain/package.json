@@ -15,7 +15,7 @@
     "@obi-wallet/sdk-caip": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@obi-wallet/wallet-connect": "workspace:*",
-    "@tanstack/query-core": "^5.51.1"
+    "@tanstack/query-core": "^5.51.21"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
