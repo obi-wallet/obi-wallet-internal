@@ -3549,7 +3549,7 @@ __metadata:
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@playwright/test": "npm:^1.46.0"
-    "@reactuses/core": "npm:^5.0.13"
+    "@reactuses/core": "npm:^5.0.19"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@sentry/nextjs": "npm:^8.0.0"
@@ -4371,17 +4371,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reactuses/core@npm:^5.0.13":
-  version: 5.0.13
-  resolution: "@reactuses/core@npm:5.0.13"
+"@reactuses/core@npm:^5.0.19":
+  version: 5.0.19
+  resolution: "@reactuses/core@npm:5.0.19"
   dependencies:
     js-cookie: "npm:^3.0.5"
     lodash-es: "npm:^4.17.21"
     screenfull: "npm:^5.0.0"
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
+    qrcode: ^1.5
     react: ^16.8.0  || ^17.0.0 || ^18.0.0
-  checksum: 10c0/b13c7f0d6c476df482d2e70d12e8d79ecc9c7f73b194af47644ad26403537058f3a386910f55bae76ad59be6d51865418200c3338fb02108ada3cb7c30ff154e
+  peerDependenciesMeta:
+    qrcode:
+      optional: true
+  checksum: 10c0/07ffc61bbd85b721e6f39c1d35d8a2c16ea9c340ed41a1c70a76bbe210f25e721cb59cbde80b9dd41cff11e59e013f9645174d01fb5683231532b9b17dbccd70
   languageName: node
   linkType: hard
 
