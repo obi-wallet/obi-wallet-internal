@@ -38,6 +38,7 @@ import { bech32 } from "bech32";
 import { chains } from "chain-registry";
 import { Msg, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
+import { rootStore } from "@/stores";
 
 export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   public readonly secretChainId: SecretJsHomeChainId;
@@ -121,16 +122,45 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     address: string;
     assetId: Caip19AssetId;
   }) {
-    // TODO: here we also need to fetch the viewing key, probably via store
-    // const { viewingKeysStore } = useStore();
-    // console.log("1");
-    // const viewingKey = viewingKeysStore.getViewingKey({
-    //   address: _.address,
-    //   assetId: _.assetId,
-    // });
-    // console.log("viewing key", viewingKey);
-    // console.log("address", _.address);
-    // console.log("assetId", _.assetId);
+    const key = rootStore.current?.viewingKeysStore.getViewingKey({
+      address:
+        rootStore.current?.mpcWalletsStore.currentWallet?.userEntryAddress ??
+        "",
+      assetId: _.assetId,
+    });
+    const queryMsg = {
+      balance: {
+        address: _.address,
+        key,
+      },
+    };
+    const { namespace, reference } = parseCaip19AssetId(_.assetId);
+    switch (namespace) {
+      case "cw20" || "snip20":
+        if (key) {
+          return await this.client.withSecretNetworkClient(async (client) => {
+            try {
+              const response: {
+                balance: {
+                  amount: string;
+                };
+              } = await client.query.compute.queryContract({
+                contract_address: reference,
+                query: queryMsg,
+              });
+              if ("viewing_key_error" in response) {
+                // with invalid viewing key, it will return `viewing_key_error: {msg: "Wrong viewing key for this address or viewing key not set"}`
+                return "false";
+              } else {
+                return response.balance.amount;
+              }
+            } catch (e) {
+              console.error(e);
+              return "false";
+            }
+          });
+        }
+    }
 
     return "0";
   }

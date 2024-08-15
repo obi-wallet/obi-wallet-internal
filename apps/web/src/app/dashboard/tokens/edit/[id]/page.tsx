@@ -6,7 +6,6 @@ import { useAddressQuery } from "@/hooks/address";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { SecretChainId } from "@/target-chain/secret/chains";
-import { SignAndBroadcastTransactionUserInteractionHandler } from "@/user-interactions/sign-and-broadcast-transaction-handler";
 import {
   ChainId,
   SignAndBroadcastTransactionUserInteraction,
@@ -47,8 +46,6 @@ export default observer<{
     },
   });
 
-  const [secretTokenViewingKey, setSecretTokenViewingKey] =
-    useState<string>("");
   useEffectOnceWhen(async () => {
     if (wallet) {
       const persistedAssetInfo = tokensStore.getTokenConfig({
@@ -76,22 +73,14 @@ export default observer<{
           });
         }
       }
-      const persistedViewingKey = viewingKeysStore.getViewingKey({
-        address: wallet.userEntryAddress,
-        assetId,
-      });
-      if (persistedViewingKey) {
-        setSecretTokenViewingKey(persistedViewingKey);
-      } else {
-      }
     }
   }, !!wallet);
 
   if (!wallet) return null;
 
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <div className="my-4 flex-1 text-center text-white">Edit Asset</div>
         <div className="my-4">
           <label className="text-sm text-white">Token ID</label>
@@ -179,12 +168,15 @@ export default observer<{
               });
 
               if (contract_address && chainId && address) {
+                const random = new Uint8Array(32);
+                crypto.getRandomValues(random);
+                const key = Buffer.from(random).toString("hex");
                 const message = new MsgExecuteContract({
                   sender: address,
                   contract_address: contract_address,
                   msg: {
                     set_viewing_key: {
-                      key: "sample viewing key",
+                      key,
                     },
                   },
                 });
@@ -202,16 +194,12 @@ export default observer<{
 
                 if (response.approved) {
                   const broadcastResult = response.payload;
-                  console.log("broadcastResult", broadcastResult);
                   if (broadcastResult.success) {
-                    console.log("broadcast success");
                     viewingKeysStore.setViewingKey({
                       address: wallet.userEntryAddress,
                       assetId,
-                      key: secretTokenViewingKey,
+                      key,
                     });
-                  } else {
-                    console.log("broadcast failed");
                   }
                 }
               }

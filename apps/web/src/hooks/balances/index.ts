@@ -18,6 +18,7 @@ export interface PrettyCaip19Asset extends Caip19Asset {
   usdBalance: string;
   prettyAmount: string;
   assetInfo: AssetInfo | null;
+  hasWrongViewingKey: boolean;
 }
 
 async function fetchBalances({
@@ -67,6 +68,7 @@ async function fetchBalances({
             usdBalance: usdBalance.toString(),
             prettyAmount: amount.toString(),
             assetInfo,
+            hasWrongViewingKey: false,
           },
         ];
       }),
@@ -78,17 +80,22 @@ async function fetchBalances({
           address,
           assetId: id,
         });
-
         if (!tokenConfig?.enabled) return [];
 
         const assetInfo = tokenConfig.assetInfo ?? null;
 
-        const amount = new BigNumber(rawAmount).dividedBy(
-          10 ** (assetInfo?.decimals ?? 0),
-        );
+        const hasWrongViewingKey = rawAmount === "false" ? true : false;
+
+        const amount =
+          hasWrongViewingKey === false
+            ? new BigNumber(rawAmount).dividedBy(
+                10 ** (assetInfo?.decimals ?? 0),
+              )
+            : "0";
 
         const priceBn = new BigNumber(price);
-        const usdBalance = priceBn.times(amount);
+        const usdBalance =
+          hasWrongViewingKey === false ? priceBn.times(amount) : "0";
 
         return [
           {
@@ -98,6 +105,7 @@ async function fetchBalances({
             usdBalance: usdBalance.toString(),
             prettyAmount: amount.toString(),
             assetInfo,
+            hasWrongViewingKey,
           },
         ];
       }),
