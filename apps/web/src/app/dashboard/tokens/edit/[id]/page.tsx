@@ -28,7 +28,6 @@ export default observer<{
   const chainId = assetId.split("/")[0] as SecretChainId.Secret;
 
   const { data: address } = useAddressQuery(chainId);
-  console.log("wallet address", address);
   const wallet = useCurrentWallet({});
   const router = useRouter();
   const { tokensStore, viewingKeysStore } = useStore();
