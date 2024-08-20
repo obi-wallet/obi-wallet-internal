@@ -1,7 +1,7 @@
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { action, autorun, observable, runInAction, toJS } from "mobx";
-import { omit, toPairs } from "ramda";
+import { omit } from "ramda";
 import { z } from "zod";
 
 const viewingKeySchema = z.string();

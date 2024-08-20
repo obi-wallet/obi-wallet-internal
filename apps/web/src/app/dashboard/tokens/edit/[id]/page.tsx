@@ -3,6 +3,7 @@
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
 import { useAddressQuery } from "@/hooks/address";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import {
@@ -28,6 +29,7 @@ export default observer<{
   const wallet = useCurrentWallet({});
   const router = useRouter();
   const { tokensStore, viewingKeysStore } = useStore();
+  const alert = useAlert();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -181,7 +183,6 @@ export default observer<{
                     messages: [message],
                     memo: "",
                     cancelable: true,
-                    mockOnly: true,
                     targetChainId: chainId,
                     walletMeta: {
                       userEntryAddress: wallet.userEntryAddress,
@@ -196,6 +197,9 @@ export default observer<{
                       assetId,
                       key,
                     });
+                    alert.showSuccess("TX broadcast successfully");
+                  } else {
+                    alert.showError(`TX failed: ${broadcastResult.rawLog}`);
                   }
                 }
               }

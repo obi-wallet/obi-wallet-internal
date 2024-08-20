@@ -3,7 +3,7 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
+import { isSecretChainId } from "@/target-chain/secret/chains";
 import {
   ApproveIntentions,
   IntentionsResults,

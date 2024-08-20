@@ -1,4 +1,5 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { rootStore } from "@/stores";
 import { CosmosTokenRegistry } from "@/target-chain/cosmos/token-registry";
 import {
   SecretChainData,
@@ -38,7 +39,6 @@ import { bech32 } from "bech32";
 import { chains } from "chain-registry";
 import { Msg, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
-import { rootStore } from "@/stores";
 import { z } from "zod";
 
 const StdFeeSchema = z.object({
