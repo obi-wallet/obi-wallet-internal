@@ -6,10 +6,7 @@ import { useAddressQuery } from "@/hooks/address";
 import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
-import {
-  ChainId,
-  SignAndBroadcastTransactionUserInteraction,
-} from "@obi-wallet/sdk";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";

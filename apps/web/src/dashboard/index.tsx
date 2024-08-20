@@ -385,7 +385,7 @@ export function AssetRow({
     ) {
       setIsPrivateToken(true);
     }
-  }, []);
+  });
 
   return (
     <li
