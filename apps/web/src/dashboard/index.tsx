@@ -384,7 +384,6 @@ export function AssetRow({
       assetInfo.namespace === ("cw20" || "snip20")
     ) {
       setIsPrivateToken(true);
-      console.log("asset id", assetInfo.namespace);
     }
   }, []);
 

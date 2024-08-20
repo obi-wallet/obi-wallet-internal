@@ -39,6 +39,16 @@ import { chains } from "chain-registry";
 import { Msg, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { rootStore } from "@/stores";
+import { z } from "zod";
+
+const StdFeeSchema = z.object({
+  amount: z.array(z.object({ amount: z.string(), denom: z.string() })),
+  gas: z.string(),
+});
+
+function isStdFee(fee: unknown): fee is StdFee {
+  return StdFeeSchema.safeParse(fee).success;
+}
 
 export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   public readonly secretChainId: SecretJsHomeChainId;
@@ -116,6 +126,10 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
           return !!balance.assetId;
         });
     });
+  }
+
+  public validateFee(fee: unknown): fee is StdFee {
+    return isStdFee(fee);
   }
 
   public async tokenBalanceQueryFn(_: {

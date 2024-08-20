@@ -3,7 +3,7 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import { isSecretChainId } from "@/target-chain/secret/chains";
+import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -186,7 +186,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             />
           ) : null}
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 flex w-full flex-row space-x-6">
             <Button block variant="outline" onClick={onReject}>
               Reject
             </Button>
@@ -223,7 +223,8 @@ const PrettyPrint = observer(function PrettyPrint({
   fee: unknown;
   memo: string;
 }) {
-  if (!isCosmosChainId(targetChainId)) {
+  if (!isCosmosChainId(targetChainId) && !isSecretChainId(targetChainId)) {
+    console.log("target chain id check", isSecretChainId(targetChainId));
     return null;
   }
 

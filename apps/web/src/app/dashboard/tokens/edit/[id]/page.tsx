@@ -5,7 +5,6 @@ import { useStore } from "@/contexts";
 import { useAddressQuery } from "@/hooks/address";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
-import { SecretChainId } from "@/target-chain/secret/chains";
 import {
   ChainId,
   SignAndBroadcastTransactionUserInteraction,
@@ -23,9 +22,7 @@ export default observer<{
 }>(function TokenEdit({ params }) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const assetId = decodeURIComponent(params.id) as Caip19AssetId;
-  const parts = assetId.split(":");
-  const contract_address = parts[parts.length - 1];
-  const chainId = assetId.split("/")[0] as SecretChainId.Secret;
+  const { reference, chainId } = parseCaip19AssetId(assetId);
 
   const { data: address } = useAddressQuery(chainId);
   const wallet = useCurrentWallet({});
@@ -62,7 +59,6 @@ export default observer<{
           },
         });
       } else {
-        const { chainId } = parseCaip19AssetId(assetId);
         const assetInfo =
           await TargetChain.chainId(chainId).newAssetInfo(assetId);
         if (assetInfo) {
@@ -166,13 +162,13 @@ export default observer<{
                 config: state,
               });
 
-              if (contract_address && chainId && address) {
+              if (reference && chainId && address) {
                 const random = new Uint8Array(32);
                 crypto.getRandomValues(random);
                 const key = Buffer.from(random).toString("hex");
                 const message = new MsgExecuteContract({
                   sender: address,
-                  contract_address: contract_address,
+                  contract_address: reference,
                   msg: {
                     set_viewing_key: {
                       key,
@@ -185,6 +181,7 @@ export default observer<{
                     messages: [message],
                     memo: "",
                     cancelable: true,
+                    mockOnly: true,
                     targetChainId: chainId,
                     walletMeta: {
                       userEntryAddress: wallet.userEntryAddress,
