@@ -385,7 +385,7 @@ export function AssetRow({
     ) {
       setIsPrivateToken(true);
     }
-  });
+  }, [viewingKeysStore, wallet?.userEntryAddress, asset.assetId]);
 
   return (
     <li
