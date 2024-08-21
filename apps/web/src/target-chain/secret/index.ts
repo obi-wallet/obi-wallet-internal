@@ -1,13 +1,21 @@
 import { AssetProvider } from "@/asset-provider";
+import { IntentionsPayload } from "@/keys/intentions-handler";
 import { PriceProvider } from "@/price-provider";
 import {
   SecretChainData,
   SecretChainId,
   SecretChains,
 } from "@/target-chain/secret/chains";
+import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { Chain } from "@chain-registry/types";
+import { GasPrice, StdFee } from "@cosmjs/stargate";
 import { queryClient } from "@obi-wallet/query-client";
-import { SecretJsClient, SecretJsHomeChainId } from "@obi-wallet/sdk";
+import {
+  MpcWallet,
+  SecretJsClient,
+  SecretJsHomeChainId,
+} from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   Caip19Asset,
@@ -28,7 +36,7 @@ import {
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import { chains } from "chain-registry";
-import { pubkeyToAddress } from "secretjs";
+import { Msg, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 
 export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
@@ -182,17 +190,124 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     });
   }
 
-  // TODO:
-  public async calculateFee() {}
+  public async calculateFee({
+    messages,
+  }: {
+    wallet: MpcWallet;
+    messages: unknown[];
+    memo: string;
+  }) {
+    invariant(this.validateMessages(messages), "Invalid messages");
+    return this.client.defaultFee;
+  }
 
-  // TODO:
-  public async calculateHashToSign() {}
+  public async calculateHashToSign({
+    wallet,
+    messages,
+    memo,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+  }): Promise<Uint8Array> {
+    invariant(this.validateMessages(messages), "Invalid messages");
+    const signer = await this.getSigner(wallet);
+    return await signer.mpcSigner.calculateHashToSign(async () => {
+      await this.client.withSigningSecretNetworkClient(
+        signer,
+        async (client) => {
+          await client.tx.signTx(messages, {
+            ...this.client.defaultTxOptions,
+            memo,
+          });
+        },
+      );
+    });
+  }
 
-  // TODO:
-  public async sign() {}
+  public async sign({
+    wallet,
+    messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    invariant(this.validateMessages(messages), "Invalid messages");
+    const signer = await this.getSigner(wallet);
+    signer.mpcSigner.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
+    return await this.client.withSigningSecretNetworkClient(
+      signer,
+      async (client) => {
+        return await client.tx.signTx(messages, {
+          ...this.client.defaultTxOptions,
+          memo,
+        });
+      },
+    );
+  }
 
-  // TODO:
-  public async signAndBroadcast() {}
+  public async signAndBroadcast({
+    wallet,
+    messages,
+    memo,
+    intentionsPayload,
+    intentionsResults,
+  }: {
+    wallet: MpcWallet;
+    fee: StdFee;
+    messages: unknown[];
+    memo: string;
+    intentionsPayload: IntentionsPayload;
+    intentionsResults: IntentionsResults;
+  }) {
+    invariant(this.validateMessages(messages), "Invalid messages");
+
+    const signer = await this.getSigner(wallet);
+    signer.mpcSigner.addIntentionsResults({
+      payload: intentionsPayload,
+      results: intentionsResults,
+    });
+    return await this.client.withSigningSecretNetworkClient(
+      signer,
+      async (client) => {
+        return await client.tx.broadcast(messages, {
+          ...this.client.defaultTxOptions,
+          memo,
+        });
+      },
+    );
+  }
+
+  protected get gasPrice() {
+    const firstFeeToken = this.chain.fees?.fee_tokens[0];
+    return firstFeeToken
+      ? GasPrice.fromString(
+          `${firstFeeToken.average_gas_price}${firstFeeToken.denom}`,
+        )
+      : undefined;
+  }
+
+  public async getSigner(wallet: MpcWallet) {
+    return await SecretMpcSigner.fromWallet(wallet, this.chainData.id);
+  }
+
+  public validateMessages(messages: unknown[]): messages is Msg[] {
+    return messages.every((msg) => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return typeof (msg as Msg).toProto === "function";
+    });
+  }
 
   public async newAssetInfo(id: Caip19AssetId) {
     const asset = await AssetProvider.getInstance().assetInfo(id);

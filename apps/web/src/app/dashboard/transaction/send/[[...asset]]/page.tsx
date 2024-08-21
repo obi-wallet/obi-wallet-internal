@@ -14,6 +14,7 @@ import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSecretChainId } from "@/target-chain/secret/chains";
+import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
@@ -31,6 +32,7 @@ import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
@@ -164,7 +166,70 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       }
 
       if (isSecretChainId(chainId)) {
-        alert.showError("Sending on Secret Network not implemented yet");
+        const targetChain = TargetChain.chainId(chainId);
+        const signer = await SecretMpcSigner.fromWallet(wallet, chainId);
+
+        const accounts = await signer.getAccounts();
+        const firstAccount = accounts[0];
+        invariant(firstAccount, "No account found");
+
+        const denom = targetChain.caip19AssetIdToDenom(asset.denom);
+
+        invariant(denom, "Expected valid denom");
+
+        const getMessage = () => {
+          const { namespace } = parseCaip19AssetId(asset.denom);
+          switch (namespace) {
+            case "native":
+            case "factory":
+            case "ibc": {
+              return new MsgSend({
+                from_address: firstAccount.address,
+                to_address: recipient,
+                amount: [
+                  {
+                    amount: rawAmount,
+                    denom,
+                  },
+                ],
+              });
+            }
+
+            case "cw20": {
+              // TODO: handle cw20 & snip20
+              return null;
+            }
+          }
+        };
+
+        const message = getMessage();
+
+        if (!message) {
+          alert.showError("Unsupported asset");
+          return;
+        }
+
+        const response = await SignAndBroadcastTransactionUserInteraction.start(
+          {
+            messages: [message],
+            memo,
+            cancelable: true,
+            targetChainId: chainId,
+            walletMeta: {
+              userEntryAddress: wallet.userEntryAddress,
+            },
+          },
+        );
+
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          const broadcastResult = response.payload;
+          if (broadcastResult.success) {
+            alert.showSuccess("TX broadcast successfully");
+          } else {
+            alert.showError(`TX failed: ${broadcastResult.rawLog}`);
+          }
+        }
         return;
       }
 
@@ -274,7 +339,9 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       if (!b.assetInfo) return null;
 
       invariant(
-        isCosmosChainId(chainId) || isEip155ChainId(chainId),
+        isCosmosChainId(chainId) ||
+          isEip155ChainId(chainId) ||
+          isSecretChainId(chainId),
         "Expected valid targetChainId",
       );
 
