@@ -40,7 +40,7 @@ export const SignAndBroadcastTransactionUserInteractionHandlerInner = observer<{
 }) {
   const chainId = interaction.payload.targetChainId;
 
-  if (!isCosmosChainId(chainId)) {
+  if (!isCosmosChainId(chainId) && !isSecretChainId(chainId)) {
     console.error("Unsupported chainId: ", chainId);
     return null;
   }

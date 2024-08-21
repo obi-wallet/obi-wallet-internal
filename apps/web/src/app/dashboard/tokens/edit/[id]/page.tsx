@@ -6,6 +6,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { Encoding } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
@@ -39,7 +40,6 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
       image: "",
     },
   });
-  const [secretTokenViewingKey, setSecretTokenViewingKey] = useState("");
 
   useEffectOnceWhen(async () => {
     if (wallet) {
@@ -58,7 +58,6 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           },
         });
       } else {
-        const { chainId } = parseCaip19AssetId(assetId);
         const assetInfo =
           await TargetChain.chainId(chainId).newAssetInfo(assetId);
         if (assetInfo) {
@@ -67,14 +66,6 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             enabled: true,
           });
         }
-      }
-
-      const persistedViewingKey = viewingKeysStore.getViewingKey({
-        address: wallet.userEntryAddress,
-        assetId,
-      });
-      if (persistedViewingKey) {
-        setSecretTokenViewingKey(persistedViewingKey);
       }
     }
   }, !!wallet);
@@ -170,7 +161,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
                 config: state,
               });
 
-              if (reference && chainId && isSecretChainId(chainId)) {
+              if (reference && isSecretChainId(chainId)) {
                 const signer = await SecretMpcSigner.fromWallet(
                   wallet,
                   chainId,
@@ -180,12 +171,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
                 const firstAccount = accounts[0];
                 invariant(firstAccount, "No account found");
 
+                const random = new Uint8Array(32);
+                crypto.getRandomValues(random);
+                const key = Encoding.fromBytes(random).toHex();
                 const message = new MsgExecuteContract({
                   sender: firstAccount.address,
                   contract_address: reference,
                   msg: {
                     set_viewing_key: {
-                      key: secretTokenViewingKey,
+                      key,
                     },
                   },
                 });
@@ -209,7 +203,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
                     viewingKeysStore.setViewingKey({
                       address: wallet.userEntryAddress,
                       assetId,
-                      key: secretTokenViewingKey,
+                      key,
                     });
                   } else {
                     console.log("broadcast failed");
