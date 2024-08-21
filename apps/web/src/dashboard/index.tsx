@@ -394,11 +394,17 @@ export function AssetRow({
         </div>
         <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
           {asset.prettyAmount.toString()}
+          <Button variant="primary" className="h-5">
+            View Balance
+          </Button>
         </Text>
       </div>
       <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
         <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
           {asset.prettyAmount.toString()}
+          <Button variant="primary" className="h-5">
+            View Balance
+          </Button>
         </Text>
         <Text
           fontWeight="bold"
