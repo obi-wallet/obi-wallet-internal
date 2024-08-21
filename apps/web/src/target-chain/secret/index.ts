@@ -1,3 +1,4 @@
+import { AssetProvider } from "@/asset-provider";
 import { PriceProvider } from "@/price-provider";
 import {
   SecretChainData,
@@ -5,7 +6,12 @@ import {
   SecretChains,
 } from "@/target-chain/secret/chains";
 import { Chain } from "@chain-registry/types";
-import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import { queryClient } from "@obi-wallet/query-client";
+import { SecretJsClient, SecretJsHomeChainId } from "@obi-wallet/sdk";
+import {
+  AbstractTargetChain,
+  Caip19Asset,
+} from "@obi-wallet/sdk-abstract-target-chain";
 import {
   Caip19AssetId,
   parseCaip19AssetId,
@@ -29,12 +35,15 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   public readonly secretChainId: string;
   protected readonly chainData: SecretChainData;
   protected readonly chain: Chain;
+  protected readonly client: SecretJsClient;
 
   public constructor(chainId: SecretChainId) {
     super(chainId);
     this.chainData = SecretChains[chainId];
     const { reference } = parseCaip2ChainId(chainId);
     this.secretChainId = reference;
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    this.client = new SecretJsClient(this.secretChainId as SecretJsHomeChainId);
     const chain = chains.find((c) => {
       return c.chain_id === reference;
     });
@@ -78,16 +87,31 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     return chainId === this.chainId && namespace === "cw20";
   }
 
-  public async nativeBalancesQueryFn(_address: string) {
-    // TODO:
-    return [];
+  public async nativeBalancesQueryFn(address: string) {
+    return await this.client.withSecretNetworkClient(async (client) => {
+      const balances = await client.query.bank.allBalances({
+        address,
+      });
+      return (balances.balances ?? [])
+        .map((balance) => {
+          return {
+            assetId: balance.denom
+              ? this.denomToCaip19AssetId(balance.denom)
+              : null,
+            rawAmount: balance.amount,
+          };
+        })
+        .filter((balance): balance is Caip19Asset => {
+          return !!balance.assetId;
+        });
+    });
   }
 
   public async tokenBalanceQueryFn(_: {
     address: string;
     assetId: Caip19AssetId;
   }) {
-    // TODO:
+    // TODO: here we also need to fetch the viewing key, probably via store
     return "0";
   }
 
@@ -98,11 +122,65 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     return { usdValue: "0" };
   }
 
-  // TODO:
-  protected denomMetadata(_denom: string) {}
+  protected denomMetadata(denom: string) {
+    return queryClient.fetchQuery(this.denomMetadataQuery(denom));
+  }
+  protected get denomMetadataQuery() {
+    return this.queryNamespace.createQuery({
+      name: "denomMetadata",
+      fn: this.denomMetadataQueryFn.bind(this),
+      staleTime: { day: 1 },
+    });
+  }
+  protected async denomMetadataQueryFn(denom: string) {
+    return await this.client.withSecretNetworkClient(async (client) => {
+      const response = await client.query.bank.denomMetadata({
+        denom,
+      });
+      return response.metadata;
+    });
+  }
 
-  // TODO:
-  public tokenInfo(_contract: string) {}
+  public tokenInfo(contract: string) {
+    return queryClient.fetchQuery(this.tokenInfoQuery(contract));
+  }
+  public get tokenInfoQuery() {
+    return this.queryNamespace.createQuery({
+      name: "tokenInfo",
+      fn: this.tokenInfoQueryFn.bind(this),
+      staleTime: { day: 1 },
+    });
+  }
+  public async tokenInfoQueryFn(contract: string) {
+    return await this.client.withSecretNetworkClient(async (client) => {
+      const info = await client.query.compute.contractInfo({
+        contract_address: contract,
+      });
+      const response = await client.query.compute.codeHashByCodeId({
+        code_id: info.contract_info?.code_id,
+      });
+      const { token_info } = await client.query.compute.queryContract<
+        {
+          token_info: unknown;
+        },
+        {
+          token_info: {
+            name: string;
+            symbol: string;
+            decimals: number;
+            total_supply: string;
+          };
+        }
+      >({
+        contract_address: contract,
+        code_hash: response.code_hash,
+        query: {
+          token_info: {},
+        },
+      });
+      return token_info;
+    });
+  }
 
   // TODO:
   public async calculateFee() {}
@@ -116,9 +194,47 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   // TODO:
   public async signAndBroadcast() {}
 
-  // TODO:
-  public async newAssetInfo(_id: Caip19AssetId) {
-    return null;
+  public async newAssetInfo(id: Caip19AssetId) {
+    const asset = await AssetProvider.getInstance().assetInfo(id);
+    if (asset) return asset;
+
+    const { namespace, reference } = parseCaip19AssetId(id);
+    switch (namespace) {
+      case "factory": {
+        const denom = `factory/${reference.replace("%2F", "/")}`;
+        try {
+          const metadata = await this.denomMetadata(denom);
+          if (!metadata) return null;
+
+          const denomUnit = (metadata.denom_units ?? []).find((value) => {
+            return value.denom === metadata.display;
+          });
+
+          return {
+            name: metadata.name ?? "",
+            symbol: metadata.symbol ?? "",
+            decimals: denomUnit?.exponent ?? 0,
+            image: null,
+          };
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+      }
+      case "cw20": {
+        const tokenInfo = await this.tokenInfo(reference);
+        if (!tokenInfo) return null;
+
+        return {
+          name: tokenInfo.name,
+          symbol: tokenInfo.symbol,
+          decimals: tokenInfo.decimals,
+          image: null,
+        };
+      }
+    }
+
+    return asset ?? null;
   }
 
   public validateAddress(address: string): boolean {
