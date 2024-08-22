@@ -1,6 +1,7 @@
 import { AssetProvider } from "@/asset-provider";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { PriceProvider } from "@/price-provider";
+import { rootStore } from "@/stores";
 import {
   SecretChainData,
   SecretChainId,
@@ -120,6 +121,54 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     assetId: Caip19AssetId;
   }) {
     // TODO: here we also need to fetch the viewing key, probably via store
+    const { namespace, reference } = parseCaip19AssetId(_.assetId);
+    switch (namespace) {
+      case "snip20":
+        if (
+          rootStore.current &&
+          rootStore.current.mpcWalletsStore.currentWallet
+        ) {
+          const userEntryAddress =
+            rootStore.current.mpcWalletsStore.currentWallet.userEntryAddress;
+          const key = rootStore.current.viewingKeysStore.getViewingKey({
+            address: userEntryAddress,
+            assetId: _.assetId,
+          });
+          if (key) {
+            const queryMsg = {
+              balance: {
+                address: _.address,
+                key,
+              },
+            };
+            return await this.client.withSecretNetworkClient(async (client) => {
+              try {
+                const response: {
+                  balance: {
+                    amount: string;
+                  };
+                } = await client.query.compute.queryContract({
+                  contract_address: reference,
+                  query: queryMsg,
+                });
+                if ("viewing_key_error" in response) {
+                  // with invalid viewing key, it will return `viewing_key_error: {msg: "Wrong viewing key for this address or viewing key not set"}`
+                  rootStore.current?.viewingKeysStore.removeViewingKey({
+                    address: userEntryAddress,
+                    assetId: _.assetId,
+                  });
+                  return "0";
+                } else {
+                  return response.balance.amount;
+                }
+              } catch (e) {
+                console.error(e);
+                return "0";
+              }
+            });
+          }
+        }
+    }
     return "0";
   }
 
