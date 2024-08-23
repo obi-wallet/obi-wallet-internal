@@ -424,7 +424,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   ): Promise<boolean> {
     return await this.client.withSecretNetworkClient(async (client) => {
       try {
-        const response: any = await client.query.compute.queryContract({
+        const response = await client.query.compute.queryContract({
           contract_address: denom,
           query: {
             balance: {
