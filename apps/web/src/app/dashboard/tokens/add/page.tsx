@@ -1,10 +1,13 @@
 "use client";
 
 import { Box, Button, ChainDropdown, Input } from "@/components";
+import { useAddressQuery } from "@/hooks/address";
 import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import { InputContainer } from "@/ui/container";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -14,6 +17,7 @@ export default observer(function TokenAdd() {
   const router = useRouter();
   const [chainId, setChainId] = useState<TargetChainId>(CosmosChainId.Sei);
   const [address, setAddress] = useState("");
+  const chainAddress = useAddressQuery(chainId);
 
   return (
     <div className="w-full">
@@ -49,11 +53,22 @@ export default observer(function TokenAdd() {
           <Button
             onClick={async () => {
               const targetChain = TargetChain.chainId(chainId);
-              const assetId =
-                TargetChain.chainId(chainId).denomToCaip19AssetId(address);
+              let assetId: Caip19AssetId | null = null;
+              if (chainId === SecretChainId.Secret) {
+                const isPrivateAsset = await TargetChain.chainId(
+                  chainId,
+                ).isPrivateAsset(chainAddress, address);
+                if (isPrivateAsset) {
+                  assetId = `${chainId}/snip20:${address.replace("/", "%2F")}`;
+                } else {
+                  assetId = targetChain.denomToCaip19AssetId(address);
+                }
+              } else {
+                assetId = targetChain.denomToCaip19AssetId(address);
+              }
               const assetInfo =
                 assetId && (await targetChain.newAssetInfo(assetId));
-              if (assetInfo) {
+              if (assetInfo && assetId) {
                 router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,
                 );

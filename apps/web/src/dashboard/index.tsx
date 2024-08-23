@@ -379,12 +379,10 @@ export function AssetRow({
     if (viewingKey) setHasViewingKey(true);
 
     const assetInfo = parseCaip19AssetId(asset.assetId);
-    console.log("namespace", asset.assetId);
     if (
       assetInfo.chainId === "cosmos:secret-4" &&
-      (assetInfo.namespace === "snip20" || assetInfo.namespace === "cw20")
+      assetInfo.namespace === "snip20"
     ) {
-      console.log("set as private");
       setIsPrivateToken(true);
     }
   }, [viewingKeysStore, wallet?.userEntryAddress, asset.assetId]);

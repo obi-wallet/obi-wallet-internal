@@ -34,6 +34,7 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
+import { UseQueryResult } from "@tanstack/react-query";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import { chains } from "chain-registry";
@@ -93,7 +94,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
 
   public isTokenAsset(assetId: Caip19AssetId) {
     const { chainId, namespace } = parseCaip19AssetId(assetId);
-    return chainId === this.chainId && namespace === "cw20";
+    return chainId === this.chainId && namespace === "snip20";
   }
 
   public async nativeBalancesQueryFn(address: string) {
@@ -385,7 +386,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
           return null;
         }
       }
-      case "cw20": {
+      case "snip20": {
         const tokenInfo = await this.tokenInfo(reference);
         if (!tokenInfo) return null;
 
@@ -415,6 +416,33 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     _: SessionRequestPayload,
   ): Promise<SessionRequestResponse> {
     return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+  }
+
+  public async isPrivateAsset(
+    address: UseQueryResult,
+    denom: string,
+  ): Promise<boolean> {
+    return await this.client.withSecretNetworkClient(async (client) => {
+      try {
+        const response: any = await client.query.compute.queryContract({
+          contract_address: denom,
+          query: {
+            balance: {
+              address,
+            },
+          },
+        });
+        // without viewing key, response will be string but with it, it will be object containing balanc
+        if (typeof response === "string") {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        console.log(e);
+        return false;
+      }
+    });
   }
 
   public denomToCaip19AssetId(denom: string): Caip19AssetId | null {

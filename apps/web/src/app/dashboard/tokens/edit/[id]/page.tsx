@@ -2,6 +2,7 @@
 
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { isSecretChainId } from "@/target-chain/secret/chains";
@@ -27,6 +28,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   const wallet = useCurrentWallet({});
   const router = useRouter();
   const { tokensStore, viewingKeysStore } = useStore();
+  const alert = useAlert();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -197,16 +199,15 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
 
                 if (response.approved) {
                   const broadcastResult = response.payload;
-                  console.log("broadcastResult", broadcastResult);
                   if (broadcastResult.success) {
-                    console.log("broadcast success");
                     viewingKeysStore.setViewingKey({
                       address: wallet.userEntryAddress,
                       assetId,
                       key,
                     });
+                    alert.showSuccess("TX broadcast successfully");
                   } else {
-                    console.log("broadcast failed");
+                    alert.showError(`TX failed: ${broadcastResult.rawLog}`);
                   }
                 }
               }
