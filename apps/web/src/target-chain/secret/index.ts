@@ -146,6 +146,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
                   };
                 } = await client.query.compute.queryContract({
                   contract_address: reference,
+                  code_hash: await this.codeHash(reference),
                   query: {
                     balance: {
                       address,
@@ -212,12 +213,6 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   }
   public async tokenInfoQueryFn(contract: string) {
     return await this.client.withSecretNetworkClient(async (client) => {
-      const info = await client.query.compute.contractInfo({
-        contract_address: contract,
-      });
-      const response = await client.query.compute.codeHashByCodeId({
-        code_id: info.contract_info?.code_id,
-      });
       const { token_info } = await client.query.compute.queryContract<
         {
           token_info: unknown;
@@ -232,7 +227,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
         }
       >({
         contract_address: contract,
-        code_hash: response.code_hash,
+        code_hash: await this.codeHash(contract),
         query: {
           token_info: {},
         },
@@ -427,13 +422,14 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       try {
         const response = await client.query.compute.queryContract({
           contract_address: denom,
+          code_hash: await this.codeHash(denom),
           query: {
             balance: {
               address,
             },
           },
         });
-        // without viewing key, response will be string but with it, it will be object containing balanc
+        // without viewing key, response will be string but with it, it will be object containing balance
         if (typeof response === "string") {
           return true;
         } else {
@@ -476,5 +472,34 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       default:
         return null;
     }
+  }
+
+  protected codeHash(contract: string) {
+    return queryClient.fetchQuery(this.codeHashQuery(contract));
+  }
+
+  protected get codeHashQuery() {
+    return this.queryNamespace.createQuery({
+      name: "codeHash",
+      fn: async (contract: string) => {
+        const codeHash = await this.client.withSecretNetworkClient(
+          async (secretNetworkClient) => {
+            const info = await secretNetworkClient.query.compute.contractInfo({
+              contract_address: contract,
+            });
+            const response =
+              await secretNetworkClient.query.compute.codeHashByCodeId({
+                code_id: info.contract_info?.code_id,
+              });
+            return response.code_hash;
+          },
+        );
+        invariant(
+          typeof codeHash === "string",
+          "userEntryCodeHash must be a string",
+        );
+        return codeHash;
+      },
+    });
   }
 }
