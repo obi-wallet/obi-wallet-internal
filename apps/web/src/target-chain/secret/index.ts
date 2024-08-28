@@ -124,54 +124,58 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     address: string;
     assetId: Caip19AssetId;
   }) {
+    invariant(rootStore.current, "Root store is not initialized");
+
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
-      case "snip20":
-        if (
-          rootStore.current &&
-          rootStore.current.mpcWalletsStore.currentWallet
-        ) {
-          const userEntryAddress =
-            rootStore.current.mpcWalletsStore.currentWallet.userEntryAddress;
-          const key = rootStore.current.viewingKeysStore.getViewingKey({
-            address: userEntryAddress,
-            assetId,
-          });
-          if (key) {
-            return await this.client.withSecretNetworkClient(async (client) => {
-              try {
-                const response: {
-                  balance: {
-                    amount: string;
-                  };
-                } = await client.query.compute.queryContract({
-                  contract_address: reference,
-                  code_hash: await this.codeHash(reference),
-                  query: {
-                    balance: {
-                      address,
-                      key,
-                    },
-                  },
-                });
-                if ("viewing_key_error" in response) {
-                  // When viewing key is invalid, response will include `viewing_key_error: {msg: "Wrong viewing key for this address or viewing key not set"}`
-                  rootStore.current?.viewingKeysStore.removeViewingKey({
-                    address: userEntryAddress,
-                    assetId,
-                  });
-                  return "0";
-                } else {
-                  return response.balance.amount;
-                }
-              } catch (e) {
-                console.error(e);
-                return "0";
-              }
+      case "snip20": {
+        const wallet = rootStore.current.mpcWalletsStore.currentWallet;
+
+        if (!wallet) return "0";
+
+        const userEntryAddress = wallet.userEntryAddress;
+        const key = rootStore.current.viewingKeysStore.getViewingKey({
+          address: userEntryAddress,
+          assetId,
+        });
+
+        if (!key) return "0";
+
+        return await this.client.withSecretNetworkClient(async (client) => {
+          try {
+            const response: {
+              balance: {
+                amount: string;
+              };
+            } = await client.query.compute.queryContract({
+              contract_address: reference,
+              code_hash: await this.codeHash(reference),
+              query: {
+                balance: {
+                  address,
+                  key,
+                },
+              },
             });
+
+            if ("viewing_key_error" in response) {
+              // When viewing key is invalid, response will include `viewing_key_error: {msg: "Wrong viewing key for this address or viewing key not set"}`
+              rootStore.current?.viewingKeysStore.removeViewingKey({
+                address: userEntryAddress,
+                assetId,
+              });
+              return "0";
+            }
+
+            return response.balance.amount;
+          } catch (e) {
+            console.error(e);
+            return "0";
           }
-        }
+        });
+      }
     }
+
     return "0";
   }
 
