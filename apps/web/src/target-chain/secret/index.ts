@@ -128,6 +128,29 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
 
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
+      case "cw20":
+        return await this.client.withSecretNetworkClient(async (client) => {
+          try {
+            const response: {
+              balance: {
+                amount: string;
+              };
+            } = await client.query.compute.queryContract({
+              contract_address: reference,
+              code_hash: await this.codeHash(reference),
+              query: {
+                balance: {
+                  address,
+                },
+              },
+            });
+
+            return response.balance.amount;
+          } catch (e) {
+            console.error(e);
+            return "0";
+          }
+        });
       case "snip20": {
         const wallet = rootStore.current.mpcWalletsStore.currentWallet;
 
