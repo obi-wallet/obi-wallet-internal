@@ -1,4 +1,4 @@
-import { AssetProvider } from "@/asset-provider";
+import { AssetRegistry } from "@/asset-registry";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
@@ -383,8 +383,8 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   }
 
   public async newAssetInfo(id: Caip19AssetId) {
-    const asset = await AssetProvider.getInstance().assetInfo(id);
-    if (asset) return asset;
+    const asset = await AssetRegistry.getInstance().byId(id);
+    if (asset) return asset.assetInfo;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
