@@ -5,13 +5,14 @@ import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import { Input } from "@/ui/input";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import invariant from "tiny-invariant";
 
@@ -357,7 +358,7 @@ const Network = observer(function NetworkAssets({
   );
 });
 
-export function AssetRow({
+export const AssetRow = observer(function AssetRow({
   asset,
   editMode,
 }: {
@@ -368,24 +369,14 @@ export function AssetRow({
   const wallet = useCurrentWallet({});
   const { viewingKeysStore } = useStore();
 
-  const [isPrivateToken, setIsPrivateToken] = useState<boolean>(false);
-  const [hasViewingKey, setHasViewingKey] = useState<boolean>(false);
-
-  useEffect(() => {
-    const viewingKey = viewingKeysStore.getViewingKey({
-      address: wallet?.userEntryAddress ?? "",
-      assetId: asset.assetId,
-    });
-    if (viewingKey) setHasViewingKey(true);
-
-    const assetInfo = parseCaip19AssetId(asset.assetId);
-    if (
-      assetInfo.chainId === "cosmos:secret-4" &&
-      assetInfo.namespace === "snip20"
-    ) {
-      setIsPrivateToken(true);
-    }
-  }, [viewingKeysStore, wallet?.userEntryAddress, asset.assetId]);
+  const viewingKey = viewingKeysStore.getViewingKey({
+    address: wallet?.userEntryAddress ?? "",
+    assetId: asset.assetId,
+  });
+  const assetInfo = parseCaip19AssetId(asset.assetId);
+  const isPrivateToken =
+    assetInfo.chainId === SecretChainId.Secret &&
+    assetInfo.namespace === "snip20";
 
   return (
     <li
@@ -414,7 +405,7 @@ export function AssetRow({
           </Text>
         </div>
         {isPrivateToken ? (
-          hasViewingKey ? (
+          viewingKey ? (
             editMode ? (
               <Button
                 variant="primary"
@@ -426,7 +417,6 @@ export function AssetRow({
                       address: wallet.userEntryAddress,
                       assetId: asset.assetId,
                     });
-                    setHasViewingKey(false);
                   }
                 }}
               >
@@ -461,7 +451,7 @@ export function AssetRow({
       </div>
       <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
         {isPrivateToken ? (
-          hasViewingKey ? (
+          viewingKey ? (
             editMode ? (
               <Button
                 variant="primary"
@@ -473,7 +463,6 @@ export function AssetRow({
                       address: wallet.userEntryAddress,
                       assetId: asset.assetId,
                     });
-                    setHasViewingKey(false);
                   }
                 }}
               >
@@ -514,7 +503,7 @@ export function AssetRow({
       </div>
     </li>
   );
-}
+});
 
 enum PrettyBalancesStatus {
   Loading,
