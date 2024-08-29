@@ -1,3 +1,4 @@
+import { AssetRegistry } from "@/asset-registry";
 import { AstroportAssetProvider } from "@/astroport";
 import { SkipAssetProvider } from "@/skip";
 import { SquidAssetProvider } from "@/squid";
@@ -38,11 +39,7 @@ export class AssetProvider implements AbstractAssetProvider {
   }
 
   public async assetInfo(id: Caip19AssetId) {
-    for (const source of this.sources) {
-      const asset = await source.assetInfo(id);
-      if (asset) return asset;
-    }
-
-    return null;
+    const response = await AssetRegistry.getInstance().byId(id);
+    return response.assetInfo;
   }
 }

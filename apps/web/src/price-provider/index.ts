@@ -1,3 +1,4 @@
+import { AssetRegistry } from "@/asset-registry";
 import { SkipPriceProvider } from "@/skip";
 import { SquidPriceProvider } from "@/squid";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
@@ -21,15 +22,7 @@ export class PriceProvider implements AbstractPriceProvider {
   }
 
   public async priceInfo(id: Caip19AssetId) {
-    for (const source of this.sources) {
-      try {
-        const price = await source.priceInfo(id);
-        if (price) return price;
-      } catch {
-        // Ignore errors
-      }
-    }
-
-    return null;
+    const response = await AssetRegistry.getInstance().byId(id);
+    return response.priceInfo;
   }
 }
