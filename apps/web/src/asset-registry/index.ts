@@ -2,7 +2,6 @@ import { TargetChainId } from "@/target-chain";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import { Caip19AssetId, Caip2ChainIdSchema } from "@obi-wallet/sdk-caip";
 import { z } from "zod";
-import { staleTime } from "@/lib/stale-time";
 
 export const AssetInfo = z.object({
   _source: z.string(),
