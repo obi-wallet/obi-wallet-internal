@@ -1,6 +1,9 @@
-import { TargetChainId } from "@/target-chain";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
-import { Caip19AssetId, Caip2ChainIdSchema } from "@obi-wallet/sdk-caip";
+import {
+  Caip19AssetId,
+  Caip2ChainId,
+  Caip2ChainIdSchema,
+} from "@obi-wallet/sdk-caip";
 import { z } from "zod";
 
 export const AssetInfo = z.object({
@@ -48,7 +51,7 @@ export class AssetRegistry {
     chainId,
     denom,
   }: {
-    chainId: TargetChainId;
+    chainId: Caip2ChainId;
     denom: string;
   }) {
     return await queryClient.fetchQuery(this.byDenomQuery({ chainId, denom }));
@@ -61,7 +64,7 @@ export class AssetRegistry {
         chainId,
         denom,
       }: {
-        chainId: TargetChainId;
+        chainId: Caip2ChainId;
         denom: string;
       }) => {
         const url = `https://asset-registry.obiwallet.workers.dev/denom/${encodeURIComponent(chainId)}/${encodeURIComponent(denom)}`;

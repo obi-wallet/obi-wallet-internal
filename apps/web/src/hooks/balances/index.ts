@@ -52,7 +52,7 @@ async function fetchBalances({
   }) => {
     if (!tokenConfig?.enabled) return [];
 
-    const price = (await targetChain.newPrice(id)).usdValue;
+    const price = (await targetChain.price(id)).usdValue;
     const defaultAssetInfo = await targetChain.newAssetInfo(id);
     const assetInfo = tokenConfig.assetInfo ?? defaultAssetInfo ?? null;
 

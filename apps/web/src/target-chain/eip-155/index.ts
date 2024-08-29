@@ -1,4 +1,3 @@
-import { AssetRegistry } from "@/asset-registry";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
@@ -17,6 +16,7 @@ import {
   AbstractTargetChain,
   AssetId,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
@@ -178,13 +178,6 @@ export class Eip155TargetChain extends AbstractTargetChain<
     }
 
     return "0";
-  }
-
-  public async newPriceQueryFn(id: Caip19AssetId) {
-    const priceInfo = await AssetRegistry.getInstance().byId(id);
-    if (priceInfo?.priceInfo) return priceInfo?.priceInfo;
-
-    return { usdValue: "0" };
   }
 
   public assetInfo(id: AssetId) {

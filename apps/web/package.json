@@ -36,6 +36,7 @@
     "@obi-wallet/sdk": "workspace:*",
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*",
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*",
+    "@obi-wallet/sdk-asset-registry": "workspace:*",
     "@obi-wallet/sdk-caip": "workspace:*",
     "@obi-wallet/sdk-json": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",

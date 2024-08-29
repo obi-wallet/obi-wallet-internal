@@ -1,4 +1,5 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -121,17 +122,12 @@ export abstract class AbstractTargetChain<
     assetId: Caip19AssetId;
   }): Promise<string>;
 
-  public newPrice(id: Caip19AssetId) {
-    return queryClient.fetchQuery(this.newPriceQuery(id));
+  public async price(id: Caip19AssetId) {
+    const priceInfo = await AssetRegistry.getInstance().byId(id);
+    if (priceInfo?.priceInfo) return priceInfo.priceInfo;
+
+    return { usdValue: "0" };
   }
-  public get newPriceQuery() {
-    return this.queryNamespace.createQuery({
-      name: "newPrice",
-      fn: this.newPriceQueryFn.bind(this),
-      staleTime: { minute: 1 },
-    });
-  }
-  public abstract newPriceQueryFn(id: Caip19AssetId): Promise<PriceInfo>;
 
   public abstract newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null>;
 

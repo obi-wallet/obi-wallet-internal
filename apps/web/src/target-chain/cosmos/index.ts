@@ -1,4 +1,3 @@
-import { AssetRegistry } from "@/asset-registry";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
@@ -48,6 +47,7 @@ import {
   AssetInfo,
   Caip19Asset,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import {
   Caip19AssetId,
   parseCaip19AssetId,
@@ -175,13 +175,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         });
       }
     }
-  }
-
-  public async newPriceQueryFn(id: Caip19AssetId) {
-    const priceInfo = await AssetRegistry.getInstance().byId(id);
-    if (priceInfo?.priceInfo) return priceInfo.priceInfo;
-
-    return { usdValue: "0" };
   }
 
   protected denomMetadata(denom: string) {
