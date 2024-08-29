@@ -449,7 +449,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     return isStdFee(fee);
   }
 
-  public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
+  public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const asset = await AssetRegistry.getInstance().byId(id);
     if (asset?.assetInfo) return asset.assetInfo;
 

@@ -374,7 +374,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     });
   }
 
-  public async newAssetInfo(id: Caip19AssetId) {
+  public async assetInfo(id: Caip19AssetId) {
     const asset = await AssetRegistry.getInstance().byId(id);
     if (asset?.assetInfo) return asset.assetInfo;
 

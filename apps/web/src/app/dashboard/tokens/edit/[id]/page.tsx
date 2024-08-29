@@ -60,8 +60,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           },
         });
       } else {
-        const assetInfo =
-          await TargetChain.chainId(chainId).newAssetInfo(assetId);
+        const assetInfo = await TargetChain.chainId(chainId).assetInfo(assetId);
         if (assetInfo) {
           setState({
             assetInfo,

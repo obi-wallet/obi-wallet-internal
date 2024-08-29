@@ -398,7 +398,7 @@ async function prettyPrintCoin({
   if (!id) {
     return fallback;
   }
-  const asset = await targetChain.newAssetInfo(id);
+  const asset = await targetChain.assetInfo(id);
   if (!asset) {
     return fallback;
   }

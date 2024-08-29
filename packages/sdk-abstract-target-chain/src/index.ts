@@ -129,7 +129,7 @@ export abstract class AbstractTargetChain<
     return { usdValue: "0" };
   }
 
-  public abstract newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null>;
+  public abstract assetInfo(id: Caip19AssetId): Promise<AssetInfo | null>;
 
   public abstract handleWalletConnectSessionRequest(
     payload: SessionRequestPayload,

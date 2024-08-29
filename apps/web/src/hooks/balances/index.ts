@@ -53,7 +53,7 @@ async function fetchBalances({
     if (!tokenConfig?.enabled) return [];
 
     const price = (await targetChain.price(id)).usdValue;
-    const defaultAssetInfo = await targetChain.newAssetInfo(id);
+    const defaultAssetInfo = await targetChain.assetInfo(id);
     const assetInfo = tokenConfig.assetInfo ?? defaultAssetInfo ?? null;
 
     const amount = new BigNumber(rawAmount).dividedBy(
@@ -83,7 +83,7 @@ async function fetchBalances({
   return flatten([
     ...(await Promise.all(
       balances.map(async (asset): Promise<PrettyCaip19Asset[]> => {
-        const defaultAssetInfo = await targetChain.newAssetInfo(asset.assetId);
+        const defaultAssetInfo = await targetChain.assetInfo(asset.assetId);
         const tokenConfig: TokenConfig = tokensConfig[asset.assetId] ?? {
           enabled: true,
           assetInfo: defaultAssetInfo ?? undefined,

@@ -12,10 +12,7 @@ import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
-import {
-  AbstractTargetChain,
-  AssetId,
-} from "@obi-wallet/sdk-abstract-target-chain";
+import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
@@ -180,7 +177,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return "0";
   }
 
-  public async newAssetInfo(id: Caip19AssetId) {
+  public async assetInfo(id: Caip19AssetId) {
     const asset = await AssetRegistry.getInstance().byId(id);
     if (asset?.assetInfo) return asset.assetInfo;
 

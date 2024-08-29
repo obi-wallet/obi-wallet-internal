@@ -67,7 +67,7 @@ export default observer(function TokenAdd() {
                 assetId = targetChain.denomToCaip19AssetId(address);
               }
               const assetInfo =
-                assetId && (await targetChain.newAssetInfo(assetId));
+                assetId && (await targetChain.assetInfo(assetId));
               if (assetInfo && assetId) {
                 router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,

@@ -10,7 +10,7 @@ export const testSuite = createTestSuite(({ test }) => {
       "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
     );
     invariant(assetId, "assetId is not null");
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
+    const tokenInfo = await targetChain.assetInfo(assetId);
     expect(tokenInfo?.decimals).to.equal(6);
     expect(tokenInfo?.symbol).to.equal("USDT");
   });
