@@ -180,37 +180,6 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return "0";
   }
 
-  public assetInfo(id: AssetId) {
-    if (id === this.nativeCurrency.symbol) {
-      const getImage = () => {
-        switch (id) {
-          case "AVAX":
-            return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
-          case "ETH":
-            return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
-          case "BNB":
-          case "tBNB":
-            return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
-          case "CRO":
-            return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
-          case "MATIC":
-            return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
-          default:
-            return null;
-        }
-      };
-
-      return {
-        name: this.nativeCurrency.name,
-        symbol: this.nativeCurrency.symbol,
-        decimals: this.nativeCurrency.decimals,
-        image: getImage(),
-      };
-    }
-
-    return null;
-  }
-
   public async newAssetInfo(id: Caip19AssetId) {
     const asset = await AssetRegistry.getInstance().byId(id);
     if (asset?.assetInfo) return asset.assetInfo;
@@ -511,11 +480,11 @@ export class Eip155TargetChain extends AbstractTargetChain<
     }
   }
 
-  protected get nativeAddress(): Address {
-    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+  public get nativeCaip19AssetId(): Caip19AssetId {
+    return `${this.chainId}/native:${this.nativeAddress}`;
   }
 
-  protected get nativeCaip19AssetId(): Caip19AssetId {
-    return `${this.chainId}/native:${this.nativeAddress}`;
+  protected get nativeAddress(): Address {
+    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   }
 }
