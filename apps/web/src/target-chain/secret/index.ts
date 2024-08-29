@@ -1,6 +1,5 @@
 import { AssetRegistry } from "@/asset-registry";
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
 import {
   SecretChainData,
@@ -203,8 +202,8 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   }
 
   public async newPriceQueryFn(id: Caip19AssetId) {
-    const priceInfo = await PriceProvider.getInstance().priceInfo(id);
-    if (priceInfo) return priceInfo;
+    const priceInfo = await AssetRegistry.getInstance().byId(id);
+    if (priceInfo?.priceInfo) return priceInfo?.priceInfo;
 
     return { usdValue: "0" };
   }
