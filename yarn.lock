@@ -3416,6 +3416,7 @@ __metadata:
   resolution: "@obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain"
   dependencies:
     "@obi-wallet/query-client": "workspace:*"
+    "@obi-wallet/sdk-asset-registry": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
@@ -3437,6 +3438,20 @@ __metadata:
     eventemitter3: "npm:^5.0.1"
     tiny-warning: "npm:^1.0.3"
     typescript: "npm:^5.5.4"
+  languageName: unknown
+  linkType: soft
+
+"@obi-wallet/sdk-asset-registry@workspace:*, @obi-wallet/sdk-asset-registry@workspace:packages/sdk-asset-registry":
+  version: 0.0.0-use.local
+  resolution: "@obi-wallet/sdk-asset-registry@workspace:packages/sdk-asset-registry"
+  dependencies:
+    "@obi-wallet/query-client": "workspace:*"
+    "@obi-wallet/sdk-caip": "workspace:*"
+    "@repo/eslint-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*"
+    eslint: "npm:^8.57.0"
+    typescript: "npm:^5.5.4"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -3567,6 +3582,7 @@ __metadata:
     "@obi-wallet/sdk": "workspace:*"
     "@obi-wallet/sdk-abstract-target-chain": "workspace:*"
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
+    "@obi-wallet/sdk-asset-registry": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
     "@obi-wallet/sdk-json": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"

@@ -512,7 +512,7 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
       const toChain = intent.destination_chain_id;
       const targetChain = TargetChain.chainId(toChain);
       const id = targetChain.denomToCaip19AssetId(intent.destination_asset);
-      const priceInfo = id ? await targetChain.newPrice(id) : { usdValue: "0" };
+      const priceInfo = id ? await targetChain.price(id) : { usdValue: "0" };
       const price = parseFloat(priceInfo.usdValue);
       const decimals = Math.min(simulation.params.toToken.decimals, 8);
       const amount = new BigNumber(simulation.estimate.toAmountUSD)

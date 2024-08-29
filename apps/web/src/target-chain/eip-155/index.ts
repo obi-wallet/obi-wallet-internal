@@ -1,7 +1,5 @@
-import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { PriceProvider } from "@/price-provider";
 import { rootStore } from "@/stores";
 import {
   allEip155Chains,
@@ -14,10 +12,8 @@ import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
-import {
-  AbstractTargetChain,
-  AssetId,
-} from "@obi-wallet/sdk-abstract-target-chain";
+import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import {
@@ -181,47 +177,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
     return "0";
   }
 
-  public async newPriceQueryFn(id: Caip19AssetId) {
-    const priceInfo = await PriceProvider.getInstance().priceInfo(id);
-    if (priceInfo) return priceInfo;
-
-    return { usdValue: "0" };
-  }
-
-  public assetInfo(id: AssetId) {
-    if (id === this.nativeCurrency.symbol) {
-      const getImage = () => {
-        switch (id) {
-          case "AVAX":
-            return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
-          case "ETH":
-            return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
-          case "BNB":
-          case "tBNB":
-            return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
-          case "CRO":
-            return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
-          case "MATIC":
-            return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
-          default:
-            return null;
-        }
-      };
-
-      return {
-        name: this.nativeCurrency.name,
-        symbol: this.nativeCurrency.symbol,
-        decimals: this.nativeCurrency.decimals,
-        image: getImage(),
-      };
-    }
-
-    return null;
-  }
-
-  public async newAssetInfo(id: Caip19AssetId) {
-    const asset = await AssetProvider.getInstance().assetInfo(id);
-    if (asset) return asset;
+  public async assetInfo(id: Caip19AssetId) {
+    const asset = await AssetRegistry.getInstance().byId(id);
+    if (asset?.assetInfo) return asset.assetInfo;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     if (id === this.nativeCaip19AssetId) {
@@ -519,11 +477,11 @@ export class Eip155TargetChain extends AbstractTargetChain<
     }
   }
 
-  protected get nativeAddress(): Address {
-    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+  public get nativeCaip19AssetId(): Caip19AssetId {
+    return `${this.chainId}/native:${this.nativeAddress}`;
   }
 
-  protected get nativeCaip19AssetId(): Caip19AssetId {
-    return `${this.chainId}/native:${this.nativeAddress}`;
+  protected get nativeAddress(): Address {
+    return "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
   }
 }

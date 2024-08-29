@@ -5,6 +5,7 @@ import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import { Input } from "@/ui/input";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
@@ -357,7 +358,7 @@ const Network = observer(function NetworkAssets({
   );
 });
 
-export function AssetRow({
+export const AssetRow = observer(function AssetRow({
   asset,
   editMode,
 }: {
@@ -365,6 +366,17 @@ export function AssetRow({
   editMode?: boolean;
 }) {
   const router = useRouter();
+  const wallet = useCurrentWallet({});
+  const { viewingKeysStore } = useStore();
+
+  const viewingKey = viewingKeysStore.getViewingKey({
+    address: wallet?.userEntryAddress ?? "",
+    assetId: asset.assetId,
+  });
+  const assetInfo = parseCaip19AssetId(asset.assetId);
+  const isPrivateToken =
+    assetInfo.chainId === SecretChainId.Secret &&
+    assetInfo.namespace === "snip20";
 
   return (
     <li
@@ -392,14 +404,96 @@ export function AssetRow({
             {asset.assetInfo?.symbol}
           </Text>
         </div>
-        <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
-          {asset.prettyAmount.toString()}
-        </Text>
+        {isPrivateToken ? (
+          viewingKey ? (
+            editMode ? (
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (wallet) {
+                    viewingKeysStore.removeViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId: asset.assetId,
+                    });
+                  }
+                }}
+              >
+                Remove Viewing Key
+              </Button>
+            ) : (
+              <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+                {asset.prettyAmount.toString()}
+              </Text>
+            )
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(
+                    `/dashboard/tokens/edit/${encodeURIComponent(asset.assetId)}`,
+                  );
+                }}
+              >
+                Create Viewing Key
+              </Button>
+            </>
+          )
+        ) : (
+          <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+            {asset.prettyAmount.toString()}
+          </Text>
+        )}
       </div>
       <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
-        <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
-          {asset.prettyAmount.toString()}
-        </Text>
+        {isPrivateToken ? (
+          viewingKey ? (
+            editMode ? (
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (wallet) {
+                    viewingKeysStore.removeViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId: asset.assetId,
+                    });
+                  }
+                }}
+              >
+                Remove Viewing Key
+              </Button>
+            ) : (
+              <Text className="-ml-6 h-5 max-sm:text-sm sm:hidden">
+                {asset.prettyAmount.toString()}
+              </Text>
+            )
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(
+                    `/dashboard/tokens/edit/${encodeURIComponent(asset.assetId)}`,
+                  );
+                }}
+              >
+                Create Viewing Key
+              </Button>
+            </>
+          )
+        ) : (
+          <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
+            {asset.prettyAmount.toString()}
+          </Text>
+        )}
         <Text
           fontWeight="bold"
           className="tabular-nums max-sm:hidden max-sm:text-sm"
@@ -409,7 +503,7 @@ export function AssetRow({
       </div>
     </li>
   );
-}
+});
 
 enum PrettyBalancesStatus {
   Loading,

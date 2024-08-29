@@ -1,5 +1,3 @@
-import { TargetChainsStore } from "@/stores/target-chains";
-import { TokensStore } from "@/stores/tokens";
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
@@ -13,7 +11,10 @@ import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
+import { TargetChainsStore } from "./target-chains";
+import { TokensStore } from "./tokens";
 import { UserDataStore } from "./user-data";
+import { ViewingKeysStore } from "./viewing-keys";
 import { WalletConnectStore } from "./wallet-connect";
 import { WasmStore } from "./wasm";
 
@@ -40,6 +41,7 @@ export class RootStore {
   public readonly targetChainsStore: TargetChainsStore;
   public readonly tokensStore: TokensStore;
   public readonly userDataStore: UserDataStore;
+  public readonly viewingKeysStore: ViewingKeysStore;
   public readonly walletConnectStore: WalletConnectStore;
   public readonly wasmStore: WasmStore;
 
@@ -61,6 +63,9 @@ export class RootStore {
     );
     this.tokensStore = new TokensStore(new KVStore("tokens-store"));
     this.userDataStore = new UserDataStore(new KVStore("user-data-store"));
+    this.viewingKeysStore = new ViewingKeysStore(
+      new KVStore("viewing-keys-store"),
+    );
     this.wasmStore = new WasmStore();
 
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?

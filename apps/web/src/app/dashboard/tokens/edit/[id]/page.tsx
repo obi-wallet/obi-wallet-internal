@@ -2,23 +2,33 @@
 
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
+import { isSecretChainId } from "@/target-chain/secret/chains";
+import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { Encoding } from "@obi-wallet/encoding";
+import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
+import { MsgExecuteContract } from "secretjs";
+import invariant from "tiny-invariant";
 
 export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   params,
 }) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const assetId = decodeURIComponent(params.id) as Caip19AssetId;
+  const { chainId, reference } = parseCaip19AssetId(assetId);
+
   const wallet = useCurrentWallet({});
   const router = useRouter();
-  const { tokensStore } = useStore();
+  const { tokensStore, viewingKeysStore } = useStore();
+  const alert = useAlert();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -32,6 +42,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
       image: "",
     },
   });
+
   useEffectOnceWhen(async () => {
     if (wallet) {
       const persistedAssetInfo = tokensStore.getTokenConfig({
@@ -49,9 +60,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           },
         });
       } else {
-        const { chainId } = parseCaip19AssetId(assetId);
-        const assetInfo =
-          await TargetChain.chainId(chainId).newAssetInfo(assetId);
+        const assetInfo = await TargetChain.chainId(chainId).assetInfo(assetId);
         if (assetInfo) {
           setState({
             assetInfo,
@@ -146,12 +155,62 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             Cancel
           </Button>
           <Button
-            onClick={() => {
+            onClick={async () => {
               tokensStore.setTokenConfig({
                 address: wallet.userEntryAddress,
                 assetId,
                 config: state,
               });
+
+              if (reference && isSecretChainId(chainId)) {
+                const signer = await SecretMpcSigner.fromWallet(
+                  wallet,
+                  chainId,
+                );
+
+                const accounts = await signer.getAccounts();
+                const firstAccount = accounts[0];
+                invariant(firstAccount, "No account found");
+
+                const random = new Uint8Array(32);
+                crypto.getRandomValues(random);
+                const key = Encoding.fromBytes(random).toHex();
+                const message = new MsgExecuteContract({
+                  sender: firstAccount.address,
+                  contract_address: reference,
+                  msg: {
+                    set_viewing_key: {
+                      key,
+                    },
+                  },
+                });
+
+                const response =
+                  await SignAndBroadcastTransactionUserInteraction.start({
+                    messages: [message],
+                    memo: "",
+                    cancelable: true,
+                    targetChainId: chainId,
+                    walletMeta: {
+                      userEntryAddress: wallet.userEntryAddress,
+                    },
+                  });
+
+                if (response.approved) {
+                  const broadcastResult = response.payload;
+                  if (broadcastResult.success) {
+                    viewingKeysStore.setViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId,
+                      key,
+                    });
+                    alert.showSuccess("TX broadcast successfully");
+                  } else {
+                    alert.showError(`TX failed: ${broadcastResult.rawLog}`);
+                  }
+                }
+              }
+
               router.back();
             }}
             className="flex-1 justify-center rounded-lg p-2"

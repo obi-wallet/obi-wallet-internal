@@ -5,6 +5,7 @@ import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { InputContainer } from "@/ui/container";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -49,11 +50,15 @@ export default observer(function TokenAdd() {
           <Button
             onClick={async () => {
               const targetChain = TargetChain.chainId(chainId);
-              const assetId =
-                TargetChain.chainId(chainId).denomToCaip19AssetId(address);
+
+              const { assetId } = await AssetRegistry.getInstance().byDenom({
+                chainId: chainId,
+                denom: address,
+              });
+
               const assetInfo =
-                assetId && (await targetChain.newAssetInfo(assetId));
-              if (assetInfo) {
+                assetId && (await targetChain.assetInfo(assetId));
+              if (assetInfo && assetId) {
                 router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,
                 );
