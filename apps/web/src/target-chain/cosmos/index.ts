@@ -458,7 +458,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const asset = await AssetRegistry.getInstance().byId(id);
-    if (asset) return asset.assetInfo;
+    if (asset?.assetInfo) return asset.assetInfo;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
@@ -495,7 +495,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       }
     }
 
-    return asset ?? null;
+    return null;
   }
 
   public validateAddress(address: string): boolean {

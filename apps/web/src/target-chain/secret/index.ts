@@ -383,7 +383,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
 
   public async newAssetInfo(id: Caip19AssetId) {
     const asset = await AssetRegistry.getInstance().byId(id);
-    if (asset) return asset.assetInfo;
+    if (asset?.assetInfo) return asset.assetInfo;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
@@ -421,7 +421,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       }
     }
 
-    return asset ?? null;
+    return null;
   }
 
   public validateAddress(address: string): boolean {
