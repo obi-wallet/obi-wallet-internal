@@ -27,6 +27,9 @@
     "bn.js@npm:^4.11.8": "patch:bn.js@npm%3A4.12.0#~/.yarn/patches/bn.js-npm-4.12.0-3ec6c884f6.patch",
     "bn.js@npm:^4.11.9": "patch:bn.js@npm%3A4.12.0#~/.yarn/patches/bn.js-npm-4.12.0-3ec6c884f6.patch"
   },
+  "dependencies": {
+    "@obi-wallet/sdk-asset-registry": "workspace:^"
+  },
   "devDependencies": {
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.1",
@@ -36,8 +39,5 @@
   "packageManager": "yarn@4.4.0",
   "engines": {
     "node": "^20.0.0"
-  },
-  "dependencies": {
-    "@obi-wallet/sdk-asset-registry": "workspace:^"
   }
 }
