@@ -4,10 +4,11 @@ import { z } from "zod";
 import { PasskeyKey } from "./passkey";
 import { PhoneKey } from "./phone";
 import { TelegramKey } from "./telegram";
+import { CloudKey } from "./cloudkey";
 import { migratable } from "../../migratable";
 
 export const UsableKeySchema = migratable(
-  z.union([PasskeyKey, PhoneKey, TelegramKey]),
+  z.union([PasskeyKey, PhoneKey, TelegramKey, CloudKey]),
 );
 
 export const PendingRecoveryKeySchema = migratable(

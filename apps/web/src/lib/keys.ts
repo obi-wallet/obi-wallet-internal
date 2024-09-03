@@ -28,6 +28,11 @@ export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
     label: "Telegram Key",
     mandatory: false,
   },
+  [KeyType.Cloudkey]: {
+    type: KeyType.Cloudkey,
+    label: "Cloud key",
+    mandatory: false,
+  },
 };
 
 export function useKeyList() {
@@ -79,6 +84,10 @@ export function useKeyListForMultisigKey({
     {
       ...keyTypeMeta[KeyType.Telegram],
       keys: getKeysOfType(KeyType.Telegram),
+    },
+    {
+      ...keyTypeMeta[KeyType.Cloudkey],
+      keys: getKeysOfType(KeyType.Cloudkey),
     },
   ];
 }

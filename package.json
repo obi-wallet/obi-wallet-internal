@@ -36,5 +36,8 @@
   "packageManager": "yarn@4.4.0",
   "engines": {
     "node": "^20.0.0"
+  },
+  "dependencies": {
+    "@obi-wallet/sdk-asset-registry": "workspace:^"
   }
 }

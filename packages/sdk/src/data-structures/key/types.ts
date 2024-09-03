@@ -6,6 +6,7 @@ export enum KeyType {
   Passkey = "passkey",
   Phone = "phone",
   Telegram = "telegram",
+  Cloudkey = "cloudkey",
 }
 
 export type KeyAbstractSerializedMapping = {

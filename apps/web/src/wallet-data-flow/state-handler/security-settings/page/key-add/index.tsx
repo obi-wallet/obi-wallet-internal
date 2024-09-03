@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { AddPasskeyPage } from "./passkey";
 import { AddPhoneKeyPage } from "./phone";
 import { AddTelegramKeyPage } from "./telegram";
+import { AddCloudkeyPage } from "./cloudkey";
 import { KeyAddPage } from "../../context";
 
 export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
@@ -15,6 +16,8 @@ export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
         return <AddPhoneKeyPage />;
       case KeyType.Telegram:
         return <AddTelegramKeyPage />;
+      case KeyType.Cloudkey:
+        return <AddCloudkeyPage />;
       default:
         console.error("Not implemented");
     }
