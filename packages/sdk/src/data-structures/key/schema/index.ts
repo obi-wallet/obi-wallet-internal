@@ -1,10 +1,10 @@
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { z } from "zod";
 
+import { CloudKey } from "./cloudkey";
 import { PasskeyKey } from "./passkey";
 import { PhoneKey } from "./phone";
 import { TelegramKey } from "./telegram";
-import { CloudKey } from "./cloudkey";
 import { migratable } from "../../migratable";
 
 export const UsableKeySchema = migratable(
