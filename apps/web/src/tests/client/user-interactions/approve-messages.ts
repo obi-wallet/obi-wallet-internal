@@ -41,7 +41,9 @@ async function mockApproveIntentions({
     keyPair,
   });
   const result = await intentionsHandler.handle();
-  intentionsResults.set(result.publicKey, result.intentionsResult);
+  if (result.publicKey && result.intentionsResult) {
+    intentionsResults.set(result.publicKey, result.intentionsResult);
+  }
 
   onApprove(intentionsResults);
 }
