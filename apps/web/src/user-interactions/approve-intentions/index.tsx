@@ -1,4 +1,5 @@
 import { Button, KeyItem, Text } from "@/components";
+import { useAlert } from "@/hooks/alert";
 import {
   IntentionsPayload,
   IntentionsResult,
@@ -81,6 +82,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     } | null>(null);
 
     const [results, setResults] = useState(new IntentionsResults());
+    const alert = useAlert();
 
     const getResult = (key: Key) => {
       return results.get(key.publicKey.value);
@@ -135,10 +137,20 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                               payload: intentions,
                             });
                           const result = await intentionsHandler.handle();
-                          setResultWithPublicKey(
-                            result.publicKey,
-                            result.intentionsResult,
-                          );
+                          if (result.success) {
+                            if (result.publicKey && result.intentionsResult) {
+                              setResultWithPublicKey(
+                                result.publicKey,
+                                result.intentionsResult,
+                              );
+                            } else {
+                              alert.showError(
+                                "Invalid result: missing public key or intentions result",
+                              );
+                            }
+                          } else {
+                            alert.showError("This key is invalid!");
+                          }
                           break;
                         }
 
