@@ -212,7 +212,9 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
                 }
               }
 
-              router.back();
+              if (!isSecretChainId(chainId)) {
+                router.push("/dashboard");
+              }
             }}
             className="flex-1 justify-center rounded-lg p-2"
           >
