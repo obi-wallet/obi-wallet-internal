@@ -4,6 +4,7 @@ import { Box, Button, Divider, Modal, renderModal, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
+import { AsyncButton } from "@/ui/button";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -152,7 +153,7 @@ export default observer(function AppConnect() {
         <div className="mt-5">
           {activeSessions.map((session) => {
             return (
-              <Button
+              <AsyncButton
                 className="my-1 w-full justify-between"
                 variant="secondary"
                 key={session.topic}
@@ -165,7 +166,7 @@ export default observer(function AppConnect() {
               >
                 <Text size="xl">{session.peer.metadata.name}</Text>
                 <Text size="sm">Disconnect</Text>
-              </Button>
+              </AsyncButton>
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-import { Button, KeyItem, Text } from "@/components";
+import { KeyItem, Text } from "@/components";
 import {
   IntentionsPayload,
   IntentionsResult,
@@ -8,6 +8,7 @@ import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { AsyncButton } from "@/ui/button";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
 import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -118,7 +119,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
             {keyList.map((keyData) => {
               return keyData.keys.map((key) => {
                 return (
-                  <Button
+                  <AsyncButton
                     key={key.id}
                     className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
@@ -157,7 +158,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                     }
                   >
                     {key.label}
-                  </Button>
+                  </AsyncButton>
                 );
               });
             })}
