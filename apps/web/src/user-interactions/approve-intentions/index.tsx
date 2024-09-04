@@ -1,4 +1,5 @@
 import { KeyItem, Text } from "@/components";
+import { useAlert } from "@/hooks/alert";
 import {
   IntentionsPayload,
   IntentionsResult,
@@ -82,6 +83,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     } | null>(null);
 
     const [results, setResults] = useState(new IntentionsResults());
+    const alert = useAlert();
 
     const getResult = (key: Key) => {
       return results.get(key.publicKey.value);
@@ -108,6 +110,34 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
 
     const confirmedKeyCount = results.size;
 
+    const handleClick = async (key: KeyItem, index: number) => {
+      try {
+        switch (key.key.type) {
+          case KeyType.Passkey: {
+            const intentionsHandler = new PasskeyIntentionsHandler({
+              owner: multisigKey,
+              payload: intentions,
+            });
+            const result = await intentionsHandler.handle();
+            setResultWithPublicKey(result.publicKey, result.intentionsResult);
+            break;
+          }
+
+          case KeyType.Telegram: {
+            setModal({
+              key,
+              index,
+            });
+            break;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        const error = e as Error;
+        alert.showError(`Could not process key: ${error.message}`);
+      }
+    };
+
     return (
       <div className="relative w-full">
         <div className="flex justify-center">
@@ -123,35 +153,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                     key={key.id}
                     className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
-                    onClick={async () => {
-                      const index = multisigKey.keys.findIndex((k) => {
-                        return k.publicKey.value === key.key.publicKey.value;
-                      });
-
-                      switch (key.key.type) {
-                        case KeyType.Passkey: {
-                          const intentionsHandler =
-                            new PasskeyIntentionsHandler({
-                              owner: multisigKey,
-                              payload: intentions,
-                            });
-                          const result = await intentionsHandler.handle();
-                          setResultWithPublicKey(
-                            result.publicKey,
-                            result.intentionsResult,
-                          );
-                          break;
-                        }
-
-                        case KeyType.Telegram: {
-                          setModal({
-                            key,
-                            index,
-                          });
-                          break;
-                        }
-                      }
-                    }}
+                    onClick={() =>
+                      handleClick(
+                        key,
+                        multisigKey.keys.findIndex(
+                          (k) => k.publicKey.value === key.key.publicKey.value,
+                        ),
+                      )
+                    }
                     variant={getResult(key.key) ? "confirmed" : "primary"}
                     disabled={
                       !!getResult(key.key) || threshold <= confirmedKeyCount
