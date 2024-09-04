@@ -1,3 +1,5 @@
+import { EncodeObject } from "@cosmjs/proto-signing";
+import { StdFee } from "@cosmjs/stargate";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
@@ -6,10 +8,8 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
-import { StdFee } from "@cosmjs/stargate";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { Msg } from "secretjs";
 import { Query } from "@tanstack/query-core";
+import { Msg } from "secretjs";
 
 export interface AssetInfo {
   name: string;
