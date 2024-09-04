@@ -144,7 +144,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                             );
                           } catch (e) {
                             console.error(e);
-                            alert.showError("Failed to fetch the passkey!");
+                            alert.showError(`Could not process key: ${e}`);
                           }
                           break;
                         }
