@@ -73,7 +73,7 @@ const EncodeObjectSchema = z.object({
   value: z.unknown(),
 });
 
-function isEncodeObject(message: unknown): message is EncodeObject {
+export function isEncodeObject(message: unknown): message is EncodeObject {
   return EncodeObjectSchema.safeParse(message).success;
 }
 

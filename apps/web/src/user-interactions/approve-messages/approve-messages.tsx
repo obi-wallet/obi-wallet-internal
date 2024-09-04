@@ -3,7 +3,7 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import { isSecretChainId } from "@/target-chain/secret/chains";
+import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -21,12 +21,13 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import { SendingAnimation } from "./sending-animation";
+import { isEncodeObject } from "@/target-chain/cosmos";
 
 export interface ApproveMessagesProps {
   walletMeta: {
     userEntryAddress: string;
   };
-  targetChainId: TargetChainId;
+  targetChainId: CosmosChainId | SecretChainId;
   messages: unknown[];
   memo: string;
   rawData: unknown;
@@ -216,12 +217,12 @@ const PrettyPrint = observer(function PrettyPrint({
   memo,
 }: {
   messages: unknown[];
-  targetChainId: TargetChainId;
+  targetChainId: CosmosChainId | SecretChainId;
   rawData: unknown;
   fee: unknown;
   memo: string;
 }) {
-  if (!isCosmosChainId(targetChainId)) {
+  if (!isCosmosChainId(targetChainId) && !isSecretChainId(targetChainId)) {
     return null;
   }
 
@@ -245,7 +246,7 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
 }: {
   messages: unknown[];
   rawData: unknown;
-  targetChainId: CosmosChainId;
+  targetChainId: CosmosChainId | SecretChainId;
   fee: unknown | undefined;
   memo: string;
 }) {
@@ -326,29 +327,37 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
 function messageToAmount({
   message,
 }: {
-  message: EncodeObject;
+  message: unknown;
   targetChainId: TargetChainId;
 }): Coin[] {
-  switch (message.typeUrl) {
-    case "/cosmos.bank.v1beta1.MsgSend": {
-      const { value } = message;
-      return value.amount ?? [];
+  if (isEncodeObject(message)) {
+    switch (message.typeUrl) {
+      case "/cosmos.bank.v1beta1.MsgSend": {
+        const { value } = message;
+        return value.amount ?? [];
+      }
+      default:
+        console.warn("Unknown message type: ", message.typeUrl);
+        return [];
     }
-    default:
-      console.warn("Unknown message type: ", message.typeUrl);
-      return [];
+  } else {
+    return [];
   }
 }
 
-function messageToAddress({ message }: { message: EncodeObject }): string[] {
-  switch (message.typeUrl) {
-    case "/cosmos.bank.v1beta1.MsgSend": {
-      const { value } = message;
-      return value.toAddress ? [value.toAddress] : [];
+function messageToAddress({ message }: { message: unknown }): string[] {
+  if (isEncodeObject(message)) {
+    switch (message.typeUrl) {
+      case "/cosmos.bank.v1beta1.MsgSend": {
+        const { value } = message;
+        return value.toAddress ? [value.toAddress] : [];
+      }
+      default:
+        console.warn("Unknown message type: ", message.typeUrl);
+        return [];
     }
-    default:
-      console.warn("Unknown message type: ", message.typeUrl);
-      return [];
+  } else {
+    return [];
   }
 }
 
@@ -356,26 +365,30 @@ async function messageToDescription({
   message,
   targetChainId,
 }: {
-  message: EncodeObject;
-  targetChainId: CosmosChainId;
+  message: unknown;
+  targetChainId: CosmosChainId | SecretChainId;
 }): Promise<string[]> {
-  switch (message.typeUrl) {
-    case "/cosmos.bank.v1beta1.MsgSend": {
-      const { value } = message;
-      const amount = messageToAmount({ message, targetChainId });
-      return await Promise.all(
-        amount.map(async (amount) => {
-          const prettyAmount = await prettyPrintCoin({
-            coin: amount,
-            targetChainId,
-          });
-          return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
-        }),
-      );
+  if (isEncodeObject(message)) {
+    switch (message.typeUrl) {
+      case "/cosmos.bank.v1beta1.MsgSend": {
+        const { value } = message;
+        const amount = messageToAmount({ message, targetChainId });
+        return await Promise.all(
+          amount.map(async (amount) => {
+            const prettyAmount = await prettyPrintCoin({
+              coin: amount,
+              targetChainId,
+            });
+            return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${value.toAddress}`;
+          }),
+        );
+      }
+      default:
+        console.warn("Unknown message type: ", message.typeUrl);
+        return [];
     }
-    default:
-      console.warn("Unknown message type: ", message.typeUrl);
-      return [];
+  } else {
+    return [];
   }
 }
 
@@ -384,7 +397,7 @@ async function prettyPrintCoin({
   targetChainId,
 }: {
   coin: Coin;
-  targetChainId: CosmosChainId;
+  targetChainId: CosmosChainId | SecretChainId;
 }): Promise<{
   amount: string;
   denom: string;
