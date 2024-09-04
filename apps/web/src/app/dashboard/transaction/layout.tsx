@@ -8,28 +8,22 @@ export default function TransactionLayout({
 }: {
   children: ReactNode;
 }) {
-  // we need to know which tab is active using the pathname
   const pathName = usePathname();
+  const [_slash, _dashboard, _transaction, activeTab, ...rest] =
+    pathName.split("/");
 
-  const getActive = (path: string) => {
-    if (path.includes("/send")) return "send";
-    if (path.includes("/receive")) return "receive";
-    return undefined;
-  };
-
-  const activeTab = getActive(pathName);
   return (
     <div className="w-full">
       <Box className="w-full lg:w-1/2">
         <TabUi.Links>
           <TabUi.Link
-            href="/dashboard/transaction/send"
+            href={`/dashboard/transaction/send/${rest.join("/")}`}
             active={activeTab === "send"}
           >
             Send Tokens
           </TabUi.Link>
           <TabUi.Link
-            href="/dashboard/transaction/receive"
+            href={`/dashboard/transaction/receive/${rest.join("/")}`}
             active={activeTab === "receive"}
           >
             Receive Tokens

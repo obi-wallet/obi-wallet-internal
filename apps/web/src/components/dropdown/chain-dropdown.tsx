@@ -8,21 +8,15 @@ import { observer } from "mobx-react-lite";
 
 import { DropDown } from "./dropdown";
 
-export const ChainDropdown = observer(function ChainDropdown({
-  onChange,
-  chainId,
-}: {
-  chainId: TargetChainId;
-  onChange: (chainId: TargetChainId) => void;
-}) {
+export function useChainOptions() {
   const wallet = useCurrentWallet({});
   const { targetChainsStore } = useStore();
 
   if (!wallet) {
-    return null;
+    return [];
   }
 
-  const chainOptions = targetChainsStore
+  return targetChainsStore
     .getTargetChains(wallet.userEntryAddress)
     .map((chain) => {
       return {
@@ -38,6 +32,16 @@ export const ChainDropdown = observer(function ChainDropdown({
     .sort((a, b) => {
       return a.label.localeCompare(b.label);
     });
+}
+
+export const ChainDropdown = observer(function ChainDropdown({
+  onChange,
+  chainId,
+}: {
+  chainId: TargetChainId;
+  onChange: (chainId: TargetChainId) => void;
+}) {
+  const chainOptions = useChainOptions();
 
   return (
     <div className="flex w-full flex-row">
