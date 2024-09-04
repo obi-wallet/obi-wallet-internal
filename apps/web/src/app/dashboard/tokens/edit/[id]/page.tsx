@@ -7,6 +7,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { AsyncButton } from "@/ui/button";
 import { Encoding } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
@@ -154,7 +155,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           >
             Cancel
           </Button>
-          <Button
+          <AsyncButton
             onClick={async () => {
               tokensStore.setTokenConfig({
                 address: wallet.userEntryAddress,
@@ -216,7 +217,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             className="flex-1 justify-center rounded-lg p-2"
           >
             Save
-          </Button>
+          </AsyncButton>
         </div>
       </Box>
     </div>

@@ -4,16 +4,16 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-type ButtonVariant =
+export type ButtonVariant =
   | "primary"
   | "outline"
   | "confirmed"
   | "secondary"
-  | "variant"
   | "detail";
-type ButtonSize = "sm" | "base";
 
-type ButtonProps = {
+export type ButtonSize = "sm" | "base";
+
+export type ButtonProps = {
   isLoading?: boolean;
   isDarkBg?: boolean;
   variant?: ButtonVariant;
@@ -105,9 +105,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               className={cn(
                 "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
                 {
-                  "text-white": ["primary", "dark"].includes(variant),
-                  "text-black": ["light"].includes(variant),
-                  "text-primary-500": ["outline", "ghost"].includes(variant),
+                  "text-white": [
+                    "primary",
+                    "secondary",
+                    "detail",
+                    "confirmed",
+                  ].includes(variant),
+                  "text-zinc-400": ["outline"].includes(variant),
                 },
               )}
             >
