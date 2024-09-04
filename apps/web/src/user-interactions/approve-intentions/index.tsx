@@ -133,8 +133,11 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
         }
       } catch (e) {
         console.error(e);
-        const error = e as Error;
-        alert.showError(`Could not process key: ${error.message}`);
+        if (e instanceof Error) {
+          alert.showError(`Could not process key: ${e.message}`);
+        } else {
+          alert.showError("An unknown error occurred while processing the key");
+        }
       }
     };
 
@@ -153,14 +156,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                     key={key.id}
                     className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
-                    onClick={() =>
-                      handleClick(
+                    onClick={() => {
+                      return handleClick(
                         key,
-                        multisigKey.keys.findIndex(
-                          (k) => k.publicKey.value === key.key.publicKey.value,
-                        ),
-                      )
-                    }
+                        multisigKey.keys.findIndex((k) => {
+                          return k.publicKey.value === key.key.publicKey.value;
+                        }),
+                      );
+                    }}
                     variant={getResult(key.key) ? "confirmed" : "primary"}
                     disabled={
                       !!getResult(key.key) || threshold <= confirmedKeyCount
