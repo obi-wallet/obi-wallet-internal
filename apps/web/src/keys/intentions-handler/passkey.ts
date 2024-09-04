@@ -45,7 +45,6 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
     const key = this.owner.keys.find((key) => {
       return key.publicKey.value === keyPair.publicKey.value;
     });
-    if (!key || key.type !== KeyType.Passkey) return { success: false };
     invariant(
       key && key.type === KeyType.Passkey,
       "No passkey found with the given public key",
@@ -72,7 +71,6 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
     ]);
 
     return {
-      success: true,
       publicKey: key.publicKey.value,
       intentionsResult: this.toIntentionsResult({
         signedHashes,

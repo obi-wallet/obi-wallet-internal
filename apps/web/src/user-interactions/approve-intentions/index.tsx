@@ -136,20 +136,15 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                               owner: multisigKey,
                               payload: intentions,
                             });
-                          const result = await intentionsHandler.handle();
-                          if (result.success) {
-                            if (result.publicKey && result.intentionsResult) {
-                              setResultWithPublicKey(
-                                result.publicKey,
-                                result.intentionsResult,
-                              );
-                            } else {
-                              alert.showError(
-                                "Invalid result: missing public key or intentions result",
-                              );
-                            }
-                          } else {
-                            alert.showError("This key is invalid!");
+                          try {
+                            const result = await intentionsHandler.handle();
+                            setResultWithPublicKey(
+                              result.publicKey,
+                              result.intentionsResult,
+                            );
+                          } catch (e) {
+                            console.error(e);
+                            alert.showError("Failed to fetch the passkey!");
                           }
                           break;
                         }
