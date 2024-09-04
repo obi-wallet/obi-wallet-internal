@@ -294,7 +294,7 @@ const Network = observer(function NetworkAssets({
               {assets.chain.label}
             </Text>
             {editMode ? (
-              <div className="flex flex-grow justify-end">
+              <div className="flex flex-grow justify-end gap-2">
                 <Button
                   variant={
                     targetChainConfig.enabled === true ? "primary" : "outline"
