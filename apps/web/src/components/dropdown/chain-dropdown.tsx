@@ -34,6 +34,9 @@ export const ChainDropdown = observer(function ChainDropdown({
     })
     .filter((chain) => {
       return !chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
     });
 
   return (
