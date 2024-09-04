@@ -3415,6 +3415,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-abstract-target-chain@workspace:packages/sdk-abstract-target-chain"
   dependencies:
+    "@cosmjs/proto-signing": "npm:^0.32.4"
+    "@cosmjs/stargate": "npm:^0.32.4"
     "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk-asset-registry": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
@@ -3424,6 +3426,7 @@ __metadata:
     "@repo/typescript-config": "workspace:*"
     "@tanstack/query-core": "npm:^5.51.21"
     eslint: "npm:^8.57.0"
+    secretjs: "npm:^1.12.5"
     typescript: "npm:^5.5.4"
   languageName: unknown
   linkType: soft
@@ -16687,12 +16690,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "obi-wallet-internal@workspace:."
   dependencies:
-    "@cosmjs/proto-signing": "npm:^0.32.4"
-    "@cosmjs/stargate": "npm:^0.32.4"
     prettier: "npm:^3.3.3"
     prettier-plugin-packagejson: "npm:^2.5.1"
     prettier-plugin-tailwindcss: "npm:^0.6.6"
-    secretjs: "npm:^1.12.5"
     turbo: "npm:^2.0.12"
   languageName: unknown
   linkType: soft

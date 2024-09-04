@@ -27,11 +27,6 @@
     "bn.js@npm:^4.11.8": "patch:bn.js@npm%3A4.12.0#~/.yarn/patches/bn.js-npm-4.12.0-3ec6c884f6.patch",
     "bn.js@npm:^4.11.9": "patch:bn.js@npm%3A4.12.0#~/.yarn/patches/bn.js-npm-4.12.0-3ec6c884f6.patch"
   },
-  "dependencies": {
-    "@cosmjs/proto-signing": "^0.32.4",
-    "@cosmjs/stargate": "^0.32.4",
-    "secretjs": "^1.12.5"
-  },
   "devDependencies": {
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.1",

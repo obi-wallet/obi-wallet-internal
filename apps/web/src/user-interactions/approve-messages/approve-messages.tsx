@@ -19,10 +19,10 @@ import { skipToken, useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { Msg } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { SendingAnimation } from "./sending-animation";
-import { Msg } from "secretjs";
 
 export interface ApproveMessagesProps {
   walletMeta: {

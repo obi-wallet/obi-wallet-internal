@@ -11,12 +11,15 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4",
     "@obi-wallet/query-client": "workspace:*",
     "@obi-wallet/sdk-asset-registry": "workspace:*",
     "@obi-wallet/sdk-caip": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@obi-wallet/wallet-connect": "workspace:*",
-    "@tanstack/query-core": "^5.51.21"
+    "@tanstack/query-core": "^5.51.21",
+    "secretjs": "^1.12.5"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
