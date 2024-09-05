@@ -111,31 +111,31 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     const confirmedKeyCount = results.size;
 
     const handleClick = async (key: KeyItem, index: number) => {
-      try {
-        switch (key.key.type) {
-          case KeyType.Passkey: {
+      switch (key.key.type) {
+        case KeyType.Passkey: {
+          try {
             const intentionsHandler = new PasskeyIntentionsHandler({
               owner: multisigKey,
               payload: intentions,
             });
             const result = await intentionsHandler.handle();
             setResultWithPublicKey(result.publicKey, result.intentionsResult);
-            break;
+          } catch (e) {
+            console.error(e);
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const error = e as Error;
+            alert.showError(`Could not process passkey: ${error.message}`);
           }
-
-          case KeyType.Telegram: {
-            setModal({
-              key,
-              index,
-            });
-            break;
-          }
+          break;
         }
-      } catch (e) {
-        console.error(e);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const error = e as Error;
-        alert.showError(`Could not process key: ${error.message}`);
+
+        case KeyType.Telegram: {
+          setModal({
+            key,
+            index,
+          });
+          break;
+        }
       }
     };
 
