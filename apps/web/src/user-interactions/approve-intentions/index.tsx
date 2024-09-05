@@ -133,11 +133,9 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
         }
       } catch (e) {
         console.error(e);
-        if (e instanceof Error) {
-          alert.showError(`Could not process key: ${e.message}`);
-        } else {
-          alert.showError("An unknown error occurred while processing the key");
-        }
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const error = e as Error;
+        alert.showError(`Could not process key: ${error.message}`);
       }
     };
 
@@ -156,8 +154,8 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                     key={key.id}
                     className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
-                    onClick={() => {
-                      return handleClick(
+                    onClick={async () => {
+                      await handleClick(
                         key,
                         multisigKey.keys.findIndex((k) => {
                           return k.publicKey.value === key.key.publicKey.value;
