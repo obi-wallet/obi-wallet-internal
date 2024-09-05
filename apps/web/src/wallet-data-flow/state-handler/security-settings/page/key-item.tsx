@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Text } from "@/components";
+import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { getPasskey, KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -34,7 +35,7 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
         </div>
         {page.payload.key.type === KeyType.Passkey &&
         !page.payload.key.isUsable ? (
-          <Button
+          <AsyncButton
             variant="primary"
             block
             onClick={async () => {
@@ -52,7 +53,7 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
             }}
           >
             Mark as usable
-          </Button>
+          </AsyncButton>
         ) : null}
         <div className="mt-40 grid grid-cols-2 gap-8">
           <Button

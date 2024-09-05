@@ -1,21 +1,53 @@
 "use client";
 
-import { ChainDropdown, TabUi } from "@/components";
+import { ChainDropdown, TabUi, useChainOptions } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { InputContainer } from "@/ui/container";
+import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-export default observer(function Receive() {
+export default observer<{ params: { asset?: string[] } }>(function Receive({
+  params,
+}) {
   const { Canvas } = useQRCode();
   const [chainId, setChainId] = useState<TargetChainId>(CosmosChainId.Sei);
   const [isCopied, setIsCopied] = useState(false);
   const { data: address } = useAddressQuery(chainId);
+  const chainOptions = useChainOptions();
+
+  useEffect(() => {
+    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+
+    function getInitialChain() {
+      if (!initialAssetParam) return;
+
+      try {
+        const { chainId } = parseCaip19AssetId(
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          initialAssetParam as Caip19AssetId,
+        );
+
+        console.log("looking for chainId", chainId, chainOptions);
+
+        return chainOptions.find((chain) => {
+          return chain.value === chainId;
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    const initialChain = initialAssetParam ? getInitialChain() : null;
+    if (initialChain) {
+      setChainId(initialChain.value);
+    }
+  }, [chainOptions, params]);
 
   const handleClickQRCode = () => {
     if (!address) return;

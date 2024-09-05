@@ -5,6 +5,7 @@ import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { AsyncButton } from "@/ui/button";
 import { LegacyWalletData } from "@/wallet-data-backup";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
@@ -158,7 +159,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         Sign in with one of the services below to recover your wallet.
       </Text>
 
-      <Button
+      <AsyncButton
         onClick={async () => {
           const keyPair = await getPasskey();
 
@@ -176,7 +177,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         variant="primary"
       >
         Passkey
-      </Button>
+      </AsyncButton>
       <Button
         onClick={() => {
           setModal(KeyType.Phone);

@@ -1,6 +1,7 @@
-import { Box, Button, Divider, KeyListItem, Text } from "@/components";
+import { Box, Divider, KeyListItem, Text } from "@/components";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { AsyncButton } from "@/ui/button";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { serialize } from "@obi-wallet/sdk-json";
@@ -66,7 +67,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         >
           Back
         </Button> */}
-        <Button
+        <AsyncButton
           variant="primary"
           block
           disabled={
@@ -106,7 +107,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           }}
         >
           Save
-        </Button>
+        </AsyncButton>
       </div>
     </Box>
   );
