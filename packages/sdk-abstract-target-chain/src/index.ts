@@ -6,7 +6,6 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
-import { StdFee } from "@cosmjs/stargate";
 import { Query } from "@tanstack/query-core";
 
 export interface AssetInfo {
@@ -69,8 +68,6 @@ export abstract class AbstractTargetChain<
   ): Promise<TAddress>;
 
   public abstract validateAddress(address: string): boolean;
-  public abstract validateMessages(messages: unknown[]): boolean;
-  public abstract validateFee(fee: unknown): fee is StdFee;
 
   public abstract isNativeAsset(assetId: Caip19AssetId): boolean;
   public abstract isTokenAsset(assetId: Caip19AssetId): boolean;

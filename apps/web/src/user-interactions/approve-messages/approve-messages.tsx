@@ -2,6 +2,7 @@ import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import { isEncodeObject } from "@/target-chain/cosmos";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
 import {
@@ -9,7 +10,6 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
 import { Coin } from "@cosmjs/amino";
-import { EncodeObject } from "@cosmjs/proto-signing";
 import { StdFee } from "@cosmjs/stargate";
 import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -21,7 +21,6 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import { SendingAnimation } from "./sending-animation";
-import { isEncodeObject } from "@/target-chain/cosmos";
 
 export interface ApproveMessagesProps {
   walletMeta: {
@@ -222,19 +221,29 @@ const PrettyPrint = observer(function PrettyPrint({
   fee: unknown;
   memo: string;
 }) {
-  if (!isCosmosChainId(targetChainId) && !isSecretChainId(targetChainId)) {
+  if (isCosmosChainId(targetChainId)) {
+    return (
+      <PrettyPrintCosmos
+        messages={messages}
+        rawData={rawData}
+        targetChainId={targetChainId}
+        fee={fee}
+        memo={memo}
+      />
+    );
+  } else if (isSecretChainId(targetChainId)) {
+    return (
+      <PrettyPrintSecret
+        messages={messages}
+        rawData={null}
+        targetChainId={targetChainId}
+        fee={fee}
+        memo={memo}
+      />
+    );
+  } else {
     return null;
   }
-
-  return (
-    <PrettyPrintCosmos
-      messages={messages}
-      rawData={rawData}
-      targetChainId={targetChainId}
-      fee={fee}
-      memo={memo}
-    />
-  );
 });
 
 const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
@@ -246,7 +255,94 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
 }: {
   messages: unknown[];
   rawData: unknown;
-  targetChainId: CosmosChainId | SecretChainId;
+  targetChainId: CosmosChainId;
+  fee: unknown | undefined;
+  memo: string;
+}) {
+  const targetChain = TargetChain.chainId(targetChainId);
+  invariant(targetChain.validateMessages(messages), "Invalid messages");
+
+  const feeInfoQuery = useQuery({
+    queryKey: ["feeInfo", { fee, targetChainId }],
+    queryFn:
+      fee && targetChain.validateFee(fee)
+        ? async () => {
+            return await Promise.all(
+              fee.amount.map((coin) => {
+                return prettyPrintCoin({ coin, targetChainId });
+              }),
+            );
+          }
+        : skipToken,
+  });
+
+  const feeInfo = feeInfoQuery.data ?? [
+    {
+      amount: "",
+      denom: "Simulating…",
+    },
+  ];
+
+  const amountsQuery = useQuery({
+    queryKey: ["amounts", { messages, targetChainId }],
+    queryFn: async () => {
+      return await Promise.all(
+        messages
+          .map((message) => {
+            return messageToAmount({ message, targetChainId });
+          })
+          .flat()
+          .map((coin) => {
+            return prettyPrintCoin({ coin, targetChainId });
+          }),
+      );
+    },
+  });
+  const amounts = amountsQuery.data ?? [];
+
+  const descriptionsQuery = useQuery({
+    queryKey: ["descriptions", { messages, targetChainId }],
+    queryFn: async () => {
+      return (
+        await Promise.all(
+          messages.map((message) => {
+            return messageToDescription({ message, targetChainId });
+          }),
+        )
+      ).flat();
+    },
+  });
+
+  const descriptions = descriptionsQuery.data ?? [];
+  const addresses = messages
+    .map((message) => {
+      return messageToAddress({ message });
+    })
+    .flat();
+
+  return (
+    <Transaction
+      amountInfo={amounts}
+      descriptions={descriptions}
+      targetChainId={targetChainId}
+      feeInfo={feeInfo}
+      rawData={rawData}
+      memo={memo}
+      addresses={addresses}
+    />
+  );
+});
+
+const PrettyPrintSecret = observer(function PrettyPrintSecret({
+  messages,
+  rawData,
+  targetChainId,
+  fee,
+  memo,
+}: {
+  messages: unknown[];
+  rawData: unknown;
+  targetChainId: SecretChainId;
   fee: unknown | undefined;
   memo: string;
 }) {
