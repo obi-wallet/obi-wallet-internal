@@ -38,6 +38,16 @@ import { bech32 } from "bech32";
 import { chains } from "chain-registry";
 import { Msg, pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
+import { z } from "zod";
+
+const StdFeeSchema = z.object({
+  amount: z.array(z.object({ amount: z.string(), denom: z.string() })),
+  gas: z.string(),
+});
+
+function isStdFee(fee: unknown): fee is StdFee {
+  return StdFeeSchema.safeParse(fee).success;
+}
 
 export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   public readonly secretChainId: string;
@@ -371,6 +381,10 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       return typeof (msg as Msg).toProto === "function";
     });
+  }
+
+  public validateFee(fee: unknown): fee is StdFee {
+    return isStdFee(fee);
   }
 
   public async assetInfo(id: Caip19AssetId) {
