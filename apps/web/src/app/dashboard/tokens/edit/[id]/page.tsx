@@ -2,22 +2,17 @@
 
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
-import { useAlert } from "@/hooks/alert";
+import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
 import { isSecretChainId } from "@/target-chain/secret/chains";
-import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { AsyncButton } from "@/ui/button";
-import { Encoding } from "@obi-wallet/encoding";
-import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
-import { MsgExecuteContract } from "secretjs";
-import invariant from "tiny-invariant";
 
 export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   params,
@@ -29,7 +24,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   const wallet = useCurrentWallet({});
   const router = useRouter();
   const { tokensStore, viewingKeysStore } = useStore();
-  const alert = useAlert();
+  const createViewingKey = useCreateViewingKey();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -164,51 +159,12 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
               });
 
               if (reference && isSecretChainId(chainId)) {
-                const signer = await SecretMpcSigner.fromWallet(
-                  wallet,
-                  chainId,
-                );
-
-                const accounts = await signer.getAccounts();
-                const firstAccount = accounts[0];
-                invariant(firstAccount, "No account found");
-
-                const random = new Uint8Array(32);
-                crypto.getRandomValues(random);
-                const key = Encoding.fromBytes(random).toHex();
-                const message = new MsgExecuteContract({
-                  sender: firstAccount.address,
-                  contract_address: reference,
-                  msg: {
-                    set_viewing_key: {
-                      key,
-                    },
-                  },
+                const viewingKey = viewingKeysStore.getViewingKey({
+                  address: wallet.userEntryAddress,
+                  assetId,
                 });
-
-                const response =
-                  await SignAndBroadcastTransactionUserInteraction.start({
-                    messages: [message],
-                    memo: "",
-                    cancelable: true,
-                    targetChainId: chainId,
-                    walletMeta: {
-                      userEntryAddress: wallet.userEntryAddress,
-                    },
-                  });
-
-                if (response.approved) {
-                  const broadcastResult = response.payload;
-                  if (broadcastResult.success) {
-                    viewingKeysStore.setViewingKey({
-                      address: wallet.userEntryAddress,
-                      assetId,
-                      key,
-                    });
-                    alert.showSuccess("TX broadcast successfully");
-                  } else {
-                    alert.showError(`TX failed: ${broadcastResult.rawLog}`);
-                  }
+                if (!viewingKey) {
+                  await createViewingKey(assetId);
                 }
               }
 
