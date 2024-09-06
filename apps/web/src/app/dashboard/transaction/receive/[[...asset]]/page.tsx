@@ -23,6 +23,10 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
       return chainId;
     }
 
+    // TODO: debug
+    console.log({
+      params,
+    });
     // User has not selected a chain, but the URL has a chain
     try {
       const assetParam = decodeURIComponent(params.asset?.[0] ?? "");
@@ -40,7 +44,6 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
       }
     } catch (e) {
       console.error(e);
-      return null;
     }
 
     // User has not selected a chain and the URL does not have a chain

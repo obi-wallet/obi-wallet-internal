@@ -116,6 +116,11 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     });
 
   const getAsset = () => {
+    // TODO: debug
+    console.log({
+      params,
+    });
+
     const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
 
     if (initialAssetParam) {
