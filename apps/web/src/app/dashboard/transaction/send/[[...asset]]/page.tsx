@@ -512,7 +512,9 @@ const SendInner = observer<{
                     );
                   }}
                   onItemSelect={function (item) {
-                    router.replace(encodeURIComponent(item.denom));
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {
