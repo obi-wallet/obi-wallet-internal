@@ -116,6 +116,11 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     });
 
   const getAsset = () => {
+    // TODO: debug
+    console.log({
+      params,
+    });
+
     const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
 
     if (initialAssetParam) {
@@ -507,7 +512,9 @@ const SendInner = observer<{
                     );
                   }}
                   onItemSelect={function (item) {
-                    router.replace(encodeURIComponent(item.denom));
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {
