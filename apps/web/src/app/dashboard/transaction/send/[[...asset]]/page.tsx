@@ -18,6 +18,7 @@ import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
@@ -116,13 +117,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     });
 
   const getAsset = () => {
-    // TODO: debug
-    console.log({
-      params,
-    });
-
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
-
+    const initialAssetParam = urlDecodeCatchAllParam(params.asset ?? []);
     if (initialAssetParam) {
       const balanceOption = balanceOptions.find((balance) => {
         return balance.asset.assetId === initialAssetParam;
