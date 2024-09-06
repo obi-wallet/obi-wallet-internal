@@ -30,7 +30,7 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
@@ -73,11 +73,82 @@ type FormData = z.infer<typeof schema>;
 export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
 }) {
+  const balances = useBalances();
+  const balance = balances
+    .filter((b) => {
+      return b.isSuccess;
+    })
+    .map((b) => {
+      return b.data;
+    })
+    .filter((b): b is PrettyCaip19Asset[] => {
+      return !!b;
+    });
+
+  const withChainId = balance.flat();
+
+  const balanceOptions = withChainId
+    .map((b) => {
+      const { chainId } = parseCaip19AssetId(b.assetId);
+      if (!b.assetInfo) return null;
+
+      invariant(
+        isCosmosChainId(chainId) ||
+          isEip155ChainId(chainId) ||
+          isSecretChainId(chainId),
+        "Expected valid targetChainId",
+      );
+
+      const result: IBalanceOption = {
+        image: b.assetInfo.image ?? undefined,
+        targetChainId: chainId,
+        denom: b.assetId,
+        network: TargetChain.chainId(chainId).label,
+        assetUnit: b.assetInfo.symbol,
+        balance: new BigNumber(b.prettyAmount),
+        asset: b,
+        assetInfo: b.assetInfo,
+      };
+      return result;
+    })
+    .filter((option): option is IBalanceOption => {
+      return !!option;
+    });
+
+  const getAsset = () => {
+    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+
+    if (initialAssetParam) {
+      const balanceOption = balanceOptions.find((balance) => {
+        return balance.asset.assetId === initialAssetParam;
+      });
+      if (balanceOption) {
+        return balanceOption;
+      }
+    }
+
+    return balanceOptions[0];
+  };
+
+  const asset = getAsset();
+
+  if (asset) {
+    return <SendInner asset={asset} balanceOptions={balanceOptions} />;
+  }
+
+  return null;
+});
+
+const SendInner = observer<{
+  asset: IBalanceOption;
+  balanceOptions: IBalanceOption[];
+}>(function Send({ asset, balanceOptions }) {
+  const router = useRouter();
   const form = useForm<FormData>({
     defaultValues: {
       coin: {
         amount: "",
-        asset: null,
+        asset,
       },
       recipient: "",
       memo: "",
@@ -87,7 +158,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const balances = useBalances();
   const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
@@ -320,70 +390,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     },
   });
 
-  const balance = balances
-    .filter((b) => {
-      return b.isSuccess;
-    })
-    .map((b) => {
-      return b.data;
-    })
-    .filter((b): b is PrettyCaip19Asset[] => {
-      return !!b;
-    });
-
-  const withChainId = balance.flat();
-
-  const balanceOptions = withChainId
-    .map((b) => {
-      const { chainId } = parseCaip19AssetId(b.assetId);
-      if (!b.assetInfo) return null;
-
-      invariant(
-        isCosmosChainId(chainId) ||
-          isEip155ChainId(chainId) ||
-          isSecretChainId(chainId),
-        "Expected valid targetChainId",
-      );
-
-      const result: IBalanceOption = {
-        image: b.assetInfo.image ?? undefined,
-        targetChainId: chainId,
-        denom: b.assetId,
-        network: TargetChain.chainId(chainId).label,
-        assetUnit: b.assetInfo.symbol,
-        balance: new BigNumber(b.prettyAmount),
-        asset: b,
-        assetInfo: b.assetInfo,
-      };
-      return result;
-    })
-    .filter((option): option is IBalanceOption => {
-      return !!option;
-    });
-
-  useEffect(() => {
-    const coin = form.getValues().coin;
-    if (coin.asset) return;
-
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
-
-    function getInitialAsset() {
-      if (!initialAssetParam) return;
-
-      return balanceOptions.find((balance) => {
-        return balance.asset.assetId === initialAssetParam;
-      });
-    }
-
-    const initialAsset = initialAssetParam ? getInitialAsset() : null;
-    if (initialAsset) {
-      form.setValue("coin", {
-        amount: coin.amount,
-        asset: initialAsset,
-      });
-    }
-  }, [balanceOptions, form, params]);
-
   if (balanceOptions.length === 0) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
@@ -501,10 +507,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                     );
                   }}
                   onItemSelect={function (item) {
-                    setCoin({
-                      amount: coin.amount,
-                      asset: item,
-                    });
+                    router.replace(encodeURIComponent(item.denom));
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {

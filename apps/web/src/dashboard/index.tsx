@@ -3,9 +3,11 @@
 import { Account, Button, Divider, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
+import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { SecretChainId } from "@/target-chain/secret/chains";
+import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
@@ -378,6 +380,8 @@ export const AssetRow = observer(function AssetRow({
     assetInfo.chainId === SecretChainId.Secret &&
     assetInfo.namespace === "snip20";
 
+  const createViewingKey = useCreateViewingKey();
+
   return (
     <li
       className="hover:bg-asset-hover-gradient relative flex cursor-pointer justify-between py-1.5 hover:rounded-lg"
@@ -429,18 +433,16 @@ export const AssetRow = observer(function AssetRow({
             )
           ) : (
             <>
-              <Button
+              <AsyncButton
                 variant="primary"
                 className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  router.push(
-                    `/dashboard/tokens/edit/${encodeURIComponent(asset.assetId)}`,
-                  );
+                  await createViewingKey(asset.assetId);
                 }}
               >
                 Create Viewing Key
-              </Button>
+              </AsyncButton>
             </>
           )
         ) : (
@@ -475,18 +477,16 @@ export const AssetRow = observer(function AssetRow({
             )
           ) : (
             <>
-              <Button
+              <AsyncButton
                 variant="primary"
                 className="-ml-6 h-5 max-sm:text-sm sm:hidden"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  router.push(
-                    `/dashboard/tokens/edit/${encodeURIComponent(asset.assetId)}`,
-                  );
+                  await createViewingKey(asset.assetId);
                 }}
               >
                 Create Viewing Key
-              </Button>
+              </AsyncButton>
             </>
           )
         ) : (
