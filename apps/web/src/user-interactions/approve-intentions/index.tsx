@@ -1,4 +1,5 @@
-import { Button, KeyItem, Text } from "@/components";
+import { KeyItem, Text } from "@/components";
+import { useAlert } from "@/hooks/alert";
 import {
   IntentionsPayload,
   IntentionsResult,
@@ -8,6 +9,7 @@ import { MultisigKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { AsyncButton } from "@/ui/button";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
 import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -81,6 +83,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     } | null>(null);
 
     const [results, setResults] = useState(new IntentionsResults());
+    const alert = useAlert();
 
     const getResult = (key: Key) => {
       return results.get(key.publicKey.value);
@@ -107,6 +110,35 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
 
     const confirmedKeyCount = results.size;
 
+    const handleClick = async (key: KeyItem, index: number) => {
+      switch (key.key.type) {
+        case KeyType.Passkey: {
+          try {
+            const intentionsHandler = new PasskeyIntentionsHandler({
+              owner: multisigKey,
+              payload: intentions,
+            });
+            const result = await intentionsHandler.handle();
+            setResultWithPublicKey(result.publicKey, result.intentionsResult);
+          } catch (e) {
+            console.error(e);
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const error = e as Error;
+            alert.showError(`Could not process passkey: ${error.message}`);
+          }
+          break;
+        }
+
+        case KeyType.Telegram: {
+          setModal({
+            key,
+            index,
+          });
+          break;
+        }
+      }
+    };
+
     return (
       <div className="relative w-full">
         <div className="flex justify-center">
@@ -118,38 +150,17 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
             {keyList.map((keyData) => {
               return keyData.keys.map((key) => {
                 return (
-                  <Button
+                  <AsyncButton
                     key={key.id}
                     className={cn("mt-4 w-full", "max-md:mt-2")}
                     block
                     onClick={async () => {
-                      const index = multisigKey.keys.findIndex((k) => {
-                        return k.publicKey.value === key.key.publicKey.value;
-                      });
-
-                      switch (key.key.type) {
-                        case KeyType.Passkey: {
-                          const intentionsHandler =
-                            new PasskeyIntentionsHandler({
-                              owner: multisigKey,
-                              payload: intentions,
-                            });
-                          const result = await intentionsHandler.handle();
-                          setResultWithPublicKey(
-                            result.publicKey,
-                            result.intentionsResult,
-                          );
-                          break;
-                        }
-
-                        case KeyType.Telegram: {
-                          setModal({
-                            key,
-                            index,
-                          });
-                          break;
-                        }
-                      }
+                      await handleClick(
+                        key,
+                        multisigKey.keys.findIndex((k) => {
+                          return k.publicKey.value === key.key.publicKey.value;
+                        }),
+                      );
                     }}
                     variant={getResult(key.key) ? "confirmed" : "primary"}
                     disabled={
@@ -157,7 +168,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                     }
                   >
                     {key.label}
-                  </Button>
+                  </AsyncButton>
                 );
               });
             })}

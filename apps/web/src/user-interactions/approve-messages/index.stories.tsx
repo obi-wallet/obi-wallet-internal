@@ -3,7 +3,9 @@ import { providerWithWalletDecorator } from "@/storybook-helpers";
 import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import type { Meta, StoryObj } from "@storybook/react";
+import { MsgSend } from "secretjs";
 
 import { ApproveMessages } from ".";
 
@@ -17,7 +19,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const sendMessage = {
+const sendMessageCosmos = {
   typeUrl: "/cosmos.bank.v1beta1.MsgSend",
   value: {
     fromAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
@@ -31,15 +33,40 @@ const sendMessage = {
   },
 };
 
-export const SendMessage: Story = {
+export const SendMessageCosmos: Story = {
   args: {
     walletMeta: {
       userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: CosmosChainId.Sei,
-    messages: [sendMessage],
+    messages: [sendMessageCosmos],
     memo: "",
-    rawData: [sendMessage],
+    rawData: [sendMessageCosmos],
+    onReject: () => {},
+    onApprove: async () => {},
+  },
+};
+
+const sendMessageSecret = new MsgSend({
+  from_address: "secret1kvjg92ldmughvhcynu72ef3zjgrx9rdkz3wc2z",
+  to_address: "secret1kvjg92ldmughvhcynu72ef3zjgrx9rdkz3wc2z",
+  amount: [
+    {
+      denom: "uscrt",
+      amount: "1",
+    },
+  ],
+});
+
+export const SendMessageSecret: Story = {
+  args: {
+    walletMeta: {
+      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+    },
+    targetChainId: SecretChainId.Secret,
+    messages: [sendMessageSecret],
+    memo: "",
+    rawData: [sendMessageSecret],
     onReject: () => {},
     onApprove: async () => {},
   },

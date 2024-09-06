@@ -163,7 +163,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             />
           ) : null}
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 flex w-full flex-row space-x-6">
             <Button block variant="outline" onClick={onReject}>
               Reject
             </Button>
@@ -285,7 +285,31 @@ const PrettyPrint = observer(function PrettyPrint({
       size(executionCallData) > 52 ? sliceHex(executionCallData, 52) : null;
 
     const targetChain = TargetChain.chainId(targetChainId);
-    const asset = targetChain.assetInfo(targetChain.nativeCurrency.symbol);
+
+    const getImage = () => {
+      switch (targetChain.nativeCurrency.symbol) {
+        case "AVAX":
+          return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
+        case "ETH":
+          return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
+        case "BNB":
+        case "tBNB":
+          return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
+        case "CRO":
+          return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
+        case "MATIC":
+          return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
+        default:
+          return null;
+      }
+    };
+    const asset = {
+      name: targetChain.nativeCurrency.name,
+      symbol: targetChain.nativeCurrency.symbol,
+      decimals: targetChain.nativeCurrency.decimals,
+      image: getImage(),
+    };
+
     const amount = new BigNumber(hexToBigInt(value).toString(10))
       .dividedBy(10 ** (asset?.decimals ?? 0))
       .toString();

@@ -15,7 +15,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
     const assetId =
       "cosmos:pacific-1/factory:sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w%2FOIN";
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
+    const tokenInfo = await targetChain.assetInfo(assetId);
     expect(tokenInfo?.symbol).to.equal("OIN");
   });
 
@@ -23,7 +23,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
     const assetId =
       "cosmos:pacific-1/factory:sei1lwp83awd5d2gt4sfet47khj8cwav2lmqn904fe%2FOIN";
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
+    const tokenInfo = await targetChain.assetInfo(assetId);
     expect(tokenInfo?.symbol).to.equal(
       "factory/sei1lwp83awd5d2gt4sfet47khj8cwav2lmqn904fe/OIN",
     );
@@ -33,7 +33,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const targetChain = TargetChain.chainId(CosmosChainId.Sei);
     const assetId =
       "cosmos:pacific-1/cw20:sei1hrndqntlvtmx2kepr0zsfgr7nzjptcc72cr4ppk4yav58vvy7v3s4er8ed";
-    const tokenInfo = await targetChain.newAssetInfo(assetId);
+    const tokenInfo = await targetChain.assetInfo(assetId);
     expect(tokenInfo?.symbol).to.equal("SEIYAN");
   });
 

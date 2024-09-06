@@ -1,4 +1,3 @@
-import { AssetProvider } from "@/asset-provider";
 import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
@@ -46,13 +45,14 @@ import { MpcWallet } from "@obi-wallet/sdk";
 import {
   AbstractTargetChain,
   AssetInfo,
+  Caip19Asset,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import {
   Caip19AssetId,
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
-import { serialize } from "@obi-wallet/sdk-json";
 import {
   getSec256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -63,7 +63,6 @@ import {
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
-import BigNumber from "bignumber.js";
 import { chains } from "chain-registry";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
@@ -127,17 +126,6 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     return this.computeAddress(publicKey);
   }
 
-  public async withStargateClient<T>(
-    f: (client: StargateClient) => Promise<T>,
-  ) {
-    const client = await this.createStargateClient();
-    try {
-      return await f(client);
-    } finally {
-      client.disconnect();
-    }
-  }
-
   public isNativeAsset(assetId: Caip19AssetId) {
     const { chainId, namespace } = parseCaip19AssetId(assetId);
     return (
@@ -154,24 +142,16 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public async nativeBalancesQueryFn(address: string) {
     return await this.withStargateClient(async (client) => {
       const balances = await client.getAllBalances(address);
-      return balances.map((balance) => {
-        const getCaip19AssetId = (): Caip19AssetId => {
-          if (balance.denom.startsWith("factory/")) {
-            return `${this.chainId}/factory:${balance.denom.replace("factory/", "").replace("/", "%2F")}`;
-          }
-
-          if (balance.denom.startsWith("ibc/")) {
-            return `${this.chainId}/ibc:${balance.denom.replace("ibc/", "").replace("/", "%2F")}`;
-          }
-
-          return `${this.chainId}/native:${balance.denom}`;
-        };
-
-        return {
-          assetId: getCaip19AssetId(),
-          rawAmount: balance.amount,
-        };
-      });
+      return balances
+        .map((balance) => {
+          return {
+            assetId: this.denomToCaip19AssetId(balance.denom),
+            rawAmount: balance.amount,
+          };
+        })
+        .filter((balance): balance is Caip19Asset => {
+          return !!balance.assetId;
+        });
     });
   }
 
@@ -197,74 +177,17 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     }
   }
 
-  public async newPriceQueryFn(id: Caip19AssetId) {
-    const { namespace, reference } = parseCaip19AssetId(id);
-
-    if (
-      [CosmosChainId.Neutron, CosmosChainId.Sei].includes(this.chainId) &&
-      !["untrn", "usei"].includes(reference)
-    ) {
-      const url = "https://api.skip.money/v2/fungible/route";
-      const asset = await this.newAssetInfo(id);
-
-      const amountIn = new BigNumber(1)
-        .multipliedBy(10 ** (asset?.decimals ?? 0))
-        .toFixed(0);
-
-      const sourceAssetDenom =
-        namespace === "ibc" ? `ibc/${reference}` : reference;
-      const data = {
-        source_asset_chain_id: this.cosmosChainId,
-        amount_in: amountIn,
-        source_asset_denom: sourceAssetDenom,
-        dest_asset_denom:
-          "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
-        dest_asset_chain_id: this.cosmosChainId,
-        allow_unsafe: true,
-      };
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: serialize(data),
-        });
-        const schema = z.object({
-          usd_amount_out: z.string(),
-        });
-        const { usd_amount_out } = schema.parse(await response.json());
-        return { usdValue: usd_amount_out };
-      } catch (e) {
-        console.log("SKIP ERROR", e);
-      }
-    }
-
-    const url = `https://api.0xsquid.com/v1/token-price?chainId=${this.cosmosChainId}&tokenAddress=${reference}`;
-    try {
-      const response = await fetch(url);
-      const schema = z.object({
-        price: z.number(),
-      });
-      const { price } = schema.parse(await response.json());
-      return { usdValue: price.toString(10) };
-    } catch (e) {
-      console.error("Error fetching price", e);
-      return { usdValue: "0" };
-    }
-  }
-
-  public denomMetadata(denom: string) {
+  protected denomMetadata(denom: string) {
     return queryClient.fetchQuery(this.denomMetadataQuery(denom));
   }
-  public get denomMetadataQuery() {
+  protected get denomMetadataQuery() {
     return this.queryNamespace.createQuery({
       name: "denomMetadata",
       fn: this.denomMetadataQueryFn.bind(this),
       staleTime: { day: 1 },
     });
   }
-  public async denomMetadataQueryFn(denom: string) {
+  protected async denomMetadataQueryFn(denom: string) {
     return await this.withTendermint34Client(async (client) => {
       const queryClient = new QueryClient(client);
       const bankExtension = setupBankExtension(queryClient);
@@ -292,6 +215,17 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     f: (client: Tendermint34Client) => Promise<T>,
   ) {
     const client = await this.createTendermint34Client();
+    try {
+      return await f(client);
+    } finally {
+      client.disconnect();
+    }
+  }
+
+  public async withStargateClient<T>(
+    f: (client: StargateClient) => Promise<T>,
+  ) {
+    const client = await this.createStargateClient();
     try {
       return await f(client);
     } finally {
@@ -515,9 +449,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     return isStdFee(fee);
   }
 
-  public async newAssetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
-    const asset = await AssetProvider.getInstance().assetInfo(id);
-    if (asset) return asset;
+  public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
+    const asset = await AssetRegistry.getInstance().byId(id);
+    if (asset?.assetInfo) return asset.assetInfo;
 
     const { namespace, reference } = parseCaip19AssetId(id);
     switch (namespace) {
@@ -554,12 +488,16 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       }
     }
 
-    return asset ?? null;
+    return null;
   }
 
   public validateAddress(address: string): boolean {
-    const { prefix } = bech32.decode(address);
-    return prefix === this.chainData.prefix;
+    try {
+      const { prefix } = bech32.decode(address);
+      return prefix === this.chainData.prefix;
+    } catch {
+      return false;
+    }
   }
 
   public get aminoTypes() {
@@ -699,7 +637,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       return `${this.chainId}/ibc:${denom.replace("ibc/", "").replace("/", "%2F")}`;
     }
 
-    if (denom.startsWith(this.chainData.prefix)) {
+    if (this.validateAddress(denom)) {
       return `${this.chainId}/cw20:${denom.replace("/", "%2F")}`;
     }
 
@@ -716,7 +654,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "ibc":
         return `ibc/${reference.replace("%2F", "/")}`;
       case "cw20":
-        return `cw20/${reference.replace("%2F", "/")}`;
+        return reference.replace("%2F", "/");
       default:
         return null;
     }

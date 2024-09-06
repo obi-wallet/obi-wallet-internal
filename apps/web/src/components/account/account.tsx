@@ -34,13 +34,13 @@ export const Account = observer(function Account() {
           <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
             <img src="/points.svg" alt="points" className="h-5" />
           </div>
-          <div className="flex flex-row gap-3 ">
-            <div className=" h-full max-h-[70px] w-full max-w-[70px] rounded-full  bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
+          <div className="flex flex-row gap-3">
+            <div className="flex h-full max-h-[70px] w-full max-w-[70px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
               {userData.avatar ? (
                 <Image
                   width={70}
                   height={70}
-                  className="h-[70px] w-[70px] rounded-full object-cover"
+                  className="h-revertLayer rounded-full object-cover max-sm:h-[37px]"
                   src={userData.avatar}
                   alt={name}
                 />
@@ -72,7 +72,7 @@ export const Account = observer(function Account() {
       <div className="">
         <div className="gap-1 bg-slate-900 px-4 pb-3.5 pt-2.5">
           <div className="flex justify-between">
-            <Text fontWeight="normal" className=" mb-2 text-sm">
+            <Text fontWeight="normal" className="mb-2 text-sm">
               Balance
             </Text>
             {userData.balanceHidden ? (

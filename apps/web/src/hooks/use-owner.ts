@@ -42,6 +42,6 @@ export function useOwnerQuery() {
           return await fetchOwner(wallet);
         }
       : skipToken,
-    staleTime: staleTime({ minute: 5 }),
+    staleTime: staleTime({ minutes: 5 }),
   });
 }

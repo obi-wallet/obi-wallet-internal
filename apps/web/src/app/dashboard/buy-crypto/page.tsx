@@ -6,6 +6,7 @@ import { rootStore } from "@/stores";
 import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
+import { SecretChainId } from "@/target-chain/secret/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
@@ -108,6 +109,8 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
     case Eip155ChainId.EthereumTestnet:
     case Eip155ChainId.Zora:
       return null;
+    case SecretChainId.Secret:
+      return "SECRET";
   }
 }
 
@@ -136,7 +139,7 @@ export default observer(function BuyCrypto() {
     <div className="h-full w-full">
       <iframe
         src={kadoUrl.data.toString()}
-        className=" h-full w-[500px] max-md:w-full"
+        className="h-full w-[500px] max-md:w-full"
       />
     </div>
   );

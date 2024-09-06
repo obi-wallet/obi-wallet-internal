@@ -5,8 +5,8 @@ import { observer } from "mobx-react-lite";
 
 export default observer(function ImportNewAsset() {
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <div className="my-4 flex-1 text-center text-white">
           Import New Asset
         </div>

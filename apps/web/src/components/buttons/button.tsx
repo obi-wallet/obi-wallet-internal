@@ -4,21 +4,20 @@ import { ComponentPropsWithRef, forwardRef } from "react";
 import { IconType } from "react-icons";
 import { FaArrowsRotate } from "react-icons/fa6";
 
-const ButtonVariant = [
-  "primary",
-  "outline",
-  "confirmed",
-  "secondary",
-  "variant",
-  "detail",
-] as const;
-const ButtonSize = ["sm", "base"] as const;
+export type ButtonVariant =
+  | "primary"
+  | "outline"
+  | "confirmed"
+  | "secondary"
+  | "detail";
 
-type ButtonProps = {
+export type ButtonSize = "sm" | "base";
+
+export type ButtonProps = {
   isLoading?: boolean;
   isDarkBg?: boolean;
-  variant?: (typeof ButtonVariant)[number];
-  size?: (typeof ButtonSize)[number];
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   leftIcon?: IconType;
   rightIcon?: IconType;
   classNames?: {
@@ -45,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       block,
       href,
       ...rest
-    },
+    }: ButtonProps,
     ref,
   ) {
     const disabled = isLoading || buttonDisabled;
@@ -106,9 +105,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               className={cn(
                 "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
                 {
-                  "text-white": ["primary", "dark"].includes(variant),
-                  "text-black": ["light"].includes(variant),
-                  "text-primary-500": ["outline", "ghost"].includes(variant),
+                  "text-white": [
+                    "primary",
+                    "secondary",
+                    "detail",
+                    "confirmed",
+                  ].includes(variant),
+                  "text-zinc-400": ["outline"].includes(variant),
                 },
               )}
             >

@@ -4,7 +4,9 @@ import { Box, Button, ChainDropdown, Input } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
+import { AsyncButton } from "@/ui/button";
 import { InputContainer } from "@/ui/container";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,13 +18,13 @@ export default observer(function TokenAdd() {
   const [address, setAddress] = useState("");
 
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <div className="my-4 flex-1 text-center text-white">
           Import New Asset
         </div>
         <InputContainer
-          className="relative z-10  w-80"
+          className="relative z-10 w-80"
           label="Chain"
           labelClassname="bg-background-secondary"
         >
@@ -46,14 +48,18 @@ export default observer(function TokenAdd() {
           >
             Cancel
           </Button>
-          <Button
+          <AsyncButton
             onClick={async () => {
               const targetChain = TargetChain.chainId(chainId);
-              const assetId =
-                TargetChain.chainId(chainId).denomToCaip19AssetId(address);
+
+              const { assetId } = await AssetRegistry.getInstance().byDenom({
+                chainId: chainId,
+                denom: address,
+              });
+
               const assetInfo =
-                assetId && (await targetChain.newAssetInfo(assetId));
-              if (assetInfo) {
+                assetId && (await targetChain.assetInfo(assetId));
+              if (assetInfo && assetId) {
                 router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,
                 );
@@ -64,7 +70,7 @@ export default observer(function TokenAdd() {
             className="flex-1 justify-center rounded-lg p-2"
           >
             Add
-          </Button>
+          </AsyncButton>
         </div>
       </Box>
     </div>

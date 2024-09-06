@@ -8,21 +8,15 @@ import { observer } from "mobx-react-lite";
 
 import { DropDown } from "./dropdown";
 
-export const ChainDropdown = observer(function ChainDropdown({
-  onChange,
-  chainId,
-}: {
-  chainId: TargetChainId;
-  onChange: (chainId: TargetChainId) => void;
-}) {
+export function useChainOptions() {
   const wallet = useCurrentWallet({});
   const { targetChainsStore } = useStore();
 
   if (!wallet) {
-    return null;
+    return [];
   }
 
-  const chainOptions = targetChainsStore
+  return targetChainsStore
     .getTargetChains(wallet.userEntryAddress)
     .map((chain) => {
       return {
@@ -34,7 +28,20 @@ export const ChainDropdown = observer(function ChainDropdown({
     })
     .filter((chain) => {
       return !chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.label.localeCompare(b.label);
     });
+}
+
+export const ChainDropdown = observer(function ChainDropdown({
+  onChange,
+  chainId,
+}: {
+  chainId: TargetChainId;
+  onChange: (chainId: TargetChainId) => void;
+}) {
+  const chainOptions = useChainOptions();
 
   return (
     <div className="flex w-full flex-row">
@@ -68,15 +75,15 @@ export const ChainDropdown = observer(function ChainDropdown({
           return (
             <li
               className={cn(
-                " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                option.value === selectedOption?.value && "bg-gray-600 ",
+                "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                option.value === selectedOption?.value && "bg-gray-600",
                 option.disabled &&
                   "cursor-not-allowed opacity-50 hover:bg-gray-600",
               )}
               onClick={handleOption}
               key={option.value}
             >
-              <img src={option.image} alt="asset" className="h-6 w-6 " />
+              <img src={option.image} alt="asset" className="h-6 w-6" />
               <span>{option.label}</span>
             </li>
           );

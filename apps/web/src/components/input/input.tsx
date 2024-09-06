@@ -83,7 +83,9 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
 
     if (type === "number" && isNaN(Number(value))) return;
     setText(value.trim());
-    onChange && onChange(value.trim());
+    if (typeof onChange === "function") {
+      onChange(value.trim());
+    }
   };
 
   const renderErrorMessage = (message: string) => {
@@ -94,8 +96,8 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
   };
 
   return (
-    <div className="flex w-full flex-col ">
-      <div className="relative w-full ">
+    <div className="flex w-full flex-col">
+      <div className="relative w-full">
         {StartIcon && (
           <span className="absolute left-3 top-1/2 -translate-y-1/2">
             <StartIcon
@@ -118,13 +120,15 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
             StartIcon && "px-9",
             errorMessage
               ? ":focus:border-red-500 border-red-500"
-              : "  focus:border-background-primary-active ",
+              : "focus:border-background-primary-active",
             className,
           )}
           required
           value={text || ""}
           onChange={(e) => {
-            !disabled && handleChange(e);
+            if (!disabled) {
+              handleChange(e);
+            }
           }}
           disabled={disabled}
           placeholder={placeholder}
@@ -157,7 +161,7 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
         )}
 
         {errorMessage && (
-          <div className=" absolute bottom-6 ml-7 h-1 w-full  text-sm  text-red-800">
+          <div className="absolute bottom-6 ml-7 h-1 w-full text-sm text-red-800">
             {renderErrorMessage(errorMessage)}
           </div>
         )}

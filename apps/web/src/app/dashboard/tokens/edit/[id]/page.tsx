@@ -2,8 +2,11 @@
 
 import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
+import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TargetChain } from "@/target-chain";
+import { isSecretChainId } from "@/target-chain/secret/chains";
+import { AsyncButton } from "@/ui/button";
 import { AssetInfo } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
@@ -16,9 +19,12 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
 }) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const assetId = decodeURIComponent(params.id) as Caip19AssetId;
+  const { chainId, reference } = parseCaip19AssetId(assetId);
+
   const wallet = useCurrentWallet({});
   const router = useRouter();
-  const { tokensStore } = useStore();
+  const { tokensStore, viewingKeysStore } = useStore();
+  const createViewingKey = useCreateViewingKey();
 
   const [state, setState] = useState<{
     enabled: boolean;
@@ -32,6 +38,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
       image: "",
     },
   });
+
   useEffectOnceWhen(async () => {
     if (wallet) {
       const persistedAssetInfo = tokensStore.getTokenConfig({
@@ -49,9 +56,7 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
           },
         });
       } else {
-        const { chainId } = parseCaip19AssetId(assetId);
-        const assetInfo =
-          await TargetChain.chainId(chainId).newAssetInfo(assetId);
+        const assetInfo = await TargetChain.chainId(chainId).assetInfo(assetId);
         if (assetInfo) {
           setState({
             assetInfo,
@@ -65,8 +70,8 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
   if (!wallet) return null;
 
   return (
-    <div className="w-full ">
-      <Box className="w-full lg:w-1/2 ">
+    <div className="w-full">
+      <Box className="w-full lg:w-1/2">
         <div className="my-4 flex-1 text-center text-white">Edit Asset</div>
         <div className="my-4">
           <label className="text-sm text-white">Token ID</label>
@@ -139,25 +144,52 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
         <div className="mb-4 mt-0.5 flex gap-8 text-white">
           <Button
             onClick={() => {
+              tokensStore.removeTokenConfig({
+                address: wallet.userEntryAddress,
+                assetId,
+              });
+              viewingKeysStore.removeViewingKey({
+                address: wallet.userEntryAddress,
+                assetId,
+              });
+              router.back();
+            }}
+            className="flex-1 justify-center rounded-lg border-red-500 bg-transparent p-2 text-center hover:border-red-500 hover:bg-red-500"
+          >
+            Remove
+          </Button>
+          <Button
+            onClick={() => {
               router.back();
             }}
             className="flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
           >
             Cancel
           </Button>
-          <Button
-            onClick={() => {
+          <AsyncButton
+            onClick={async () => {
               tokensStore.setTokenConfig({
                 address: wallet.userEntryAddress,
                 assetId,
                 config: state,
               });
-              router.back();
+
+              if (reference && isSecretChainId(chainId)) {
+                const viewingKey = viewingKeysStore.getViewingKey({
+                  address: wallet.userEntryAddress,
+                  assetId,
+                });
+                if (!viewingKey) {
+                  await createViewingKey(assetId);
+                }
+              }
+
+              router.push("/dashboard");
             }}
             className="flex-1 justify-center rounded-lg p-2"
           >
             Save
-          </Button>
+          </AsyncButton>
         </div>
       </Box>
     </div>

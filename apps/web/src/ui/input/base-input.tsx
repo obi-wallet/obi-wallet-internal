@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
 import { DetailedHTMLProps, forwardRef, InputHTMLAttributes } from "react";
 
-export interface BaseInputProps
-  extends DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {}
+export type BaseInputProps = DetailedHTMLProps<
+  InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
 
 export const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
   function BaseInput({ className, ...rest }: BaseInputProps, ref) {

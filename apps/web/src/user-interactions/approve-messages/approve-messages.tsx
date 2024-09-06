@@ -3,6 +3,7 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
+import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
 import {
   ApproveIntentions,
   IntentionsResults,
@@ -17,6 +18,7 @@ import { skipToken, useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { Msg, MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 
 import { SendingAnimation } from "./sending-animation";
@@ -65,31 +67,58 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       queryKey: ["simulate", { walletMeta, targetChainId, messages }],
       queryFn: async () => {
         invariant(wallet, "Wallet not found");
-        invariant(isCosmosChainId(targetChainId), "Invalid chainId");
 
-        const targetChain = TargetChain.chainId(targetChainId);
+        if (isCosmosChainId(targetChainId)) {
+          const targetChain = TargetChain.chainId(targetChainId);
 
-        const fee = await targetChain.calculateFee({
-          wallet,
-          messages,
-          memo,
-        });
+          const fee = await targetChain.calculateFee({
+            wallet,
+            messages,
+            memo,
+          });
 
-        invariant(fee, "Fee could not be calculated");
+          invariant(fee, "Fee could not be calculated");
 
-        const hash = calculateHashToSign
-          ? await calculateHashToSign({ wallet, fee })
-          : await targetChain.calculateHashToSign({
-              wallet,
-              fee,
-              messages,
-              memo,
-            });
+          const hash = calculateHashToSign
+            ? await calculateHashToSign({ wallet, fee })
+            : await targetChain.calculateHashToSign({
+                wallet,
+                fee,
+                messages,
+                memo,
+              });
 
-        return {
-          fee,
-          hash: Encoding.fromBytes(hash).toHex(),
-        };
+          return {
+            fee,
+            hash: Encoding.fromBytes(hash).toHex(),
+          };
+        }
+
+        if (isSecretChainId(targetChainId)) {
+          const targetChain = TargetChain.chainId(targetChainId);
+
+          const fee = await targetChain.calculateFee({
+            wallet,
+            messages,
+            memo,
+          });
+
+          invariant(fee, "Fee could not be calculated");
+
+          const hash = calculateHashToSign
+            ? await calculateHashToSign({ wallet, fee })
+            : await targetChain.calculateHashToSign({
+                wallet,
+                fee,
+                messages,
+                memo,
+              });
+
+          return {
+            fee,
+            hash: Encoding.fromBytes(hash).toHex(),
+          };
+        }
       },
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -156,7 +185,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             />
           ) : null}
 
-          <div className="mt-6 flex w-full flex-row space-x-6 ">
+          <div className="mt-6 flex w-full flex-row space-x-6">
             <Button block variant="outline" onClick={onReject}>
               Reject
             </Button>
@@ -193,19 +222,29 @@ const PrettyPrint = observer(function PrettyPrint({
   fee: unknown;
   memo: string;
 }) {
-  if (!isCosmosChainId(targetChainId)) {
+  if (isCosmosChainId(targetChainId)) {
+    return (
+      <PrettyPrintCosmos
+        messages={messages}
+        rawData={rawData}
+        targetChainId={targetChainId}
+        fee={fee}
+        memo={memo}
+      />
+    );
+  } else if (isSecretChainId(targetChainId)) {
+    return (
+      <PrettyPrintSecret
+        messages={messages}
+        rawData={rawData}
+        targetChainId={targetChainId}
+        fee={fee}
+        memo={memo}
+      />
+    );
+  } else {
     return null;
   }
-
-  return (
-    <PrettyPrintCosmos
-      messages={messages}
-      rawData={rawData}
-      targetChainId={targetChainId}
-      fee={fee}
-      memo={memo}
-    />
-  );
 });
 
 const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
@@ -251,7 +290,7 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
       return await Promise.all(
         messages
           .map((message) => {
-            return messageToAmount({ message, targetChainId });
+            return messageToAmountCosmos({ message });
           })
           .flat()
           .map((coin) => {
@@ -268,7 +307,7 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
       return (
         await Promise.all(
           messages.map((message) => {
-            return messageToDescription({ message, targetChainId });
+            return messageToDescriptionCosmos({ message, targetChainId });
           }),
         )
       ).flat();
@@ -278,7 +317,7 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
   const descriptions = descriptionsQuery.data ?? [];
   const addresses = messages
     .map((message) => {
-      return messageToAddress({ message });
+      return messageToAddressCosmos({ message });
     })
     .flat();
 
@@ -295,12 +334,94 @@ const PrettyPrintCosmos = observer(function PrettyPrintCosmos({
   );
 });
 
-function messageToAmount({
-  message,
+const PrettyPrintSecret = observer(function PrettyPrintSecret({
+  messages,
+  rawData,
+  targetChainId,
+  fee,
+  memo,
 }: {
-  message: EncodeObject;
-  targetChainId: TargetChainId;
-}): Coin[] {
+  messages: unknown[];
+  rawData: unknown;
+  targetChainId: SecretChainId;
+  fee: unknown | undefined;
+  memo: string;
+}) {
+  const targetChain = TargetChain.chainId(targetChainId);
+  invariant(targetChain.validateMessages(messages), "Invalid messages");
+
+  const feeInfoQuery = useQuery({
+    queryKey: ["feeInfo", { fee, targetChainId }],
+    queryFn:
+      fee && targetChain.validateFee(fee)
+        ? async () => {
+            return await Promise.all(
+              fee.amount.map((coin) => {
+                return prettyPrintCoin({ coin, targetChainId });
+              }),
+            );
+          }
+        : skipToken,
+  });
+
+  const feeInfo = feeInfoQuery.data ?? [
+    {
+      amount: "",
+      denom: "Simulating…",
+    },
+  ];
+
+  const amountsQuery = useQuery({
+    queryKey: ["amounts", { messages, targetChainId }],
+    queryFn: async () => {
+      return await Promise.all(
+        messages
+          .map((message) => {
+            return messageToAmountSecret({ message });
+          })
+          .flat()
+          .map((coin) => {
+            return prettyPrintCoin({ coin, targetChainId });
+          }),
+      );
+    },
+  });
+  const amounts = amountsQuery.data ?? [];
+
+  const descriptionsQuery = useQuery({
+    queryKey: ["descriptions", { messages, targetChainId }],
+    queryFn: async () => {
+      return (
+        await Promise.all(
+          messages.map((message) => {
+            return messageToDescriptionSecret({ message, targetChainId });
+          }),
+        )
+      ).flat();
+    },
+  });
+
+  const descriptions = descriptionsQuery.data ?? [];
+  const addresses = messages
+    .map((message) => {
+      return messageToAddressSecret({ message });
+    })
+    .flat();
+
+  return (
+    <Transaction
+      amountInfo={amounts}
+      descriptions={descriptions}
+      targetChainId={targetChainId}
+      feeInfo={feeInfo}
+      rawData={rawData}
+      memo={memo}
+      addresses={addresses}
+    />
+  );
+});
+
+function messageToAmountCosmos({ message }: { message: EncodeObject }): Coin[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
@@ -312,7 +433,20 @@ function messageToAmount({
   }
 }
 
-function messageToAddress({ message }: { message: EncodeObject }): string[] {
+function messageToAmountSecret({ message }: { message: Msg }) {
+  if (message instanceof MsgSend) {
+    return message.amount;
+  }
+
+  console.warn("Unknown message: ", message);
+  return [];
+}
+
+function messageToAddressCosmos({
+  message,
+}: {
+  message: EncodeObject;
+}): string[] {
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
@@ -324,7 +458,16 @@ function messageToAddress({ message }: { message: EncodeObject }): string[] {
   }
 }
 
-async function messageToDescription({
+function messageToAddressSecret({ message }: { message: Msg }) {
+  if (message instanceof MsgSend) {
+    return [message.to_address];
+  }
+
+  console.warn("Unknown message: ", message);
+  return [];
+}
+
+async function messageToDescriptionCosmos({
   message,
   targetChainId,
 }: {
@@ -334,7 +477,7 @@ async function messageToDescription({
   switch (message.typeUrl) {
     case "/cosmos.bank.v1beta1.MsgSend": {
       const { value } = message;
-      const amount = messageToAmount({ message, targetChainId });
+      const amount = messageToAmountCosmos({ message });
       return await Promise.all(
         amount.map(async (amount) => {
           const prettyAmount = await prettyPrintCoin({
@@ -351,12 +494,36 @@ async function messageToDescription({
   }
 }
 
+async function messageToDescriptionSecret({
+  message,
+  targetChainId,
+}: {
+  message: Msg;
+  targetChainId: SecretChainId;
+}): Promise<string[]> {
+  if (message instanceof MsgSend) {
+    const amount = messageToAmountSecret({ message });
+    return await Promise.all(
+      amount.map(async (amount) => {
+        const prettyAmount = await prettyPrintCoin({
+          coin: amount,
+          targetChainId,
+        });
+        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${message.to_address}`;
+      }),
+    );
+  }
+
+  console.warn("Unknown message: ", message);
+  return [];
+}
+
 async function prettyPrintCoin({
   coin,
   targetChainId,
 }: {
   coin: Coin;
-  targetChainId: CosmosChainId;
+  targetChainId: CosmosChainId | SecretChainId;
 }): Promise<{
   amount: string;
   denom: string;
@@ -370,7 +537,7 @@ async function prettyPrintCoin({
   if (!id) {
     return fallback;
   }
-  const asset = await targetChain.newAssetInfo(id);
+  const asset = await targetChain.assetInfo(id);
   if (!asset) {
     return fallback;
   }

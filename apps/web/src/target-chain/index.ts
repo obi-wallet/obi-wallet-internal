@@ -1,3 +1,9 @@
+import { SecretTargetChain } from "@/target-chain/secret";
+import {
+  allSecretChains,
+  isSecretChainId,
+  SecretChainId,
+} from "@/target-chain/secret/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 
 import { CosmosTargetChain } from "./cosmos";
@@ -13,15 +19,20 @@ import {
   isEip155ChainId,
 } from "./eip-155/chains";
 
-export type TargetChainId = CosmosChainId | Eip155ChainId;
+export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
 
-export const allTargetChainIds = [...allCosmosChains, ...allEip155Chains];
+export const allTargetChainIds = [
+  ...allCosmosChains,
+  ...allEip155Chains,
+  ...allSecretChains,
+];
 
 export class TargetChain {
   protected constructor(protected chainId: TargetChainId) {}
 
   public static chainId(chainId: CosmosChainId): CosmosTargetChain;
   public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
+  public static chainId(chainId: SecretChainId): SecretTargetChain;
   public static chainId(
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
@@ -39,6 +50,9 @@ export class TargetChain {
     }
     if (isEip155ChainId(chainId)) {
       return new Eip155TargetChain(chainId);
+    }
+    if (isSecretChainId(chainId)) {
+      return new SecretTargetChain(chainId);
     }
     throw new Error(`ChainId ${chainId} not found`);
   }

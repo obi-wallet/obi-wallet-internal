@@ -80,7 +80,9 @@ export function DropDown<
     setSelectedOption(option);
     setIsOpen(false);
 
-    onSelectOption && onSelectOption(option);
+    if (typeof onSelectOption === "function") {
+      onSelectOption(option);
+    }
   };
 
   return (
@@ -127,7 +129,7 @@ export function DropDown<
                   }}
                   className={cn(
                     "block cursor-pointer px-4 py-2 hover:bg-gray-600",
-                    option.value === selectedOption?.value && "bg-gray-600 ",
+                    option.value === selectedOption?.value && "bg-gray-600",
                     option.disabled && "cursor-not-allowed opacity-50",
                   )}
                 >

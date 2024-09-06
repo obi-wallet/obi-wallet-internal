@@ -97,5 +97,5 @@ function LoadingText() {
     };
   }, []);
 
-  return <Text className=" text-center">{message}</Text>;
+  return <Text className="text-center">{message}</Text>;
 }

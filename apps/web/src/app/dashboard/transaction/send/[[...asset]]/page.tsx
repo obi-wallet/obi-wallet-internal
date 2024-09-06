@@ -13,6 +13,8 @@ import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
+import { isSecretChainId } from "@/target-chain/secret/chains";
+import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
@@ -28,8 +30,9 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
+import { MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
@@ -57,7 +60,7 @@ const schema = z
         return TargetChain.chainId(
           data.coin.asset.targetChainId,
         ).validateAddress(data.recipient);
-      } catch (_e) {
+      } catch {
         return false;
       }
     },
@@ -70,11 +73,82 @@ type FormData = z.infer<typeof schema>;
 export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
 }) {
+  const balances = useBalances();
+  const balance = balances
+    .filter((b) => {
+      return b.isSuccess;
+    })
+    .map((b) => {
+      return b.data;
+    })
+    .filter((b): b is PrettyCaip19Asset[] => {
+      return !!b;
+    });
+
+  const withChainId = balance.flat();
+
+  const balanceOptions = withChainId
+    .map((b) => {
+      const { chainId } = parseCaip19AssetId(b.assetId);
+      if (!b.assetInfo) return null;
+
+      invariant(
+        isCosmosChainId(chainId) ||
+          isEip155ChainId(chainId) ||
+          isSecretChainId(chainId),
+        "Expected valid targetChainId",
+      );
+
+      const result: IBalanceOption = {
+        image: b.assetInfo.image ?? undefined,
+        targetChainId: chainId,
+        denom: b.assetId,
+        network: TargetChain.chainId(chainId).label,
+        assetUnit: b.assetInfo.symbol,
+        balance: new BigNumber(b.prettyAmount),
+        asset: b,
+        assetInfo: b.assetInfo,
+      };
+      return result;
+    })
+    .filter((option): option is IBalanceOption => {
+      return !!option;
+    });
+
+  const getAsset = () => {
+    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+
+    if (initialAssetParam) {
+      const balanceOption = balanceOptions.find((balance) => {
+        return balance.asset.assetId === initialAssetParam;
+      });
+      if (balanceOption) {
+        return balanceOption;
+      }
+    }
+
+    return balanceOptions[0];
+  };
+
+  const asset = getAsset();
+
+  if (asset) {
+    return <SendInner asset={asset} balanceOptions={balanceOptions} />;
+  }
+
+  return null;
+});
+
+const SendInner = observer<{
+  asset: IBalanceOption;
+  balanceOptions: IBalanceOption[];
+}>(function Send({ asset, balanceOptions }) {
+  const router = useRouter();
   const form = useForm<FormData>({
     defaultValues: {
       coin: {
         amount: "",
-        asset: null,
+        asset,
       },
       recipient: "",
       memo: "",
@@ -84,7 +158,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const balances = useBalances();
   const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
@@ -158,6 +231,74 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         await invalidateBalancesQueries(chainId);
         if (response.approved) {
           alert.showSuccess("TX sent");
+        }
+        return;
+      }
+
+      if (isSecretChainId(chainId)) {
+        const targetChain = TargetChain.chainId(chainId);
+        const signer = await SecretMpcSigner.fromWallet(wallet, chainId);
+
+        const accounts = await signer.getAccounts();
+        const firstAccount = accounts[0];
+        invariant(firstAccount, "No account found");
+
+        const denom = targetChain.caip19AssetIdToDenom(asset.denom);
+
+        invariant(denom, "Expected valid denom");
+
+        const getMessage = () => {
+          const { namespace } = parseCaip19AssetId(asset.denom);
+          switch (namespace) {
+            case "native":
+            case "factory":
+            case "ibc": {
+              return new MsgSend({
+                from_address: firstAccount.address,
+                to_address: recipient,
+                amount: [
+                  {
+                    amount: rawAmount,
+                    denom,
+                  },
+                ],
+              });
+            }
+
+            case "cw20": {
+              // TODO: handle cw20 & snip20
+              return null;
+            }
+          }
+        };
+
+        const message = getMessage();
+
+        if (!message) {
+          alert.showError("Unsupported asset");
+          return;
+        }
+
+        const response = await SignAndBroadcastTransactionUserInteraction.start(
+          {
+            messages: [message],
+            memo,
+            cancelable: true,
+            targetChainId: chainId,
+            walletMeta: {
+              userEntryAddress: wallet.userEntryAddress,
+            },
+          },
+        );
+
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          const broadcastResult = response.payload;
+          if (broadcastResult.success) {
+            alert.showSuccess("TX broadcast successfully");
+          } else {
+            alert.showError(`TX failed: ${broadcastResult.rawLog}`);
+          }
         }
         return;
       }
@@ -249,72 +390,10 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     },
   });
 
-  const balance = balances
-    .filter((b) => {
-      return b.isSuccess;
-    })
-    .map((b) => {
-      return b.data;
-    })
-    .filter((b): b is PrettyCaip19Asset[] => {
-      return !!b;
-    });
-
-  const withChainId = balance.flat();
-
-  const balanceOptions = withChainId
-    .map((b) => {
-      const { chainId } = parseCaip19AssetId(b.assetId);
-      if (!b.assetInfo) return null;
-
-      invariant(
-        isCosmosChainId(chainId) || isEip155ChainId(chainId),
-        "Expected valid targetChainId",
-      );
-
-      const result: IBalanceOption = {
-        image: b.assetInfo.image ?? undefined,
-        targetChainId: chainId,
-        denom: b.assetId,
-        network: TargetChain.chainId(chainId).label,
-        assetUnit: b.assetInfo.symbol,
-        balance: new BigNumber(b.prettyAmount),
-        asset: b,
-        assetInfo: b.assetInfo,
-      };
-      return result;
-    })
-    .filter((option): option is IBalanceOption => {
-      return !!option;
-    });
-
-  useEffect(() => {
-    const coin = form.getValues().coin;
-    if (coin.asset) return;
-
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
-
-    function getInitialAsset() {
-      if (!initialAssetParam) return;
-
-      return balanceOptions.find((balance) => {
-        return balance.asset.assetId === initialAssetParam;
-      });
-    }
-
-    const initialAsset = initialAssetParam ? getInitialAsset() : null;
-    if (initialAsset) {
-      form.setValue("coin", {
-        amount: coin.amount,
-        asset: initialAsset,
-      });
-    }
-  }, [balanceOptions, form, params]);
-
   if (balanceOptions.length === 0) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <p className=" text-white">No balances found</p>
+        <p className="text-white">No balances found</p>
       </div>
     );
   }
@@ -370,7 +449,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                 <div
                   className={cn(
                     "m-0 text-xs uppercase",
-                    " cursor-pointer text-slate-500  hover:text-blue-600",
+                    "cursor-pointer text-slate-500 hover:text-blue-600",
                   )}
                   onClick={() => {
                     if (!coin.asset) return;
@@ -404,13 +483,13 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                       <div
                         {...getItemProps({ item })}
                         className={cn(
-                          " hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
-                          isSelected && "bg-gray-600 ",
+                          "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                          isSelected && "bg-gray-600",
                           item.disabled &&
                             "cursor-not-allowed opacity-50 hover:bg-gray-600",
                         )}
                       >
-                        <div className="flex items-center justify-center ">
+                        <div className="flex items-center justify-center">
                           <img
                             src={item.image}
                             alt={item.network}
@@ -428,10 +507,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                     );
                   }}
                   onItemSelect={function (item) {
-                    setCoin({
-                      amount: coin.amount,
-                      asset: item,
-                    });
+                    router.replace(encodeURIComponent(item.denom));
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {
@@ -439,8 +515,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                     }
 
                     return (
-                      <div className="flex  w-full cursor-pointer flex-row gap-5 font-normal">
-                        <div className="flex items-center   justify-between">
+                      <div className="flex w-full cursor-pointer flex-row gap-5 font-normal">
+                        <div className="flex items-center justify-between">
                           <img
                             src={selected.item.image}
                             alt={selected.item.network}
@@ -460,7 +536,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
             >
               <div className="flex gap-3 text-slate-500">
                 <span
-                  className=" cursor-pointer text-xs hover:text-blue-600"
+                  className="cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -472,7 +548,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   25%
                 </span>
                 <span
-                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  className="cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -484,7 +560,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   50%
                 </span>
                 <span
-                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  className="cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount:
@@ -496,7 +572,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                   75%
                 </span>
                 <span
-                  className="cursor-pointer  text-xs hover:text-blue-600"
+                  className="cursor-pointer text-xs hover:text-blue-600"
                   onClick={() => {
                     setCoin({
                       amount: coin.asset?.balance.toString() ?? "",

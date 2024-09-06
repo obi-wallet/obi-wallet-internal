@@ -3,15 +3,18 @@
 import { Account, Button, Divider, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
+import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { SecretChainId } from "@/target-chain/secret/chains";
+import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import invariant from "tiny-invariant";
 
@@ -212,6 +215,50 @@ const AssetBalance = observer(function AssetBalance({
   );
 });
 
+export const AssetsContainer = observer(function AssetsContainer({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return (
+    <ul role="list">
+      <li className="relative flex py-1.5">
+        <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400"
+          >
+            Asset
+          </Text>
+
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
+          >
+            Balance
+          </Text>
+        </div>
+
+        <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
+          <Text
+            fontWeight="light"
+            className="pr-4 text-[10px] uppercase text-slate-400 sm:hidden"
+          >
+            Balance
+          </Text>
+          <Text
+            fontWeight="light"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
+          >
+            Value
+          </Text>
+        </div>
+      </li>
+      {children}
+    </ul>
+  );
+});
+
 const Network = observer(function NetworkAssets({
   assets,
   editMode,
@@ -249,7 +296,7 @@ const Network = observer(function NetworkAssets({
               {assets.chain.label}
             </Text>
             {editMode ? (
-              <div className="flex flex-grow justify-end">
+              <div className="flex flex-grow justify-end gap-3">
                 <Button
                   variant={
                     targetChainConfig.enabled === true ? "primary" : "outline"
@@ -302,50 +349,18 @@ const Network = observer(function NetworkAssets({
           </div>
         </h3>
       </div>
-      <ul role="list">
-        <li className="relative flex py-1.5">
-          <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400"
-            >
-              Asset
-            </Text>
-
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400 max-sm:hidden"
-            >
-              Balance
-            </Text>
-          </div>
-
-          <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
-            <Text
-              fontWeight="light"
-              className="pr-4 text-[10px] uppercase text-slate-400 sm:hidden"
-            >
-              Balance
-            </Text>
-            <Text
-              fontWeight="light"
-              className="text-[10px] uppercase text-slate-400 max-sm:hidden"
-            >
-              Value
-            </Text>
-          </div>
-        </li>
+      <AssetsContainer>
         {assets.prettyData.map((data) => {
           return (
             <AssetRow key={data.assetId} asset={data} editMode={editMode} />
           );
         })}
-      </ul>
+      </AssetsContainer>
     </div>
   );
 });
 
-function AssetRow({
+export const AssetRow = observer(function AssetRow({
   asset,
   editMode,
 }: {
@@ -353,6 +368,19 @@ function AssetRow({
   editMode?: boolean;
 }) {
   const router = useRouter();
+  const wallet = useCurrentWallet({});
+  const { viewingKeysStore } = useStore();
+
+  const viewingKey = viewingKeysStore.getViewingKey({
+    address: wallet?.userEntryAddress ?? "",
+    assetId: asset.assetId,
+  });
+  const assetInfo = parseCaip19AssetId(asset.assetId);
+  const isPrivateToken =
+    assetInfo.chainId === SecretChainId.Secret &&
+    assetInfo.namespace === "snip20";
+
+  const createViewingKey = useCreateViewingKey();
 
   return (
     <li
@@ -380,14 +408,92 @@ function AssetRow({
             {asset.assetInfo?.symbol}
           </Text>
         </div>
-        <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
-          {asset.prettyAmount.toString()}
-        </Text>
+        {isPrivateToken ? (
+          viewingKey ? (
+            editMode ? (
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (wallet) {
+                    viewingKeysStore.removeViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId: asset.assetId,
+                    });
+                  }
+                }}
+              >
+                Remove Viewing Key
+              </Button>
+            ) : (
+              <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+                {asset.prettyAmount.toString()}
+              </Text>
+            )
+          ) : (
+            <>
+              <AsyncButton
+                variant="primary"
+                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await createViewingKey(asset.assetId);
+                }}
+              >
+                Create Viewing Key
+              </AsyncButton>
+            </>
+          )
+        ) : (
+          <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+            {asset.prettyAmount.toString()}
+          </Text>
+        )}
       </div>
       <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
-        <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
-          {asset.prettyAmount.toString()}
-        </Text>
+        {isPrivateToken ? (
+          viewingKey ? (
+            editMode ? (
+              <Button
+                variant="primary"
+                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (wallet) {
+                    viewingKeysStore.removeViewingKey({
+                      address: wallet.userEntryAddress,
+                      assetId: asset.assetId,
+                    });
+                  }
+                }}
+              >
+                Remove Viewing Key
+              </Button>
+            ) : (
+              <Text className="-ml-6 h-5 max-sm:text-sm sm:hidden">
+                {asset.prettyAmount.toString()}
+              </Text>
+            )
+          ) : (
+            <>
+              <AsyncButton
+                variant="primary"
+                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await createViewingKey(asset.assetId);
+                }}
+              >
+                Create Viewing Key
+              </AsyncButton>
+            </>
+          )
+        ) : (
+          <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
+            {asset.prettyAmount.toString()}
+          </Text>
+        )}
         <Text
           fontWeight="bold"
           className="tabular-nums max-sm:hidden max-sm:text-sm"
@@ -397,7 +503,7 @@ function AssetRow({
       </div>
     </li>
   );
-}
+});
 
 enum PrettyBalancesStatus {
   Loading,
