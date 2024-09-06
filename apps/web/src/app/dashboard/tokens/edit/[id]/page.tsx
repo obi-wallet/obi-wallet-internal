@@ -144,6 +144,22 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
         <div className="mb-4 mt-0.5 flex gap-8 text-white">
           <Button
             onClick={() => {
+              tokensStore.removeTokenConfig({
+                address: wallet.userEntryAddress,
+                assetId,
+              });
+              viewingKeysStore.removeViewingKey({
+                address: wallet.userEntryAddress,
+                assetId,
+              });
+              router.back();
+            }}
+            className="flex-1 justify-center rounded-lg border-red-500 bg-transparent p-2 text-center hover:border-red-500 hover:bg-red-500"
+          >
+            Remove
+          </Button>
+          <Button
+            onClick={() => {
               router.back();
             }}
             className="flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
