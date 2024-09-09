@@ -18,6 +18,7 @@ import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
@@ -32,7 +33,7 @@ import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { MsgSend } from "secretjs";
+import { MsgExecuteContract, MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
@@ -40,7 +41,14 @@ import { z } from "zod";
 const schema = z
   .object({
     coin: z.object({
-      amount: z.string(),
+      amount: z
+        .string()
+        .transform((amount) => {
+          return amount.trim().replace(",", ".");
+        })
+        .refine((amount) => {
+          return new BigNumber(amount).isGreaterThan(0);
+        }),
       asset: z
         .custom<IBalanceOption>(() => {
           // TODO: this should be more precise
@@ -116,8 +124,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
     });
 
   const getAsset = () => {
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
-
+    const initialAssetParam = urlDecodeCatchAllParam(params.asset ?? []);
     if (initialAssetParam) {
       const balanceOption = balanceOptions.find((balance) => {
         return balance.asset.assetId === initialAssetParam;
@@ -248,7 +255,7 @@ const SendInner = observer<{
         invariant(denom, "Expected valid denom");
 
         const getMessage = () => {
-          const { namespace } = parseCaip19AssetId(asset.denom);
+          const { namespace, reference } = parseCaip19AssetId(asset.denom);
           switch (namespace) {
             case "native":
             case "factory":
@@ -265,10 +272,18 @@ const SendInner = observer<{
               });
             }
 
-            case "cw20": {
-              // TODO: handle cw20 & snip20
-              return null;
-            }
+            case "cw20":
+            case "snip20":
+              return new MsgExecuteContract({
+                sender: firstAccount.address,
+                contract_address: reference,
+                msg: {
+                  transfer: {
+                    recipient: recipient,
+                    amount: rawAmount,
+                  },
+                },
+              });
           }
         };
 
@@ -507,7 +522,9 @@ const SendInner = observer<{
                     );
                   }}
                   onItemSelect={function (item) {
-                    router.replace(encodeURIComponent(item.denom));
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {

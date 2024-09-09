@@ -476,6 +476,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       case "ibc":
         return `ibc/${reference.replace("%2F", "/")}`;
       case "cw20":
+      case "snip20":
         return reference.replace("%2F", "/");
       default:
         return null;

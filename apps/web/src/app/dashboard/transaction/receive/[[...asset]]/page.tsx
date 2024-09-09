@@ -4,6 +4,7 @@ import { ChainDropdown, TabUi, useChainOptions } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
 import { InputContainer } from "@/ui/container";
+import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
@@ -25,7 +26,7 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
 
     // User has not selected a chain, but the URL has a chain
     try {
-      const assetParam = decodeURIComponent(params.asset?.[0] ?? "");
+      const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
       if (assetParam) {
         const { chainId } = parseCaip19AssetId(
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
@@ -40,7 +41,6 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
       }
     } catch (e) {
       console.error(e);
-      return null;
     }
 
     // User has not selected a chain and the URL does not have a chain
