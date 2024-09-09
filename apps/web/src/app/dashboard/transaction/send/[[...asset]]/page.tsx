@@ -33,7 +33,7 @@ import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { MsgSend } from "secretjs";
+import { MsgExecuteContract, MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
@@ -248,7 +248,7 @@ const SendInner = observer<{
         invariant(denom, "Expected valid denom");
 
         const getMessage = () => {
-          const { namespace } = parseCaip19AssetId(asset.denom);
+          const { namespace, reference } = parseCaip19AssetId(asset.denom);
           switch (namespace) {
             case "native":
             case "factory":
@@ -265,10 +265,18 @@ const SendInner = observer<{
               });
             }
 
-            case "cw20": {
-              // TODO: handle cw20 & snip20
-              return null;
-            }
+            case "cw20":
+            case "snip20":
+              return new MsgExecuteContract({
+                sender: firstAccount.address,
+                contract_address: reference,
+                msg: {
+                  transfer: {
+                    recipient: recipient,
+                    amount: rawAmount,
+                  },
+                },
+              });
           }
         };
 
