@@ -41,7 +41,14 @@ import { z } from "zod";
 const schema = z
   .object({
     coin: z.object({
-      amount: z.string(),
+      amount: z
+        .string()
+        .transform((amount) => {
+          return amount.trim().replace(",", ".");
+        })
+        .refine((amount) => {
+          return new BigNumber(amount).isGreaterThan(0);
+        }),
       asset: z
         .custom<IBalanceOption>(() => {
           // TODO: this should be more precise
