@@ -21,6 +21,14 @@ import {
 
 export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
 
+export function isTargetChainId(chainId: string): chainId is TargetChainId {
+  return (
+    isCosmosChainId(chainId) ||
+    isEip155ChainId(chainId) ||
+    isSecretChainId(chainId)
+  );
+}
+
 export const allTargetChainIds = [
   ...allCosmosChains,
   ...allEip155Chains,

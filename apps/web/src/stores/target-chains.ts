@@ -21,8 +21,16 @@ export type TargetChainsConfigPerWallet = z.infer<
   typeof targetChainsConfigPerWalletSchema
 >;
 
+const lastUsedTargetChainIdPerWalletSchema = z.record(Caip2ChainIdSchema);
+
+export type LastUsedTargetChainIdPerWallet = z.infer<
+  typeof lastUsedTargetChainIdPerWalletSchema
+>;
+
 export class TargetChainsStore {
   @observable protected accessor config: TargetChainsConfigPerWallet = {};
+  @observable
+  protected accessor lastUsedTargetChainId: LastUsedTargetChainIdPerWallet = {};
   protected readonly kvStore: AbstractKVStore;
 
   public constructor(kvStore: AbstractKVStore) {
@@ -31,19 +39,40 @@ export class TargetChainsStore {
   }
 
   protected async init() {
-    const currentConfig = await this.getFromKVStore();
+    const [currentConfig, lastUsedTargetChainId] = await Promise.all([
+      this.getTargetChainsConfigFromKVStore(),
+      this.getLastUsedTargetChainIdFromKVStore(),
+    ]);
 
     runInAction(() => {
       this.config = currentConfig;
+      this.lastUsedTargetChainId = lastUsedTargetChainId;
     });
 
     autorun(async () => {
-      const data = targetChainsConfigPerWalletSchema.parse(toJS(this.config));
-      await this.kvStore.set("target-chains-config", data);
+      await Promise.all([
+        this.kvStore.set(
+          "target-chains-config",
+          targetChainsConfigPerWalletSchema.parse(toJS(this.config)),
+        ),
+        this.kvStore.set(
+          "last-used-target-chain-id",
+          lastUsedTargetChainIdPerWalletSchema.parse(
+            toJS(this.lastUsedTargetChainId),
+          ),
+        ),
+      ]);
     });
   }
 
-  public async getFromKVStore(): Promise<TargetChainsConfigPerWallet> {
+  protected async getLastUsedTargetChainIdFromKVStore(): Promise<LastUsedTargetChainIdPerWallet> {
+    const data = await this.kvStore.get("last-used-target-chain-id");
+    const result = lastUsedTargetChainIdPerWalletSchema.safeParse(data);
+    if (!result.success) return {};
+    return result.data;
+  }
+
+  protected async getTargetChainsConfigFromKVStore(): Promise<TargetChainsConfigPerWallet> {
     const data = await this.kvStore.get("target-chains-config");
     const result = targetChainsConfigPerWalletSchema.safeParse(data);
     if (!result.success) return {};
@@ -96,5 +125,23 @@ export class TargetChainsStore {
         config,
       };
     });
+  }
+
+  public getLastUsedTargetChainId(address: string) {
+    return this.lastUsedTargetChainId[address];
+  }
+
+  @action
+  public setLastUsedTargetChainId({
+    address,
+    chainId,
+  }: {
+    address: string;
+    chainId: TargetChainId;
+  }) {
+    this.lastUsedTargetChainId = {
+      ...this.lastUsedTargetChainId,
+      [address]: chainId,
+    };
   }
 }

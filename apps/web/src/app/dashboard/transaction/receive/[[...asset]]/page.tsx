@@ -16,7 +16,7 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
   params,
 }) {
   const [chainId, setChainId] = useState<TargetChainId | null>(null);
-  const chainOptions = useChainOptions();
+  const { options, initialValue } = useChainOptions();
 
   const getChainId = () => {
     // User has selected a chain
@@ -32,7 +32,7 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           assetParam as Caip19AssetId,
         );
-        const chainOption = chainOptions.find((chain) => {
+        const chainOption = options.find((chain) => {
           return chain.value === chainId;
         });
         if (chainOption) {
@@ -44,7 +44,7 @@ export default observer<{ params: { asset?: string[] } }>(function Receive({
     }
 
     // User has not selected a chain and the URL does not have a chain
-    return chainOptions[0]?.value ?? null;
+    return initialValue;
   };
 
   const chainIdToUse = getChainId();
