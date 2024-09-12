@@ -5,7 +5,6 @@ import {
   SecretChainId,
 } from "@/target-chain/secret/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
-import { z } from "zod";
 
 import { CosmosTargetChain } from "./cosmos";
 import {
