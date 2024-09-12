@@ -60,7 +60,7 @@ export class WalletConnectStore {
       this.web3Wallet = await setupWalletConnect({
         projectId: "044348b5f9a15395896ca2661ad9ea10",
         metadata: {
-          name: "OBI Money",
+          name: "Keplr",
           description: "",
           url: "",
           icons: [],

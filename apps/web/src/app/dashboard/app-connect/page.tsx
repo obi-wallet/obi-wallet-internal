@@ -114,7 +114,7 @@ export default observer(function AppConnect() {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            await void walletConnectStore.pair(uri);
+            await walletConnectStore.pair(uri);
             setUri("");
           }}
         >
