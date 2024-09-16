@@ -4,10 +4,12 @@ import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
+import useGoogleAuth from "@/hooks/use-google-auth";
 
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
     const { draft, keyList, pushPage, popPage } = useSecuritySettingsContext();
+    const { signIn } = useGoogleAuth();
     const keyData = keyList.find((item) => {
       return item.type === page.payload;
     });
@@ -61,11 +63,21 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
           variant="outline"
           block
           className="mt-6 border-dashed"
-          onClick={() => {
-            pushPage({
-              type: "key-add",
-              payload: page.payload,
-            });
+          onClick={async () => {
+            if (page.payload === "cloudkey") {
+              const googleUser = await signIn();
+              if (googleUser) {
+                pushPage({
+                  type: "key-add",
+                  payload: page.payload,
+                });
+              }
+            } else {
+              pushPage({
+                type: "key-add",
+                payload: page.payload,
+              });
+            }
           }}
         >
           Add New Key
