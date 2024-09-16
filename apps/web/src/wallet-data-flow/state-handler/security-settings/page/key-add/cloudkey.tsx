@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Text, DropDown } from "@/components";
+import { useGoogleAuth } from "@/hooks/use-google-auth";
 import {
   useSecurityQuestionInput,
   useSecurityQuestions,
@@ -11,7 +12,6 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 import { useSecuritySettingsContext } from "../../context";
-import useGoogleAuth from "@/hooks/use-google-auth";
 
 export const AddCloudkeyPage = observer(function AddCloudkeyPage() {
   const { draft, setKeyMetaData, popPage } = useSecuritySettingsContext();
@@ -22,19 +22,19 @@ export const AddCloudkeyPage = observer(function AddCloudkeyPage() {
 
   const cloudkeyFlow = useMutation({
     mutationFn: async () => {
-      // const keyPair = await createPasskey();
-      // const passkey = draft.value.addPasskeyKey(keyPair);
-      // if (!draft.value.primaryKey) {
-      //   draft.value.setPrimaryKey(passkey);
-      // }
-      // setKeyMetaData(keyPair.publicKey, {
-      //   name,
-      //   timestamp: DateTime.now().toISO(),
-      // });
+      const keyPair = await createPasskey();
+      const passkey = draft.value.addPasskeyKey(keyPair);
+      if (!draft.value.primaryKey) {
+        draft.value.setPrimaryKey(passkey);
+      }
+      setKeyMetaData(keyPair.publicKey, {
+        name,
+        timestamp: DateTime.now().toISO(),
+      });
       // popPage();
       console.log("check", isSignedIn);
       if (isSignedIn) {
-        uploadFile("hello world", name, "text/plain");
+        await uploadFile("hello world", name, "text/plain");
       }
     },
   });

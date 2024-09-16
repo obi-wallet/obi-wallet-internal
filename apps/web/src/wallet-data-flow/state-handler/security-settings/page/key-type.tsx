@@ -1,10 +1,10 @@
 import { Box, Button, Divider, Text } from "@/components";
+import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
-import useGoogleAuth from "@/hooks/use-google-auth";
 
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {

@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
-import { gapi } from "gapi-script";
 import { serialize } from "@obi-wallet/sdk-json";
+import { gapi } from "gapi-script";
+import { useEffect, useState, useCallback } from "react";
 
 const CLIENT_ID =
   "450981852892-sj5e8fks9u1frgehjnfcgb16fn62iev0.apps.googleusercontent.com";
@@ -57,7 +57,7 @@ export function useGoogleAuth() {
       fileContent: string | ArrayBuffer,
       fileName: string,
       mimeType: string,
-    ): Promise<any> => {
+    ) => {
       if (!isSignedIn) {
         console.error("User is not signed in");
         return null;
@@ -77,7 +77,7 @@ export function useGoogleAuth() {
       const form = new FormData();
       form.append(
         "metadata",
-        new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+        new Blob([serialize(metadata)], { type: "application/json" }),
       );
       form.append("file", file);
       try {
@@ -105,5 +105,3 @@ export function useGoogleAuth() {
 
   return { isSignedIn, signIn, signOut, uploadFile };
 }
-
-export default useGoogleAuth;
