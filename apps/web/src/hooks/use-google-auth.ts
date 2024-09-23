@@ -54,9 +54,9 @@ export function useGoogleAuth() {
 
   const uploadFile = useCallback(
     async (
-      fileContent: string | ArrayBuffer,
+      fileContent: object,
       fileName: string,
-      mimeType: string,
+      mimeType: string = "application/json",
     ) => {
       if (!isSignedIn) {
         console.error("User is not signed in");
@@ -68,7 +68,7 @@ export function useGoogleAuth() {
         .currentUser.get()
         .getAuthResponse().access_token;
 
-      const file = new Blob([fileContent], { type: mimeType });
+      const file = new Blob([serialize(fileContent)], { type: mimeType }); // Convert object to JSON string
       const metadata = {
         name: fileName,
         mimeType: mimeType,
@@ -103,5 +103,57 @@ export function useGoogleAuth() {
     [isSignedIn],
   );
 
-  return { isSignedIn, signIn, signOut, uploadFile };
+  const readFiles = async (): Promise<
+    [{ id: string; name: string }] | null
+  > => {
+    const accessToken = gapi.auth2
+      .getAuthInstance()
+      .currentUser.get()
+      .getAuthResponse().access_token;
+
+    const response = await fetch(
+      "https://www.googleapis.com/drive/v3/files?q=mimeType='application/json'&fields=files(id,name)",
+      {
+        headers: new Headers({
+          Authorization: `Bearer ${accessToken}`,
+        }),
+      },
+    );
+
+    const data = await response.json();
+    console.log("Files in Google Drive:", data.files);
+
+    return data.files;
+  };
+
+  const readFileById = async (fileId: string): Promise<any | null> => {
+    const accessToken = gapi.auth2
+      .getAuthInstance()
+      .currentUser.get()
+      .getAuthResponse().access_token;
+
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+        {
+          headers: new Headers({
+            Authorization: `Bearer ${accessToken}`,
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Error fetching file");
+      }
+
+      const fileContent = await response.json();
+      console.log("File content:", fileContent);
+      return fileContent;
+    } catch (error) {
+      console.error("Error reading file by ID:", error);
+      return null;
+    }
+  };
+
+  return { isSignedIn, signIn, signOut, uploadFile, readFiles, readFileById };
 }
