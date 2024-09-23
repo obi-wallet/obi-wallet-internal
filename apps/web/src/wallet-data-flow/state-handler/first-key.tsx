@@ -132,7 +132,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
                     onClick={async () => {
                       const fileContent = await readFileById(file.id);
                       const keyPair = fileContent && fileContent.key.payload;
-                      console.log("keyPair from cloudkey", keyPair);
+                      console.log("keyPair from cloudkey", fileContent);
                       await recoverByPublicKey.mutateAsync({
                         publicKey: keyPair.publicKey,
                         keyMetaData: {},

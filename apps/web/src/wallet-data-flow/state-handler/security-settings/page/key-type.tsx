@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
+import { KeyType } from "@obi-wallet/sdk";
 
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
@@ -64,7 +65,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
           block
           className="mt-6 border-dashed"
           onClick={async () => {
-            if (page.payload === "cloudkey") {
+            if (page.payload === KeyType.Cloud) {
               const googleUser = await signIn();
               if (googleUser) {
                 pushPage({

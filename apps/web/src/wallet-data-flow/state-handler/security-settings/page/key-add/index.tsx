@@ -16,7 +16,7 @@ export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
         return <AddPhoneKeyPage />;
       case KeyType.Telegram:
         return <AddTelegramKeyPage />;
-      case KeyType.Cloudkey:
+      case KeyType.Cloud:
         return <AddCloudkeyPage />;
       default:
         console.error("Not implemented");
