@@ -2,6 +2,7 @@
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
+import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
 import { KeyMetaData } from "@/stores/key-meta-data";
@@ -24,6 +25,10 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
     null,
   );
   const [modal, setModal] = useState<KeyType | null>(null);
+  const [cloudkeyFiles, setCloudkeyFiles] = useState<
+    { id: string; name: string }[] | null
+  >(null);
+  const { signIn, readFiles, readFileById } = useGoogleAuth();
 
   const recoverByPublicKey = useMutation({
     mutationFn: async ({
@@ -111,6 +116,44 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         </Modal>
       );
     }
+
+    if (modal === KeyType.Cloud) {
+      return (
+        <Modal
+          title="Cloud Key"
+          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full"
+          onClose={onClose}
+        >
+          <section className="flex flex-col items-center space-y-4">
+            {cloudkeyFiles &&
+              cloudkeyFiles.map((file) => {
+                return (
+                  <AsyncButton
+                    onClick={async () => {
+                      const fileContent = await readFileById(file.id);
+                      const keyPair = fileContent && fileContent.key.payload;
+                      console.log("keyPair from cloudkey", keyPair);
+                      await recoverByPublicKey.mutateAsync({
+                        publicKey: keyPair.publicKey,
+                        keyMetaData: {},
+                        modifyMultisigKey: (multisigKey) => {
+                          multisigKey.removeKeyByPublicKey(keyPair.publicKey);
+                          const primaryKey = multisigKey.addCloudKey(keyPair);
+                          multisigKey.setPrimaryKey(primaryKey);
+                        },
+                      });
+                    }}
+                    className="block w-full"
+                    variant="primary"
+                  >
+                    {file.name}
+                  </AsyncButton>
+                );
+              })}
+          </section>
+        </Modal>
+      );
+    }
   }
 
   function renderProxyWalletsModal() {
@@ -163,6 +206,8 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         onClick={async () => {
           const keyPair = await getPasskey();
 
+          console.log("keyPair from getPasskey", keyPair);
+
           await recoverByPublicKey.mutateAsync({
             publicKey: keyPair.publicKey,
             keyMetaData: {},
@@ -196,6 +241,32 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       >
         Telegram Key
       </Button>
+      <AsyncButton
+        onClick={async () => {
+          const googleUser = await signIn();
+          if (googleUser) {
+            console.log(googleUser);
+            const files = await readFiles();
+            const keyFiles =
+              files &&
+              files
+                .filter((file) => {
+                  return file.name.startsWith("obi-");
+                })
+                .filter((file) => {
+                  return file.name.endsWith(".key");
+                });
+            if (keyFiles) {
+              setCloudkeyFiles(keyFiles);
+              setModal(KeyType.Cloud);
+            }
+          }
+        }}
+        className="block w-full"
+        variant="primary"
+      >
+        Cloud Key
+      </AsyncButton>
       <Button disabled className="block w-full" variant="primary">
         More Recovery Options Coming Soon
       </Button>

@@ -56,7 +56,7 @@ export function useGoogleAuth() {
     async (
       fileContent: object,
       fileName: string,
-      mimeType: string = "application/json",
+      mimeType = "application/json",
     ) => {
       if (!isSignedIn) {
         console.error("User is not signed in");

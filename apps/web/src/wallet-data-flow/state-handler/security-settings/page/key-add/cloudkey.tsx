@@ -1,11 +1,10 @@
 import { Box, Button, Divider, Text, DropDown } from "@/components";
-import { useGoogleAuth } from "@/hooks/use-google-auth";
 import {
   useSecurityQuestionInput,
   useSecurityQuestions,
 } from "@/keys/phone/use-security-questions";
 import { Input } from "@/ui/input";
-import { createPasskey } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
@@ -18,24 +17,19 @@ export const AddCloudkeyPage = observer(function AddCloudkeyPage() {
   const [name, setName] = useState("");
   const securityQuestion = useSecurityQuestionInput();
   const securityQuestions = useSecurityQuestions();
-  const { isSignedIn, uploadFile } = useGoogleAuth();
 
   const cloudkeyFlow = useMutation({
     mutationFn: async () => {
-      const keyPair = await createPasskey();
-      const passkey = draft.value.addPasskeyKey(keyPair);
+      const keyPair = generateSec256k1KeyPair();
+      const cloudkey = draft.value.addCloudKey(keyPair);
       if (!draft.value.primaryKey) {
-        draft.value.setPrimaryKey(passkey);
+        draft.value.setPrimaryKey(cloudkey);
       }
       setKeyMetaData(keyPair.publicKey, {
         name,
         timestamp: DateTime.now().toISO(),
       });
-      // popPage();
-      console.log("check", isSignedIn);
-      if (isSignedIn) {
-        await uploadFile("hello world", name, "text/plain");
-      }
+      popPage();
     },
   });
 

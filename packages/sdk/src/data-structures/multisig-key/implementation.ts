@@ -142,6 +142,13 @@ export class MultisigKey {
     });
   }
 
+  public addCloudKey(keyPair: Secp256k1KeyPair) {
+    return this.addKey({
+      type: KeyType.Cloud,
+      payload: keyPair,
+    });
+  }
+
   public addPendingRecoveryKey({
     type,
     publicKey,

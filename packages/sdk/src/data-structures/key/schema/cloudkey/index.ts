@@ -7,7 +7,7 @@ import { z } from "zod";
 import { KeyType } from "../../types";
 
 export const CloudKey = z.object({
-  type: z.literal(KeyType.Passkey),
+  type: z.literal(KeyType.Cloud),
   payload: z.object({
     publicKey: Secp256k1PublicKey,
     privateKey: Sec256k1PrivateKey,
