@@ -126,13 +126,14 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         >
           <section className="flex flex-col items-center space-y-4">
             {cloudkeyFiles &&
-              cloudkeyFiles.map((file) => {
+              cloudkeyFiles.map((file, index) => {
                 return (
                   <AsyncButton
+                    key={index}
                     onClick={async () => {
                       const fileContent = await readFileById(file.id);
+                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                       const keyPair = fileContent && fileContent.key.payload;
-                      console.log("keyPair from cloudkey", fileContent);
                       await recoverByPublicKey.mutateAsync({
                         publicKey: keyPair.publicKey,
                         keyMetaData: {},

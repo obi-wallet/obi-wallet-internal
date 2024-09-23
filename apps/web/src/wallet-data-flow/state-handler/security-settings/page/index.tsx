@@ -113,9 +113,9 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               if (keyData && isSignedIn) {
                 try {
                   await Promise.all(
-                    keyData.keys.map((key) => {
+                    keyData.keys.map(async (key) => {
                       const fileName = `obi-${key.keyMetaData.timestamp}.key`;
-                      uploadFile(key, fileName, "application/json");
+                      await uploadFile(key, fileName, "application/json");
                     }),
                   );
                 } catch (e) {
