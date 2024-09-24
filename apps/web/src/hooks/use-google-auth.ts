@@ -3,11 +3,6 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { gapi } from "gapi-script";
 import { useEffect, useState, useCallback } from "react";
 
-const CLIENT_ID =
-  "450981852892-sj5e8fks9u1frgehjnfcgb16fn62iev0.apps.googleusercontent.com";
-const API_KEY = "AIzaSyB-xaM6JPc5VWQZgKfXN_R13TJeK7mcAX4";
-const SCOPE = "https://www.googleapis.com/auth/drive.file";
-
 export function useGoogleAuth() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
 
@@ -15,9 +10,9 @@ export function useGoogleAuth() {
     const start = async (): Promise<void> => {
       try {
         await gapi.client.init({
-          clientId: CLIENT_ID,
-          apiKey: API_KEY,
-          scope: SCOPE,
+          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY,
+          scope: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_SCOPE,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
           ],
@@ -35,6 +30,7 @@ export function useGoogleAuth() {
   }, []);
 
   const signIn = async (): Promise<gapi.auth2.GoogleUser | null> => {
+    console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
     try {
       return await gapi.auth2.getAuthInstance().signIn();
     } catch (error) {
