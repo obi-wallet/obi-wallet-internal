@@ -142,10 +142,12 @@ export class MultisigKey {
     });
   }
 
-  public addCloudKey(keyPair: Secp256k1KeyPair) {
+  public addCloudKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Cloud,
-      payload: keyPair,
+      payload: {
+        publicKey,
+      },
     });
   }
 

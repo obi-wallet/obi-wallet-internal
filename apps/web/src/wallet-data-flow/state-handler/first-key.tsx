@@ -139,7 +139,9 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
                         keyMetaData: {},
                         modifyMultisigKey: (multisigKey) => {
                           multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-                          const primaryKey = multisigKey.addCloudKey(keyPair);
+                          const primaryKey = multisigKey.addCloudKey(
+                            keyPair.publicKey,
+                          );
                           multisigKey.setPrimaryKey(primaryKey);
                         },
                       });
@@ -206,8 +208,6 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       <AsyncButton
         onClick={async () => {
           const keyPair = await getPasskey();
-
-          console.log("keyPair from getPasskey", keyPair);
 
           await recoverByPublicKey.mutateAsync({
             publicKey: keyPair.publicKey,

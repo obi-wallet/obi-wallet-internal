@@ -14,7 +14,7 @@ import { useSecuritySettingsContext } from "../context";
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   const currentWallet = useCurrentWallet({});
   const { state, dispatch } = useWalletDataFlowContext();
-  const { isSignedIn, uploadFile } = useGoogleAuth();
+  const { uploadFile } = useGoogleAuth();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const missingMandatoryKey = !draft.value.primaryKey;
@@ -110,7 +110,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               const keyData = keyList.find((item) => {
                 return item.type === KeyType.Cloud;
               });
-              if (keyData && isSignedIn) {
+              if (keyData) {
                 try {
                   await Promise.all(
                     keyData.keys.map(async (key) => {

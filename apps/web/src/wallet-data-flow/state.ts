@@ -122,6 +122,12 @@ export function walletDataToMultisigKey({
       case KeyType.Telegram:
         multisigKey.addTelegramKey(key.publicKey);
         break;
+      case KeyType.Cloud:
+        multisigKey.addPendingRecoveryKey({
+          type: KeyType.Cloud,
+          publicKey: key.publicKey,
+        });
+        break;
     }
   });
   return multisigKey;
