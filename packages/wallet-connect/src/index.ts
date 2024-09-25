@@ -17,6 +17,18 @@ export interface Account {
   publicKey: Secp256k1PublicKey;
 }
 
+export interface Key {
+  name: string;
+  algo: string;
+  pubKey: Uint8Array;
+  address: Uint8Array;
+  bech32Address: string;
+  ethereumHexAddress: string;
+  isNanoLedger: boolean;
+  isKeystone: boolean;
+  chainId: string;
+}
+
 export type SessionRequestPayload = Web3WalletTypes.SessionRequest["params"];
 export type SessionRequestResponse =
   | { result: unknown }
@@ -26,6 +38,7 @@ export async function setupWalletConnect({
   projectId,
   metadata,
   getSupportedNamespaces,
+  getKeys,
   handleSessionRequest,
 }: {
   projectId: string;
@@ -38,6 +51,7 @@ export async function setupWalletConnect({
   getSupportedNamespaces: () => Promise<
     BuildApprovedNamespacesParams["supportedNamespaces"]
   >;
+  getKeys: () => Promise<Key[]>;
   handleSessionRequest: (
     payload: SessionRequestPayload,
   ) => Promise<SessionRequestResponse>;
@@ -87,9 +101,23 @@ export async function setupWalletConnect({
           proposal: params.params,
           supportedNamespaces: await getSupportedNamespaces(),
         });
+        const keys = await getKeys();
+        const chainTypes = Object.keys(approvedNamespaces);
+        const chainIds = chainTypes
+          .map((chainType) => {
+            return approvedNamespaces?.[chainType]?.chains ?? [];
+          })
+          .flat();
+        const keysForChainIds = keys.filter((key) => {
+          return chainIds.includes(key.chainId);
+        });
         const _session = await web3wallet.approveSession({
           id: params.id,
           namespaces: approvedNamespaces,
+          sessionProperties: {
+            // eslint-disable-next-line no-restricted-globals
+            keys: JSON.stringify(keysForChainIds),
+          },
         });
       } else {
         await web3wallet.rejectSession({

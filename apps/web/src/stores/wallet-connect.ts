@@ -67,6 +67,7 @@ export class WalletConnectStore {
         },
         getSupportedNamespaces:
           TargetChain.getSupportedWalletConnectNamespaces.bind(TargetChain),
+        getKeys: TargetChain.getWalletConnectKeys.bind(TargetChain),
         handleSessionRequest: this.handleSessionRequest.bind(this),
       });
     }

@@ -167,6 +167,11 @@ export default observer<{ params: { id: Caip19AssetId } }>(function TokenEdit({
             Cancel
           </Button>
           <AsyncButton
+            disabled={
+              !state.assetInfo.symbol ||
+              !state.assetInfo.name ||
+              !state.assetInfo.decimals
+            }
             onClick={async () => {
               tokensStore.setTokenConfig({
                 address: wallet.userEntryAddress,

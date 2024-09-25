@@ -5,6 +5,7 @@ import {
   SecretChainId,
 } from "@/target-chain/secret/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import { Key } from "@obi-wallet/wallet-connect";
 
 import { CosmosTargetChain } from "./cosmos";
 import {
@@ -20,6 +21,14 @@ import {
 } from "./eip-155/chains";
 
 export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
+
+export function isTargetChainId(chainId: string): chainId is TargetChainId {
+  return (
+    isCosmosChainId(chainId) ||
+    isEip155ChainId(chainId) ||
+    isSecretChainId(chainId)
+  );
+}
 
 export const allTargetChainIds = [
   ...allCosmosChains,
@@ -67,5 +76,14 @@ export class TargetChain {
       ...namespaces[0],
       ...namespaces[1],
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    const keys = await Promise.all([
+      CosmosTargetChain.getWalletConnectKeys(),
+      Eip155TargetChain.getWalletConnectKeys(),
+    ]);
+
+    return keys.flat();
   }
 }
