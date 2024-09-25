@@ -18,6 +18,7 @@ import {
   SigningCosmWasmClient,
   wasmTypes,
 } from "@cosmjs/cosmwasm-stargate";
+import { fromBech32, toHex } from "@cosmjs/encoding";
 import { EncodeObject, OfflineSigner, Registry } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
@@ -58,6 +59,7 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
+  Key,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
@@ -553,6 +555,44 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         events: ["chainChanged", "accountsChanged"],
       },
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+      wallet.userEntryAddress,
+    );
+
+    const cosmosChains = allCosmosChains
+      .map((targetChainId) => {
+        return new CosmosTargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    return await Promise.all(
+      cosmosChains.map(async (chain) => {
+        const bech32Address = await chain.obiAccountAddress(publicKey);
+        const address = fromBech32(bech32Address).data;
+        const ethereumHexAddress = toHex(address);
+
+        return {
+          name: chain.label,
+          algo: "secp256k1",
+          pubKey: Encoding.fromBytes(
+            getSec256k1CompressedPublicKey(publicKey),
+          ).toBytes(),
+          address,
+          ethereumHexAddress,
+          bech32Address,
+          isNanoLedger: false,
+          isKeystone: false,
+          chainId: chain.chainId,
+        };
+      }),
+    );
   }
 
   public async handleWalletConnectSessionRequest({

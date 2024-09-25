@@ -5,6 +5,7 @@ import {
   SecretChainId,
 } from "@/target-chain/secret/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import { Key } from "@obi-wallet/wallet-connect";
 
 import { CosmosTargetChain } from "./cosmos";
 import {
@@ -75,5 +76,14 @@ export class TargetChain {
       ...namespaces[0],
       ...namespaces[1],
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    const keys = await Promise.all([
+      CosmosTargetChain.getWalletConnectKeys(),
+      Eip155TargetChain.getWalletConnectKeys(),
+    ]);
+
+    return keys.flat();
   }
 }
