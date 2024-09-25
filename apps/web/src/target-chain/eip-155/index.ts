@@ -21,6 +21,7 @@ import {
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
+  Key,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
@@ -396,6 +397,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
         events: ["chainChanged", "accountsChanged"],
       },
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    return [];
   }
 
   public async handleWalletConnectSessionRequest({
