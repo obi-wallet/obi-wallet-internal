@@ -1,5 +1,5 @@
-import { KeyItem } from "@/components";
 import { serialize } from "@obi-wallet/sdk-json";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { gapi } from "gapi-script";
 import { useEffect, useState, useCallback } from "react";
 
@@ -123,7 +123,9 @@ export function useGoogleAuth() {
     return data.files;
   };
 
-  const readFileById = async (fileId: string): Promise<KeyItem | null> => {
+  const readFileById = async (
+    fileId: string,
+  ): Promise<Secp256k1KeyPair | null> => {
     const accessToken = gapi.auth2
       .getAuthInstance()
       .currentUser.get()

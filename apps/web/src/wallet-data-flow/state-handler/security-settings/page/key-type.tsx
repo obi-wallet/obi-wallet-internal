@@ -10,7 +10,6 @@ import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
 
-
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
     const { draft, keyList, pushPage, popPage, setKeyMetaData } =
