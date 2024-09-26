@@ -2,13 +2,16 @@
 
 import { Text } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
+import { useGoogleAuth } from "@/hooks/use-google-auth";
 import {
   OnboardingFromType,
   PrimaryKeyOnboardingStep,
 } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { createPasskey, KeyType } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { useMutation } from "@tanstack/react-query";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -21,6 +24,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 }: StepProps<PrimaryKeyOnboardingStep>) {
   const pathName = usePathname();
   const externalAsset = pathName.split("/")[2]?.split("-")[1];
+  const { signIn, uploadFile } = useGoogleAuth();
 
   const capitalizedExternalAsset = externalAsset
     ? externalAsset?.charAt(0).toUpperCase() + externalAsset?.slice(1)
@@ -36,6 +40,31 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         },
       });
       if (next) next();
+    },
+  });
+
+  const cloudkeyFlow = useMutation({
+    mutationFn: async () => {
+      const keyPair = generateSec256k1KeyPair();
+      draft.value.setPrimaryKey({
+        key: {
+          type: KeyType.Cloud,
+          payload: keyPair,
+        },
+      });
+      const googleUser = await signIn();
+      if (googleUser) {
+        const timestamp = DateTime.now().toISO();
+        const fileName = `obi-${timestamp}.key`;
+        const uploadedData = await uploadFile(
+          keyPair,
+          fileName,
+          "application/json",
+        );
+        if (next && uploadedData) next();
+      } else {
+        console.error("Error in signing with google");
+      }
     },
   });
 
@@ -80,7 +109,14 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             passkeyFlow.mutate();
           }}
         >
-          Continue
+          Passkey
+        </BitButton>
+        <BitButton
+          onClick={() => {
+            cloudkeyFlow.mutate();
+          }}
+        >
+          Cloudkey
         </BitButton>
         {/* <Button disabled className="block w-full" variant="primary">
         More Services Coming Soon

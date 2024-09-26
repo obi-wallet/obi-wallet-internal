@@ -101,10 +101,13 @@ export class MultisigKey {
     return this._keys.filter(this.isKeyOfType(type));
   }
 
-  public get primaryKey(): KeySubclassTypeMapping[KeyType.Passkey] | null {
+  public get primaryKey():
+    | KeySubclassTypeMapping[KeyType.Passkey | KeyType.Cloud]
+    | null {
     if (
       this._primaryKey &&
-      this.isUsableKeyOfType(KeyType.Passkey)(this._primaryKey) &&
+      (this.isUsableKeyOfType(KeyType.Passkey)(this._primaryKey) ||
+        this.isUsableKeyOfType(KeyType.Cloud)(this._primaryKey)) &&
       this._keys.includes(this._primaryKey)
     ) {
       return this._primaryKey;
