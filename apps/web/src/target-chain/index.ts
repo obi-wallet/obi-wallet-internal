@@ -18,14 +18,21 @@ import {
   Eip155ChainId,
   isEip155ChainId,
 } from "./eip-155/chains";
+import { BitcoinChainId, isBitcoinChainId } from "./bitcoin/chains";
+import { BitcoinTargetChain } from "./bitcoin";
 
-export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
+export type TargetChainId =
+  | CosmosChainId
+  | Eip155ChainId
+  | SecretChainId
+  | BitcoinChainId;
 
 export function isTargetChainId(chainId: string): chainId is TargetChainId {
   return (
     isCosmosChainId(chainId) ||
     isEip155ChainId(chainId) ||
-    isSecretChainId(chainId)
+    isSecretChainId(chainId) ||
+    isBitcoinChainId(chainId)
   );
 }
 
@@ -41,6 +48,7 @@ export class TargetChain {
   public static chainId(chainId: CosmosChainId): CosmosTargetChain;
   public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
   public static chainId(chainId: SecretChainId): SecretTargetChain;
+  public static chainId(chainId: BitcoinChainId): BitcoinTargetChain;
   public static chainId(
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
@@ -61,6 +69,9 @@ export class TargetChain {
     }
     if (isSecretChainId(chainId)) {
       return new SecretTargetChain(chainId);
+    }
+    if (isBitcoinChainId(chainId)) {
+      return new BitcoinTargetChain(chainId);
     }
     throw new Error(`ChainId ${chainId} not found`);
   }

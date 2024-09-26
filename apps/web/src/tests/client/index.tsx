@@ -2,6 +2,8 @@
 
 import { Text } from "@/components";
 import { hasSucceeded, runTests, TestResults } from "@/tests";
+import { testSuite as bitcoinTestSuite } from "@/tests/client/target-chain/bitcoin/tokens";
+import { testSuite as bitcoinMpcSignerTestSuite } from "@/tests/client/target-chain/bitcoin/mpc-signer";
 import { testSuite as cosmosMpcSignerTestSuite } from "@/tests/client/target-chain/cosmos-sdk/mpc-signer";
 import { testSuite as cosmosTokensTestSuite } from "@/tests/client/target-chain/cosmos-sdk/tokens";
 import { testSuite as evmMpcSignerTestSuite } from "@/tests/client/target-chain/evm/mpc-signer";
@@ -22,6 +24,8 @@ export function ClientSideTests({
 
   useEffectOnceWhen(async () => {
     const clientResults = await runTests((context) => {
+      bitcoinTestSuite(context);
+      bitcoinMpcSignerTestSuite(context);
       cosmosMpcSignerTestSuite(context);
       cosmosTokensTestSuite(context);
       evmMpcSignerTestSuite(context);
