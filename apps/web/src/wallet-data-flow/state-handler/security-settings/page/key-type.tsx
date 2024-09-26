@@ -1,16 +1,21 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { cn } from "@/lib/utils";
+import { AsyncButton } from "@/ui/button";
 import { KeyType } from "@obi-wallet/sdk";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
 
+
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
-    const { draft, keyList, pushPage, popPage } = useSecuritySettingsContext();
-    const { signIn } = useGoogleAuth();
+    const { draft, keyList, pushPage, popPage, setKeyMetaData } =
+      useSecuritySettingsContext();
+    const { signIn, uploadFile } = useGoogleAuth();
     const keyData = keyList.find((item) => {
       return item.type === page.payload;
     });
@@ -60,7 +65,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
             );
           })}
         </div>
-        <Button
+        <AsyncButton
           variant="outline"
           block
           className="mt-6 border-dashed"
@@ -68,21 +73,26 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
             if (page.payload === KeyType.Cloud) {
               const googleUser = await signIn();
               if (googleUser) {
-                pushPage({
-                  type: "key-add",
-                  payload: page.payload,
+                const keyPair = generateSec256k1KeyPair();
+                const cloudkey = draft.value.addCloudKey(keyPair.publicKey);
+                if (!draft.value.primaryKey) {
+                  draft.value.setPrimaryKey(cloudkey);
+                }
+                const timestamp = DateTime.now().toISO();
+                const fileName = `obi-${timestamp}.key`;
+                setKeyMetaData(keyPair.publicKey, {
+                  name: `CloudKey-${timestamp}`,
+                  timestamp,
                 });
+                await uploadFile(keyPair, fileName, "application/json");
               }
             } else {
-              pushPage({
-                type: "key-add",
-                payload: page.payload,
-              });
+              console.error("Error in signing to google");
             }
           }}
         >
           Add New Key
-        </Button>
+        </AsyncButton>
         <div className="mt-40 grid grid-cols-2 gap-8">
           <Button
             variant="secondary"

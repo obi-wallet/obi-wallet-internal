@@ -131,20 +131,20 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
                   <AsyncButton
                     key={index}
                     onClick={async () => {
-                      const fileContent = await readFileById(file.id);
-                      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                      const keyPair = fileContent && fileContent.key.payload;
-                      await recoverByPublicKey.mutateAsync({
-                        publicKey: keyPair.publicKey,
-                        keyMetaData: {},
-                        modifyMultisigKey: (multisigKey) => {
-                          multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-                          const primaryKey = multisigKey.addCloudKey(
-                            keyPair.publicKey,
-                          );
-                          multisigKey.setPrimaryKey(primaryKey);
-                        },
-                      });
+                      const keyPair = await readFileById(file.id);
+                      if (keyPair) {
+                        await recoverByPublicKey.mutateAsync({
+                          publicKey: keyPair.publicKey,
+                          keyMetaData: {},
+                          modifyMultisigKey: (multisigKey) => {
+                            multisigKey.removeKeyByPublicKey(keyPair.publicKey);
+                            const primaryKey = multisigKey.addCloudKey(
+                              keyPair.publicKey,
+                            );
+                            multisigKey.setPrimaryKey(primaryKey);
+                          },
+                        });
+                      }
                     }}
                     className="block w-full"
                     variant="primary"

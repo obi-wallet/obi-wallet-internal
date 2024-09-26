@@ -21,7 +21,7 @@ export const AddCloudkeyPage = observer(function AddCloudkeyPage() {
   const cloudkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = generateSec256k1KeyPair();
-      const cloudkey = draft.value.addCloudKey(keyPair);
+      const cloudkey = draft.value.addCloudKey(keyPair.publicKey);
       if (!draft.value.primaryKey) {
         draft.value.setPrimaryKey(cloudkey);
       }
