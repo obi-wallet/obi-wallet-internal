@@ -20,7 +20,7 @@ import {
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
@@ -62,7 +62,7 @@ export class CosmosMpcSigner
       {
         algo: "secp256k1",
         address: this.address,
-        pubkey: getSec256k1CompressedPublicKey(this.publicKey),
+        pubkey: getSecp256k1CompressedPublicKey(this.publicKey),
       },
     ];
   }
@@ -112,7 +112,7 @@ export class CosmosMpcSigner
       Encoding.fromHex(s),
     ).toBytes();
     return encodeSecp256k1Signature(
-      getSec256k1CompressedPublicKey(this.publicKey),
+      getSecp256k1CompressedPublicKey(this.publicKey),
       signature,
     );
   }

@@ -55,7 +55,7 @@ import {
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -119,7 +119,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
     return pubkeyToAddress(
-      getSec256k1CompressedPublicKey(publicKey),
+      getSecp256k1CompressedPublicKey(publicKey),
       this.chainData.prefix,
     );
   }
@@ -582,7 +582,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           name: chain.label,
           algo: "secp256k1",
           pubKey: Encoding.fromBytes(
-            getSec256k1CompressedPublicKey(publicKey),
+            getSecp256k1CompressedPublicKey(publicKey),
           ).toBytes(),
           address,
           ethereumHexAddress,
@@ -626,7 +626,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
               algo: "secp256k1",
               address: await targetChain.obiAccountAddress(publicKey),
               pubkey: Encoding.fromBytes(
-                getSec256k1CompressedPublicKey(publicKey),
+                getSecp256k1CompressedPublicKey(publicKey),
               ).toBase64(),
             };
           }),

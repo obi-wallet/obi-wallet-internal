@@ -14,7 +14,7 @@ import { AccountData } from "@cosmjs/proto-signing";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import { AminoSigner } from "secretjs/dist/wallet_amino";
@@ -54,7 +54,7 @@ export class SecretMpcSigner implements AminoSigner {
       {
         algo: "secp256k1",
         address: this.address,
-        pubkey: getSec256k1CompressedPublicKey(this.publicKey),
+        pubkey: getSecp256k1CompressedPublicKey(this.publicKey),
       },
     ];
   }
@@ -91,7 +91,7 @@ export class SecretMpcSigner implements AminoSigner {
       Encoding.fromHex(s),
     ).toBytes();
     return encodeSecp256k1Signature(
-      getSec256k1CompressedPublicKey(this.publicKey),
+      getSecp256k1CompressedPublicKey(this.publicKey),
       signature,
     );
   }
