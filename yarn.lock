@@ -3592,6 +3592,7 @@ __metadata:
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@sentry/nextjs": "npm:^8.25.0"
+    "@spotlightjs/sidecar": "npm:^1.8.0"
     "@spotlightjs/spotlight": "npm:^2.3.1"
     "@storybook/addon-essentials": "npm:^8.2.8"
     "@storybook/addon-interactions": "npm:^8.2.8"
@@ -4899,6 +4900,19 @@ __metadata:
   bin:
     spotlight-sidecar: server.js
   checksum: 10c0/1c4827c08f6ed16bfa0aef8ed4ee6d0114d6c90e791c31874b93c44986e749a0210c89153c634e64dd9a3baf1bc3b9b3b106112126ef460eb12902577db27ede
+  languageName: node
+  linkType: hard
+
+"@spotlightjs/sidecar@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "@spotlightjs/sidecar@npm:1.8.0"
+  dependencies:
+    kleur: "npm:^4.1.5"
+    launch-editor: "npm:^2.8.0"
+    source-map: "npm:^0.7.4"
+  bin:
+    spotlight-sidecar: server.js
+  checksum: 10c0/bd7196787869192ca0e6d475e65fe270513903cf0508b09b6c8ae5299aa1a00f88590babf3a71d5f2680bbdcf7d1da48e64f0ba375836a9bd86a12806c77f035
   languageName: node
   linkType: hard
 
