@@ -1,7 +1,6 @@
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 
-import { AddCloudkeyPage } from "./cloudkey";
 import { AddPasskeyPage } from "./passkey";
 import { AddPhoneKeyPage } from "./phone";
 import { AddTelegramKeyPage } from "./telegram";
@@ -16,8 +15,6 @@ export const SecuritySettingsKeyAddPage = observer<{ page: KeyAddPage }>(
         return <AddPhoneKeyPage />;
       case KeyType.Telegram:
         return <AddTelegramKeyPage />;
-      case KeyType.Cloud:
-        return <AddCloudkeyPage />;
       default:
         console.error("Not implemented");
     }

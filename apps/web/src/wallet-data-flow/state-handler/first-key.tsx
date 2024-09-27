@@ -28,7 +28,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
   const [cloudkeyFiles, setCloudkeyFiles] = useState<
     { id: string; name: string }[] | null
   >(null);
-  const { signIn, readFiles, readFileById } = useGoogleAuth();
+  const { readFiles, readFileById } = useGoogleAuth();
 
   const recoverByPublicKey = useMutation({
     mutationFn: async ({
@@ -244,23 +244,19 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       </Button>
       <AsyncButton
         onClick={async () => {
-          const googleUser = await signIn();
-          if (googleUser) {
-            console.log(googleUser);
-            const files = await readFiles();
-            const keyFiles =
-              files &&
-              files
-                .filter((file) => {
-                  return file.name.startsWith("obi-");
-                })
-                .filter((file) => {
-                  return file.name.endsWith(".key");
-                });
-            if (keyFiles) {
-              setCloudkeyFiles(keyFiles);
-              setModal(KeyType.Cloud);
-            }
+          const files = await readFiles();
+          const keyFiles =
+            files &&
+            files
+              .filter((file) => {
+                return file.name.startsWith("obi-");
+              })
+              .filter((file) => {
+                return file.name.endsWith(".key");
+              });
+          if (keyFiles) {
+            setCloudkeyFiles(keyFiles);
+            setModal(KeyType.Cloud);
           }
         }}
         className="block w-full"

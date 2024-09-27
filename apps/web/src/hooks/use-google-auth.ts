@@ -29,23 +29,19 @@ export function useGoogleAuth() {
     gapi.load("client:auth2", start);
   }, []);
 
-  const signIn = async (): Promise<gapi.auth2.GoogleUser | null> => {
-    console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+  const signIn = async (): Promise<void> => {
     try {
-      return await gapi.auth2.getAuthInstance().signIn();
+      await gapi.auth2.getAuthInstance().signIn();
     } catch (error) {
       console.error("Error signing in:", error);
-      return null;
     }
   };
 
   const signOut = async (): Promise<void> => {
     try {
-      const result = await gapi.auth2.getAuthInstance().signOut();
-      return result;
+      await gapi.auth2.getAuthInstance().signOut();
     } catch (error) {
       console.error("Error signing out:", error);
-      throw error;
     }
   };
 
@@ -55,17 +51,14 @@ export function useGoogleAuth() {
       fileName: string,
       mimeType = "application/json",
     ) => {
-      if (!isSignedIn) {
-        console.error("User is not signed in");
-        return null;
-      }
+      if (!isSignedIn) await signIn();
 
       const accessToken = gapi.auth2
         .getAuthInstance()
         .currentUser.get()
         .getAuthResponse().access_token;
 
-      const file = new Blob([serialize(fileContent)], { type: mimeType }); // Convert object to JSON string
+      const file = new Blob([serialize(fileContent)], { type: mimeType });
       const metadata = {
         name: fileName,
         mimeType: mimeType,
@@ -103,6 +96,8 @@ export function useGoogleAuth() {
   const readFiles = async (): Promise<
     [{ id: string; name: string }] | null
   > => {
+    if (!isSignedIn) await signIn();
+
     const accessToken = gapi.auth2
       .getAuthInstance()
       .currentUser.get()
@@ -126,6 +121,8 @@ export function useGoogleAuth() {
   const readFileById = async (
     fileId: string,
   ): Promise<Secp256k1KeyPair | null> => {
+    if (!isSignedIn) await signIn();
+
     const accessToken = gapi.auth2
       .getAuthInstance()
       .currentUser.get()

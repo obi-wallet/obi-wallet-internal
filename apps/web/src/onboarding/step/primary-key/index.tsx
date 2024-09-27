@@ -24,7 +24,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 }: StepProps<PrimaryKeyOnboardingStep>) {
   const pathName = usePathname();
   const externalAsset = pathName.split("/")[2]?.split("-")[1];
-  const { signIn, uploadFile } = useGoogleAuth();
+  const { uploadFile } = useGoogleAuth();
 
   const capitalizedExternalAsset = externalAsset
     ? externalAsset?.charAt(0).toUpperCase() + externalAsset?.slice(1)
@@ -52,19 +52,14 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
           payload: keyPair,
         },
       });
-      const googleUser = await signIn();
-      if (googleUser) {
-        const timestamp = DateTime.now().toISO();
-        const fileName = `obi-${timestamp}.key`;
-        const uploadedData = await uploadFile(
-          keyPair,
-          fileName,
-          "application/json",
-        );
-        if (next && uploadedData) next();
-      } else {
-        console.error("Error in signing with google");
-      }
+      const timestamp = DateTime.now().toISO();
+      const fileName = `obi-${timestamp}.key`;
+      const uploadedData = await uploadFile(
+        keyPair,
+        fileName,
+        "application/json",
+      );
+      if (next && uploadedData) next();
     },
   });
 
