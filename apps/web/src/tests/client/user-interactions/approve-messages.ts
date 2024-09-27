@@ -145,9 +145,9 @@ export const testSuite = createTestSuite(({ test }) => {
 
   test("CosmosSignAminoUserInteraction", async () => {
     const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-      wallet.userEntryAddress,
-    );
+    const publicKey = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).secp256k1PublicKey(wallet.userEntryAddress);
 
     const interaction: CosmosSignAminoUserInteraction = {
       payload: {
@@ -183,9 +183,9 @@ export const testSuite = createTestSuite(({ test }) => {
 
   test("CosmosSignDirectUserInteraction", async () => {
     const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-      wallet.userEntryAddress,
-    );
+    const publicKey = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).secp256k1PublicKey(wallet.userEntryAddress);
 
     const interaction: CosmosSignDirectUserInteraction = {
       payload: {

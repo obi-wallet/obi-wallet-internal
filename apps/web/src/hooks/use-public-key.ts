@@ -8,7 +8,7 @@ export function usePublicKeyQuery() {
   const wallet = useCurrentWallet({});
   const query = makeNamespacedQueryParamsOptional(
     HomeChain.chainId(wallet?.homeChainId ?? SecretJsHomeChainId.MAINNET)
-      .publicKeyQuery,
+      .secp256k1PublicKeyQuery,
   );
   return useQuery(query(wallet?.userEntryAddress));
 }

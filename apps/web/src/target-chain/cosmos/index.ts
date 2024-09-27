@@ -524,9 +524,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-      wallet.userEntryAddress,
-    );
+    const publicKey = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).secp256k1PublicKey(wallet.userEntryAddress);
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -560,9 +560,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getWalletConnectKeys(): Promise<Key[]> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-      wallet.userEntryAddress,
-    );
+    const publicKey = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).secp256k1PublicKey(wallet.userEntryAddress);
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -606,9 +606,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     switch (request.method) {
       case "cosmos_getAccounts": {
-        const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-          wallet.userEntryAddress,
-        );
+        const publicKey = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).secp256k1PublicKey(wallet.userEntryAddress);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
