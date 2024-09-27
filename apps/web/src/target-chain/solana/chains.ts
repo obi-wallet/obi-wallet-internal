@@ -12,6 +12,7 @@ export function isSolanaChainId(chainId: string): chainId is SolanaChainId {
 export interface SolanaChainData {
   id: SolanaChainId;
   name: string;
+  endpoint: string;
   disabled?: boolean;
 }
 
@@ -19,10 +20,13 @@ export const SolanaChains: Record<SolanaChainId, SolanaChainData> = {
   [SolanaChainId.Mainnet]: {
     id: SolanaChainId.Mainnet,
     name: "Solana Mainnet",
+    // TODO:
+    endpoint: "https://api.mainnet-beta.solana.com",
     disabled: true,
   },
   [SolanaChainId.Devnet]: {
     id: SolanaChainId.Devnet,
     name: "Solana Devnet",
+    endpoint: "https://api.devnet.solana.com",
   },
 };

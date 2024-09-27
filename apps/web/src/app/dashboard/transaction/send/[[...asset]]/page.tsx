@@ -104,7 +104,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(
         isCosmosChainId(chainId) ||
           isEip155ChainId(chainId) ||
-          isSecretChainId(chainId),
+          isSecretChainId(chainId) ||
+          isSolanaChainId(chainId),
         "Expected valid targetChainId",
       );
 

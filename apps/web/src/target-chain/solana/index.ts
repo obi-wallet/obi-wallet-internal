@@ -3,6 +3,7 @@ import {
   AssetInfo,
   Caip19Asset,
 } from "@obi-wallet/sdk-abstract-target-chain";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
@@ -10,6 +11,7 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 import { SolanaChainData, SolanaChainId, SolanaChains } from "./chains";
 
@@ -61,9 +63,17 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     throw new Error("Method isTokenAsset not implemented.");
   }
 
-  public nativeBalancesQueryFn(_address: string): Promise<Caip19Asset[]> {
+  public async nativeBalancesQueryFn(address: string): Promise<Caip19Asset[]> {
+    const publicKey = new PublicKey(address);
+    const balance = await this.solanaConnection.getBalance(publicKey);
+    return [
+      {
+        assetId: this.nativeCaip19AssetId,
+        rawAmount: balance.toString(),
+      },
+    ];
     // TODO:
-    throw new Error("Method nativeBalancesQueryFn not implemented.");
+    // throw new Error("Method nativeBalancesQueryFn not implemented.");
   }
 
   public tokenBalanceQueryFn(_: {
@@ -74,9 +84,20 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     throw new Error("Method tokenBalanceQueryFn not implemented.");
   }
 
-  public assetInfo(_id: Caip19AssetId): Promise<AssetInfo | null> {
-    // TODO:
-    throw new Error("Method assetInfo not implemented.");
+  public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
+    const asset = await AssetRegistry.getInstance().byId(id);
+    if (asset?.assetInfo) return asset.assetInfo;
+
+    if (id === this.nativeCaip19AssetId) {
+      return {
+        name: "SOL",
+        symbol: "SOL",
+        decimals: 9,
+        image: null,
+      };
+    }
+
+    return null;
   }
 
   public handleWalletConnectSessionRequest(
@@ -96,5 +117,13 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   public caip19AssetIdToDenom(_assetId: Caip19AssetId): string | null {
     // TODO:
     throw new Error("Method caip19AssetIdToDenom not implemented.");
+  }
+
+  protected get solanaConnection() {
+    return new Connection(this.chainData.endpoint, "confirmed");
+  }
+
+  public get nativeCaip19AssetId(): Caip19AssetId {
+    return `${this.chainId}/slip44:501`;
   }
 }
