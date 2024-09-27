@@ -3426,6 +3426,7 @@ __metadata:
     "@obi-wallet/query-client": "workspace:*"
     "@obi-wallet/sdk-asset-registry": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
+    "@obi-wallet/sdk-obi-account": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@repo/eslint-config": "workspace:*"
@@ -3503,7 +3504,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@obi-wallet/sdk-obi-account@workspace:packages/sdk-obi-account":
+"@obi-wallet/sdk-obi-account@workspace:*, @obi-wallet/sdk-obi-account@workspace:packages/sdk-obi-account":
   version: 0.0.0-use.local
   resolution: "@obi-wallet/sdk-obi-account@workspace:packages/sdk-obi-account"
   dependencies:
@@ -3619,7 +3620,9 @@ __metadata:
     "@obi-wallet/sdk-abstract-user-interaction": "workspace:*"
     "@obi-wallet/sdk-asset-registry": "workspace:*"
     "@obi-wallet/sdk-caip": "workspace:*"
+    "@obi-wallet/sdk-ed25519": "workspace:*"
     "@obi-wallet/sdk-json": "workspace:*"
+    "@obi-wallet/sdk-obi-account": "workspace:*"
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@playwright/test": "npm:^1.46.0"

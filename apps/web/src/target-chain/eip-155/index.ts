@@ -16,6 +16,7 @@ import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
   getSecp256k1UncompressedPublicKey,
   Secp256k1PublicKey,
@@ -99,16 +100,16 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   protected async obiAccountAddressQueryFn(
-    publicKey: Secp256k1PublicKey,
+    publicKeys: ObiAccountPublicKeys,
   ): Promise<HexEncodedStringWithPrefix> {
     if (this.chainId === Eip155ChainId.BscTestnet) {
       return await new Eip155TargetChain(
         Eip155ChainId.Bsc,
-      ).obiAccountAddressQueryFn(publicKey);
+      ).obiAccountAddressQueryFn(publicKeys);
     }
 
     const account = toAccount({
-      address: this.computeAddress(publicKey),
+      address: this.computeAddress(publicKeys.secp256k1),
       async signMessage() {
         throw new Error("signMessage not implemented");
       },
@@ -366,9 +367,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
 
     const eip155Chains = allEip155Chains
       .map((targetChainId) => {
@@ -390,7 +391,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
         ],
         accounts: await Promise.all(
           eip155Chains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKey);
+            const address = await chain.obiAccountAddressQueryFn(publicKeys);
             return `${chain.chainId}:${address}`;
           }),
         ),

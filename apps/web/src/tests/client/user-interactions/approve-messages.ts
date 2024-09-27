@@ -145,9 +145,9 @@ export const testSuite = createTestSuite(({ test }) => {
 
   test("CosmosSignAminoUserInteraction", async () => {
     const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKey = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
 
     const interaction: CosmosSignAminoUserInteraction = {
       payload: {
@@ -156,7 +156,7 @@ export const testSuite = createTestSuite(({ test }) => {
         },
         signerAddress: await TargetChain.chainId(
           CosmosChainId.Sei,
-        ).obiAccountAddress(publicKey),
+        ).obiAccountAddress(publicKeys),
         signDoc: {
           chain_id: "pacific-1",
           account_number: "1",
@@ -183,9 +183,9 @@ export const testSuite = createTestSuite(({ test }) => {
 
   test("CosmosSignDirectUserInteraction", async () => {
     const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKey = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
 
     const interaction: CosmosSignDirectUserInteraction = {
       payload: {
@@ -194,7 +194,7 @@ export const testSuite = createTestSuite(({ test }) => {
         },
         signerAddress: await TargetChain.chainId(
           CosmosChainId.Sei,
-        ).obiAccountAddress(publicKey),
+        ).obiAccountAddress(publicKeys),
         signDoc: makeSignDoc(
           fromHex(
             "0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637",

@@ -1,6 +1,5 @@
 import { useStore } from "@/contexts";
 import { SimulationEntry } from "@/dashboard/schema";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TokenConfig, TokensConfig } from "@/stores/tokens";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -12,7 +11,8 @@ import { flatten, toPairs } from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { usePublicKey } from "../use-public-key";
+import { useCurrentWallet } from "../use-current-wallet";
+import { usePublicKeys } from "../use-public-keys";
 
 export interface PrettyCaip19Asset extends Caip19Asset {
   price: string;
@@ -123,14 +123,14 @@ export function useInvalidateBalancesQueries() {
 export function useBalances() {
   const wallet = useCurrentWallet({});
   const { targetChainsStore, tokensStore } = useStore();
-  const publicKey = usePublicKey();
+  const publicKeys = usePublicKeys();
 
   return useQueries({
     queries: getQueries(),
   });
 
   function getQueries() {
-    if (!wallet || !publicKey) return [];
+    if (!wallet || !publicKeys) return [];
 
     const targetChains = targetChainsStore.getTargetChains(
       wallet.userEntryAddress,
@@ -139,14 +139,14 @@ export function useBalances() {
 
     return targetChains.map((chain) => {
       return {
-        queryKey: ["balances", chain.id, publicKey],
+        queryKey: ["balances", chain.id, publicKeys],
         queryFn: async (): Promise<PrettyCaip19Asset[]> => {
-          invariant(publicKey, "Expected publicKey to be set.");
+          invariant(publicKeys, "Expected publicKeys to be set.");
           if (!chain.enabled) {
             return [];
           }
           return await fetchBalances({
-            address: await chain.targetChain.obiAccountAddress(publicKey),
+            address: await chain.targetChain.obiAccountAddress(publicKeys),
             targetChainId: chain.id,
             tokensConfig,
           });

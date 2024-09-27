@@ -54,6 +54,7 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
   getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
@@ -124,8 +125,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     );
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    return this.computeAddress(publicKey);
+  protected async obiAccountAddressQueryFn(publicKeys: ObiAccountPublicKeys) {
+    return this.computeAddress(publicKeys.secp256k1);
   }
 
   public isNativeAsset(assetId: Caip19AssetId) {
@@ -524,9 +525,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -548,7 +549,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         ],
         accounts: await Promise.all(
           cosmosChains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKey);
+            const address = await chain.obiAccountAddressQueryFn(publicKeys);
             return `${chain.chainId}:${address}`;
           }),
         ),
@@ -560,9 +561,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getWalletConnectKeys(): Promise<Key[]> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -574,7 +575,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     return await Promise.all(
       cosmosChains.map(async (chain) => {
-        const bech32Address = await chain.obiAccountAddress(publicKey);
+        const bech32Address = await chain.obiAccountAddress(publicKeys);
         const address = fromBech32(bech32Address).data;
         const ethereumHexAddress = toHex(address);
 
@@ -582,7 +583,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           name: chain.label,
           algo: "secp256k1",
           pubKey: Encoding.fromBytes(
-            getSecp256k1CompressedPublicKey(publicKey),
+            getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
           ).toBytes(),
           address,
           ethereumHexAddress,
@@ -606,9 +607,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     switch (request.method) {
       case "cosmos_getAccounts": {
-        const publicKey = await HomeChain.chainId(
+        const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).secp256k1PublicKey(wallet.userEntryAddress);
+        ).publicKeys(wallet.userEntryAddress);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
@@ -624,9 +625,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           cosmosChains.map(async (targetChain) => {
             return {
               algo: "secp256k1",
-              address: await targetChain.obiAccountAddress(publicKey),
+              address: await targetChain.obiAccountAddress(publicKeys),
               pubkey: Encoding.fromBytes(
-                getSecp256k1CompressedPublicKey(publicKey),
+                getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
               ).toBase64(),
             };
           }),
