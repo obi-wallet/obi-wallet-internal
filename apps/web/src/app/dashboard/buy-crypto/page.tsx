@@ -7,6 +7,7 @@ import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
+import { SolanaChainId } from "@/target-chain/solana/chains";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { skipToken } from "@tanstack/react-query";
@@ -111,6 +112,10 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
       return null;
     case SecretChainId.Secret:
       return "SECRET";
+    case SolanaChainId.Devnet:
+    case SolanaChainId.Mainnet:
+      // TODO:
+      return null;
   }
 }
 

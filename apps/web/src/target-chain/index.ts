@@ -19,14 +19,25 @@ import {
   Eip155ChainId,
   isEip155ChainId,
 } from "./eip-155/chains";
+import { SolanaTargetChain } from "./solana";
+import {
+  allSolanaChains,
+  isSolanaChainId,
+  SolanaChainId,
+} from "./solana/chains";
 
-export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
+export type TargetChainId =
+  | CosmosChainId
+  | Eip155ChainId
+  | SecretChainId
+  | SolanaChainId;
 
 export function isTargetChainId(chainId: string): chainId is TargetChainId {
   return (
     isCosmosChainId(chainId) ||
     isEip155ChainId(chainId) ||
-    isSecretChainId(chainId)
+    isSecretChainId(chainId) ||
+    isSolanaChainId(chainId)
   );
 }
 
@@ -34,6 +45,7 @@ export const allTargetChainIds = [
   ...allCosmosChains,
   ...allEip155Chains,
   ...allSecretChains,
+  ...allSolanaChains,
 ];
 
 export class TargetChain {
@@ -42,6 +54,7 @@ export class TargetChain {
   public static chainId(chainId: CosmosChainId): CosmosTargetChain;
   public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
   public static chainId(chainId: SecretChainId): SecretTargetChain;
+  public static chainId(chainId: SolanaChainId): SolanaTargetChain;
   public static chainId(
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
@@ -52,6 +65,8 @@ export class TargetChain {
   ):
     | CosmosTargetChain
     | Eip155TargetChain
+    | SecretTargetChain
+    | SolanaTargetChain
     | AbstractTargetChain<TargetChainId>
     | AbstractTargetChain {
     if (isCosmosChainId(chainId)) {
@@ -62,6 +77,9 @@ export class TargetChain {
     }
     if (isSecretChainId(chainId)) {
       return new SecretTargetChain(chainId);
+    }
+    if (isSolanaChainId(chainId)) {
+      return new SolanaTargetChain(chainId);
     }
     throw new Error(`ChainId ${chainId} not found`);
   }

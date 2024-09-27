@@ -15,6 +15,7 @@ import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { isSolanaChainId } from "@/target-chain/solana/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
@@ -315,6 +316,12 @@ const SendInner = observer<{
             alert.showError(`TX failed: ${broadcastResult.rawLog}`);
           }
         }
+        return;
+      }
+
+      if (isSolanaChainId(chainId)) {
+        // TODO:
+        alert.showError("Sending on Solana is not supported yet");
         return;
       }
 
