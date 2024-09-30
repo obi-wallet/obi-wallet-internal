@@ -78,7 +78,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       >
         {step.from === OnboardingFromType.External
           ? `Create a passkey to secure access to your ${capitalizedExternalAsset} tokens and other assets.`
-          : "Create a primary passkey to protect your account."}
+          : "Create a primary passkey or cloudkey to protect your account."}
       </Text>
 
       {step.from === OnboardingFromType.External ? (

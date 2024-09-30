@@ -121,7 +121,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       return (
         <Modal
           title="Cloud Key"
-          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full"
+          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full overflow-y-auto max-h-[400px]"
           onClose={onClose}
         >
           <section className="flex flex-col items-center space-y-4">

@@ -46,8 +46,8 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
       return key.publicKey.value === keyPair.publicKey.value;
     });
     invariant(
-      key && key.type === KeyType.Passkey,
-      "No passkey found with the given public key",
+      key && (key.type === KeyType.Passkey || key.type === KeyType.Cloud),
+      "No key found with the given public key",
     );
 
     const signer = new Secp256k1PrivateKeySigner(keyPair.privateKey);
