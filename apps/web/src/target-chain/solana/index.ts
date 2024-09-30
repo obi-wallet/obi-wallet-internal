@@ -28,9 +28,7 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   }
 
   public get image() {
-    // TODO:
-    return "";
-    // throw new Error("Method image not implemented.");
+    return "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png";
   }
 
   public get disabled() {
