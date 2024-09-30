@@ -83,7 +83,10 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
               });
               await uploadFile(keyPair, fileName, "application/json");
             } else {
-              console.error("Error in signing to google");
+              pushPage({
+                type: "key-add",
+                payload: page.payload,
+              });
             }
           }}
         >
