@@ -101,7 +101,7 @@ export function useWalletDataStateQuery() {
               break;
             }
             case KeyType.Cloud: {
-              const cloudkey = owner.addCloudKey(primaryKey.payload.publicKey);
+              const cloudkey = owner.addCloudKey(primaryKey.payload);
               owner.setPrimaryKey(cloudkey);
               break;
             }

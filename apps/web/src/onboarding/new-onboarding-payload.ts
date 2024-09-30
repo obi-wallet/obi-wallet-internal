@@ -167,7 +167,7 @@ export class NewOnboardingPayload implements Draftable {
         case KeyType.Passkey:
           return this._multisigKey.addPasskeyKey(key.payload);
         case KeyType.Cloud:
-          return this._multisigKey.addCloudKey(key.payload.publicKey);
+          return this._multisigKey.addCloudKey(key.payload);
         default:
           throw new Error(`Unsupported primary key type: ${key.type}`);
       }

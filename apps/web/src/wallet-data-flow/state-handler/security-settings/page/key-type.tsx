@@ -71,7 +71,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
           onClick={async () => {
             if (page.payload === KeyType.Cloud) {
               const keyPair = generateSec256k1KeyPair();
-              const cloudkey = draft.value.addCloudKey(keyPair.publicKey);
+              const cloudkey = draft.value.addCloudKey(keyPair);
               if (!draft.value.primaryKey) {
                 draft.value.setPrimaryKey(cloudkey);
               }
