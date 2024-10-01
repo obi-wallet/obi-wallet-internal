@@ -8,7 +8,6 @@ import { useAlert } from "./alert";
 export function useGoogleAuth() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const { showSuccess, showWarning } = useAlert();
-  const [isUploading, setIsUploading] = useState<boolean>(false); // State to track upload status
 
   useEffect(() => {
     const start = async (): Promise<void> => {
@@ -54,9 +53,6 @@ export function useGoogleAuth() {
     fileName: string,
     mimeType = "application/json",
   ) => {
-    if (isUploading) return;
-    setIsUploading(true);
-
     if (!isSignedIn) await signIn();
 
     const accessToken = gapi.auth2
@@ -80,7 +76,6 @@ export function useGoogleAuth() {
     if (!response.ok) {
       throw new Error("Invalid Response!");
     }
-    setIsUploading(false);
     await signOut();
     showSuccess("The Key File is successfully uploaded to google drive!");
   };

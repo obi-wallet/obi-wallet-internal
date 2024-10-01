@@ -1,11 +1,9 @@
 import { Box, Divider, KeyListItem, Text } from "@/components";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AsyncButton } from "@/ui/button";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { KeyType } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 
@@ -14,7 +12,6 @@ import { useSecuritySettingsContext } from "../context";
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   const currentWallet = useCurrentWallet({});
   const { state, dispatch } = useWalletDataFlowContext();
-  const { uploadFile } = useGoogleAuth();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const missingMandatoryKey = !draft.value.primaryKey;
@@ -106,22 +103,6 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               dispatch({
                 type: "update-owner",
               });
-              // upload key file to google drive connected
-              const keyData = keyList.find((item) => {
-                return item.type === KeyType.Cloud;
-              });
-              if (keyData) {
-                try {
-                  await Promise.all(
-                    keyData.keys.map(async (key) => {
-                      const fileName = `obi-${key.keyMetaData.timestamp}.key`;
-                      await uploadFile(key, fileName, "application/json");
-                    }),
-                  );
-                } catch (e) {
-                  console.log(e);
-                }
-              }
             }
           }}
         >
