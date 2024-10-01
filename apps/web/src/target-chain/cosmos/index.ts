@@ -11,6 +11,7 @@ import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
+import { filterMap } from "@/util/filter-map";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -536,9 +537,21 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         return !chain.disabled;
       });
 
+    const usableCosmosChains = await filterMap(
+      async (chain) => {
+        const address = await chain.obiAccountAddressQueryFn(publicKey);
+        return {
+          chainId: chain.chainId,
+          account: `${chain.chainId}:${address}`,
+        };
+      },
+      cosmosChains,
+      { catchErrors: true },
+    );
+
     return {
       cosmos: {
-        chains: cosmosChains.map((chain) => {
+        chains: usableCosmosChains.map((chain) => {
           return chain.chainId;
         }),
         methods: [
@@ -546,12 +559,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           "cosmos_signAmino",
           "cosmos_signDirect",
         ],
-        accounts: await Promise.all(
-          cosmosChains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKey);
-            return `${chain.chainId}:${address}`;
-          }),
-        ),
+        accounts: usableCosmosChains.map((chain) => {
+          return chain.account;
+        }),
         events: ["chainChanged", "accountsChanged"],
       },
     };
@@ -572,8 +582,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         return !chain.disabled;
       });
 
-    return await Promise.all(
-      cosmosChains.map(async (chain) => {
+    return await filterMap(
+      async (chain) => {
         const bech32Address = await chain.obiAccountAddress(publicKey);
         const address = fromBech32(bech32Address).data;
         const ethereumHexAddress = toHex(address);
@@ -591,7 +601,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           isKeystone: false,
           chainId: chain.chainId,
         };
-      }),
+      },
+      cosmosChains,
+      { catchErrors: true },
     );
   }
 
@@ -620,8 +632,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
             return !chain.disabled;
           });
 
-        const result = await Promise.all(
-          cosmosChains.map(async (targetChain) => {
+        const result = await filterMap(
+          async (targetChain) => {
             return {
               algo: "secp256k1",
               address: await targetChain.obiAccountAddress(publicKey),
@@ -629,7 +641,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
                 getSec256k1CompressedPublicKey(publicKey),
               ).toBase64(),
             };
-          }),
+          },
+          cosmosChains,
+          { catchErrors: true },
         );
         return { result };
       }
