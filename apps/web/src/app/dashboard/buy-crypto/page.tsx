@@ -7,6 +7,7 @@ import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
+import { filterMap } from "@/util/filter-map";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { skipToken } from "@tanstack/react-query";
@@ -27,28 +28,26 @@ async function computeKadoUrl({
   const targetChains =
     rootStore.current?.targetChainsStore.getTargetChains(userEntryAddress) ??
     [];
-  const networks = (
-    await Promise.all(
-      targetChains.map(async (chain): Promise<KadoNetwork | null> => {
-        if (!chain.enabled) {
-          return null;
-        }
+  const networks = await filterMap(
+    async (chain): Promise<KadoNetwork | null> => {
+      if (!chain.enabled) {
+        return null;
+      }
 
-        const kadoNetwork = toKadoNetwork(chain.id);
+      const kadoNetwork = toKadoNetwork(chain.id);
 
-        if (!kadoNetwork) {
-          return null;
-        }
+      if (!kadoNetwork) {
+        return null;
+      }
 
-        return {
-          network: kadoNetwork,
-          address: await chain.targetChain.obiAccountAddress(publicKey),
-        };
-      }),
-    )
-  ).filter((network): network is KadoNetwork => {
-    return !!network;
-  });
+      return {
+        network: kadoNetwork,
+        address: await chain.targetChain.obiAccountAddress(publicKey),
+      };
+    },
+    targetChains,
+    { catchErrors: true },
+  );
 
   const networkList = networks
     .map((network) => {
@@ -71,6 +70,8 @@ async function computeKadoUrl({
   url.searchParams.append("onToAddressMulti", onToAddressMulti);
   url.searchParams.append("network", "SEI");
   url.searchParams.append("onRevCurrency", "SEI");
+
+  console.log(url.toString());
 
   return url.toString();
 }
