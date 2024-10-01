@@ -54,12 +54,12 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       });
       const timestamp = DateTime.now().toISO();
       const fileName = `obi-${timestamp}.key`;
-      const uploadedData = await uploadFile(
-        keyPair,
-        fileName,
-        "application/json",
-      );
-      if (next && uploadedData) next();
+      try {
+        await uploadFile(keyPair, fileName, "application/json");
+        if (next) next();
+      } catch (e) {
+        console.error(e);
+      }
     },
   });
 

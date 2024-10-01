@@ -50,7 +50,7 @@ export function useGoogleAuth() {
   };
 
   const uploadFile = async (
-    fileContent: object,
+    fileContent: Secp256k1KeyPair,
     fileName: string,
     mimeType = "application/json",
   ) => {
@@ -64,45 +64,29 @@ export function useGoogleAuth() {
       .currentUser.get()
       .getAuthResponse().access_token;
 
-    const file = new Blob([serialize(fileContent)], { type: mimeType });
     const metadata = {
       name: fileName,
       mimeType: mimeType,
     };
 
-    const form = new FormData();
-    form.append(
-      "metadata",
-      new Blob([serialize(metadata)], { type: "application/json" }),
-    );
-    form.append("file", file);
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-        {
-          method: "POST",
-          headers: new Headers({
-            Authorization: `Bearer ${accessToken}`,
-          }),
-          body: form,
-        },
-      );
-
-      const data = await response.json();
-      await signOut();
-      console.log("File uploaded successfully", data);
-      showSuccess("The Key File is successfully uploaded to google drive!");
-      return data;
-    } catch (error) {
-      console.error("Error uploading file", error);
-      throw error;
-    } finally {
-      setIsUploading(false);
+    const response = await fetch("/api/google-drive/upload-file", {
+      method: "POST",
+      body: serialize({
+        accessToken,
+        metadata,
+        fileContent,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error("Invalid Response!");
     }
+    setIsUploading(false);
+    await signOut();
+    showSuccess("The Key File is successfully uploaded to google drive!");
   };
 
   const readFiles = async (): Promise<
-    [{ id: string; name: string }] | null
+    { id: string; name: string }[] | null
   > => {
     if (!isSignedIn) await signIn();
 
@@ -111,15 +95,16 @@ export function useGoogleAuth() {
       .currentUser.get()
       .getAuthResponse().access_token;
 
-    const response = await fetch(
-      "https://www.googleapis.com/drive/v3/files?q=mimeType='application/json'&fields=files(id,name)",
-      {
-        headers: new Headers({
-          Authorization: `Bearer ${accessToken}`,
-        }),
-      },
-    );
+    const response = await fetch("/api/google-drive/read-files", {
+      method: "POST",
+      body: serialize({
+        accessToken,
+      }),
+    });
 
+    if (!response.ok) {
+      throw new Error("Invalid Response!");
+    }
     const data = await response.json();
     if (data.files.length === 0) showWarning("No Key File is founded!");
 
@@ -136,28 +121,22 @@ export function useGoogleAuth() {
       .currentUser.get()
       .getAuthResponse().access_token;
 
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-        {
-          headers: new Headers({
-            Authorization: `Bearer ${accessToken}`,
-          }),
-        },
-      );
+    const response = await fetch("/api/google-drive/read-file-by-id", {
+      method: "POST",
+      body: serialize({
+        accessToken,
+        fileId,
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error("Error fetching file");
-      }
-
-      const fileContent = await response.json();
-      await signOut();
-      showSuccess("The Key File is successfully imported!");
-      return fileContent;
-    } catch (error) {
-      console.error("Error reading file by ID:", error);
-      return null;
+    if (!response.ok) {
+      throw new Error("Error fetching file");
     }
+
+    const fileContent = await response.json();
+    await signOut();
+    showSuccess("The Key File is successfully imported!");
+    return fileContent;
   };
 
   return { isSignedIn, signIn, signOut, uploadFile, readFiles, readFileById };
