@@ -10,6 +10,7 @@ import {
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { filterMap } from "@/util/filter-map";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
@@ -379,9 +380,21 @@ export class Eip155TargetChain extends AbstractTargetChain<
         return !chain.disabled;
       });
 
+    const usableEip155Chains = await filterMap(
+      async (chain) => {
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
+        return {
+          chainId: chain.chainId,
+          account: `${chain.chainId}:${address}`,
+        };
+      },
+      eip155Chains,
+      { catchErrors: true },
+    );
+
     return {
       eip155: {
-        chains: eip155Chains.map((chain) => {
+        chains: usableEip155Chains.map((chain) => {
           return chain.chainId;
         }),
         methods: [
@@ -389,12 +402,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
           "personal_sign",
           "wallet_switchEthereumChain",
         ],
-        accounts: await Promise.all(
-          eip155Chains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKeys);
-            return `${chain.chainId}:${address}`;
-          }),
-        ),
+        accounts: usableEip155Chains.map((chain) => {
+          return chain.account;
+        }),
         events: ["chainChanged", "accountsChanged"],
       },
     };
