@@ -70,7 +70,7 @@ export class MpcWallet {
 
   public setEd25519KeyPair(ed25519KeyPair: {
     publicKey: Base58EncodedString;
-    encryptedPrivateKey: Base64EncodedString;
+    encryptedPrivateKey: string;
   }) {
     this._ed25519KeyPair = ed25519KeyPair;
   }

@@ -146,6 +146,7 @@ export class SecretJsHomeChain {
         backup: wallet.encryptedShares.backup,
       },
       encryptedKeyMetaData,
+      ed25519KeyPair: wallet.ed25519KeyPair ? wallet.ed25519KeyPair : undefined,
       revision: wallet.previousWalletData?.revision ?? 0,
     };
     return WalletData.parse(data);

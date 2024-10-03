@@ -125,6 +125,12 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
                 backup: "...",
               },
               encryptedKeyMetaData: "...",
+              ed25519KeyPair: walletData.ed25519KeyPair
+                ? {
+                    publicKey: walletData.ed25519KeyPair.publicKey,
+                    encryptedPrivateKey: "...",
+                  }
+                : undefined,
             }}
           />
 
