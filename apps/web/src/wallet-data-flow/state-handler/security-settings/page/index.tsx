@@ -43,7 +43,19 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           </Box>
         ) : null}
         {keyList.map((sigKey) => {
-          return (
+          return sigKey.mandatory ? (
+            <KeyListItem
+              key={sigKey.type}
+              keyData={sigKey}
+              alert={missingMandatoryKey}
+              onClick={() => {
+                pushPage({
+                  type: "key-type",
+                  payload: sigKey.type,
+                });
+              }}
+            />
+          ) : (
             <KeyListItem
               key={sigKey.type}
               keyData={sigKey}

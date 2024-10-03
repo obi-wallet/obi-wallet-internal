@@ -31,7 +31,7 @@ export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
   [KeyType.Cloud]: {
     type: KeyType.Cloud,
     label: "Cloud Key",
-    mandatory: false,
+    mandatory: true,
   },
 };
 
