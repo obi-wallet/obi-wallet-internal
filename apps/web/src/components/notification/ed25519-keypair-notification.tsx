@@ -47,7 +47,7 @@ export const Ed25519KeyPairNotification = observer(
 
     return (
       <Notification
-        description="Caution: Your account does not have an ed25519 key pair yet."
+        description="Your wallet needs a quick upgrade to work with Solana. Click here to upgrade now."
         type="warning"
         onClick={async () => {
           invariant(currentWallet, "Expected current wallet to be defined");
