@@ -1,4 +1,4 @@
-import { Base64EncodedString } from "@obi-wallet/encoding";
+import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../../keys";
@@ -25,6 +25,12 @@ export const WalletData = z.object({
     backup: z.string(),
   }),
   encryptedKeyMetaData: z.string(),
+  ed25519KeyPair: z
+    .object({
+      publicKey: Base58EncodedString,
+      encryptedPrivateKey: z.string(),
+    })
+    .optional(),
   revision: z.number().default(0),
 });
 
@@ -40,21 +46,46 @@ export const MpcWalletSchema = migratable(
       backup: z.string(),
     }),
   }),
-).addMigration({
-  nextSchema: z.object({
-    homeChain: HomeChainIdSchema,
-    owner: MultisigKey.schema.migratableSchema,
-    userEntryAddress: UserEntryAddress,
-    encryptedShares: z.object({
-      easy: Base64EncodedString,
-      backup: z.string(),
+)
+  .addMigration({
+    nextSchema: z.object({
+      homeChain: HomeChainIdSchema,
+      owner: MultisigKey.schema.migratableSchema,
+      userEntryAddress: UserEntryAddress,
+      encryptedShares: z.object({
+        easy: Base64EncodedString,
+        backup: z.string(),
+      }),
+      previousWalletData: WalletData.or(z.null()),
     }),
-    previousWalletData: WalletData.or(z.null()),
-  }),
-  migrate(data) {
-    return {
-      ...data,
-      previousWalletData: null,
-    };
-  },
-});
+    migrate(data) {
+      return {
+        ...data,
+        previousWalletData: null,
+      };
+    },
+  })
+  .addMigration({
+    nextSchema: z.object({
+      homeChain: HomeChainIdSchema,
+      owner: MultisigKey.schema.migratableSchema,
+      userEntryAddress: UserEntryAddress,
+      encryptedShares: z.object({
+        easy: Base64EncodedString,
+        backup: z.string(),
+      }),
+      ed25519KeyPair: z
+        .object({
+          publicKey: Base58EncodedString,
+          encryptedPrivateKey: z.string(),
+        })
+        .or(z.null()),
+      previousWalletData: WalletData.or(z.null()),
+    }),
+    migrate(data) {
+      return {
+        ...data,
+        ed25519KeyPair: null,
+      };
+    },
+  });

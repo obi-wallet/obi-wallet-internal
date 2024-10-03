@@ -9,7 +9,9 @@ import {
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";
+import { Base58EncodedString } from "@obi-wallet/encoding";
 import { BackupShare, EasyShare, WalletData } from "@obi-wallet/sdk";
+import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { deserialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -37,12 +39,30 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
     mutationFn: async () => {
       invariant(results, "Results not found");
 
-      const [keyMetaDataRaw, firstShareRaw, secondShareRaw] =
-        await handleMultisigKeyDecryptedMessages({
-          multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
-          multisigKey: owner,
-          results,
-        });
+      const [
+        keyMetaDataRaw,
+        firstShareRaw,
+        secondShareRaw,
+        ed25519PrivateKeyRaw,
+      ] = await handleMultisigKeyDecryptedMessages({
+        multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
+        multisigKey: owner,
+        results,
+      });
+
+      function getEd25519KeyPair(): Ed25519KeyPair | null {
+        if (!walletData.ed25519KeyPair || !ed25519PrivateKeyRaw) {
+          return null;
+        }
+
+        return {
+          publicKey: {
+            type: "tendermint/PubKeyEd25519",
+            value: walletData.ed25519KeyPair.publicKey,
+          },
+          privateKey: Base58EncodedString.parse(ed25519PrivateKeyRaw),
+        };
+      }
 
       if (keyMetaDataRaw && firstShareRaw && secondShareRaw) {
         const easyShare = EasyShare.parse(deserialize(firstShareRaw));
@@ -55,6 +75,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
               easy: easyShare,
               backup: backupShare,
             },
+            ed25519KeyPair: getEd25519KeyPair(),
             keyMetaData,
           });
           return;
@@ -65,6 +86,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
           payload: {
             easyShare,
             backupShare,
+            ed25519KeyPair: getEd25519KeyPair(),
             keyMetaData,
           },
         });
@@ -81,11 +103,14 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
     const encryptedKeyMetaData = walletData.encryptedKeyMetaData;
     const encryptedEasyShare = walletData.encryptedShares.easy;
     const encryptedBackupShare = walletData.encryptedShares.backup;
+    const encryptedEd25519PrivateKey =
+      walletData.ed25519KeyPair?.encryptedPrivateKey;
 
     return [
       ...(encryptedKeyMetaData ? [encryptedKeyMetaData] : []),
       ...(encryptedEasyShare ? [encryptedEasyShare] : []),
       encryptedBackupShare,
+      ...(encryptedEd25519PrivateKey ? [encryptedEd25519PrivateKey] : []),
     ];
   }
 

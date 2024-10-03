@@ -9,7 +9,11 @@ import {
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
-import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
+import {
+  Base58EncodedString,
+  Encoding,
+  HexEncodedString,
+} from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
@@ -17,6 +21,7 @@ import {
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
+import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { skipToken, useMutation } from "@tanstack/react-query";
 import { diffString } from "json-diff";
@@ -49,9 +54,13 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   const [results, setResults] = useState<IntentionsResults | undefined>(
     undefined,
   );
-  const [backupShare, setBackupShare] = useState<BackupShare | undefined>(
-    undefined,
-  );
+  const [decrypted, setDecrypted] = useState<
+    | {
+        backupShare: BackupShare;
+        ed25519KeyPair: Ed25519KeyPair;
+      }
+    | undefined
+  >(undefined);
 
   const userAccount = useQuery({
     queryKey: ["user-account", { walletData }],
@@ -171,14 +180,15 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         };
         const easyShare = await getEasyShare();
 
-        invariant(backupShare, "Backup share not found");
+        invariant(decrypted, "Decrypted not found");
 
         const payload = {
           keyMetaData,
           shares: {
             easy: easyShare,
-            backup: backupShare,
+            backup: decrypted.backupShare,
           },
+          ed25519KeyPair: decrypted.ed25519KeyPair,
         };
 
         const wallet = await getWallet(payload);
@@ -236,7 +246,41 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         return BackupShare.parse(deserialize(response));
       }
 
-      setBackupShare(await getBackupShare());
+      async function getEd25519KeyPair(): Promise<Ed25519KeyPair> {
+        if (state.ed25519KeyPair) {
+          return state.ed25519KeyPair;
+        }
+
+        invariant(results, "Results not found");
+        invariant(
+          state.ed25519KeyPairPreviousOwner,
+          "Ed25519 key pair not found",
+        );
+
+        const response = await handleMultisigKeyDecryptedMessage({
+          multisigKeyEncryptedMessage:
+            state.ed25519KeyPairPreviousOwner.encryptedPrivateKey,
+          multisigKey: previousOwner,
+          results,
+          index: 1,
+        });
+
+        return {
+          publicKey: {
+            type: "tendermint/PubKeyEd25519",
+            value: state.ed25519KeyPairPreviousOwner.publicKey,
+          },
+          privateKey: Base58EncodedString.parse(response),
+        };
+      }
+
+      const [decryptedBackupShare, decryptedEd25519KeyPair] = await Promise.all(
+        [getBackupShare(), getEd25519KeyPair()],
+      );
+      setDecrypted({
+        backupShare: decryptedBackupShare,
+        ed25519KeyPair: decryptedEd25519KeyPair,
+      });
       await nextHash.refetch();
       setResults(undefined);
       setProposedUpdate(true);
@@ -247,8 +291,15 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   });
 
   function getMultisigKeyEncryptedMessages(): string[] {
-    if (!proposedUpdate && state.locallyEncryptedSharesByPreviousOwner) {
-      return [state.locallyEncryptedSharesByPreviousOwner.backup];
+    if (
+      !proposedUpdate &&
+      state.locallyEncryptedSharesByPreviousOwner &&
+      state.ed25519KeyPairPreviousOwner
+    ) {
+      return [
+        state.locallyEncryptedSharesByPreviousOwner.backup,
+        state.ed25519KeyPairPreviousOwner.encryptedPrivateKey,
+      ];
     }
 
     return [];
