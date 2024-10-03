@@ -1,6 +1,6 @@
 import { Draft } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { Base64EncodedString } from "@obi-wallet/encoding";
+import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -12,6 +12,7 @@ import {
   Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
 import { action, observable, toJS } from "mobx";
 import { Dispatch, useReducer } from "react";
@@ -60,6 +61,11 @@ export interface WalletDataFlowState {
     easy: Base64EncodedString;
     backup: string;
   } | null;
+  ed25519KeyPair: Ed25519KeyPair | null;
+  ed25519KeyPairPreviousOwner: {
+    publicKey: Base58EncodedString;
+    encryptedPrivateKey: string;
+  } | null;
   onDone({
     wallet,
     keyMetaData,
@@ -89,6 +95,7 @@ export type WalletDataFlowAction =
         easyShare: EasyShare;
         backupShare: BackupShare;
         keyMetaData: KeyMetaData;
+        ed25519KeyPair: Ed25519KeyPair | null;
       };
     }
   | {
@@ -160,7 +167,8 @@ export function walletDataFlowStateReducer(
         walletData: null,
       };
     case "approve-decrypt-wallet-data": {
-      const { easyShare, backupShare, keyMetaData } = action.payload;
+      const { easyShare, backupShare, keyMetaData, ed25519KeyPair } =
+        action.payload;
 
       state.keyMetaDataDraft.commit({
         original: new KeyMetaDataContainer(keyMetaData),
@@ -172,6 +180,7 @@ export function walletDataFlowStateReducer(
           easy: easyShare,
           backup: backupShare,
         },
+        ed25519KeyPair,
       };
     }
     case "update-owner":
@@ -202,6 +211,11 @@ export interface WalletDataFlowStatePayload {
     locallyEncryptedSharesByPreviousOwner?: {
       easy: Base64EncodedString;
       backup: string;
+    };
+    ed25519KeyPair?: Ed25519KeyPair;
+    ed25519KeyPairPreviousOwner?: {
+      publicKey: Base58EncodedString;
+      encryptedPrivateKey: string;
     };
   };
   onDone({
@@ -236,6 +250,8 @@ export function useWalletDataFlowState(
         newKeyMetaData,
         shares,
         locallyEncryptedSharesByPreviousOwner,
+        ed25519KeyPair,
+        ed25519KeyPairPreviousOwner,
       } = initialValues;
       return {
         onBack,
@@ -254,6 +270,8 @@ export function useWalletDataFlowState(
         shares: shares ?? null,
         locallyEncryptedSharesByPreviousOwner:
           locallyEncryptedSharesByPreviousOwner ?? null,
+        ed25519KeyPair: ed25519KeyPair ?? null,
+        ed25519KeyPairPreviousOwner: ed25519KeyPairPreviousOwner ?? null,
         updateOwnerInteraction: !!newOwner,
         mockOnly: mockOnly ?? false,
       };

@@ -1,6 +1,6 @@
 import { toAssets } from "@/dashboard/assets";
 import { usePendingTXs } from "@/hooks/balances";
-import { usePublicKey } from "@/hooks/use-public-key";
+import { usePublicKeys } from "@/hooks/use-public-keys";
 import { cn, getFromChain } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import BigNumber from "bignumber.js";
@@ -29,9 +29,9 @@ type StepAndTx = StepStatus & {
 };
 
 export const PendingAssets = observer(function PendingAssets() {
-  const publicKey = usePublicKey();
+  const publicKeys = usePublicKeys();
 
-  const pendingTXs = usePendingTXs(publicKey?.value ?? "");
+  const pendingTXs = usePendingTXs(publicKeys?.secp256k1.value ?? "");
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;

@@ -1,23 +1,24 @@
 "use client";
 
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { usePublicKey } from "@/hooks/use-public-key";
+import { usePublicKeys } from "@/hooks/use-public-keys";
 import { rootStore } from "@/stores";
 import { TargetChainId } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
+import { SolanaChainId } from "@/target-chain/solana/chains";
 import { filterMap } from "@/util/filter-map";
 import { useQuery } from "@obi-wallet/headless-ui";
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { skipToken } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 
 async function computeKadoUrl({
-  publicKey,
+  publicKeys,
   userEntryAddress,
 }: {
-  publicKey: Secp256k1PublicKey;
+  publicKeys: ObiAccountPublicKeys;
   userEntryAddress: string;
 }): Promise<string> {
   interface KadoNetwork {
@@ -42,7 +43,7 @@ async function computeKadoUrl({
 
       return {
         network: kadoNetwork,
-        address: await chain.targetChain.obiAccountAddress(publicKey),
+        address: await chain.targetChain.obiAccountAddress(publicKeys),
       };
     },
     targetChains,
@@ -70,8 +71,6 @@ async function computeKadoUrl({
   url.searchParams.append("onToAddressMulti", onToAddressMulti);
   url.searchParams.append("network", "SEI");
   url.searchParams.append("onRevCurrency", "SEI");
-
-  console.log(url.toString());
 
   return url.toString();
 }
@@ -112,20 +111,24 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
       return null;
     case SecretChainId.Secret:
       return "SECRET";
+    case SolanaChainId.Devnet:
+    case SolanaChainId.Mainnet:
+      // TODO:
+      return null;
   }
 }
 
 export default observer(function BuyCrypto() {
   const wallet = useCurrentWallet({});
-  const publicKey = usePublicKey();
+  const publicKeys = usePublicKeys();
 
   const kadoUrl = useQuery({
-    queryKey: ["kado-url", publicKey],
+    queryKey: ["kado-url", publicKeys],
     queryFn:
-      wallet && publicKey
+      wallet && publicKeys
         ? async () => {
             return await computeKadoUrl({
-              publicKey,
+              publicKeys,
               userEntryAddress: wallet.userEntryAddress,
             });
           }

@@ -17,8 +17,9 @@ import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1UncompressedPublicKey,
+  getSecp256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -93,23 +94,23 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
-    const u8 = getSec256k1UncompressedPublicKey(publicKey);
+    const u8 = getSecp256k1UncompressedPublicKey(publicKey);
     const hex = `0x${Buffer.from(u8).toString("hex")}`;
     const address = keccak256(`0x${hex.substring(4)}`).substring(26);
     return getAddress(`0x${address}`);
   }
 
   protected async obiAccountAddressQueryFn(
-    publicKey: Secp256k1PublicKey,
+    publicKeys: ObiAccountPublicKeys,
   ): Promise<HexEncodedStringWithPrefix> {
     if (this.chainId === Eip155ChainId.BscTestnet) {
       return await new Eip155TargetChain(
         Eip155ChainId.Bsc,
-      ).obiAccountAddressQueryFn(publicKey);
+      ).obiAccountAddressQueryFn(publicKeys);
     }
 
     const account = toAccount({
-      address: this.computeAddress(publicKey),
+      address: this.computeAddress(publicKeys.secp256k1),
       async signMessage() {
         throw new Error("signMessage not implemented");
       },
@@ -367,7 +368,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -381,7 +382,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
 
     const usableEip155Chains = await filterMap(
       async (chain) => {
-        const address = await chain.obiAccountAddressQueryFn(publicKey);
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
         return {
           chainId: chain.chainId,
           account: `${chain.chainId}:${address}`,

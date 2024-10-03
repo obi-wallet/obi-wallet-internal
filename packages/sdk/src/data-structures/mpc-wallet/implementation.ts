@@ -1,4 +1,4 @@
-import { Base64EncodedString } from "@obi-wallet/encoding";
+import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import { toJS } from "mobx";
 
 import { MpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
@@ -14,6 +14,10 @@ export class MpcWallet {
       easy: Base64EncodedString;
       backup: string;
     },
+    protected _ed25519KeyPair: {
+      publicKey: Base58EncodedString;
+      encryptedPrivateKey: string;
+    } | null,
     protected _previousWalletData: WalletData | null,
   ) {}
 
@@ -45,6 +49,14 @@ export class MpcWallet {
     return this._encryptedShares.backup;
   }
 
+  public get ed25519PublicKey() {
+    return this._ed25519KeyPair?.publicKey ?? null;
+  }
+
+  public get encryptedEd25519PrivateKey() {
+    return this._ed25519KeyPair?.encryptedPrivateKey ?? null;
+  }
+
   public get previousWalletData() {
     return this._previousWalletData;
   }
@@ -54,6 +66,13 @@ export class MpcWallet {
     backup: string;
   }) {
     this._encryptedShares = encryptedShares;
+  }
+
+  public setEd25519KeyPair(ed25519KeyPair: {
+    publicKey: Base58EncodedString;
+    encryptedPrivateKey: string;
+  }) {
+    this._ed25519KeyPair = ed25519KeyPair;
   }
 
   public setPreviousWalletData(previousWalletData: WalletData | null) {
@@ -70,6 +89,7 @@ export class MpcWallet {
       owner: this._owner.toJSON()!,
       userEntryAddress: UserEntryAddress.parse(this._userEntryAddress),
       encryptedShares: this._encryptedShares,
+      ed25519KeyPair: this._ed25519KeyPair,
       previousWalletData: toJS(this._previousWalletData),
     };
   }

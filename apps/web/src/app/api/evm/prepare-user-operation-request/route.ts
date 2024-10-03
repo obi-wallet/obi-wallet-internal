@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const { homeChainId, targetChainId, userEntryAddress, callData } =
     result.data;
   const publicKey =
-    await HomeChain.chainId(homeChainId).publicKey(userEntryAddress);
+    await HomeChain.chainId(homeChainId).secp256k1PublicKey(userEntryAddress);
   const targetChain = TargetChain.chainId(targetChainId);
 
   const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.eip155ChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;

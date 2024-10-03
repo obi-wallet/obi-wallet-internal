@@ -47,6 +47,13 @@ export const SecuritySettings = observer(function SecuritySettings() {
               easy: wallet.encryptedEasyShare,
               backup: wallet.encryptedBackupShare,
             },
+            ed25519KeyPairPreviousOwner:
+              wallet.ed25519PublicKey && wallet.encryptedEd25519PrivateKey
+                ? {
+                    publicKey: wallet.ed25519PublicKey,
+                    encryptedPrivateKey: wallet.encryptedEd25519PrivateKey,
+                  }
+                : undefined,
           }}
           onDone={({ wallet: walletData, keyMetaData }) => {
             const wallet = ObservableMpcWallet.create(walletData);

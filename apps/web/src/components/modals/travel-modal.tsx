@@ -3,7 +3,7 @@
 import { fromAssets, ToAsset, toAssets } from "@/dashboard/assets";
 import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { usePublicKey } from "@/hooks/use-public-key";
+import { usePublicKeys } from "@/hooks/use-public-keys";
 import { cn, fromChains, toChains } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
@@ -19,7 +19,7 @@ import {
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
-import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { skipToken } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import copy from "copy-to-clipboard";
@@ -113,7 +113,7 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
   modal,
   cancelLabel = "Accept",
 }) {
-  const publicKey = usePublicKey();
+  const publicKeys = usePublicKeys();
   const currentWallet = useCurrentWallet({ redirectIfFound: false });
   const alert = useAlert();
 
@@ -162,12 +162,12 @@ export const TravelModal = observer<TravelModalProps>(function TravelModal({
       formData.toAsset &&
       formData.toChain &&
       formData.fromChain &&
-      publicKey
+      publicKeys
         ? async () => {
             if (BigNumber(formData.fromAsset.amount).lt(0.005)) return null;
 
             try {
-              const simulation = await simulateTravel(formData, publicKey);
+              const simulation = await simulateTravel(formData, publicKeys);
               if (!simulation) return null;
 
               if (
@@ -974,7 +974,7 @@ function ErrorsComponent({ errors }: { errors: Errors }) {
 
 const simulateTravel = async (
   data: FormData,
-  publicKey: Secp256k1PublicKey,
+  publicKeys: ObiAccountPublicKeys,
 ) => {
   const requestURL = `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/swap/simulate`;
   const toAsset = toAssets[data.toAsset];
@@ -984,7 +984,7 @@ const simulateTravel = async (
     fromAsset?.decimals,
   ).toString();
   const targetChain = TargetChain.chainId(data.toChain);
-  const toAddress = await targetChain.obiAccountAddress(publicKey);
+  const toAddress = await targetChain.obiAccountAddress(publicKeys);
   const requestData = {
     slippage: data.slippage.toString(),
     from: {
@@ -998,7 +998,7 @@ const simulateTravel = async (
       asset: toAsset?.denom,
       address: toAddress,
     },
-    pubkey: publicKey.value,
+    pubkey: publicKeys.secp256k1.value,
   };
   const res = await fetch(requestURL, {
     method: "POST",

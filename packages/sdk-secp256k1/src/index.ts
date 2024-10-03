@@ -21,7 +21,7 @@ export const Secp256k1KeyPair = z.object({
 
 export type Secp256k1KeyPair = z.infer<typeof Secp256k1KeyPair>;
 
-export function generateSec256k1KeyPair(
+export function generateSecp256k1KeyPair(
   base64Seed?: Uint8Array,
 ): Secp256k1KeyPair {
   // use base64Seed to create 32 random bytes
@@ -40,12 +40,12 @@ export function generateSec256k1KeyPair(
   };
 }
 
-export function getSec256k1CompressedPublicKey(publicKey: Secp256k1PublicKey) {
+export function getSecp256k1CompressedPublicKey(publicKey: Secp256k1PublicKey) {
   const u8 = Encoding.fromBase64(publicKey.value).toBytes();
   return publicKeyConvert(u8, true);
 }
 
-export function getSec256k1UncompressedPublicKey(
+export function getSecp256k1UncompressedPublicKey(
   publicKey: Secp256k1PublicKey,
 ) {
   const u8 = Encoding.fromBase64(publicKey.value).toBytes();

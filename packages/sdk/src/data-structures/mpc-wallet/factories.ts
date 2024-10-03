@@ -17,6 +17,7 @@ export function createMpcWallet(
     factories.MultisigKey.create(serialized.homeChain, serialized.owner),
     serialized.userEntryAddress,
     serialized.encryptedShares,
+    serialized.ed25519KeyPair,
     serialized.previousWalletData,
   );
 }

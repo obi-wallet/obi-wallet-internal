@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { HomeChain } from "@/home-chain";
 import { useAlert } from "@/hooks/alert";
 import {
   PrettyCaip19Asset,
@@ -15,9 +16,11 @@ import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { isSolanaChainId } from "@/target-chain/solana/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { SignAndBroadcastSvm } from "@/user-interactions/sign-and-broadcast/svm";
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
@@ -103,7 +106,8 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       invariant(
         isCosmosChainId(chainId) ||
           isEip155ChainId(chainId) ||
-          isSecretChainId(chainId),
+          isSecretChainId(chainId) ||
+          isSolanaChainId(chainId),
         "Expected valid targetChainId",
       );
 
@@ -314,6 +318,32 @@ const SendInner = observer<{
           } else {
             alert.showError(`TX failed: ${broadcastResult.rawLog}`);
           }
+        }
+        return;
+      }
+
+      if (isSolanaChainId(chainId)) {
+        const targetChain = TargetChain.chainId(chainId);
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
+        const response = await SignAndBroadcastSvm.start({
+          targetChainId: chainId,
+          cancelable: true,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          message: {
+            fromAddress: await targetChain.obiAccountAddress(publicKeys),
+            toAddress: recipient,
+            id: coin.asset.asset.assetId,
+            rawAmount,
+          },
+        });
+
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          alert.showSuccess("TX sent");
         }
         return;
       }

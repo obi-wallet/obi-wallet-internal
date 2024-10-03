@@ -25,8 +25,9 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -83,13 +84,13 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
 
   public computeAddress(publicKey: Secp256k1PublicKey): string {
     return pubkeyToAddress(
-      getSec256k1CompressedPublicKey(publicKey),
+      getSecp256k1CompressedPublicKey(publicKey),
       this.chainData.prefix,
     );
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    return this.computeAddress(publicKey);
+  protected async obiAccountAddressQueryFn(publicKey: ObiAccountPublicKeys) {
+    return this.computeAddress(publicKey.secp256k1);
   }
 
   public isNativeAsset(assetId: Caip19AssetId) {
