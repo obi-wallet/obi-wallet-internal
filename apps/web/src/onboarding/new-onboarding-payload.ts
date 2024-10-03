@@ -1,8 +1,9 @@
 import { HomeChain } from "@/home-chain";
-import { SharesLocalEncryption } from "@/lib/encryption";
+import { MultisigKeyEncryption, SharesLocalEncryption } from "@/lib/encryption";
 import { rootStore } from "@/stores";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
+import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -16,6 +17,7 @@ import {
   Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { generateEd25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { action, observable, toJS } from "mobx";
@@ -78,6 +80,10 @@ export class NewOnboardingPayload implements Draftable {
   protected accessor _unclaimedHomeAccount: UnclaimedHomeAccount | null = null;
   @observable protected accessor _homeAccountClaimed: boolean = false;
   @observable protected accessor _walletData: WalletData | null = null;
+  @observable protected accessor _ed25519KeyPair: {
+    publicKey: Base58EncodedString;
+    encryptedPrivateKey: string;
+  } | null = null;
 
   public constructor(homeChainId: HomeChainId) {
     this._multisigKey = ObservableMultisigKey.create(homeChainId);
@@ -123,6 +129,7 @@ export class NewOnboardingPayload implements Draftable {
   }
 
   public toMpcWalletData(): Serialized<MpcWallet> {
+    invariant(this._ed25519KeyPair, "Ed25519 key pair is not available");
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._distributedShares, "Shares have not been distributed");
@@ -134,6 +141,7 @@ export class NewOnboardingPayload implements Draftable {
         easy: this._encryptedShares.easyShare,
         backup: this._encryptedShares.backupShare,
       },
+      ed25519KeyPair: this._ed25519KeyPair,
       userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
       previousWalletData: toJS(this._walletData),
     });
@@ -149,6 +157,7 @@ export class NewOnboardingPayload implements Draftable {
     // Next steps require the owner
     if (!this._ownerConfirmed) return;
     await this.encryptSharesIfNecessary();
+    await this.encryptEd25519KeyPairIfNecessary();
     await this.distributeSharesIfNecessary();
     await this.claimHomeAccountIfNecessary();
   }
@@ -219,6 +228,20 @@ export class NewOnboardingPayload implements Draftable {
     this._encryptedShares = {
       easyShare: easy,
       backupShare: backup,
+    };
+  }
+
+  protected async encryptEd25519KeyPairIfNecessary() {
+    if (this._ed25519KeyPair) return;
+    const keyPair = generateEd25519KeyPair();
+    const multisigKeyEncryption = new MultisigKeyEncryption(
+      this._multisigKey.publicKey,
+    );
+    this._ed25519KeyPair = {
+      publicKey: keyPair.publicKey.value,
+      encryptedPrivateKey: await multisigKeyEncryption.encrypt(
+        keyPair.privateKey,
+      ),
     };
   }
 

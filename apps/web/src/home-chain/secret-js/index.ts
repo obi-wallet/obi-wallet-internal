@@ -321,10 +321,13 @@ export class SecretJsHomeChain {
     });
   }
   protected async ed25519PublicKeyQueryFn(
-    _userEntryAddress: string,
+    userEntryAddress: string,
   ): Promise<Ed25519PublicKey | null> {
-    const currentWallet = rootStore.current?.mpcWalletsStore.currentWallet;
-    const value = currentWallet?.ed25519PublicKey;
+    const wallet =
+      rootStore.current?.mpcWalletsStore.getWalletByUserEntryAddress(
+        userEntryAddress,
+      );
+    const value = wallet?.ed25519PublicKey;
 
     if (!value) return null;
 
