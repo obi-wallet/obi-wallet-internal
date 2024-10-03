@@ -525,6 +525,7 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
   const balances = useBalances();
 
   if (
+    balances.length > 0 &&
     balances.every((b) => {
       return b.isLoading;
     })

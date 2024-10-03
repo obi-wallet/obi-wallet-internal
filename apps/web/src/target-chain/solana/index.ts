@@ -1,3 +1,4 @@
+import { rootStore } from "@/stores";
 import {
   AbstractTargetChain,
   AssetInfo,
@@ -12,6 +13,7 @@ import {
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
 import { Connection, PublicKey } from "@solana/web3.js";
+import invariant from "tiny-invariant";
 
 import { SolanaChainData, SolanaChainId, SolanaChains } from "./chains";
 
@@ -32,6 +34,9 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   }
 
   public get disabled() {
+    if (!rootStore.current?.mpcWalletsStore.currentWallet?.ed25519PublicKey) {
+      return true;
+    }
     return this.chainData.disabled ?? false;
   }
 
@@ -43,6 +48,7 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   protected async obiAccountAddressQueryFn(
     publicKeys: ObiAccountPublicKeys,
   ): Promise<string> {
+    invariant(publicKeys.ed25519, "Ed25519 public key is required.");
     return publicKeys.ed25519.value;
   }
 

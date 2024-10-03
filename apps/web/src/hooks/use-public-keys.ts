@@ -14,7 +14,7 @@ export function usePublicKeys() {
       const secp256k1 = results[0].data;
       const ed25519 = results[1].data;
 
-      if (!secp256k1 || !ed25519) {
+      if (!secp256k1 || ed25519 === undefined) {
         return undefined;
       }
 

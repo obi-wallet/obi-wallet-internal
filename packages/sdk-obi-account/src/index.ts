@@ -3,5 +3,5 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 
 export interface ObiAccountPublicKeys {
   secp256k1: Secp256k1PublicKey;
-  ed25519: Ed25519PublicKey;
+  ed25519: Ed25519PublicKey | null;
 }

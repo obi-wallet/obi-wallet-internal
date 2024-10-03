@@ -3,6 +3,7 @@ import {
   MultisigKeyEncryption,
   SharesBackupEncryption,
 } from "@/lib/encryption";
+import { rootStore } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { LegacyWalletData, LegacyWalletDataBackup } from "@/wallet-data-backup";
 import {
@@ -22,10 +23,7 @@ import {
   UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
-import {
-  Ed25519PublicKey,
-  generateEd25519KeyPair,
-} from "@obi-wallet/sdk-ed25519";
+import { Ed25519PublicKey } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import invariant from "tiny-invariant";
@@ -319,14 +317,19 @@ export class SecretJsHomeChain {
     return this.queryNamespace.createQuery({
       name: "ed25519PublicKey",
       fn: this.ed25519PublicKeyQueryFn.bind(this),
-      staleTime: { day: 1 },
     });
   }
   protected async ed25519PublicKeyQueryFn(
     _userEntryAddress: string,
-  ): Promise<Ed25519PublicKey> {
-    // TODO:
-    const keyPair = generateEd25519KeyPair();
-    return keyPair.publicKey;
+  ): Promise<Ed25519PublicKey | null> {
+    const currentWallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    const value = currentWallet?.ed25519PublicKey;
+
+    if (!value) return null;
+
+    return {
+      type: "tendermint/PubKeyEd25519",
+      value,
+    };
   }
 }
