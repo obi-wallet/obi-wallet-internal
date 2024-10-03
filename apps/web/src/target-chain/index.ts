@@ -88,11 +88,13 @@ export class TargetChain {
     const namespaces = await Promise.all([
       CosmosTargetChain.getSupportedWalletConnectNamespaces(),
       Eip155TargetChain.getSupportedWalletConnectNamespaces(),
+      SolanaTargetChain.getSupportedWalletConnectNamespaces(),
     ]);
 
     return {
       ...namespaces[0],
       ...namespaces[1],
+      ...namespaces[2],
     };
   }
 
@@ -100,6 +102,7 @@ export class TargetChain {
     const keys = await Promise.all([
       CosmosTargetChain.getWalletConnectKeys(),
       Eip155TargetChain.getWalletConnectKeys(),
+      SolanaTargetChain.getWalletConnectKeys(),
     ]);
 
     return keys.flat();

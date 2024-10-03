@@ -1,4 +1,6 @@
+import { HomeChain } from "@/home-chain";
 import { rootStore } from "@/stores";
+import { filterMap } from "@/util/filter-map";
 import {
   AbstractTargetChain,
   AssetInfo,
@@ -9,13 +11,20 @@ import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
+  Key,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
 import { Connection, PublicKey } from "@solana/web3.js";
+import { getSdkError } from "@walletconnect/utils";
 import invariant from "tiny-invariant";
 
-import { SolanaChainData, SolanaChainId, SolanaChains } from "./chains";
+import {
+  allSolanaChains,
+  SolanaChainData,
+  SolanaChainId,
+  SolanaChains,
+} from "./chains";
 
 export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   protected readonly chainData: SolanaChainData;
@@ -80,8 +89,6 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
         rawAmount: balance.toString(),
       },
     ];
-    // TODO:
-    // throw new Error("Method nativeBalancesQueryFn not implemented.");
   }
 
   public tokenBalanceQueryFn(_: {
@@ -108,15 +115,6 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     return null;
   }
 
-  public handleWalletConnectSessionRequest(
-    _payload: SessionRequestPayload,
-  ): Promise<SessionRequestResponse> {
-    // TODO:
-    throw new Error(
-      "Method handleWalletConnectSessionRequest not implemented.",
-    );
-  }
-
   public denomToCaip19AssetId(_denom: string): Caip19AssetId | null {
     // TODO:
     throw new Error("Method denomToCaip19AssetId not implemented.");
@@ -133,5 +131,103 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
 
   public get nativeCaip19AssetId(): Caip19AssetId {
     return `${this.chainId}/slip44:501`;
+  }
+
+  public static async getSupportedWalletConnectNamespaces() {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
+
+    const solanaChains = allSolanaChains
+      .map((targetChainId) => {
+        return new SolanaTargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    const usableSolanaChains = await filterMap(
+      async (chain) => {
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
+        return {
+          chainId: chain.chainId,
+          account: `${chain.chainId}:${address}`,
+        };
+      },
+      solanaChains,
+      { catchErrors: true },
+    );
+
+    return {
+      solana: {
+        chains: usableSolanaChains.map((chain) => {
+          return chain.chainId;
+        }),
+        methods: [
+          "solana_getAccounts",
+          "solana_requestAccounts",
+          // TODO:
+          "solana_signMessage",
+          // TODO:
+          "solana_signTransaction",
+          // TODO:
+          "solana_signAllTransactions",
+          // TODO:
+          "solana_signAndSendTransaction",
+        ],
+        accounts: usableSolanaChains.map((chain) => {
+          return chain.account;
+        }),
+        events: ["chainChanged", "accountsChanged"],
+      },
+    };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    return [];
+  }
+
+  public async handleWalletConnectSessionRequest({
+    request,
+    chainId,
+  }: SessionRequestPayload): Promise<SessionRequestResponse> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    if (!wallet) {
+      return { error: getSdkError("USER_DISCONNECTED") };
+    }
+
+    switch (request.method) {
+      case "solana_getAccounts":
+      case "solana_requestAccounts": {
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
+        const solanaChains = allSolanaChains
+          .map((targetChainId) => {
+            return new SolanaTargetChain(targetChainId);
+          })
+          .filter((chain) => {
+            return chain.chainId === chainId;
+          })
+          .filter((chain) => {
+            return !chain.disabled;
+          });
+
+        const result = await filterMap(
+          async (targetChain) => {
+            return {
+              pubkey: await targetChain.obiAccountAddress(publicKeys),
+            };
+          },
+          solanaChains,
+          { catchErrors: true },
+        );
+        return { result };
+      }
+      default:
+        return { error: getSdkError("WC_METHOD_UNSUPPORTED") };
+    }
   }
 }

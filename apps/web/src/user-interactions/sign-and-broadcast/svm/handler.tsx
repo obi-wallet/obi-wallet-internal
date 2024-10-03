@@ -49,7 +49,6 @@ export const SignAndBroadcastSvmHandlerInner = observer<{
         });
       }}
       onApprove={async ({ keyPair, transaction }) => {
-        console.log(keyPair);
         const kp = Keypair.fromSecretKey(
           Encoding.concat(
             Encoding.fromBase58(keyPair.privateKey),

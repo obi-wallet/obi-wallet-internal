@@ -21,12 +21,12 @@ export const SolanaChains: Record<SolanaChainId, SolanaChainData> = {
     id: SolanaChainId.Mainnet,
     name: "Solana Mainnet",
     // TODO:
-    endpoint: "https://api.mainnet-beta.solana.com",
-    disabled: true,
+    endpoint: "https://solana-rpc.publicnode.com",
   },
   [SolanaChainId.Devnet]: {
     id: SolanaChainId.Devnet,
     name: "Solana Devnet",
     endpoint: "https://api.devnet.solana.com",
+    disabled: true,
   },
 };
