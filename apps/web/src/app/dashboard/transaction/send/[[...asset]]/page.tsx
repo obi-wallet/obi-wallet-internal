@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { HomeChain } from "@/home-chain";
 import { useAlert } from "@/hooks/alert";
 import {
   PrettyCaip19Asset,
@@ -19,6 +20,7 @@ import { isSolanaChainId } from "@/target-chain/solana/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { SignAndBroadcastSvm } from "@/user-interactions/sign-and-broadcast/svm";
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
@@ -321,8 +323,28 @@ const SendInner = observer<{
       }
 
       if (isSolanaChainId(chainId)) {
-        // TODO:
-        alert.showError("Sending on Solana is not supported yet");
+        const targetChain = TargetChain.chainId(chainId);
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
+        const response = await SignAndBroadcastSvm.start({
+          targetChainId: chainId,
+          cancelable: true,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          message: {
+            fromAddress: await targetChain.obiAccountAddress(publicKeys),
+            toAddress: recipient,
+            id: coin.asset.asset.assetId,
+            rawAmount,
+          },
+        });
+
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          alert.showSuccess("TX sent");
+        }
         return;
       }
 

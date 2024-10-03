@@ -52,9 +52,13 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     return publicKeys.ed25519.value;
   }
 
-  public validateAddress(_address: string): boolean {
-    // TODO:
-    throw new Error("Method validateAddress not implemented.");
+  public validateAddress(address: string): boolean {
+    try {
+      new PublicKey(address);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public isNativeAsset(_assetId: Caip19AssetId): boolean {
@@ -123,7 +127,7 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     throw new Error("Method caip19AssetIdToDenom not implemented.");
   }
 
-  protected get solanaConnection() {
+  public get solanaConnection() {
     return new Connection(this.chainData.endpoint, "confirmed");
   }
 
