@@ -137,7 +137,7 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             }}
           />
           <DropDown
-            className="w-full"
+            className="relative w-full"
             contentContainerClassname="w-full"
             description="Security Question"
             options={securityQuestions}

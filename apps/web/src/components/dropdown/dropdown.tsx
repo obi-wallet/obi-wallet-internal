@@ -108,7 +108,7 @@ export function DropDown<
         <div
           id="dropdown"
           className={cn(
-            "z-1000 absolute right-0 max-h-80 w-full overflow-y-auto rounded-lg bg-gray-700 shadow",
+            "absolute right-0 z-50 max-h-80 w-full overflow-y-auto rounded-lg bg-gray-700 shadow",
             contentContainerClassname,
           )}
         >
