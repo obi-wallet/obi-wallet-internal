@@ -7,7 +7,7 @@ import {
   Caip19Asset,
 } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
-import { Caip19AssetId } from "@obi-wallet/sdk-caip";
+import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -15,7 +15,11 @@ import {
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
-import { Connection, PublicKey } from "@solana/web3.js";
+import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
+import { Connection, PublicKey, SolanaJSONRPCError } from "@solana/web3.js";
 import { getSdkError } from "@walletconnect/utils";
 import invariant from "tiny-invariant";
 
@@ -70,14 +74,13 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     }
   }
 
-  public isNativeAsset(_assetId: Caip19AssetId): boolean {
-    // TODO:
-    throw new Error("Method isNativeAsset not implemented.");
+  public isNativeAsset(assetId: Caip19AssetId): boolean {
+    return assetId === this.nativeCaip19AssetId;
   }
 
-  public isTokenAsset(_assetId: Caip19AssetId): boolean {
-    // TODO:
-    throw new Error("Method isTokenAsset not implemented.");
+  public isTokenAsset(assetId: Caip19AssetId): boolean {
+    const { chainId, namespace } = parseCaip19AssetId(assetId);
+    return chainId === this.chainId && namespace === "token";
   }
 
   public async nativeBalancesQueryFn(address: string): Promise<Caip19Asset[]> {
@@ -91,26 +94,46 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     ];
   }
 
-  public tokenBalanceQueryFn(_: {
+  public async tokenBalanceQueryFn({
+    address,
+    assetId,
+  }: {
     address: string;
     assetId: Caip19AssetId;
-  }): Promise<string> {
-    // TODO:
-    throw new Error("Method tokenBalanceQueryFn not implemented.");
+  }) {
+    const { namespace, reference } = parseCaip19AssetId(assetId);
+    switch (namespace) {
+      case "token": {
+        const owner = new PublicKey(address);
+        const mint = new PublicKey(reference);
+        const [tokenAccountAddress] = PublicKey.findProgramAddressSync(
+          [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+          ASSOCIATED_TOKEN_PROGRAM_ID,
+        );
+        try {
+          const balance =
+            await this.solanaConnection.getTokenAccountBalance(
+              tokenAccountAddress,
+            );
+          return balance.value.amount;
+        } catch (e) {
+          if (e instanceof SolanaJSONRPCError) {
+            // Account not found
+            if (e.code === -32602) {
+              return "0";
+            }
+          }
+          throw e;
+        }
+      }
+    }
+
+    return "0";
   }
 
   public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {
     const asset = await AssetRegistry.getInstance().byId(id);
     if (asset?.assetInfo) return asset.assetInfo;
-
-    if (id === this.nativeCaip19AssetId) {
-      return {
-        name: "SOL",
-        symbol: "SOL",
-        decimals: 9,
-        image: null,
-      };
-    }
 
     return null;
   }
@@ -130,7 +153,11 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   }
 
   public get nativeCaip19AssetId(): Caip19AssetId {
-    return `${this.chainId}/slip44:501`;
+    return `${this.chainId}/native:${this.nativeAddress}`;
+  }
+
+  protected get nativeAddress() {
+    return "So11111111111111111111111111111111111111112";
   }
 
   public static async getSupportedWalletConnectNamespaces() {
