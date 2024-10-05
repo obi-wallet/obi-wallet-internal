@@ -165,7 +165,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }: {
     address: string;
     assetId: Caip19AssetId;
-  }) {
+  }): Promise<string> {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "cw20": {
@@ -179,6 +179,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         });
       }
     }
+
+    return "0";
   }
 
   protected denomMetadata(denom: string) {
