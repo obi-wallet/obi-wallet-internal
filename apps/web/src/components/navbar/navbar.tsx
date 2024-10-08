@@ -43,8 +43,8 @@ const navMenu: NavMenu[] = [
     mobileText: "FT",
     module: "fast-travel",
     icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
+    showOnDesktop: false,
+    showOnMobile: false,
     mobileOrder: 1,
   },
   {
