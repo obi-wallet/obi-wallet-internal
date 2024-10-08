@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   const { accessToken } = result.data;
 
   const response = await fetch(
-    "https://www.googleapis.com/drive/v3/files?q=mimeType='application/json'&fields=files(id,name)",
+    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent("mimeType='application/json'")}&fields=${encodeURIComponent("files(id,name)")}&spaces=appDataFolder`,
     {
       method: "GET",
       headers: new Headers({
@@ -25,8 +25,18 @@ export async function POST(request: Request) {
       }),
     },
   );
+  if (response.status !== 200) {
+    console.log(await response.text());
+    return NextResponse.json(
+      {
+        success: false,
+      },
+      {
+        status: response.status,
+      },
+    );
+  }
 
   const fileList = await response.json();
-
   return NextResponse.json(fileList);
 }

@@ -6,6 +6,8 @@ import { useEffectOnceWhen } from "rooks";
 
 import { useAlert } from "./alert";
 
+const SCOPE = "https://www.googleapis.com/auth/drive.appdata";
+
 export function useGoogleAuth() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const { showSuccess, showWarning } = useAlert();
@@ -18,7 +20,7 @@ export function useGoogleAuth() {
         await gapi.client.init({
           clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
           apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY,
-          scope: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_SCOPE,
+          scope: SCOPE,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
           ],

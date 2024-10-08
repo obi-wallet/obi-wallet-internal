@@ -27,7 +27,9 @@ export async function POST(request: Request) {
   const form = new FormData();
   form.append(
     "metadata",
-    new Blob([serialize(metadata)], { type: "application/json" }),
+    new Blob([serialize({ ...metadata, parents: ["appDataFolder"] })], {
+      type: "application/json",
+    }),
   );
   form.append("file", file);
 
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
     },
   );
   if (response.status !== 200) {
+    console.log(await response.text());
     return NextResponse.json(
       {
         success: false,
