@@ -32,7 +32,8 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
         <Divider className="my-2" />
         <div className="space-y-2">
           {keyData.keys.map((sigKey) => {
-            const disabled = keyData.mandatory && keyData.keys.length === 1;
+            const disabled =
+              keyData.possiblePrimaryKey && keyData.keys.length === 1;
 
             return (
               <div key={sigKey.id} className="relative flex">

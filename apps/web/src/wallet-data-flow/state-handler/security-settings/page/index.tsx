@@ -14,7 +14,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   const { state, dispatch } = useWalletDataFlowContext();
   const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
-  const missingMandatoryKey = !draft.value.primaryKey;
+  const missingPrimaryKey = !draft.value.primaryKey;
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -36,29 +36,18 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       <Divider className="my-2" />
 
       <div className="space-y-2">
-        {missingMandatoryKey ? (
+        {missingPrimaryKey ? (
           <Box className="mt-4 bg-red-500 text-white">
-            Please add a passkey on this device to continue using your Obi
+            Please add a primary key on this device to continue using your Obi
             account.
           </Box>
         ) : null}
         {keyList.map((sigKey) => {
-          return sigKey.mandatory ? (
+          return (
             <KeyListItem
               key={sigKey.type}
               keyData={sigKey}
-              alert={missingMandatoryKey}
-              onClick={() => {
-                pushPage({
-                  type: "key-type",
-                  payload: sigKey.type,
-                });
-              }}
-            />
-          ) : (
-            <KeyListItem
-              key={sigKey.type}
-              keyData={sigKey}
+              alert={missingPrimaryKey && sigKey.possiblePrimaryKey}
               onClick={() => {
                 pushPage({
                   type: "key-type",
@@ -83,7 +72,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           variant="primary"
           block
           disabled={
-            (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingMandatoryKey
+            (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingPrimaryKey
           }
           onClick={async () => {
             if (

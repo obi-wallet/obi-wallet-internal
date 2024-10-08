@@ -13,7 +13,7 @@ export interface KeyItem {
 
 export interface KeyItems {
   type: KeyType;
-  mandatory?: boolean;
+  possiblePrimaryKey?: boolean;
   label: string;
   comingSoon?: true;
   keys: KeyItem[];
@@ -22,12 +22,12 @@ export interface KeyItems {
 export function KeyListItem({
   keyData,
   onClick,
-  alert = false,
+  alert,
   ...rest
 }: {
   onClick: () => void;
   keyData: KeyItems;
-  alert?: boolean;
+  alert: boolean;
 }) {
   const keyCount = keyData.keys.length;
   return (
