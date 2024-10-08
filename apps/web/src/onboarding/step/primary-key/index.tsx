@@ -77,8 +77,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         color="zinc"
       >
         {step.from === OnboardingFromType.External
-          ? `Create a passkey to secure access to your ${capitalizedExternalAsset} tokens and other assets.`
-          : "Create a primary passkey or cloudkey to protect your account."}
+          ? `Create a primary key to secure access to your ${capitalizedExternalAsset} tokens and other assets.`
+          : "Create a primary key to protect your account."}
       </Text>
 
       {step.from === OnboardingFromType.External ? (
@@ -111,32 +111,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             cloudkeyFlow.mutate();
           }}
         >
-          Cloudkey
+          Cloud Key
         </BitButton>
-        {/* <Button disabled className="block w-full" variant="primary">
-        More Services Coming Soon
-      </Button> */}
-
-        {/* TODO: cloud keys aren't integrated yet */}
-        {/*<div className="flex w-full items-center">*/}
-        {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-        {/*  <Text className="grow-0 px-3" color="gray">*/}
-        {/*    OR*/}
-        {/*  </Text>*/}
-        {/*  <div className="h-0.5 w-full rounded-lg bg-gray-600" />*/}
-        {/*</div>*/}
-
-        {/*<div className="flex w-full flex-row justify-around">*/}
-        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-        {/*    <FaApple className="h-9 w-9 text-white" />*/}
-        {/*  </div>*/}
-        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-        {/*    <FaGoogle className="h-7 w-7 text-white" />*/}
-        {/*  </div>*/}
-        {/*  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800">*/}
-        {/*    <FaWindows className="h-7 w-7 text-white" />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
 
         {back ? <BitButton onClick={back}>Back</BitButton> : null}
       </div>
