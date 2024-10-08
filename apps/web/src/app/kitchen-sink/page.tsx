@@ -82,7 +82,7 @@ const Homepage = observer(function Homepage() {
             </IconButton>
           </div>
           <div>
-            <DropDown options={options} description="Select option"></DropDown>
+            <DropDown options={options} description="Select option" />
           </div>
         </div>
         <div className="col-span-6 space-y-3">

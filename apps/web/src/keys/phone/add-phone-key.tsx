@@ -132,7 +132,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           }}
         />
         <DropDown
-          className="relative w-full"
+          className="w-full"
           contentContainerClassname="w-full"
           description="Security Question"
           options={securityQuestions}

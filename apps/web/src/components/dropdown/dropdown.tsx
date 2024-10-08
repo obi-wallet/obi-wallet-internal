@@ -86,7 +86,7 @@ export function DropDown<
   };
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={cn("relative", className)}>
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
