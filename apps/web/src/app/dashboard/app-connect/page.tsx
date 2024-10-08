@@ -112,9 +112,9 @@ export default observer(function AppConnect() {
         <Divider className="mb-7 mt-5" />
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            void walletConnectStore.pair(uri);
+            await walletConnectStore.pair(uri);
             setUri("");
           }}
         >

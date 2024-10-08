@@ -31,7 +31,7 @@ type StepAndTx = StepStatus & {
 export const PendingAssets = observer(function PendingAssets() {
   const publicKeys = usePublicKeys();
 
-  const pendingTXs = usePendingTXs(publicKeys?.secp256k1.value ?? "");
+  const pendingTXs = usePendingTXs(publicKeys?.secp256k1);
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
