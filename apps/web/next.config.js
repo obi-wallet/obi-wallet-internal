@@ -7,6 +7,7 @@ module.exports = withSentryConfig(
     env: {
       NEXT_PUBLIC_FAST_TRAVEL_API_URL: process.env.FAST_TRAVEL_API_URL,
       NEXT_PUBLIC_ENV: process.env.VERCEL_ENV,
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     },
     transpilePackages: [
       "@obi-wallet/config",

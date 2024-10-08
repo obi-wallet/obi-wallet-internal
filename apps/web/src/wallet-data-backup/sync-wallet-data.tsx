@@ -8,6 +8,7 @@ import { WalletDataFlow } from "@/wallet-data-flow";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
+  KeyType,
   MultisigKey,
   ObservableMpcWallet,
   ObservableMultisigKey,
@@ -93,8 +94,21 @@ export function useWalletDataStateQuery() {
           }
 
           owner.removeKeyByPublicKey(primaryKey.publicKey);
-          const passkey = owner.addPasskeyKey(primaryKey.payload);
-          owner.setPrimaryKey(passkey);
+          switch (primaryKey.type) {
+            case KeyType.Passkey: {
+              const passkey = owner.addPasskeyKey(primaryKey.payload);
+              owner.setPrimaryKey(passkey);
+              break;
+            }
+            case KeyType.Cloud: {
+              const cloudKey = owner.addCloudKey(primaryKey.payload);
+              owner.setPrimaryKey(cloudKey);
+              break;
+            }
+            default:
+              console.error("Invalid Primary Key Type");
+              break;
+          }
 
           return {
             type: WalletDataStateType.Outdated,

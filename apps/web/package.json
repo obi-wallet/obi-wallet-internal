@@ -43,6 +43,7 @@
     "@obi-wallet/sdk-obi-account": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@obi-wallet/wallet-connect": "workspace:*",
+    "@react-oauth/google": "^0.12.1",
     "@reactuses/core": "^5.0.19",
     "@sentry/nextjs": "^8.25.0",
     "@solana/spl-token": "^0.4.8",

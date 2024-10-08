@@ -9,24 +9,29 @@ import { prop, sortBy } from "ramda";
 export interface KeyTypeMeta {
   type: KeyType;
   label: string;
-  mandatory: boolean;
+  possiblePrimaryKey: boolean;
 }
 
 export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
   [KeyType.Passkey]: {
     type: KeyType.Passkey,
     label: "Passkey",
-    mandatory: true,
+    possiblePrimaryKey: true,
   },
   [KeyType.Phone]: {
     type: KeyType.Phone,
     label: "Phone Key",
-    mandatory: false,
+    possiblePrimaryKey: false,
   },
   [KeyType.Telegram]: {
     type: KeyType.Telegram,
     label: "Telegram Key",
-    mandatory: false,
+    possiblePrimaryKey: false,
+  },
+  [KeyType.Cloud]: {
+    type: KeyType.Cloud,
+    label: "Cloud Key",
+    possiblePrimaryKey: true,
   },
 };
 
@@ -79,6 +84,10 @@ export function useKeyListForMultisigKey({
     {
       ...keyTypeMeta[KeyType.Telegram],
       keys: getKeysOfType(KeyType.Telegram),
+    },
+    {
+      ...keyTypeMeta[KeyType.Cloud],
+      keys: getKeysOfType(KeyType.Cloud),
     },
   ];
 }
