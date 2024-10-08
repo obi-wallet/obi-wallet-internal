@@ -257,6 +257,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                               owner: multisigKey,
                               payload: intentions,
                               keyPair,
+                              type: KeyType.Cloud,
                             });
                           const result = await keyIntentionsHandler.handle();
                           setResultWithPublicKey(
@@ -269,7 +270,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                           const error = e as Error;
                           alert.showError(
-                            `Could not process cloudkey: ${error.message}`,
+                            `Could not process cloud key: ${error.message}`,
                           );
                         }
                       }

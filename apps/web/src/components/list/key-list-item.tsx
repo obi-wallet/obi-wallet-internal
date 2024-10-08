@@ -27,7 +27,7 @@ export function KeyListItem({
 }: {
   onClick: () => void;
   keyData: KeyItems;
-  alert: boolean;
+  alert?: boolean;
 }) {
   const keyCount = keyData.keys.length;
   return (

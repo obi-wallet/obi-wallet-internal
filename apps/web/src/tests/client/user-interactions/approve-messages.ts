@@ -21,6 +21,7 @@ import { makeSignDoc } from "@cosmjs/proto-signing";
 import { calculateFee } from "@cosmjs/stargate";
 import { Encoding } from "@obi-wallet/encoding";
 import {
+  KeyType,
   ObservableMpcWallet,
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
@@ -39,6 +40,7 @@ async function mockApproveIntentions({
     owner: multisigKey,
     payload: intentions,
     keyPair,
+    type: KeyType.Passkey,
   });
   const result = await intentionsHandler.handle();
   intentionsResults.set(result.publicKey, result.intentionsResult);

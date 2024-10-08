@@ -19,6 +19,7 @@ export class PasskeyIntentionsHandler extends NewIntentionsHandler {
       owner: this.owner,
       payload: this.payload,
       keyPair,
+      type: KeyType.Passkey,
     });
     return await keyPairIntentionsHandler.handle();
   }
@@ -26,18 +27,22 @@ export class PasskeyIntentionsHandler extends NewIntentionsHandler {
 
 export class KeyPairIntentionsHandler extends NewIntentionsHandler {
   protected keyPair: Secp256k1KeyPair;
+  protected type: KeyType;
 
   public constructor({
     owner,
     payload,
     keyPair,
+    type,
   }: {
     owner: MultisigKey;
     payload: IntentionsPayload;
     keyPair: Secp256k1KeyPair;
+    type: KeyType;
   }) {
     super({ owner, payload });
     this.keyPair = keyPair;
+    this.type = type;
   }
 
   public async handle() {
@@ -46,7 +51,7 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
       return key.publicKey.value === keyPair.publicKey.value;
     });
     invariant(
-      key && (key.type === KeyType.Passkey || key.type === KeyType.Cloud),
+      key && key.type === this.type,
       "No key found with the given public key",
     );
 
