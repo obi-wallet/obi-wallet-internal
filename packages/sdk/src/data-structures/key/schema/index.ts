@@ -1,7 +1,7 @@
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { z } from "zod";
 
-import { CloudKey } from "./cloudkey";
+import { CloudKey } from "./cloud";
 import { PasskeyKey } from "./passkey";
 import { PhoneKey } from "./phone";
 import { TelegramKey } from "./telegram";

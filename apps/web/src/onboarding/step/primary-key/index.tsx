@@ -43,7 +43,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
     },
   });
 
-  const cloudkeyFlow = useMutation({
+  const cloudKeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = generateSecp256k1KeyPair();
       draft.value.setPrimaryKey({
@@ -108,7 +108,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         </BitButton>
         <BitButton
           onClick={() => {
-            cloudkeyFlow.mutate();
+            cloudKeyFlow.mutate();
           }}
         >
           Cloud Key

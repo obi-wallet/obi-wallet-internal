@@ -20,7 +20,7 @@ import { useEffectOnceWhen } from "rooks";
 
 export const IntentionsResults = Map<string, IntentionsResult>;
 export type IntentionsResults = Map<string, IntentionsResult>;
-interface cloudkeyFile {
+interface CloudKeyFile {
   id: string;
   name: string;
 }
@@ -87,7 +87,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       key: KeyItem;
       index: number;
     } | null>(null);
-    const [cloudkeysModal, setCloudkeysModal] = useState<cloudkeyFile[] | null>(
+    const [cloudKeysModal, setCloudKeysModal] = useState<CloudKeyFile[] | null>(
       null,
     );
 
@@ -149,17 +149,15 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
 
         case KeyType.Cloud: {
           const files = await readFiles();
-          const keyFiles =
-            files &&
-            files
-              .filter((file) => {
-                return file.name.startsWith("obi-");
-              })
-              .filter((file) => {
-                return file.name.endsWith(".key");
-              });
+          const keyFiles = files
+            ?.filter((file) => {
+              return file.name.startsWith("obi-");
+            })
+            .filter((file) => {
+              return file.name.endsWith(".key");
+            });
           if (keyFiles) {
-            setCloudkeysModal(keyFiles);
+            setCloudKeysModal(keyFiles);
           }
           break;
         }
@@ -205,7 +203,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
             </div>
           </div>
         </div>
-        {renderCloudkeysModal()}
+        {renderCloudKeysModal()}
       </>
     );
 
@@ -228,12 +226,12 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
       );
     }
 
-    function renderCloudkeysModal() {
-      if (!cloudkeysModal) {
+    function renderCloudKeysModal() {
+      if (!cloudKeysModal) {
         return null;
       }
       const onClose = () => {
-        setCloudkeysModal(null);
+        setCloudKeysModal(null);
       };
 
       return (
@@ -243,8 +241,8 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
           onClose={onClose}
         >
           <section className="flex max-h-[400px] flex-col items-center space-y-4 overflow-y-auto">
-            {cloudkeysModal &&
-              cloudkeysModal.map((file, index) => {
+            {cloudKeysModal &&
+              cloudKeysModal.map((file, index) => {
                 return (
                   <AsyncButton
                     key={index}
@@ -264,11 +262,11 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                             result.publicKey,
                             result.intentionsResult,
                           );
-                          setCloudkeysModal(null);
+                          setCloudKeysModal(null);
                         } catch (e) {
-                          console.error(e);
                           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
                           const error = e as Error;
+                          console.error(error);
                           alert.showError(
                             `Could not process cloud key: ${error.message}`,
                           );

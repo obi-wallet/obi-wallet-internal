@@ -25,7 +25,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
     null,
   );
   const [modal, setModal] = useState<KeyType | null>(null);
-  const [cloudkeyFiles, setCloudkeyFiles] = useState<
+  const [cloudKeyFiles, setCloudKeyFiles] = useState<
     { id: string; name: string }[] | null
   >(null);
   const { readFiles, readFileById } = useGoogleAuth();
@@ -125,32 +125,31 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
           onClose={onClose}
         >
           <section className="flex flex-col items-center space-y-4">
-            {cloudkeyFiles &&
-              cloudkeyFiles.map((file, index) => {
-                return (
-                  <AsyncButton
-                    key={index}
-                    onClick={async () => {
-                      const keyPair = await readFileById(file.id);
-                      if (keyPair) {
-                        await recoverByPublicKey.mutateAsync({
-                          publicKey: keyPair.publicKey,
-                          keyMetaData: {},
-                          modifyMultisigKey: (multisigKey) => {
-                            multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-                            const primaryKey = multisigKey.addCloudKey(keyPair);
-                            multisigKey.setPrimaryKey(primaryKey);
-                          },
-                        });
-                      }
-                    }}
-                    className="block w-full"
-                    variant="primary"
-                  >
-                    {file.name}
-                  </AsyncButton>
-                );
-              })}
+            {cloudKeyFiles?.map((file, index) => {
+              return (
+                <AsyncButton
+                  key={index}
+                  onClick={async () => {
+                    const keyPair = await readFileById(file.id);
+                    if (keyPair) {
+                      await recoverByPublicKey.mutateAsync({
+                        publicKey: keyPair.publicKey,
+                        keyMetaData: {},
+                        modifyMultisigKey: (multisigKey) => {
+                          multisigKey.removeKeyByPublicKey(keyPair.publicKey);
+                          const primaryKey = multisigKey.addCloudKey(keyPair);
+                          multisigKey.setPrimaryKey(primaryKey);
+                        },
+                      });
+                    }
+                  }}
+                  className="block w-full"
+                  variant="primary"
+                >
+                  {file.name}
+                </AsyncButton>
+              );
+            })}
           </section>
         </Modal>
       );
@@ -253,7 +252,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
                 return file.name.endsWith(".key");
               });
           if (keyFiles) {
-            setCloudkeyFiles(keyFiles);
+            setCloudKeyFiles(keyFiles);
             setModal(KeyType.Cloud);
           }
         }}
