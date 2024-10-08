@@ -5,6 +5,7 @@ import { StoreContext } from "@/contexts";
 import { useCreateRootStore } from "@/hooks/use-create-root-store";
 import { obiModalConfig } from "@obi-wallet/config";
 import { Provider as SdkProvider } from "@obi-wallet/headless-ui";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClientProvider } from "@tanstack/react-query";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -22,11 +23,16 @@ const Provider = observer<ProviderProps>(function Provider({
 }) {
   const rootStore = useCreateRootStore({ config: obiModalConfig });
   const buster = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA;
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
 
   return (
     <SdkProvider QueryClientProvider={QueryClientProvider} buster={buster}>
       <StoreContext.Provider value={rootStore}>
-        <MultiThemeProvider>{children}</MultiThemeProvider>
+        <MultiThemeProvider>
+          <GoogleOAuthProvider clientId={clientId}>
+            {children}
+          </GoogleOAuthProvider>
+        </MultiThemeProvider>
       </StoreContext.Provider>
       <ReactQueryDevtools />
     </SdkProvider>

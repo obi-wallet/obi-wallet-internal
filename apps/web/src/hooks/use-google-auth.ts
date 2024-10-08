@@ -1,58 +1,62 @@
-import { useStore } from "@/contexts";
 import { serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import { useState } from "react";
-import { useEffectOnceWhen } from "rooks";
+import {
+  googleLogout,
+  TokenResponse,
+  useGoogleLogin,
+} from "@react-oauth/google";
+import { useRef } from "react";
 
 import { useAlert } from "./alert";
 
 const SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 
+type TokenResponseSuccess = Omit<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+type TokenResponseError = Pick<
+  TokenResponse,
+  "error" | "error_description" | "error_uri"
+>;
+
 export function useGoogleAuth() {
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const { showSuccess, showWarning } = useAlert();
-  const { googleApiStore } = useStore();
 
-  useEffectOnceWhen(async () => {
-    const start = async (): Promise<void> => {
-      const gapi = await googleApiStore.getGapi();
-      try {
-        await gapi.client.init({
-          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          scope: SCOPE,
-          discoveryDocs: [
-            "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
-          ],
-        });
+  const callbackRef = useRef<{
+    resolve: (value: TokenResponseSuccess) => void;
+    reject: (error: TokenResponseError) => void;
+  }>();
+  const tokenResponseRef = useRef<TokenResponseSuccess | null>(null);
 
-        const auth = gapi.auth2.getAuthInstance();
-        setIsSignedIn(auth.isSignedIn.get());
-        auth.isSignedIn.listen(setIsSignedIn);
-      } catch (error) {
-        console.error("Error initializing Google API client:", error);
-      }
-    };
-
-    const gapi = await googleApiStore.getGapi();
-    gapi.load("client:auth2", start);
+  const googleLogin = useGoogleLogin({
+    scope: SCOPE,
+    onSuccess: (tokenResponse) => {
+      callbackRef.current?.resolve(tokenResponse);
+    },
+    onError: (error) => {
+      callbackRef.current?.reject(error);
+    },
   });
 
-  const signIn = async (): Promise<void> => {
-    const gapi = await googleApiStore.getGapi();
-    try {
-      await gapi.auth2.getAuthInstance().signIn();
-    } catch (error) {
-      console.error("Error signing in:", error);
-    }
+  const signOut = () => {
+    tokenResponseRef.current = null;
+    googleLogout();
   };
 
-  const signOut = async (): Promise<void> => {
-    const gapi = await googleApiStore.getGapi();
-    try {
-      await gapi.auth2.getAuthInstance().signOut();
-    } catch (error) {
-      console.error("Error signing out:", error);
+  const getToken = async (): Promise<string> => {
+    if (tokenResponseRef.current) {
+      return tokenResponseRef.current.access_token;
     }
+    const p = new Promise<TokenResponseSuccess>((resolve, reject) => {
+      callbackRef.current = {
+        resolve,
+        reject,
+      };
+    });
+    googleLogin();
+    tokenResponseRef.current = await p;
+    return tokenResponseRef.current.access_token;
   };
 
   const uploadFile = async (
@@ -60,13 +64,7 @@ export function useGoogleAuth() {
     fileName: string,
     mimeType = "application/json",
   ) => {
-    const gapi = await googleApiStore.getGapi();
-    if (!isSignedIn) await signIn();
-
-    const accessToken = gapi.auth2
-      .getAuthInstance()
-      .currentUser.get()
-      .getAuthResponse().access_token;
+    const accessToken = await getToken();
 
     const metadata = {
       name: fileName,
@@ -84,20 +82,14 @@ export function useGoogleAuth() {
     if (!response.ok) {
       throw new Error("Invalid Response!");
     }
-    await signOut();
+    signOut();
     showSuccess("The Key File is successfully uploaded to google drive!");
   };
 
   const readFiles = async (): Promise<
     { id: string; name: string }[] | null
   > => {
-    const gapi = await googleApiStore.getGapi();
-    if (!isSignedIn) await signIn();
-
-    const accessToken = gapi.auth2
-      .getAuthInstance()
-      .currentUser.get()
-      .getAuthResponse().access_token;
+    const accessToken = await getToken();
 
     const response = await fetch("/api/google-drive/read-files", {
       method: "POST",
@@ -118,14 +110,7 @@ export function useGoogleAuth() {
   const readFileById = async (
     fileId: string,
   ): Promise<Secp256k1KeyPair | null> => {
-    const gapi = await googleApiStore.getGapi();
-    if (!isSignedIn) await signIn();
-
-    const accessToken = gapi.auth2
-      .getAuthInstance()
-      .currentUser.get()
-      .getAuthResponse().access_token;
-
+    const accessToken = await getToken();
     const response = await fetch("/api/google-drive/read-file-by-id", {
       method: "POST",
       body: serialize({
@@ -139,10 +124,10 @@ export function useGoogleAuth() {
     }
 
     const fileContent = await response.json();
-    await signOut();
+    signOut();
     showSuccess("The Key File is successfully imported!");
     return fileContent;
   };
 
-  return { isSignedIn, signIn, signOut, uploadFile, readFiles, readFileById };
+  return { uploadFile, readFiles, readFileById };
 }
