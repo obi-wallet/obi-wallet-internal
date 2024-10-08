@@ -17,6 +17,7 @@ import {
 } from "@obi-wallet/wallet-connect";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { Connection, PublicKey, SolanaJSONRPCError } from "@solana/web3.js";
@@ -106,9 +107,16 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
       case "token": {
         const owner = new PublicKey(address);
         const mint = new PublicKey(reference);
+        const programIds = await this.getTokenProgramIds(reference);
+        invariant(programIds, "Unknown token program");
+
         const [tokenAccountAddress] = PublicKey.findProgramAddressSync(
-          [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-          ASSOCIATED_TOKEN_PROGRAM_ID,
+          [
+            owner.toBuffer(),
+            programIds.tokenProgramId.toBuffer(),
+            mint.toBuffer(),
+          ],
+          programIds.associatedTokenProgramId,
         );
         try {
           const balance =
@@ -129,6 +137,27 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
     }
 
     return "0";
+  }
+
+  public async getTokenProgramIds(address: string) {
+    const accountInfo = await this.solanaConnection.getParsedAccountInfo(
+      new PublicKey(address),
+    );
+    const owner = accountInfo.value?.owner;
+
+    if (owner?.equals(TOKEN_PROGRAM_ID)) {
+      return {
+        tokenProgramId: TOKEN_PROGRAM_ID,
+        associatedTokenProgramId: ASSOCIATED_TOKEN_PROGRAM_ID,
+      };
+    } else if (owner?.equals(TOKEN_2022_PROGRAM_ID)) {
+      return {
+        tokenProgramId: TOKEN_2022_PROGRAM_ID,
+        associatedTokenProgramId: ASSOCIATED_TOKEN_PROGRAM_ID,
+      };
+    }
+
+    return null;
   }
 
   public async assetInfo(id: Caip19AssetId): Promise<AssetInfo | null> {

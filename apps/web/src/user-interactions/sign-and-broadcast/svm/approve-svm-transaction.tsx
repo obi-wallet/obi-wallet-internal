@@ -12,7 +12,12 @@ import { SendingAnimation } from "@/user-interactions/approve-messages/sending-a
 import { SvmSendMessage } from "@/user-interactions/sign-and-broadcast/svm/user-interaction";
 import { Base58EncodedString } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
+import {
+  createAssociatedTokenAccountIdempotentInstruction,
+  createTransferInstruction,
+} from "@solana/spl-token";
 import {
   PublicKey,
   SystemProgram,
@@ -65,17 +70,64 @@ export const ApproveSvmTransaction = observer<ApproveSvmTransactionProps>(
       queryKey: ["transaction", { message, targetChainId }],
       queryFn: wallet
         ? async () => {
-            if (message.id !== targetChain.nativeCaip19AssetId) {
-              throw new Error("Unsupported asset");
-            }
-            const transferInstruction = SystemProgram.transfer({
-              fromPubkey: new PublicKey(message.fromAddress),
-              toPubkey: new PublicKey(message.toAddress),
-              lamports: BigInt(message.rawAmount),
-            });
-            const transaction = new SolanaTransaction().add(
-              transferInstruction,
-            );
+            const getTransaction = async () => {
+              if (message.id === targetChain.nativeCaip19AssetId) {
+                const transferInstruction = SystemProgram.transfer({
+                  fromPubkey: new PublicKey(message.fromAddress),
+                  toPubkey: new PublicKey(message.toAddress),
+                  lamports: BigInt(message.rawAmount),
+                });
+                return new SolanaTransaction().add(transferInstruction);
+              } else {
+                const { reference } = parseCaip19AssetId(message.id);
+                const mint = new PublicKey(reference);
+
+                const programIds =
+                  await targetChain.getTokenProgramIds(reference);
+                invariant(programIds, "Unknown token program");
+
+                const { tokenProgramId, associatedTokenProgramId } = programIds;
+
+                const from = new PublicKey(message.fromAddress);
+                const to = new PublicKey(message.toAddress);
+                const [fromTokenAccountAddress] =
+                  PublicKey.findProgramAddressSync(
+                    [
+                      from.toBuffer(),
+                      tokenProgramId.toBuffer(),
+                      mint.toBuffer(),
+                    ],
+                    associatedTokenProgramId,
+                  );
+                const [toTokenAccountAddress] =
+                  PublicKey.findProgramAddressSync(
+                    [to.toBuffer(), tokenProgramId.toBuffer(), mint.toBuffer()],
+                    associatedTokenProgramId,
+                  );
+
+                const transferInstruction = createTransferInstruction(
+                  fromTokenAccountAddress,
+                  toTokenAccountAddress,
+                  from,
+                  BigInt(message.rawAmount),
+                  [],
+                  tokenProgramId,
+                );
+                return new SolanaTransaction().add(
+                  createAssociatedTokenAccountIdempotentInstruction(
+                    from,
+                    toTokenAccountAddress,
+                    to,
+                    mint,
+                    tokenProgramId,
+                    associatedTokenProgramId,
+                  ),
+                  transferInstruction,
+                );
+              }
+            };
+
+            const transaction = await getTransaction();
 
             const latestBlockHash =
               await targetChain.solanaConnection.getLatestBlockhash();
