@@ -19,7 +19,6 @@ export function useGoogleAuth() {
       try {
         await gapi.client.init({
           clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          apiKey: process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY,
           scope: SCOPE,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
