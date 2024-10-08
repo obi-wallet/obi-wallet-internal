@@ -1,4 +1,5 @@
 import {
+  Ed25519KeyPairNotification,
   Navbar,
   OnekeyNotification,
   WalletDataNotification,
@@ -17,6 +18,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <DashboardCustomLayout nav={<Navbar />}>
       <WalletDataNotification />
       <OnekeyNotification />
+      <Ed25519KeyPairNotification />
       {children}
     </DashboardCustomLayout>
   );

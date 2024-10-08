@@ -3,6 +3,7 @@ import {
   MultisigKeyEncryption,
   SharesBackupEncryption,
 } from "@/lib/encryption";
+import { rootStore } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { LegacyWalletData, LegacyWalletDataBackup } from "@/wallet-data-backup";
 import {
@@ -22,7 +23,9 @@ import {
   UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
+import { Ed25519PublicKey } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -143,6 +146,7 @@ export class SecretJsHomeChain {
         backup: wallet.encryptedShares.backup,
       },
       encryptedKeyMetaData,
+      ed25519KeyPair: wallet.ed25519KeyPair ? wallet.ed25519KeyPair : undefined,
       revision: wallet.previousWalletData?.revision ?? 0,
     };
     return WalletData.parse(data);
@@ -260,17 +264,32 @@ export class SecretJsHomeChain {
     return result.data;
   }
 
-  public publicKey(userEntryAddress: string) {
-    return queryClient.fetchQuery(this.publicKeyQuery(userEntryAddress));
+  public async publicKeys(
+    userEntryAddresss: string,
+  ): Promise<ObiAccountPublicKeys> {
+    const [secp256k1, ed25519] = await Promise.all([
+      this.secp256k1PublicKey(userEntryAddresss),
+      this.ed25519PublicKey(userEntryAddresss),
+    ]);
+    return {
+      secp256k1,
+      ed25519,
+    };
   }
-  public get publicKeyQuery() {
+
+  public secp256k1PublicKey(userEntryAddress: string) {
+    return queryClient.fetchQuery(
+      this.secp256k1PublicKeyQuery(userEntryAddress),
+    );
+  }
+  public get secp256k1PublicKeyQuery() {
     return this.queryNamespace.createQuery({
-      name: "obiAccountAddress",
-      fn: this.publicKeyQueryFn.bind(this),
+      name: "sec256k1PublicKey",
+      fn: this.secp256k1PublicKeyQueryFn.bind(this),
       staleTime: { day: 1 },
     });
   }
-  protected async publicKeyQueryFn(
+  protected async secp256k1PublicKeyQueryFn(
     userEntryAddress: string,
   ): Promise<Secp256k1PublicKey> {
     const response = await this.client.queryContract({
@@ -289,6 +308,32 @@ export class SecretJsHomeChain {
         Encoding.fromHex(HexEncodedString.parse("04")),
         Encoding.fromHex(response),
       ).toBase64(),
+    };
+  }
+
+  public ed25519PublicKey(userEntryAddress: string) {
+    return queryClient.fetchQuery(this.ed25519PublicKeyQuery(userEntryAddress));
+  }
+  public get ed25519PublicKeyQuery() {
+    return this.queryNamespace.createQuery({
+      name: "ed25519PublicKey",
+      fn: this.ed25519PublicKeyQueryFn.bind(this),
+    });
+  }
+  protected async ed25519PublicKeyQueryFn(
+    userEntryAddress: string,
+  ): Promise<Ed25519PublicKey | null> {
+    const wallet =
+      rootStore.current?.mpcWalletsStore.getWalletByUserEntryAddress(
+        userEntryAddress,
+      );
+    const value = wallet?.ed25519PublicKey;
+
+    if (!value) return null;
+
+    return {
+      type: "tendermint/PubKeyEd25519",
+      value,
     };
   }
 }

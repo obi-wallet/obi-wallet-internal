@@ -3,51 +3,66 @@
 import { ChainDropdown, TabUi, useChainOptions } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
-import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { InputContainer } from "@/ui/container";
+import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 export default observer<{ params: { asset?: string[] } }>(function Receive({
   params,
 }) {
-  const { Canvas } = useQRCode();
-  const [chainId, setChainId] = useState<TargetChainId>(CosmosChainId.Sei);
-  const [isCopied, setIsCopied] = useState(false);
-  const { data: address } = useAddressQuery(chainId);
-  const chainOptions = useChainOptions();
+  const [chainId, setChainId] = useState<TargetChainId | null>(null);
+  const { options, initialValue } = useChainOptions();
 
-  useEffect(() => {
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
+  const getChainId = () => {
+    // User has selected a chain
+    if (chainId) {
+      return chainId;
+    }
 
-    function getInitialChain() {
-      if (!initialAssetParam) return;
-
-      try {
+    // User has not selected a chain, but the URL has a chain
+    try {
+      const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
+      if (assetParam) {
         const { chainId } = parseCaip19AssetId(
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-          initialAssetParam as Caip19AssetId,
+          assetParam as Caip19AssetId,
         );
-
-        console.log("looking for chainId", chainId, chainOptions);
-
-        return chainOptions.find((chain) => {
+        const chainOption = options.find((chain) => {
           return chain.value === chainId;
         });
-      } catch (e) {
-        console.error(e);
+        if (chainOption) {
+          return chainOption.value;
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
 
-    const initialChain = initialAssetParam ? getInitialChain() : null;
-    if (initialChain) {
-      setChainId(initialChain.value);
-    }
-  }, [chainOptions, params]);
+    // User has not selected a chain and the URL does not have a chain
+    return initialValue;
+  };
+
+  const chainIdToUse = getChainId();
+
+  if (chainIdToUse) {
+    return <ReceiveInner chainId={chainIdToUse} setChainId={setChainId} />;
+  }
+
+  return null;
+});
+
+const ReceiveInner = observer<{
+  chainId: TargetChainId;
+  setChainId: (chainId: TargetChainId) => void;
+}>(function ReceiveInner({ chainId, setChainId }) {
+  const { Canvas } = useQRCode();
+  const [isCopied, setIsCopied] = useState(false);
+  const { data: address } = useAddressQuery(chainId);
 
   const handleClickQRCode = () => {
     if (!address) return;

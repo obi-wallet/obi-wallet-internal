@@ -9,7 +9,7 @@ import {
 } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { createPasskey, KeyType } from "@obi-wallet/sdk";
-import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { generateSecp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
@@ -45,7 +45,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
   const cloudkeyFlow = useMutation({
     mutationFn: async () => {
-      const keyPair = generateSec256k1KeyPair();
+      const keyPair = generateSecp256k1KeyPair();
       draft.value.setPrimaryKey({
         key: {
           type: KeyType.Cloud,

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { HomeChain } from "@/home-chain";
 import { useAlert } from "@/hooks/alert";
 import {
   PrettyCaip19Asset,
@@ -15,9 +16,12 @@ import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
+import { isSolanaChainId } from "@/target-chain/solana/chains";
 import { CustomDropdown as Dropdown } from "@/ui/dropdown";
 import { Input } from "@/ui/input";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { SignAndBroadcastSvm } from "@/user-interactions/sign-and-broadcast/svm";
+import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
 import { nonEmptyString } from "@/validation-helpers";
 import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
@@ -30,9 +34,9 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import { MsgSend } from "secretjs";
+import { MsgExecuteContract, MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
@@ -40,7 +44,14 @@ import { z } from "zod";
 const schema = z
   .object({
     coin: z.object({
-      amount: z.string(),
+      amount: z
+        .string()
+        .transform((amount) => {
+          return amount.trim().replace(",", ".");
+        })
+        .refine((amount) => {
+          return new BigNumber(amount).isGreaterThan(0);
+        }),
       asset: z
         .custom<IBalanceOption>(() => {
           // TODO: this should be more precise
@@ -73,11 +84,82 @@ type FormData = z.infer<typeof schema>;
 export default observer<{ params: { asset?: string[] } }>(function Send({
   params,
 }) {
+  const balances = useBalances();
+  const balance = balances
+    .filter((b) => {
+      return b.isSuccess;
+    })
+    .map((b) => {
+      return b.data;
+    })
+    .filter((b): b is PrettyCaip19Asset[] => {
+      return !!b;
+    });
+
+  const withChainId = balance.flat();
+
+  const balanceOptions = withChainId
+    .map((b) => {
+      const { chainId } = parseCaip19AssetId(b.assetId);
+      if (!b.assetInfo) return null;
+
+      invariant(
+        isCosmosChainId(chainId) ||
+          isEip155ChainId(chainId) ||
+          isSecretChainId(chainId) ||
+          isSolanaChainId(chainId),
+        "Expected valid targetChainId",
+      );
+
+      const result: IBalanceOption = {
+        image: b.assetInfo.image ?? undefined,
+        targetChainId: chainId,
+        denom: b.assetId,
+        network: TargetChain.chainId(chainId).label,
+        assetUnit: b.assetInfo.symbol,
+        balance: new BigNumber(b.prettyAmount),
+        asset: b,
+        assetInfo: b.assetInfo,
+      };
+      return result;
+    })
+    .filter((option): option is IBalanceOption => {
+      return !!option;
+    });
+
+  const getAsset = () => {
+    const initialAssetParam = urlDecodeCatchAllParam(params.asset ?? []);
+    if (initialAssetParam) {
+      const balanceOption = balanceOptions.find((balance) => {
+        return balance.asset.assetId === initialAssetParam;
+      });
+      if (balanceOption) {
+        return balanceOption;
+      }
+    }
+
+    return balanceOptions[0];
+  };
+
+  const asset = getAsset();
+
+  if (asset) {
+    return <SendInner asset={asset} balanceOptions={balanceOptions} />;
+  }
+
+  return null;
+});
+
+const SendInner = observer<{
+  asset: IBalanceOption;
+  balanceOptions: IBalanceOption[];
+}>(function Send({ asset, balanceOptions }) {
+  const router = useRouter();
   const form = useForm<FormData>({
     defaultValues: {
       coin: {
         amount: "",
-        asset: null,
+        asset,
       },
       recipient: "",
       memo: "",
@@ -87,7 +169,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
   });
 
   const wallet = useCurrentWallet({});
-  const balances = useBalances();
   const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 
@@ -178,7 +259,7 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
         invariant(denom, "Expected valid denom");
 
         const getMessage = () => {
-          const { namespace } = parseCaip19AssetId(asset.denom);
+          const { namespace, reference } = parseCaip19AssetId(asset.denom);
           switch (namespace) {
             case "native":
             case "factory":
@@ -195,10 +276,18 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
               });
             }
 
-            case "cw20": {
-              // TODO: handle cw20 & snip20
-              return null;
-            }
+            case "cw20":
+            case "snip20":
+              return new MsgExecuteContract({
+                sender: firstAccount.address,
+                contract_address: reference,
+                msg: {
+                  transfer: {
+                    recipient: recipient,
+                    amount: rawAmount,
+                  },
+                },
+              });
           }
         };
 
@@ -229,6 +318,32 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
           } else {
             alert.showError(`TX failed: ${broadcastResult.rawLog}`);
           }
+        }
+        return;
+      }
+
+      if (isSolanaChainId(chainId)) {
+        const targetChain = TargetChain.chainId(chainId);
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
+        const response = await SignAndBroadcastSvm.start({
+          targetChainId: chainId,
+          cancelable: true,
+          walletMeta: {
+            userEntryAddress: wallet.userEntryAddress,
+          },
+          message: {
+            fromAddress: await targetChain.obiAccountAddress(publicKeys),
+            toAddress: recipient,
+            id: coin.asset.asset.assetId,
+            rawAmount,
+          },
+        });
+
+        await invalidateBalancesQueries(chainId);
+        if (response.approved) {
+          alert.showSuccess("TX sent");
         }
         return;
       }
@@ -319,70 +434,6 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
       alert.showError(`TX failed: ${error.message}`);
     },
   });
-
-  const balance = balances
-    .filter((b) => {
-      return b.isSuccess;
-    })
-    .map((b) => {
-      return b.data;
-    })
-    .filter((b): b is PrettyCaip19Asset[] => {
-      return !!b;
-    });
-
-  const withChainId = balance.flat();
-
-  const balanceOptions = withChainId
-    .map((b) => {
-      const { chainId } = parseCaip19AssetId(b.assetId);
-      if (!b.assetInfo) return null;
-
-      invariant(
-        isCosmosChainId(chainId) ||
-          isEip155ChainId(chainId) ||
-          isSecretChainId(chainId),
-        "Expected valid targetChainId",
-      );
-
-      const result: IBalanceOption = {
-        image: b.assetInfo.image ?? undefined,
-        targetChainId: chainId,
-        denom: b.assetId,
-        network: TargetChain.chainId(chainId).label,
-        assetUnit: b.assetInfo.symbol,
-        balance: new BigNumber(b.prettyAmount),
-        asset: b,
-        assetInfo: b.assetInfo,
-      };
-      return result;
-    })
-    .filter((option): option is IBalanceOption => {
-      return !!option;
-    });
-
-  useEffect(() => {
-    const coin = form.getValues().coin;
-    if (coin.asset) return;
-
-    const initialAssetParam = decodeURIComponent(params.asset?.[0] ?? "");
-
-    function getInitialAsset() {
-      if (!initialAssetParam) return;
-
-      return balanceOptions.find((balance) => {
-        return balance.asset.assetId === initialAssetParam;
-      });
-    }
-
-    const initialAsset = initialAssetParam ? getInitialAsset() : null;
-    if (initialAsset) {
-      form.setValue("coin", {
-        amount: coin.amount,
-        asset: initialAsset,
-      });
-    }
-  }, [balanceOptions, form, params]);
 
   if (balanceOptions.length === 0) {
     return (
@@ -501,10 +552,9 @@ export default observer<{ params: { asset?: string[] } }>(function Send({
                     );
                   }}
                   onItemSelect={function (item) {
-                    setCoin({
-                      amount: coin.amount,
-                      asset: item,
-                    });
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
                   }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {

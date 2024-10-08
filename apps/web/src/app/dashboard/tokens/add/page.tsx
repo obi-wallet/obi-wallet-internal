@@ -1,21 +1,37 @@
 "use client";
 
-import { Box, Button, ChainDropdown, Input } from "@/components";
+import {
+  Box,
+  Button,
+  ChainDropdown,
+  Input,
+  useChainOptions,
+} from "@/components";
 import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
-import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { AsyncButton } from "@/ui/button";
 import { InputContainer } from "@/ui/container";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import invariant from "tiny-invariant";
 
 export default observer(function TokenAdd() {
   const alert = useAlert();
   const router = useRouter();
-  const [chainId, setChainId] = useState<TargetChainId>(CosmosChainId.Sei);
+  const { initialValue } = useChainOptions();
+  const [chainId, setChainId] = useState<TargetChainId | null>(null);
   const [address, setAddress] = useState("");
+
+  const getChainId = () => {
+    if (chainId) {
+      return chainId;
+    }
+
+    return initialValue;
+  };
+  const chainIdToUse = getChainId();
 
   return (
     <div className="w-full">
@@ -28,7 +44,7 @@ export default observer(function TokenAdd() {
           label="Chain"
           labelClassname="bg-background-secondary"
         >
-          <ChainDropdown onChange={setChainId} chainId={chainId} />
+          <ChainDropdown onChange={setChainId} chainId={chainIdToUse} />
         </InputContainer>
         <div className="my-4">
           <label className="text-sm text-white">Token Contract Address</label>
@@ -50,12 +66,15 @@ export default observer(function TokenAdd() {
           </Button>
           <AsyncButton
             onClick={async () => {
-              const targetChain = TargetChain.chainId(chainId);
+              invariant(chainIdToUse, "Chain ID is required");
+              const targetChain = TargetChain.chainId(chainIdToUse);
 
-              const { assetId } = await AssetRegistry.getInstance().byDenom({
-                chainId: chainId,
-                denom: address,
-              });
+              const assetRegistryInfo =
+                await AssetRegistry.getInstance().byDenom({
+                  chainId: chainIdToUse,
+                  denom: address,
+                });
+              const assetId = assetRegistryInfo?.assetId;
 
               const assetInfo =
                 assetId && (await targetChain.assetInfo(assetId));

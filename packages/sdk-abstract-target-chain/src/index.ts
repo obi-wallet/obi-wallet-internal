@@ -1,6 +1,7 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import {
   SessionRequestPayload,
@@ -53,8 +54,8 @@ export abstract class AbstractTargetChain<
 
   public abstract computeAddress(publicKey: Secp256k1PublicKey): string;
 
-  public obiAccountAddress(publicKey: Secp256k1PublicKey) {
-    return queryClient.fetchQuery(this.obiAccountAddressQuery(publicKey));
+  public obiAccountAddress(publicKeys: ObiAccountPublicKeys) {
+    return queryClient.fetchQuery(this.obiAccountAddressQuery(publicKeys));
   }
   public get obiAccountAddressQuery() {
     return this.queryNamespace.createQuery({
@@ -64,7 +65,7 @@ export abstract class AbstractTargetChain<
     });
   }
   protected abstract obiAccountAddressQueryFn(
-    publicKey: Secp256k1PublicKey,
+    publicKeys: ObiAccountPublicKeys,
   ): Promise<TAddress>;
 
   public abstract validateAddress(address: string): boolean;

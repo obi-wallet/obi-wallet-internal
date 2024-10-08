@@ -3,7 +3,7 @@
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
-import { TargetChainId } from "@/target-chain";
+import { isTargetChainId, TargetChainId } from "@/target-chain";
 import { observer } from "mobx-react-lite";
 
 import { DropDown } from "./dropdown";
@@ -13,10 +13,14 @@ export function useChainOptions() {
   const { targetChainsStore } = useStore();
 
   if (!wallet) {
-    return [];
+    return {
+      options: [],
+      initialValue: null,
+      setLastUsedTargetChainId: () => {},
+    };
   }
 
-  return targetChainsStore
+  const options = targetChainsStore
     .getTargetChains(wallet.userEntryAddress)
     .map((chain) => {
       return {
@@ -32,25 +36,53 @@ export function useChainOptions() {
     .sort((a, b) => {
       return a.label.localeCompare(b.label);
     });
+
+  const getInitialValue = (): TargetChainId | null => {
+    const lastUsedChainId = targetChainsStore.getLastUsedTargetChainId(
+      wallet.userEntryAddress,
+    );
+    if (lastUsedChainId && isTargetChainId(lastUsedChainId)) {
+      return lastUsedChainId;
+    }
+
+    const chainId = options[0]?.value;
+    if (chainId) {
+      return chainId;
+    }
+
+    return null;
+  };
+
+  return {
+    options,
+    initialValue: getInitialValue(),
+    setLastUsedTargetChainId: (chainId: TargetChainId) => {
+      targetChainsStore.setLastUsedTargetChainId({
+        address: wallet.userEntryAddress,
+        chainId,
+      });
+    },
+  };
 }
 
 export const ChainDropdown = observer(function ChainDropdown({
   onChange,
   chainId,
 }: {
-  chainId: TargetChainId;
+  chainId: TargetChainId | null;
   onChange: (chainId: TargetChainId) => void;
 }) {
-  const chainOptions = useChainOptions();
+  const { options, setLastUsedTargetChainId } = useChainOptions();
 
   return (
     <div className="flex w-full flex-row">
       <DropDown
-        options={chainOptions}
-        value={chainId}
+        options={options}
+        value={chainId ?? undefined}
         description="Select chain"
-        className="relative z-10 w-full"
+        className="w-full"
         onSelectOption={(option) => {
+          setLastUsedTargetChainId(option.value);
           onChange(option.value);
         }}
         customSelectedItemComponent={(option) => {

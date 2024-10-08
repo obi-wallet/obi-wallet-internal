@@ -1,0 +1,23 @@
+{
+  "name": "@obi-wallet/sdk-obi-account",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@obi-wallet/sdk-ed25519": "workspace:*",
+    "@obi-wallet/sdk-secp256k1": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^8.57.0",
+    "typescript": "^5.5.4"
+  }
+}

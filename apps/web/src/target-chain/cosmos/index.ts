@@ -11,6 +11,7 @@ import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
+import { filterMap } from "@/util/filter-map";
 import { Chain } from "@chain-registry/types";
 import {
   CosmWasmClient,
@@ -18,6 +19,7 @@ import {
   SigningCosmWasmClient,
   wasmTypes,
 } from "@cosmjs/cosmwasm-stargate";
+import { fromBech32, toHex } from "@cosmjs/encoding";
 import { EncodeObject, OfflineSigner, Registry } from "@cosmjs/proto-signing";
 import {
   AminoTypes,
@@ -53,11 +55,13 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
+  Key,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
@@ -117,13 +121,13 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
     return pubkeyToAddress(
-      getSec256k1CompressedPublicKey(publicKey),
+      getSecp256k1CompressedPublicKey(publicKey),
       this.chainData.prefix,
     );
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    return this.computeAddress(publicKey);
+  protected async obiAccountAddressQueryFn(publicKeys: ObiAccountPublicKeys) {
+    return this.computeAddress(publicKeys.secp256k1);
   }
 
   public isNativeAsset(assetId: Caip19AssetId) {
@@ -161,7 +165,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }: {
     address: string;
     assetId: Caip19AssetId;
-  }) {
+  }): Promise<string> {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "cw20": {
@@ -175,6 +179,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         });
       }
     }
+
+    return "0";
   }
 
   protected denomMetadata(denom: string) {
@@ -522,7 +528,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -534,9 +540,21 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         return !chain.disabled;
       });
 
+    const usableCosmosChains = await filterMap(
+      async (chain) => {
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
+        return {
+          chainId: chain.chainId,
+          account: `${chain.chainId}:${address}`,
+        };
+      },
+      cosmosChains,
+      { catchErrors: true },
+    );
+
     return {
       cosmos: {
-        chains: cosmosChains.map((chain) => {
+        chains: usableCosmosChains.map((chain) => {
           return chain.chainId;
         }),
         methods: [
@@ -544,15 +562,52 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           "cosmos_signAmino",
           "cosmos_signDirect",
         ],
-        accounts: await Promise.all(
-          cosmosChains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKey);
-            return `${chain.chainId}:${address}`;
-          }),
-        ),
+        accounts: usableCosmosChains.map((chain) => {
+          return chain.account;
+        }),
         events: ["chainChanged", "accountsChanged"],
       },
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
+    invariant(wallet, "Wallet not found");
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet.userEntryAddress,
+    );
+
+    const cosmosChains = allCosmosChains
+      .map((targetChainId) => {
+        return new CosmosTargetChain(targetChainId);
+      })
+      .filter((chain) => {
+        return !chain.disabled;
+      });
+
+    return await filterMap(
+      async (chain) => {
+        const bech32Address = await chain.obiAccountAddress(publicKeys);
+        const address = fromBech32(bech32Address).data;
+        const ethereumHexAddress = toHex(address);
+
+        return {
+          name: chain.label,
+          algo: "secp256k1",
+          pubKey: Encoding.fromBytes(
+            getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
+          ).toBytes(),
+          address,
+          ethereumHexAddress,
+          bech32Address,
+          isNanoLedger: false,
+          isKeystone: false,
+          chainId: chain.chainId,
+        };
+      },
+      cosmosChains,
+      { catchErrors: true },
+    );
   }
 
   public async handleWalletConnectSessionRequest({
@@ -566,9 +621,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     switch (request.method) {
       case "cosmos_getAccounts": {
-        const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-          wallet.userEntryAddress,
-        );
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
@@ -580,16 +635,18 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
             return !chain.disabled;
           });
 
-        const result = await Promise.all(
-          cosmosChains.map(async (targetChain) => {
+        const result = await filterMap(
+          async (targetChain) => {
             return {
               algo: "secp256k1",
-              address: await targetChain.obiAccountAddress(publicKey),
+              address: await targetChain.obiAccountAddress(publicKeys),
               pubkey: Encoding.fromBytes(
-                getSec256k1CompressedPublicKey(publicKey),
+                getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
               ).toBase64(),
             };
-          }),
+          },
+          cosmosChains,
+          { catchErrors: true },
         );
         return { result };
       }

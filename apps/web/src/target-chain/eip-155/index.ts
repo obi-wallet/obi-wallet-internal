@@ -10,17 +10,20 @@ import {
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
+import { filterMap } from "@/util/filter-map";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1UncompressedPublicKey,
+  getSecp256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
+  Key,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
@@ -91,23 +94,23 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
-    const u8 = getSec256k1UncompressedPublicKey(publicKey);
+    const u8 = getSecp256k1UncompressedPublicKey(publicKey);
     const hex = `0x${Buffer.from(u8).toString("hex")}`;
     const address = keccak256(`0x${hex.substring(4)}`).substring(26);
     return getAddress(`0x${address}`);
   }
 
   protected async obiAccountAddressQueryFn(
-    publicKey: Secp256k1PublicKey,
+    publicKeys: ObiAccountPublicKeys,
   ): Promise<HexEncodedStringWithPrefix> {
     if (this.chainId === Eip155ChainId.BscTestnet) {
       return await new Eip155TargetChain(
         Eip155ChainId.Bsc,
-      ).obiAccountAddressQueryFn(publicKey);
+      ).obiAccountAddressQueryFn(publicKeys);
     }
 
     const account = toAccount({
-      address: this.computeAddress(publicKey),
+      address: this.computeAddress(publicKeys.secp256k1),
       async signMessage() {
         throw new Error("signMessage not implemented");
       },
@@ -365,7 +368,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -377,9 +380,21 @@ export class Eip155TargetChain extends AbstractTargetChain<
         return !chain.disabled;
       });
 
+    const usableEip155Chains = await filterMap(
+      async (chain) => {
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
+        return {
+          chainId: chain.chainId,
+          account: `${chain.chainId}:${address}`,
+        };
+      },
+      eip155Chains,
+      { catchErrors: true },
+    );
+
     return {
       eip155: {
-        chains: eip155Chains.map((chain) => {
+        chains: usableEip155Chains.map((chain) => {
           return chain.chainId;
         }),
         methods: [
@@ -387,15 +402,16 @@ export class Eip155TargetChain extends AbstractTargetChain<
           "personal_sign",
           "wallet_switchEthereumChain",
         ],
-        accounts: await Promise.all(
-          eip155Chains.map(async (chain) => {
-            const address = await chain.obiAccountAddressQueryFn(publicKey);
-            return `${chain.chainId}:${address}`;
-          }),
-        ),
+        accounts: usableEip155Chains.map((chain) => {
+          return chain.account;
+        }),
         events: ["chainChanged", "accountsChanged"],
       },
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    return [];
   }
 
   public async handleWalletConnectSessionRequest({

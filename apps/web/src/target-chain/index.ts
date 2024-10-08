@@ -5,6 +5,7 @@ import {
   SecretChainId,
 } from "@/target-chain/secret/chains";
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
+import { Key } from "@obi-wallet/wallet-connect";
 
 import { CosmosTargetChain } from "./cosmos";
 import {
@@ -18,13 +19,33 @@ import {
   Eip155ChainId,
   isEip155ChainId,
 } from "./eip-155/chains";
+import { SolanaTargetChain } from "./solana";
+import {
+  allSolanaChains,
+  isSolanaChainId,
+  SolanaChainId,
+} from "./solana/chains";
 
-export type TargetChainId = CosmosChainId | Eip155ChainId | SecretChainId;
+export type TargetChainId =
+  | CosmosChainId
+  | Eip155ChainId
+  | SecretChainId
+  | SolanaChainId;
+
+export function isTargetChainId(chainId: string): chainId is TargetChainId {
+  return (
+    isCosmosChainId(chainId) ||
+    isEip155ChainId(chainId) ||
+    isSecretChainId(chainId) ||
+    isSolanaChainId(chainId)
+  );
+}
 
 export const allTargetChainIds = [
   ...allCosmosChains,
   ...allEip155Chains,
   ...allSecretChains,
+  ...allSolanaChains,
 ];
 
 export class TargetChain {
@@ -33,6 +54,7 @@ export class TargetChain {
   public static chainId(chainId: CosmosChainId): CosmosTargetChain;
   public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
   public static chainId(chainId: SecretChainId): SecretTargetChain;
+  public static chainId(chainId: SolanaChainId): SolanaTargetChain;
   public static chainId(
     chainId: TargetChainId,
   ): AbstractTargetChain<TargetChainId>;
@@ -43,6 +65,8 @@ export class TargetChain {
   ):
     | CosmosTargetChain
     | Eip155TargetChain
+    | SecretTargetChain
+    | SolanaTargetChain
     | AbstractTargetChain<TargetChainId>
     | AbstractTargetChain {
     if (isCosmosChainId(chainId)) {
@@ -54,6 +78,9 @@ export class TargetChain {
     if (isSecretChainId(chainId)) {
       return new SecretTargetChain(chainId);
     }
+    if (isSolanaChainId(chainId)) {
+      return new SolanaTargetChain(chainId);
+    }
     throw new Error(`ChainId ${chainId} not found`);
   }
 
@@ -61,11 +88,23 @@ export class TargetChain {
     const namespaces = await Promise.all([
       CosmosTargetChain.getSupportedWalletConnectNamespaces(),
       Eip155TargetChain.getSupportedWalletConnectNamespaces(),
+      SolanaTargetChain.getSupportedWalletConnectNamespaces(),
     ]);
 
     return {
       ...namespaces[0],
       ...namespaces[1],
+      ...namespaces[2],
     };
+  }
+
+  public static async getWalletConnectKeys(): Promise<Key[]> {
+    const keys = await Promise.all([
+      CosmosTargetChain.getWalletConnectKeys(),
+      Eip155TargetChain.getWalletConnectKeys(),
+      SolanaTargetChain.getWalletConnectKeys(),
+    ]);
+
+    return keys.flat();
   }
 }
