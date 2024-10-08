@@ -1,16 +1,19 @@
+import { useStore } from "@/contexts";
 import { serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
-import { gapi } from "gapi-script";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useEffectOnceWhen } from "rooks";
 
 import { useAlert } from "./alert";
 
 export function useGoogleAuth() {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const { showSuccess, showWarning } = useAlert();
+  const { googleApiStore } = useStore();
 
-  useEffect(() => {
+  useEffectOnceWhen(async () => {
     const start = async (): Promise<void> => {
+      const gapi = await googleApiStore.getGapi();
       try {
         await gapi.client.init({
           clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
@@ -29,10 +32,12 @@ export function useGoogleAuth() {
       }
     };
 
+    const gapi = await googleApiStore.getGapi();
     gapi.load("client:auth2", start);
-  }, []);
+  });
 
   const signIn = async (): Promise<void> => {
+    const gapi = await googleApiStore.getGapi();
     try {
       await gapi.auth2.getAuthInstance().signIn();
     } catch (error) {
@@ -41,6 +46,7 @@ export function useGoogleAuth() {
   };
 
   const signOut = async (): Promise<void> => {
+    const gapi = await googleApiStore.getGapi();
     try {
       await gapi.auth2.getAuthInstance().signOut();
     } catch (error) {
@@ -53,6 +59,7 @@ export function useGoogleAuth() {
     fileName: string,
     mimeType = "application/json",
   ) => {
+    const gapi = await googleApiStore.getGapi();
     if (!isSignedIn) await signIn();
 
     const accessToken = gapi.auth2
@@ -83,6 +90,7 @@ export function useGoogleAuth() {
   const readFiles = async (): Promise<
     { id: string; name: string }[] | null
   > => {
+    const gapi = await googleApiStore.getGapi();
     if (!isSignedIn) await signIn();
 
     const accessToken = gapi.auth2
@@ -109,6 +117,7 @@ export function useGoogleAuth() {
   const readFileById = async (
     fileId: string,
   ): Promise<Secp256k1KeyPair | null> => {
+    const gapi = await googleApiStore.getGapi();
     if (!isSignedIn) await signIn();
 
     const accessToken = gapi.auth2

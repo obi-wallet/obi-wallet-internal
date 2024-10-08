@@ -9,6 +9,7 @@ import { AlertStore } from "./alert";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
+import { GoogleApiStore } from "./google-api";
 import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
 import { TargetChainsStore } from "./target-chains";
@@ -35,6 +36,7 @@ export class RootStore {
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
+  public readonly googleApiStore: GoogleApiStore;
   public readonly keyMetaDataStore: KeyMetaDataStore;
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
@@ -56,6 +58,7 @@ export class RootStore {
     this.alertStore = new AlertStore();
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
+    this.googleApiStore = new GoogleApiStore();
     this.keyMetaDataStore = new KeyMetaDataStore(new KVStore("key-meta-data"));
     this.sdkRootStore = new SdkRootStore(KVStore);
     this.targetChainsStore = new TargetChainsStore(

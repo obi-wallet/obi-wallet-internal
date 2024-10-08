@@ -3,6 +3,7 @@ export * from "./chain";
 export * from "./config";
 export * from "./drafts";
 export * from "./entities";
+export * from "./google-api";
 export * from "./root";
 export * from "./target-chains";
 export * from "./user-data";
