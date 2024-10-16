@@ -1,30 +1,31 @@
-import { toAssets } from "@/dashboard/assets";
 import { usePendingTXs } from "@/hooks/balances";
 import { usePublicKeys } from "@/hooks/use-public-keys";
 import { cn, getFromChain } from "@/lib/utils";
-import { TargetChain } from "@/target-chain";
+import { TargetChain, TargetChainId } from "@/target-chain";
+import { isCosmosChainId } from "@/target-chain/cosmos/chains";
+import { isEip155ChainId } from "@/target-chain/eip-155/chains";
+import { SolanaChainId } from "@/target-chain/solana/chains";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { toPairs } from "ramda";
 import { useEffect, useState } from "react";
 
 import {
   EmptyObject,
-  NullStepSimulation,
-  OnlySquidStepSimulation,
   SimulationEntryObject,
   SkipStatus,
   SquidRouteFromChain,
   SquidRouteToChain,
   SquidStatus,
-  SquidStepSimulation,
-  StepSimulations,
-  StepStatus,
+  SquidStepInfoSimulationAction,
+  StepInfo,
   Transaction,
+  TransactionIntent,
 } from "./schema";
 
-type StepAndTx = StepStatus & {
+type StepAndTx = StepInfo & {
   transaction: Transaction;
 };
 
@@ -32,6 +33,7 @@ export const PendingAssets = observer(function PendingAssets() {
   const publicKeys = usePublicKeys();
 
   const pendingTXs = usePendingTXs(publicKeys?.secp256k1);
+  console.log(pendingTXs);
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
@@ -55,7 +57,9 @@ export const PendingAssets = observer(function PendingAssets() {
               }
               setOpenedAsset(addr);
             }}
-            opened={openedAsset === tx.transaction.deposit_address}
+            // TODO:
+            // opened={openedAsset === tx.transaction.deposit_address}
+            opened
           />
         );
       })}
@@ -68,12 +72,11 @@ const PendingAsset = observer<{
   opened: boolean;
   onOpen: (addr: string) => void;
 }>(function PendingAsset({ tx, opened, onOpen }) {
-  const asset =
-    toAssets[
-      Object.keys(toAssets).find((key) => {
-        return toAssets[key]?.denom === tx.transaction.intent.destination_asset;
-      }) ?? ""
-    ];
+  const asset = useAssetInfo(tx.transaction.intent)?.assetInfo;
+
+  if (!asset) {
+    return null;
+  }
 
   return (
     <>
@@ -91,13 +94,13 @@ const PendingAsset = observer<{
           <div className="mr-3">
             <img
               src={asset?.image ?? ""}
-              alt={asset?.label}
+              alt={asset?.name}
               className="h-8 w-8"
             />
           </div>
           <div className="flex flex-row">
             <div className="flex flex-col">
-              <div className="mr-5 text-lg">{asset?.label} </div>
+              <div className="mr-5 text-lg">{asset?.name} </div>
               <div className="mr-5 text-xs opacity-60">Pending tx</div>
             </div>
           </div>
@@ -129,12 +132,11 @@ const PendingStepList = observer<{
   return (
     <div className="flex: flex-1 p-4 pt-1">
       <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
-        {tx.step_statuses.map((step) => {
+        {tx.stepInfo.map((step, index) => {
           return (
             <PendingStepItem
+              key={index}
               step={{ ...step, transaction: tx.transaction }}
-              key={step.action}
-              simulations={tx.step_simulations}
             />
           );
         })}
@@ -144,16 +146,12 @@ const PendingStepList = observer<{
   );
 });
 
-function PendingStepItem({
-  step,
+function PendingStepItem({ step }: { step: StepAndTx }) {
+  const asset = useAssetInfo(step.transaction.intent);
+  const chain = asset ? TargetChain.chainId(asset.chainId) : null;
 
-  simulations,
-}: {
-  step: StepAndTx;
-  simulations: StepSimulations;
-}) {
   const renderSTEPIcon = () => {
-    switch (step.action) {
+    switch (step.status.action) {
       case "Squid": {
         return (
           <Image
@@ -188,43 +186,42 @@ function PendingStepItem({
           />
         );
       }
+      case "JupiterSwap": {
+        return (
+          <img
+            src="https://jup.ag/svg/jupiter-logo.svg"
+            alt="Jupiter Swap"
+            width={30}
+            height={30}
+          />
+        );
+      }
       default:
         return null;
     }
   };
   const getStepTitle = () => {
-    switch (step.action) {
+    switch (step.status.action) {
       case "EthDeposit": {
-        const chain = getFromChain(step.chainId);
-
+        const chain = getFromChain(step.status.chainId);
         return `Deposit ETH on ${chain?.label}`;
       }
       case "Squid": {
         if (Object.keys(step.status).length === 0) {
           return "Not started";
         }
-        const fromChain = getFromChain(step.chainId);
-        const chainId = step.transaction.intent.destination_chain_id;
-        const chain = TargetChain.chainId(`cosmos:${chainId}`);
+        const fromChain = getFromChain(step.status.chainId);
+        const chainId = step.transaction.intent.destinationChainId;
         if (chainId === "neutron-1") {
           return `Swap to USDC on ${fromChain?.label} (Squid)`;
         }
-
-        const denom = step.transaction.intent.destination_asset;
-        const asset = toPairs(toAssets).find(([, v]) => {
-          return v.denom === denom;
-        })?.[1];
-
-        return `Swap to ${asset?.label} on ${chain.label} (Squid)`;
+        return `Swap to ${asset?.assetInfo?.name} on ${chain?.label} (Squid)`;
       }
       case "Skip": {
-        const chainId = step.transaction.intent.destination_chain_id;
-        const chain = TargetChain.chainId(`cosmos:${chainId}`);
-        const denom = step.transaction.intent.destination_asset;
-        const asset = toPairs(toAssets).find(([, v]) => {
-          return v.denom === denom;
-        })?.[1];
-        return `Swap to ${asset?.label} on ${chain.label} (Skip)`;
+        return `Swap to ${asset?.assetInfo?.name} on ${chain?.label} (Skip)`;
+      }
+      case "JupiterSwap": {
+        return `Swap to ${asset?.assetInfo?.name} on ${chain?.label} (Jupiter Swap)`;
       }
       default:
         return `Not implemented`;
@@ -241,29 +238,23 @@ function PendingStepItem({
         {renderSTEPIcon()}
       </span>
       <h3 className="font-medium leading-tight">{getStepTitle()}</h3>
-      <StepDetailsList step={step} simulations={simulations} />
+      <StepDetailsList step={step} />
     </li>
   );
 }
 
-function StepDetailsList({
-  step,
-  simulations,
-}: {
-  step: StepAndTx;
-  simulations: StepSimulations;
-}) {
-  if (!step.action || step.action === "EthDeposit") return null;
+function StepDetailsList({ step }: { step: StepAndTx }) {
+  if (!step.status.action || step.status.action === "EthDeposit") return null;
 
   const renderStatus = () => {
-    switch (step.action) {
+    switch (step.status.action) {
       case "Squid": {
         const isEmpty = EmptyObject.safeParse(step.status);
         if (isEmpty.success) {
           return <div className="text-md">Not started</div>;
         }
 
-        const squidStatus = SquidStatus.safeParse(step.status);
+        const squidStatus = SquidStatus.safeParse(step.status.status);
         if (squidStatus.success) {
           return (
             <>
@@ -278,13 +269,14 @@ function StepDetailsList({
                   className="font-semibold hover:underline"
                   rel="noreferrer"
                 >
-                  {step.txHash}
+                  {step.status.txHash}
                 </a>
               </div>
             </>
           );
         } else {
-          console.log("Error parsing squid status", squidStatus.error, step);
+          console.log("Error parsing squid status (renderStatus)");
+          console.log(step);
           return null;
         }
       }
@@ -298,10 +290,7 @@ function StepDetailsList({
   };
   return (
     <div className="flex: flex-1 p-4 pt-1">
-      {step.action !== "Skip" && (
-        <StepDetailsItem step={step} simulations={simulations} />
-      )}
-
+      <StepDetailsItem step={step} />
       {renderStatus()}
     </div>
   );
@@ -325,97 +314,96 @@ function SkipDetailsItem({ step }: { step: StepAndTx }) {
   return <div className="text-md"> {getSkipStatus()}</div>;
 }
 
-function StepDetailsItem({
-  step,
-  simulations,
-}: {
-  step: StepAndTx;
-  simulations: StepSimulations;
-}) {
-  const isSkip = SkipStatus.safeParse(step.status);
-  if (isSkip.success) return null;
-  const squidSimulation = SquidStepSimulation.safeParse(simulations[1]);
-  if (!squidSimulation.success) return null;
-  const simulationData = squidSimulation.data;
-  const squidRoutes = simulationData.estimate.route;
-  if (!simulationData.estimate.route) return null;
-
-  const routes = [...squidRoutes.fromChain, ...squidRoutes.toChain];
-  const isEmpty = EmptyObject.safeParse(step.status);
-
-  if (isEmpty.success) return null;
-
-  const squidStatus = SquidStatus.safeParse(step.status);
-  if (!squidStatus.success) {
-    console.error("Error parsing squid status", squidStatus.error);
+function StepDetailsItem({ step }: { step: StepAndTx }) {
+  if (step.type === "EthDeposit") {
     return null;
-  } else {
-    const stepStatus = squidStatus.data;
+  }
 
-    const getContent = (route: SquidRouteFromChain | SquidRouteToChain) => {
-      const isFromChainRoute = SquidRouteFromChain.safeParse(route);
-      if (isFromChainRoute.success) {
-        const fromChainRoute = isFromChainRoute.data;
-        const fromAmount = BigNumber(fromChainRoute.fromAmount)
-          .dividedBy(10 ** fromChainRoute.fromToken.decimals)
-          .toFixed(8);
-        const toAmount = BigNumber(fromChainRoute.toAmount)
-          .dividedBy(10 ** fromChainRoute.toToken.decimals)
-          .decimalPlaces(8);
-        return `${fromChainRoute.type.toUpperCase()} ${fromAmount} ${fromChainRoute.fromToken.name} to ${toAmount.toString()} ${fromChainRoute.toToken.name}`;
-      }
-      const isToChainRoute = SquidRouteToChain.safeParse(route);
-      if (isToChainRoute.success) {
-        switch (isToChainRoute.data.type) {
-          case "Transfer": {
-            return `TRANSFER ${isToChainRoute.data.fromToken.name} from ${isToChainRoute.data.fromChain} to ${isToChainRoute.data.toChain}`;
-          }
-          case "Swap": {
-            const fromAmount = BigNumber(isToChainRoute.data.fromAmount)
-              .dividedBy(10 ** isToChainRoute.data.fromToken.decimals)
-              .decimalPlaces(8);
-            const toAmount = BigNumber(isToChainRoute.data.toAmount)
-              .dividedBy(10 ** isToChainRoute.data.toToken.decimals)
-              .decimalPlaces(8);
-            return `SWAP ${fromAmount.toString()} ${isToChainRoute.data.fromToken.name} to ${toAmount.toString()} ${isToChainRoute.data.toToken.name}`;
-          }
-          default: {
-            return `not implemented `;
-          }
+  if (step.type === "Skip") {
+    return null;
+  }
+
+  if (step.type === "JupiterSwap") {
+    // TODO: Maybe handle
+    return null;
+  }
+
+  const simulationData = step.simulation;
+  if (!simulationData) return null;
+
+  const estimate = simulationData.route.estimate;
+
+  const squidStatus = SquidStatus.safeParse(step.status.status);
+  if (!squidStatus.success) {
+    return null;
+  }
+  const stepStatus = squidStatus.data;
+
+  const getContent = (route: SquidStepInfoSimulationAction) => {
+    const isFromChainRoute = SquidRouteFromChain.safeParse(route);
+    if (isFromChainRoute.success) {
+      const fromChainRoute = isFromChainRoute.data;
+      const fromAmount = BigNumber(fromChainRoute.fromAmount)
+        .dividedBy(10 ** fromChainRoute.fromToken.decimals)
+        .toFixed(8);
+      const toAmount = BigNumber(fromChainRoute.toAmount)
+        .dividedBy(10 ** fromChainRoute.toToken.decimals)
+        .decimalPlaces(8);
+      return `${fromChainRoute.type.toUpperCase()} ${fromAmount} ${fromChainRoute.fromToken.name} to ${toAmount.toString()} ${fromChainRoute.toToken.name}`;
+    }
+    const isToChainRoute = SquidRouteToChain.safeParse(route);
+    if (isToChainRoute.success) {
+      switch (isToChainRoute.data.type) {
+        case "Transfer": {
+          return `TRANSFER ${isToChainRoute.data.fromToken.name} from ${isToChainRoute.data.fromChain} to ${isToChainRoute.data.toChain}`;
+        }
+        case "Swap": {
+          const fromAmount = BigNumber(isToChainRoute.data.fromAmount)
+            .dividedBy(10 ** isToChainRoute.data.fromToken.decimals)
+            .decimalPlaces(8);
+          const toAmount = BigNumber(isToChainRoute.data.toAmount)
+            .dividedBy(10 ** isToChainRoute.data.toToken.decimals)
+            .decimalPlaces(8);
+          return `SWAP ${fromAmount.toString()} ${isToChainRoute.data.fromToken.name} to ${toAmount.toString()} ${isToChainRoute.data.toToken.name}`;
+        }
+        default: {
+          return `not implemented `;
         }
       }
-    };
+    }
+  };
 
-    return (
-      <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
-        {routes.map((route, index) => {
-          const routeStatus = stepStatus.routeStatus[index];
+  const routes = estimate.actions;
 
-          return (
-            <div key={index + "-" + route.type}>
-              <li className="mb-7 ms-6">
-                <span
-                  className={cn(
-                    "absolute -start-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-950 ring-4 ring-white dark:ring-gray-900",
-                    routeStatus?.status === "success" && "bg-green-800",
-                  )}
-                >
-                  {renderSVG(
-                    routeStatus?.status ||
-                      stepStatus.squidTransactionStatus ||
-                      "",
-                  )}
-                </span>
-                <h3 className="font-small text-sm capitalize leading-tight">
-                  {getContent(route)}
-                </h3>
-              </li>
-            </div>
-          );
-        })}
-      </ol>
-    );
-  }
+  return (
+    <ol className="relative border-s border-gray-200 p-4 text-gray-500 dark:border-gray-700 dark:text-gray-400">
+      {routes.map((route, index) => {
+        const routeStatus = stepStatus.routeStatus[index];
+
+        return (
+          <div key={index}>
+            <li className="mb-7 ms-6">
+              <span
+                className={cn(
+                  "absolute -start-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-950 ring-4 ring-white dark:ring-gray-900",
+                  routeStatus?.status === "success" && "bg-green-800",
+                )}
+              >
+                {renderSVG(
+                  routeStatus?.status ||
+                    stepStatus.squidTransactionStatus ||
+                    "",
+                )}
+              </span>
+              <h3 className="font-small text-sm capitalize leading-tight">
+                {getContent(route)}
+              </h3>
+            </li>
+          </div>
+        );
+      })}
+    </ol>
+  );
 }
 
 function SuccessSVG() {
@@ -437,6 +425,7 @@ function SuccessSVG() {
     </svg>
   );
 }
+
 function FailedSVG() {
   return (
     <svg
@@ -456,6 +445,7 @@ function FailedSVG() {
     </svg>
   );
 }
+
 function OnGoingSVG() {
   return (
     <svg
@@ -490,6 +480,9 @@ function AmountEstimate({
     </div>
   );
 }
+
+// TODO:
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{ amount: string; estimate: string } | null>(
@@ -500,34 +493,38 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => {
       setLoading(true);
-      const squidSimulation = SquidStepSimulation.safeParse(
-        tx.step_simulations[1],
-      );
-      if (!squidSimulation.success) {
+      const step = tx.stepInfo[1];
+      if (step?.type !== "Squid") {
         setLoading(false);
         return;
       }
-      const simulation = squidSimulation.data;
+
+      const simulation = step.simulation;
+      if (!simulation) {
+        setLoading(false);
+        return;
+      }
+
       const intent = tx.transaction.intent;
-      const toChain = intent.destination_chain_id;
+      const toChain = intent.destinationChainId;
       const targetChain = TargetChain.chainId(toChain);
-      const id = targetChain.denomToCaip19AssetId(intent.destination_asset);
+      const id = targetChain.denomToCaip19AssetId(intent.destinationAsset);
       const priceInfo = id ? await targetChain.price(id) : { usdValue: "0" };
       const price = parseFloat(priceInfo.usdValue);
-      const decimals = Math.min(simulation.params.toToken.decimals, 8);
-      const amount = new BigNumber(simulation.estimate.toAmountUSD)
+      const decimals = Math.min(simulation.route.estimate.toToken.decimals, 8);
+      const amount = new BigNumber(simulation.route.estimate.toAmountUSD)
         .dividedBy(price)
         .decimalPlaces(decimals);
       setData({
         amount: amount.toString(),
-        estimate: simulation.estimate.toAmountUSD,
+        estimate: simulation.route.estimate.toAmountUSD,
       });
       setLoading(false);
     })();
   }, [
-    tx.transaction.intent.destination_asset,
-    tx.step_simulations,
+    tx.transaction.intent.destinationAsset,
     tx.transaction.intent,
+    tx.stepInfo,
   ]);
 
   return (
@@ -538,31 +535,32 @@ function SkipEstimate({ tx }: { tx: SimulationEntryObject }) {
   );
 }
 
-function PendingAmount({ tx }: { tx: SimulationEntryObject }) {
-  const stepSimulations = tx.step_simulations;
-  const nulled = NullStepSimulation.safeParse(stepSimulations);
-  if (nulled.success) {
-    return null;
-  }
-  const onlySquid = OnlySquidStepSimulation.safeParse(stepSimulations);
-  if (onlySquid.success) {
-    const squidSimulation = onlySquid.data[1];
-
-    const amount = new BigNumber(squidSimulation.estimate.toAmount);
-    const decimals = Math.min(squidSimulation.params.toToken.decimals, 8);
-    const toAmount = amount.dividedBy(10 ** decimals);
-
-    return (
-      <AmountEstimate
-        amount={toAmount.toString()}
-        estimate={squidSimulation.estimate.toAmountUSD}
-      />
-    );
-  }
-  const fullSimulation = StepSimulations.safeParse(stepSimulations);
-  if (fullSimulation.success) {
-    return <SkipEstimate tx={tx} />;
-  }
+function PendingAmount(_: { tx: SimulationEntryObject }) {
+  // TODO:
+  // const stepSimulations = tx.step_simulations;
+  // const nulled = NullStepSimulation.safeParse(stepSimulations);
+  // if (nulled.success) {
+  //   return null;
+  // }
+  // const onlySquid = OnlySquidStepSimulation.safeParse(stepSimulations);
+  // if (onlySquid.success) {
+  //   const squidSimulation = onlySquid.data[1];
+  //
+  //   const amount = new BigNumber(squidSimulation.estimate.toAmount);
+  //   const decimals = Math.min(squidSimulation.params.toToken.decimals, 8);
+  //   const toAmount = amount.dividedBy(10 ** decimals);
+  //
+  //   return (
+  //     <AmountEstimate
+  //       amount={toAmount.toString()}
+  //       estimate={squidSimulation.estimate.toAmountUSD}
+  //     />
+  //   );
+  // }
+  // const fullSimulation = StepSimulations.safeParse(stepSimulations);
+  // if (fullSimulation.success) {
+  //   return <SkipEstimate tx={tx} />;
+  // }
   return null;
 }
 
@@ -584,4 +582,44 @@ function Status({ status }: { status: string }) {
       {getStatus()}
     </div>
   );
+}
+
+function useAssetInfo(intent: TransactionIntent) {
+  const assetQuery = useQuery({
+    queryKey: ["transactionIntentToAssetInfo", intent],
+    queryFn: async () => {
+      return await transactionIntentToAssetInfo(intent);
+    },
+  });
+  return assetQuery.data;
+}
+
+async function transactionIntentToAssetInfo(intent: TransactionIntent) {
+  const getChainId = (): TargetChainId | null => {
+    const chainId = intent.destinationChainId;
+    if (chainId === "solana") {
+      return SolanaChainId.Mainnet;
+    }
+
+    const cosmosChainId = `cosmos:${chainId}`;
+    if (isCosmosChainId(cosmosChainId)) {
+      return cosmosChainId;
+    }
+
+    const eip155ChainId = `eip155:${chainId}`;
+    if (isEip155ChainId(eip155ChainId)) {
+      return eip155ChainId;
+    }
+
+    console.log("unknown chain id", chainId);
+    return null;
+  };
+
+  const chainId = getChainId();
+  if (!chainId) return null;
+
+  return await AssetRegistry.getInstance().byDenom({
+    chainId: chainId,
+    denom: intent.destinationAsset,
+  });
 }
