@@ -33,7 +33,6 @@ export const PendingAssets = observer(function PendingAssets() {
   const publicKeys = usePublicKeys();
 
   const pendingTXs = usePendingTXs(publicKeys?.secp256k1);
-  console.log(pendingTXs);
   const [openedAsset, setOpenedAsset] = useState<string | null>(null);
 
   if (!pendingTXs.data) return null;
@@ -57,9 +56,7 @@ export const PendingAssets = observer(function PendingAssets() {
               }
               setOpenedAsset(addr);
             }}
-            // TODO:
-            // opened={openedAsset === tx.transaction.deposit_address}
-            opened
+            opened={openedAsset === tx.transaction.deposit_address}
           />
         );
       })}
