@@ -202,7 +202,6 @@ export function useUsdTotalValue(): {
 const fetchPendingTX = async (
   pubKey: Base64EncodedString,
 ): Promise<z.infer<typeof SimulationEntry>> => {
-  if (!pubKey) return [];
   const url = `${
     process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
   }/api/checkStatus?test=false&pubkey=${encodeURIComponent(pubKey)}`;
