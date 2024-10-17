@@ -12,12 +12,21 @@ module.exports = withSentryConfig(
     },
     transpilePackages: [
       "@obi-wallet/config",
+      "@obi-wallet/encoding",
       "@obi-wallet/headless-ui",
       "@obi-wallet/mpc-ecdsa-wasm",
       "@obi-wallet/mpc-ecdsa-wasm-types",
+      "@obi-wallet/query-client",
       "@obi-wallet/sdk",
       "@obi-wallet/sdk-abstract-target-chain",
+      "@obi-wallet/sdk-abstract-user-interaction",
+      "@obi-wallet/sdk-asset-registry",
+      "@obi-wallet/sdk-caip",
+      "@obi-wallet/sdk-ed25519",
+      "@obi-wallet/sdk-json",
+      "@obi-wallet/sdk-obi-account",
       "@obi-wallet/sdk-secp256k1",
+      "@obi-wallet/wallet-connect",
     ],
     images: {
       remotePatterns: [
