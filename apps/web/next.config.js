@@ -4,6 +4,7 @@ const WebpackHookPlugin = require("webpack-hook-plugin");
 /** @type {import('next').NextConfig} */
 module.exports = withSentryConfig(
   {
+    // Should be kept in sync with .storybook/main.ts
     env: {
       NEXT_PUBLIC_FAST_TRAVEL_API_URL: process.env.FAST_TRAVEL_API_URL,
       NEXT_PUBLIC_ENV: process.env.VERCEL_ENV,
