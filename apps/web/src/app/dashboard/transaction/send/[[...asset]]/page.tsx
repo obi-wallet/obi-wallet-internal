@@ -13,6 +13,10 @@ import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
+import {
+  EvmUserOperationCalls,
+  serializeUserOperationCalls,
+} from "@/target-chain/eip-155";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
@@ -27,7 +31,7 @@ import { Coin } from "@cosmjs/amino";
 import { MsgExecuteContractEncodeObject } from "@cosmjs/cosmwasm-stargate";
 import { MsgSendEncodeObject } from "@cosmjs/stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Encoding, HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
+import { Encoding } from "@obi-wallet/encoding";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
@@ -187,20 +191,18 @@ const SendInner = observer<{
       if (isEip155ChainId(chainId)) {
         const targetChain = TargetChain.chainId(chainId);
         invariant(targetChain.validateAddress(recipient), "Invalid address");
-        const account = await targetChain.localAccountFromWallet(wallet);
-        const kernelAccount = await targetChain.kernelAccount(account);
 
         const { namespace, reference } = parseCaip19AssetId(asset.denom);
 
-        const getCallData = async () => {
+        const getCalls = (): EvmUserOperationCalls | null => {
           if (namespace === "native") {
-            return HexEncodedStringWithPrefix.parse(
-              await kernelAccount.encodeCallData({
+            return [
+              {
                 to: recipient,
                 data: "0x",
                 value: BigInt(rawAmount),
-              }),
-            );
+              },
+            ];
           }
 
           if (namespace === "erc20") {
@@ -208,8 +210,8 @@ const SendInner = observer<{
               return null;
             }
 
-            return HexEncodedStringWithPrefix.parse(
-              await kernelAccount.encodeCallData({
+            return [
+              {
                 to: reference,
                 data: encodeFunctionData({
                   abi: erc20Abi,
@@ -217,22 +219,22 @@ const SendInner = observer<{
                   args: [recipient, BigInt(rawAmount)],
                 }),
                 value: 0n,
-              }),
-            );
+              },
+            ];
           }
 
           return null;
         };
 
-        const callData = await getCallData();
+        const calls = getCalls();
 
-        if (!callData) {
+        if (!calls) {
           alert.showError("Unsupported asset");
           return;
         }
 
         const response = await SignAndBroadcastEvm.start({
-          callData,
+          calls: serializeUserOperationCalls(calls),
           cancelable: true,
           targetChainId: chainId,
           walletMeta: {

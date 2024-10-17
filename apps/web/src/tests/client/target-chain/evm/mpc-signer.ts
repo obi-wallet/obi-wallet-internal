@@ -5,7 +5,7 @@ import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
-import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import { toEcdsaKernelSmartAccount } from "permissionless/accounts";
 import invariant from "tiny-invariant";
 import { createPublicClient, http } from "viem";
 import { toAccount } from "viem/accounts";
@@ -29,9 +29,10 @@ export const testSuite = createTestSuite(({ test }) => {
       transport: http(),
     });
 
-    const kernelAccount = await signerToEcdsaKernelSmartAccount(publicClient, {
+    const kernelAccount = await toEcdsaKernelSmartAccount({
+      client: publicClient,
       entryPoint: TargetChain.chainId(Eip155ChainId.Arbitrum).entryPoint,
-      signer: account,
+      owners: [account],
     });
 
     const hash = await signer.mpcSigner.calculateHashToSign(async () => {

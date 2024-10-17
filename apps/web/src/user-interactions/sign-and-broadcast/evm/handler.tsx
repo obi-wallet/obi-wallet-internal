@@ -36,7 +36,7 @@ export const SignAndBroadcastEvmHandlerInner = observer<{
     <ApproveEvmTransaction
       walletMeta={interaction.payload.walletMeta}
       targetChainId={interaction.payload.targetChainId}
-      callData={interaction.payload.callData}
+      calls={interaction.payload.calls}
       onReject={() => {
         interaction.resolve({
           approved: false,
