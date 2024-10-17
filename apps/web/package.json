@@ -131,7 +131,7 @@
     "storybook": "^8.3.5",
     "tailwindcss": "^3.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
+    "typescript": "^5.6.3",
     "vercel": "^35.2.4",
     "webpack-hook-plugin": "^1.0.7"
   },
