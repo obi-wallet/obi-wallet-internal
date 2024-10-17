@@ -1557,10 +1557,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.45.46":
-  version: 0.45.46
-  resolution: "@chain-registry/types@npm:0.45.46"
-  checksum: 10c0/ff637edf2c1de942b333cca6b9adb7a2c3945f2cbc43526429a42ccb50863a23631e817b48e1cd01b0dfd77ab7e5ddd176a0c67aec8db8673068a330906f9cfb
+"@chain-registry/types@npm:^0.50.1":
+  version: 0.50.1
+  resolution: "@chain-registry/types@npm:0.50.1"
+  checksum: 10c0/576478c5f16e2109620a66de7991f67b39ab2522b217125469c3788d6a4870ee059ae3f813819fbfd7ae7d7a0afb3f979df6afec2250c411750f05c127a2ff3e
   languageName: node
   linkType: hard
 
@@ -3570,7 +3570,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/web@workspace:apps/web"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.46"
+    "@chain-registry/types": "npm:^0.50.1"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:^0.32.4"
     "@cosmjs/crypto": "npm:^0.32.4"
@@ -3636,7 +3636,7 @@ __metadata:
     bech32: "npm:^2.0.0"
     bignumber.js: "npm:^9.1.2"
     chai: "npm:^5.1.1"
-    chain-registry: "npm:^1.63.56"
+    chain-registry: "npm:^1.69.3"
     clsx: "npm:^2.1.1"
     copy-to-clipboard: "npm:^3.3.3"
     cosmjs-types: "npm:^0.9.0"
@@ -9625,12 +9625,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:^1.63.56":
-  version: 1.63.56
-  resolution: "chain-registry@npm:1.63.56"
+"chain-registry@npm:^1.69.3":
+  version: 1.69.3
+  resolution: "chain-registry@npm:1.69.3"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.46"
-  checksum: 10c0/7fa33d201c58cb4d9fe79f516083bf783d969e41c3aced764bb11c81d44ff97497ea6db3c27888581825b285d3b5576430e381f6f0ce02f3dcee0d0c3a8b17fe
+    "@chain-registry/types": "npm:^0.50.1"
+  checksum: 10c0/808eae17dfc008ace6c625a98a2f7df04a0791c196bc0c5933edaec442c5c65fe7aa805b03b0797a770c06bf7b4eef686faa3a0dc6166e2672fc8880f454c9b3
   languageName: node
   linkType: hard
 
