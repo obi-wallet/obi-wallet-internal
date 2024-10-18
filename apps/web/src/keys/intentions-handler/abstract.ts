@@ -4,6 +4,16 @@ import { Key, MultisigKey } from "@obi-wallet/sdk";
 import { deserialize } from "@obi-wallet/sdk-json";
 import { fromPairs, splitAt } from "ramda";
 
+interface PrimaryKeyEncryptedMessage {
+  primaryKeyEncryptedMessage: Base64EncodedString;
+  multisigKeyEncryptedMessage: MultisigKeyEncryptedMessage;
+}
+
+interface NewPrimaryKeyEncryptedMessage {
+  primaryKeyEncryptedMessage: Base64EncodedString;
+  multisigKeyEncryptedMessage: NewMultisigKeyEncryptedMessage;
+}
+
 interface MultisigKeyEncryptedMessage {
   encryptedMessage: Base64EncodedString;
   encryptedShares: Base64EncodedString[];
@@ -17,13 +27,15 @@ interface NewMultisigKeyEncryptedMessage {
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
   decryptMessages: Base64EncodedString[];
+  decryptPrimaryKeyEncryptedMessages: string[];
   decryptMultisigKeyEncryptedMessages: string[];
 }
 
 export interface IntentionsResult {
   signedHashes: Uint8Array[];
   decryptedMessages: string[];
-  decryptedShares: Base64EncodedString[];
+  decryptedPrimaryKeyEncryptedMessagesShares: Base64EncodedString[];
+  decryptedMultisigKeyEncryptedMessagesShares: Base64EncodedString[];
 }
 
 export abstract class IntentionsHandler {
@@ -53,22 +65,35 @@ export abstract class IntentionsHandler {
     signedHashes: Uint8Array[];
     decryptedMessages: string[];
   }): IntentionsResult {
-    const [decryptedMessages, decryptedShares] = splitAt(
+    const [decryptedMessages, rest] = splitAt(
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
+    const [
+      decryptedPrimaryKeyEncryptedMessagesShares,
+      decryptedMultisigKeyEncryptedMessagesShares,
+    ] = splitAt(this.payload.decryptPrimaryKeyEncryptedMessages.length, rest);
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedShares: decryptedShares.map((share) => {
-        return Base64EncodedString.parse(share);
-      }),
+      decryptedPrimaryKeyEncryptedMessagesShares:
+        decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
+          return Base64EncodedString.parse(message);
+        }),
+      decryptedMultisigKeyEncryptedMessagesShares:
+        decryptedMultisigKeyEncryptedMessagesShares.map((share) => {
+          return Base64EncodedString.parse(share);
+        }),
     };
   }
 
   protected get messagesToDecrypt() {
     return [
       ...this.payload.decryptMessages,
+      ...this.payload.decryptPrimaryKeyEncryptedMessages.map((m) => {
+        return this.stringToPrimaryKeyEncryptedMessage(m)
+          .multisigKeyEncryptedMessage.encryptedShares[this.index]!;
+      }),
       ...this.payload.decryptMultisigKeyEncryptedMessages.map((m) => {
         return this.stringToMultisigKeyEncryptedMessage(m).encryptedShares[
           this.index
@@ -89,6 +114,20 @@ export abstract class IntentionsHandler {
     return {
       encryptedMessage,
       encryptedShares,
+    };
+  }
+
+  protected stringToPrimaryKeyEncryptedMessage(
+    message: string,
+  ): PrimaryKeyEncryptedMessage {
+    const [primaryKeyEncryptedMessage, multisigKeyEncryptedMessage] =
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      deserialize(message) as [Base64EncodedString, string];
+    return {
+      primaryKeyEncryptedMessage,
+      multisigKeyEncryptedMessage: this.stringToMultisigKeyEncryptedMessage(
+        multisigKeyEncryptedMessage,
+      ),
     };
   }
 }
@@ -112,22 +151,36 @@ export abstract class NewIntentionsHandler {
     signedHashes: Uint8Array[];
     decryptedMessages: string[];
   }): IntentionsResult {
-    const [decryptedMessages, decryptedShares] = splitAt(
+    const [decryptedMessages, rest] = splitAt(
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
+    const [
+      decryptedPrimaryKeyEncryptedMessagesShares,
+      decryptedMultisigKeyEncryptedMessagesShares,
+    ] = splitAt(this.payload.decryptPrimaryKeyEncryptedMessages.length, rest);
+
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedShares: decryptedShares.map((share) => {
-        return Base64EncodedString.parse(share);
-      }),
+      decryptedPrimaryKeyEncryptedMessagesShares:
+        decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
+          return Base64EncodedString.parse(message);
+        }),
+      decryptedMultisigKeyEncryptedMessagesShares:
+        decryptedMultisigKeyEncryptedMessagesShares.map((share) => {
+          return Base64EncodedString.parse(share);
+        }),
     };
   }
 
   protected getMessagesToDecrypt(publicKey: string) {
     return [
       ...this.payload.decryptMessages,
+      ...this.payload.decryptPrimaryKeyEncryptedMessages.map((m) => {
+        return this.stringToPrimaryKeyEncryptedMessage(m)
+          .multisigKeyEncryptedMessage.encryptedShares[publicKey]!;
+      }),
       ...this.payload.decryptMultisigKeyEncryptedMessages.map((m) => {
         return this.stringToMultisigKeyEncryptedMessage(m).encryptedShares[
           publicKey
@@ -151,6 +204,20 @@ export abstract class NewIntentionsHandler {
         encryptedShares.map((share, index) => {
           return [this.owner.keys[index]!.publicKey.value, share];
         }),
+      ),
+    };
+  }
+
+  protected stringToPrimaryKeyEncryptedMessage(
+    message: string,
+  ): NewPrimaryKeyEncryptedMessage {
+    const [primaryKeyEncryptedMessage, multisigKeyEncryptedMessage] =
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      deserialize(message) as [Base64EncodedString, string];
+    return {
+      primaryKeyEncryptedMessage,
+      multisigKeyEncryptedMessage: this.stringToMultisigKeyEncryptedMessage(
+        multisigKeyEncryptedMessage,
       ),
     };
   }

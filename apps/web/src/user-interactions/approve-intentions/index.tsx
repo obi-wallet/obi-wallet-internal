@@ -1,4 +1,4 @@
-import { KeyItem, Text, Modal } from "@/components";
+import { KeyItem, Modal, Text } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import {
@@ -7,7 +7,7 @@ import {
   KeyPairIntentionsHandler,
   PasskeyIntentionsHandler,
 } from "@/keys/intentions-handler";
-import { MultisigKeyDecryption } from "@/lib/encryption";
+import { MultisigKeyDecryption, PrimaryKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
@@ -58,10 +58,57 @@ export async function handleMultisigKeyDecryptedMessage({
   index: number;
 }) {
   const decryptedShares = multisigKey.keys.map((key) => {
-    return results.get(key.publicKey.value)?.decryptedShares[index] ?? null;
+    return (
+      results.get(key.publicKey.value)
+        ?.decryptedMultisigKeyEncryptedMessagesShares[index] ?? null
+    );
   });
   const decryption = new MultisigKeyDecryption(decryptedShares);
   return await decryption.decrypt(multisigKeyEncryptedMessage);
+}
+
+export async function handlePrimaryKeyDecryptedMessages({
+  primaryKeyEncryptedMessages,
+  multisigKey,
+  results,
+}: {
+  primaryKeyEncryptedMessages: string[];
+  multisigKey: MultisigKey;
+  results: IntentionsResults;
+}) {
+  return await Promise.all(
+    primaryKeyEncryptedMessages.map(async (message, index) => {
+      return await handlePrimaryKeyDecryptedMessage({
+        primaryKeyEncryptedMessage: message,
+        multisigKey,
+        results,
+        index,
+      });
+    }),
+  );
+}
+
+export async function handlePrimaryKeyDecryptedMessage({
+  primaryKeyEncryptedMessage,
+  multisigKey,
+  results,
+  index,
+}: {
+  primaryKeyEncryptedMessage: string;
+  multisigKey: MultisigKey;
+  results: IntentionsResults;
+  index: number;
+}) {
+  const decryptedShares = multisigKey.keys.map((key) => {
+    return (
+      results.get(key.publicKey.value)
+        ?.decryptedPrimaryKeyEncryptedMessagesShares[index] ?? null
+    );
+  });
+  return await new PrimaryKeyDecryption().decryptWithMultisigKey({
+    data: primaryKeyEncryptedMessage,
+    input: decryptedShares,
+  });
 }
 
 export interface ApproveIntentionsProps {

@@ -26,6 +26,7 @@ export const SignOnly: Story = {
     intentions: {
       signHashes: [new Uint8Array(32)],
       decryptMessages: [],
+      decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     },
     onApprove: async () => {},
@@ -42,6 +43,7 @@ export const DecryptOnly: Story = {
     intentions: {
       signHashes: [],
       decryptMessages: [],
+      decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     },
     onApprove: async () => {},

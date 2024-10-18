@@ -83,6 +83,7 @@ async function mockApproveMessages({
   const intentionsPayload = {
     signHashes: [Encoding.fromHex(txInfo.hash).toBytes()],
     decryptMessages: [],
+    decryptPrimaryKeyEncryptedMessages: [],
     decryptMultisigKeyEncryptedMessages: [],
   };
 

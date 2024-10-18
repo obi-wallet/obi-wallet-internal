@@ -121,9 +121,10 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
         }
       },
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchOnMount: "always",
       refetchOnReconnect: false,
     });
+    const txInfoData = txInfo.isFetchedAfterMount ? txInfo.data : undefined;
 
     const approve = useMutation({
       mutationFn: async () => {
@@ -146,10 +147,11 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     const keyMetaData = keyMetaDataStore.getKeyMetaData(
       wallet.userEntryAddress,
     );
-    const intentionsPayload: IntentionsPayload | null = txInfo.data
+    const intentionsPayload: IntentionsPayload | null = txInfoData
       ? {
-          signHashes: [Encoding.fromHex(txInfo.data.hash).toBytes()],
+          signHashes: [Encoding.fromHex(txInfoData.hash).toBytes()],
           decryptMessages: [],
+          decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
         }
       : null;
@@ -170,7 +172,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             messages={messages}
             rawData={rawData}
             targetChainId={targetChainId}
-            fee={txInfo.data?.fee}
+            fee={txInfoData?.fee}
             memo={memo}
           />
 
@@ -191,9 +193,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
             </Button>
             <Button
               block
-              disabled={
-                !txInfo.isSuccess || approve.isPending || !intentionsResults
-              }
+              disabled={!txInfoData || approve.isPending || !intentionsResults}
               onClick={() => {
                 approve.mutate();
               }}

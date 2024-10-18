@@ -45,6 +45,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const intentionsPayload = {
       signHashes: [hash],
       decryptMessages: [],
+      decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     };
 
@@ -56,7 +57,8 @@ export const testSuite = createTestSuite(({ test }) => {
         ).signHash(hash),
       ],
       decryptedMessages: [],
-      decryptedShares: [],
+      decryptedPrimaryKeyEncryptedMessagesShares: [],
+      decryptedMultisigKeyEncryptedMessagesShares: [],
     });
 
     signer.mpcSigner.addIntentionsResults({

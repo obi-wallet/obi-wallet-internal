@@ -144,6 +144,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
             intentions={{
               signHashes: [],
               decryptMessages: [],
+              decryptPrimaryKeyEncryptedMessages: [],
               decryptMultisigKeyEncryptedMessages:
                 getMultisigKeyEncryptedMessages(),
             }}

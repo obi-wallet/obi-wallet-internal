@@ -146,6 +146,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
                 ),
               ],
               decryptMessages: [],
+              decryptPrimaryKeyEncryptedMessages: [],
               decryptMultisigKeyEncryptedMessages: [],
             }}
             onApprove={(results) => {
