@@ -1,5 +1,5 @@
 diff --git a/dist/build/swc/options.js b/dist/build/swc/options.js
-index 59ec8f63b70e69b196d731d5e9253dcb1e358437..70368be4ed16425a4b69ec2e78be9ec47863ce6d 100644
+index 11261f8669d61451a5eb98853271f59fa1cf057f..f7695086004dec08ecbe1c27a758dd95bfca74f6 100644
 --- a/dist/build/swc/options.js
 +++ b/dist/build/swc/options.js
 @@ -48,7 +48,7 @@ function getParserOptions({ filename, jsConfig, ...rest }) {

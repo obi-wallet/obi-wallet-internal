@@ -4,8 +4,9 @@ import { useObjectUrl } from "@reactuses/core";
 import Image from "next/image";
 import { ComponentPropsWithoutRef, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import "react-dropzone/examples/theme.css";
 import invariant from "tiny-invariant";
+
+import "./theme.css";
 
 export interface ImageDropzoneProps
   extends Omit<ComponentPropsWithoutRef<"div">, "onChange"> {
