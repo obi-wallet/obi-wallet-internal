@@ -132,6 +132,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             new Uint8Array(Buffer.from(userOperation.data.hash, "hex")),
           ],
           decryptMessages: [],
+          decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
         }
       : null;

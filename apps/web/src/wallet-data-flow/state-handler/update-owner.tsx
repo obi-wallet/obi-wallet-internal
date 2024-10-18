@@ -339,6 +339,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
               intentions={{
                 signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
                 decryptMessages: [],
+                decryptPrimaryKeyEncryptedMessages: [],
                 decryptMultisigKeyEncryptedMessages:
                   getMultisigKeyEncryptedMessages(),
               }}

@@ -150,6 +150,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
       ? {
           signHashes: [Encoding.fromHex(txInfo.data.hash).toBytes()],
           decryptMessages: [],
+          decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
         }
       : null;
