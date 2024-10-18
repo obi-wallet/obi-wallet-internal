@@ -98,9 +98,12 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           }
         : skipToken,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchOnMount: "always",
       refetchOnReconnect: false,
     });
+    const userOperationData = userOperation.isFetchedAfterMount
+      ? userOperation.data
+      : undefined;
 
     const approve = useMutation({
       mutationFn: async () => {
@@ -126,10 +129,10 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
     const keyMetaData = keyMetaDataStore.getKeyMetaData(
       wallet.userEntryAddress,
     );
-    const intentionsPayload: IntentionsPayload | null = userOperation.data
+    const intentionsPayload: IntentionsPayload | null = userOperationData
       ? {
           signHashes: [
-            new Uint8Array(Buffer.from(userOperation.data.hash, "hex")),
+            new Uint8Array(Buffer.from(userOperationData.hash, "hex")),
           ],
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
@@ -152,7 +155,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           <PrettyPrint
             calls={calls}
             targetChainId={targetChainId}
-            userOperation={userOperation.data?.userOperation}
+            userOperation={userOperationData?.userOperation}
           />
 
           {intentionsPayload ? (
@@ -173,9 +176,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             <Button
               block
               disabled={
-                !userOperation.isSuccess ||
-                approve.isPending ||
-                !intentionsResults
+                !userOperationData || approve.isPending || !intentionsResults
               }
               onClick={() => {
                 approve.mutate();
