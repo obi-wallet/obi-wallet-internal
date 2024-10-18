@@ -61,6 +61,7 @@ export async function setupWalletConnect({
   });
 
   const web3wallet = await Web3Wallet.init({
+    // @ts-expect-error This is only an `exactOptionalPropertyTypes` error in third-party types
     core,
     metadata,
   });

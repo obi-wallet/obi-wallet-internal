@@ -7,7 +7,7 @@ import { BalanceDropDown, IBalanceOption } from "../dropdown";
 
 export interface BalanceInputValue {
   amount: string;
-  asset?: IBalanceOption;
+  asset?: IBalanceOption | undefined;
 }
 
 export interface BalanceInputProps {

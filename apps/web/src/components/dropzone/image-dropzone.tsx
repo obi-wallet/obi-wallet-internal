@@ -12,7 +12,7 @@ export interface ImageDropzoneProps
   extends Omit<ComponentPropsWithoutRef<"div">, "onChange"> {
   placeholder: string;
   onChange?: (file: File, fileBody: string) => void;
-  defaultImageFile?: File;
+  defaultImageFile?: File | undefined;
   width?: number;
   height?: number;
 }

@@ -7,8 +7,14 @@ import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: "https://5184d72cab0f15fa2a006b7cb8ef7eae@o1401288.ingest.us.sentry.io/4507263547604992",
-  environment: process.env.NEXT_PUBLIC_ENV,
-  release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+  ...(process.env.NEXT_PUBLIC_ENV
+    ? {
+        environment: process.env.NEXT_PUBLIC_ENV,
+      }
+    : {}),
+  ...(process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    ? { release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA }
+    : {}),
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 0,

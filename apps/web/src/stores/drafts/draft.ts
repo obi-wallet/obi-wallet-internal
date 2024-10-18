@@ -9,7 +9,7 @@ export class Draft<T extends Draftable> {
   @observable protected accessor _original: T;
   @observable protected accessor _value: T;
 
-  constructor({ original, value }: { original: T; value?: T }) {
+  constructor({ original, value }: { original: T; value?: T | undefined }) {
     this._original = original;
     this._value = value ?? original.clone();
   }

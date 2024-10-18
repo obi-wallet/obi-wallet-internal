@@ -12,7 +12,7 @@ export type TypographyProps = {
   leading?: ILeadings;
   tracking?: boolean;
   uppercase?: boolean;
-  className?: string;
+  className?: string | undefined;
   children?: ReactNode;
 } & ComponentPropsWithRef<"span">;
 

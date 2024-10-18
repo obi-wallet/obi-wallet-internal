@@ -15,7 +15,7 @@ export interface StepProps<Step = OnboardingStep> {
   draft: Draft<NewOnboardingPayload>;
   step: Step;
   back?: () => void;
-  next?: () => void;
+  next?: (() => void) | undefined;
   from?: OnboardingFromType;
 }
 

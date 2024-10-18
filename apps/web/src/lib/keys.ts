@@ -1,6 +1,4 @@
 import { KeyItems } from "@/components";
-import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -34,20 +32,6 @@ export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
     possiblePrimaryKey: true,
   },
 };
-
-export function useKeyList() {
-  const currentWallet = useCurrentWallet({});
-  const { keyMetaDataStore } = useStore();
-
-  const keyMetaData = currentWallet
-    ? keyMetaDataStore.getKeyMetaData(currentWallet.userEntryAddress)
-    : {};
-
-  return useKeyListForMultisigKey({
-    multisigKey: currentWallet?.owner,
-    keyMetaData,
-  });
-}
 
 export function useKeyListForMultisigKey({
   multisigKey,

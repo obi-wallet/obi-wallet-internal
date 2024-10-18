@@ -303,7 +303,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {
-          gasPrice: this.gasPrice,
+          ...(this.gasPrice ? { gasPrice: this.gasPrice } : {}),
         });
       } catch (e) {
         console.error(e);

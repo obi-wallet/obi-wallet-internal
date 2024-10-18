@@ -45,7 +45,7 @@ interface ToleranceProps {
   onChange: (value: number | undefined) => void;
   value: number | undefined;
   onBlur: () => void;
-  errorMessage?: string;
+  errorMessage?: string | undefined;
 }
 
 interface TravelModalProps {

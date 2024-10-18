@@ -56,7 +56,7 @@ export class SharesLocalEncryption {
   public async encrypt(shares: {
     easy?: EasyShare;
     backup: BackupShare;
-  }): Promise<{ easy?: string; backup: string }>;
+  }): Promise<{ easy?: string | undefined; backup: string }>;
   public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
     const [easy, backup] = await Promise.all([
       shares.easy ? this.easyEncryption.encrypt(shares.easy) : undefined,
@@ -85,7 +85,7 @@ export class SharesBackupEncryption {
   public async encrypt(shares: {
     easy?: EasyShare;
     backup: BackupShare;
-  }): Promise<{ easy?: string; backup: string }>;
+  }): Promise<{ easy?: string | undefined; backup: string }>;
   public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
     const [easy, backup] = await Promise.all([
       shares.easy ? this.encryptEasyShare(shares.easy) : undefined,

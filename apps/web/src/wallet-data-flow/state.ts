@@ -82,7 +82,7 @@ export type WalletDataFlowAction =
       type: "set-wallet-data";
       payload: {
         wallet: WalletData;
-        modifyMultisigKey?(multisigKey: MultisigKey): void;
+        modifyMultisigKey?: ((multisigKey: MultisigKey) => void) | undefined;
         extraKeyMetaData?: KeyMetaData;
       };
     }
@@ -219,10 +219,12 @@ export interface WalletDataFlowStatePayload {
       backup: string;
     };
     ed25519KeyPair?: Ed25519KeyPair;
-    ed25519KeyPairPreviousOwner?: {
-      publicKey: Base58EncodedString;
-      encryptedPrivateKey: string;
-    };
+    ed25519KeyPairPreviousOwner?:
+      | {
+          publicKey: Base58EncodedString;
+          encryptedPrivateKey: string;
+        }
+      | undefined;
   };
   onDone({
     wallet,

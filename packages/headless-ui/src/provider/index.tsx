@@ -11,7 +11,7 @@ const persister = createAsyncStoragePersister({
 });
 
 export type QueryClientProviderProps = OriginalQueryClientProviderProps & {
-  buster?: string;
+  buster?: string | undefined;
 };
 
 const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
@@ -19,7 +19,7 @@ const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
     return (
       <PersistQueryClientProvider
         client={client}
-        persistOptions={{ persister, buster }}
+        persistOptions={{ persister, ...(buster ? { buster } : {}) }}
       >
         {children}
       </PersistQueryClientProvider>
@@ -33,8 +33,8 @@ export const Provider = observer(function Provider({
   buster,
 }: {
   children: ReactNode;
-  QueryClientProvider?: ComponentType<QueryClientProviderProps>;
-  buster?: string;
+  QueryClientProvider?: ComponentType<QueryClientProviderProps> | undefined;
+  buster?: string | undefined;
 }) {
   return (
     <QueryClientProvider client={queryClient} buster={buster}>

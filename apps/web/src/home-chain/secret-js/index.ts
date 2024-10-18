@@ -62,7 +62,9 @@ export class SecretJsHomeChain {
             });
             const response =
               await secretNetworkClient.query.compute.codeHashByCodeId({
-                code_id: info.contract_info?.code_id,
+                ...(info.contract_info?.code_id
+                  ? { code_id: info.contract_info.code_id }
+                  : {}),
               });
             return response.code_hash;
           },

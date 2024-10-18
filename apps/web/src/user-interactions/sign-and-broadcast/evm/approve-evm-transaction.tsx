@@ -198,7 +198,7 @@ const PrettyPrint = observer(function PrettyPrint({
   targetChainId,
 }: {
   calls: SerializedEvmUserOperationCalls;
-  userOperation?: SerializedEvmUserOperation;
+  userOperation?: SerializedEvmUserOperation | undefined;
   targetChainId: Eip155ChainId;
 }) {
   const prettyPrintData = useQuery({
