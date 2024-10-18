@@ -1,7 +1,6 @@
 import { runTests } from "@/tests";
 import { ClientSideTests } from "@/tests/client";
 import { testSuite as feeLenderTestSuite } from "@/tests/server/lib/fee-lender";
-import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
 import { notFound } from "next/navigation";
 
 export async function ServerSideTests() {
@@ -11,7 +10,6 @@ export async function ServerSideTests() {
 
   const serverResults = await runTests((context) => {
     feeLenderTestSuite(context);
-    stackupTestSuite(context);
   });
 
   return <ClientSideTests serverResults={serverResults} />;

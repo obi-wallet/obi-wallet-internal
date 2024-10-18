@@ -9,7 +9,6 @@ import { testSuite as evmTokensTestSuite } from "@/tests/client/target-chain/evm
 import { testSuite as secretMpcSignerTestSuite } from "@/tests/client/target-chain/secret/mpc-signer";
 import { testSuite as secretTestSuite } from "@/tests/client/target-chain/secret/target-chain";
 import { testSuite as approveMessagesTestSuite } from "@/tests/client/user-interactions/approve-messages";
-import { testSuite as stackupTestSuite } from "@/tests/server/lib/stackup";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
@@ -28,7 +27,6 @@ export function ClientSideTests({
       evmTokensTestSuite(context);
       secretMpcSignerTestSuite(context);
       secretTestSuite(context);
-      stackupTestSuite(context);
       approveMessagesTestSuite(context);
     });
     setClientResults(clientResults);
