@@ -1,17 +1,18 @@
-import { TargetChain } from "@/target-chain";
 import {
   deserializeUserOperation,
   SerializedEvmUserOperation,
 } from "@/target-chain/eip-155";
 import { Eip155ChainIdSchema } from "@/target-chain/eip-155/chains";
-import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { http } from "viem";
+import { preparePimplicoClientAndKernelAccount } from "@/target-chain/eip-155/pimlico";
+import { HomeChainIdSchema } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 export const maxDuration = 45;
 
 const schema = z.object({
+  homeChainId: HomeChainIdSchema,
   targetChainId: Eip155ChainIdSchema,
+  userEntryAddress: z.string(),
   userOperation: SerializedEvmUserOperation,
 });
 
@@ -24,18 +25,19 @@ export async function POST(request: Request) {
     });
   }
 
-  const { targetChainId, userOperation } = result.data;
-  const targetChain = TargetChain.chainId(targetChainId);
+  const { homeChainId, targetChainId, userEntryAddress, userOperation } =
+    result.data;
 
-  const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.eip155ChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
-  const bundlerClient = createPimlicoBundlerClient({
-    chain: targetChain.chainData.chain,
-    transport: http(pimlicoUrl),
-    entryPoint: targetChain.entryPoint,
-  });
+  const { pimlicoClient, kernelAccount } =
+    await preparePimplicoClientAndKernelAccount({
+      homeChainId,
+      targetChainId,
+      userEntryAddress,
+    });
 
-  const hash = await bundlerClient.sendUserOperation({
-    userOperation: deserializeUserOperation(userOperation),
+  const hash = await pimlicoClient.sendUserOperation({
+    ...deserializeUserOperation(userOperation),
+    account: kernelAccount,
   });
 
   return Response.json({

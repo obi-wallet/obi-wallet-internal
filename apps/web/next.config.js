@@ -4,6 +4,7 @@ const WebpackHookPlugin = require("webpack-hook-plugin");
 /** @type {import('next').NextConfig} */
 module.exports = withSentryConfig(
   {
+    // Should be kept in sync with .storybook/main.ts
     env: {
       NEXT_PUBLIC_FAST_TRAVEL_API_URL: process.env.FAST_TRAVEL_API_URL,
       NEXT_PUBLIC_ENV: process.env.VERCEL_ENV,
@@ -11,12 +12,21 @@ module.exports = withSentryConfig(
     },
     transpilePackages: [
       "@obi-wallet/config",
+      "@obi-wallet/encoding",
       "@obi-wallet/headless-ui",
       "@obi-wallet/mpc-ecdsa-wasm",
       "@obi-wallet/mpc-ecdsa-wasm-types",
+      "@obi-wallet/query-client",
       "@obi-wallet/sdk",
       "@obi-wallet/sdk-abstract-target-chain",
+      "@obi-wallet/sdk-abstract-user-interaction",
+      "@obi-wallet/sdk-asset-registry",
+      "@obi-wallet/sdk-caip",
+      "@obi-wallet/sdk-ed25519",
+      "@obi-wallet/sdk-json",
+      "@obi-wallet/sdk-obi-account",
       "@obi-wallet/sdk-secp256k1",
+      "@obi-wallet/wallet-connect",
     ],
     images: {
       remotePatterns: [
@@ -44,6 +54,8 @@ module.exports = withSentryConfig(
 
     org: "obi-64",
     project: "obi-wallet",
+
+    authToken: process.env.SENTRY_AUTH_TOKEN,
 
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,
