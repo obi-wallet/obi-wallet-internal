@@ -3,10 +3,8 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
-import {
-  ApproveIntentions,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";

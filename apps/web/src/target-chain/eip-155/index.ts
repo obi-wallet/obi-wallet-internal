@@ -8,7 +8,7 @@ import {
   Eip155Chains,
 } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { filterMap } from "@/util/filter-map";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";

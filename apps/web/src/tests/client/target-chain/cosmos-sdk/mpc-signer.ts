@@ -4,7 +4,7 @@ import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
 import { mockApproveIntentions } from "@/tests/client/lib/encryption";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { fromBase64 } from "@cosmjs/encoding";
 import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";
 import { createHash, MpcWallet } from "@obi-wallet/sdk";

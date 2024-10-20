@@ -3,7 +3,7 @@ import { rootStore } from "@/stores";
 import {
   handleEncryptedEasyShare,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { EasyShare, MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";

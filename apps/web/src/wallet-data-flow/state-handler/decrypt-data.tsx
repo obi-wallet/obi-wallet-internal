@@ -1,11 +1,11 @@
 import { Button, Text, Transaction } from "@/components";
 import { useAlert } from "@/hooks/alert";
 import { KeyMetaData } from "@/stores/key-meta-data";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
-  ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow } from "@/wallet-data-flow/utils";

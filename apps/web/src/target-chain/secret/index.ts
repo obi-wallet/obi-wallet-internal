@@ -6,7 +6,7 @@ import {
   SecretChains,
 } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { Chain } from "@chain-registry/types";
 import { GasPrice, StdFee } from "@cosmjs/stargate";
 import { queryClient } from "@obi-wallet/query-client";

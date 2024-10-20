@@ -4,10 +4,8 @@ import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { isSecretChainId, SecretChainId } from "@/target-chain/secret/chains";
-import {
-  ApproveIntentions,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { Coin } from "@cosmjs/amino";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { StdFee } from "@cosmjs/stargate";

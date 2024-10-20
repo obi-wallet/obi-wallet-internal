@@ -17,7 +17,7 @@ import {
   handleMultisigKeyDecryptedMessages,
   handlePrimaryKeyDecryptedMessages,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import {
   KeyType,
   MultisigKey,

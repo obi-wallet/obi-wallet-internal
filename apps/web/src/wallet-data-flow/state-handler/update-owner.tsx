@@ -1,11 +1,11 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
-  ApproveIntentions,
   handleEncryptedEasyShare,
   handleMultisigKeyDecryptedMessage,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";

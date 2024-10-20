@@ -3,11 +3,11 @@ import { useStore } from "@/contexts";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain } from "@/target-chain";
 import { SolanaChainId } from "@/target-chain/solana/chains";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
-  ApproveIntentions,
   handleMultisigKeyDecryptedMessages,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { SvmSendMessage } from "@/user-interactions/sign-and-broadcast/svm/user-interaction";
 import { Base58EncodedString } from "@obi-wallet/encoding";

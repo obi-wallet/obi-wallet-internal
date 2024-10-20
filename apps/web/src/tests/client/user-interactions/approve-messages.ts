@@ -5,10 +5,8 @@ import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { createTestSuite } from "@/tests";
-import {
-  ApproveIntentionsProps,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentionsProps } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import {
   ApproveMessagesProps,
   cosmosSignAminoToApproveMessagesProps,
