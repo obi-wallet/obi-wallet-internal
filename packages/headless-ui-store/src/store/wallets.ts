@@ -42,6 +42,9 @@ export class WalletsStore {
         const data = MpcWallets.schema.currentSchema.parse(
           toJS(this.mpcWallets.toJSON()),
         );
+        // TODO: temporarily disable saving during refactoring
+        console.log(data);
+        return;
         await this.storage.set(data);
       });
     } catch (e) {
