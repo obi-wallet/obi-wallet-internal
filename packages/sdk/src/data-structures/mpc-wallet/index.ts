@@ -1,6 +1,6 @@
 import { createMpcWallet, createObservableMpcWallet } from "./factories";
 import { MpcWallet as MpcWalletInterface } from "./implementation";
-import { LegacyMpcWalletSchema } from "./schema";
+import { MpcWalletSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
 export {
@@ -13,11 +13,11 @@ export {
 export type MpcWallet = MpcWalletInterface;
 
 export const MpcWallet = {
-  schema: LegacyMpcWalletSchema,
+  schema: MpcWalletSchema,
   create: createMpcWallet,
-} satisfies AbstractDataStructure<MpcWallet, typeof LegacyMpcWalletSchema>;
+} satisfies AbstractDataStructure<MpcWallet, typeof MpcWalletSchema>;
 
 export const ObservableMpcWallet = {
-  schema: LegacyMpcWalletSchema,
+  schema: MpcWalletSchema,
   create: createObservableMpcWallet,
-} satisfies AbstractDataStructure<MpcWallet, typeof LegacyMpcWalletSchema>;
+} satisfies AbstractDataStructure<MpcWallet, typeof MpcWalletSchema>;

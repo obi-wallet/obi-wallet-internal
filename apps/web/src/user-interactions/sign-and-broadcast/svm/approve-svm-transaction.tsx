@@ -204,6 +204,7 @@ export const ApproveSvmTransaction = observer<ApproveSvmTransactionProps>(
     );
     const intentionsPayload: IntentionsPayload | null = {
       signHashes: [],
+      decryptEasyShare: null,
       decryptMessages: [],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: wallet.encryptedEd25519PrivateKey

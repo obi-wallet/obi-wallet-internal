@@ -1,13 +1,14 @@
 import { Button } from "@/components";
 import { cn } from "@/lib/utils";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
-import { Key, KeyType } from "@obi-wallet/sdk";
+import { KeySchema, KeyType } from "@obi-wallet/sdk";
 import { FaPlus, FaTriangleExclamation } from "react-icons/fa6";
+import { z } from "zod";
 
 export interface KeyItem {
   id: string;
   label: string;
-  key: Key;
+  key: z.infer<typeof KeySchema>;
   keyMetaData: SingleKeyMetaData;
 }
 

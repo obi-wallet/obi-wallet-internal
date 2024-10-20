@@ -1,7 +1,8 @@
 import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import { toJS } from "mobx";
+import { z } from "zod";
 
-import { LegacyMpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
+import { MpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
 import { HomeChainId, SecretJsHomeChains } from "../../home-chains";
 import { MultisigKey } from "../multisig-key";
 
@@ -11,7 +12,7 @@ export class MpcWallet {
     protected _owner: MultisigKey,
     protected _userEntryAddress: string,
     protected _encryptedShares: {
-      easy: Base64EncodedString;
+      easy: string;
       backup: string;
     },
     protected _ed25519KeyPair: {
@@ -41,6 +42,7 @@ export class MpcWallet {
     return this._userEntryAddress;
   }
 
+  // TODO: fix usages of this method
   public get encryptedEasyShare() {
     return this._encryptedShares.easy;
   }
@@ -79,14 +81,10 @@ export class MpcWallet {
     this._previousWalletData = previousWalletData;
   }
 
-  public get schema() {
-    return LegacyMpcWalletSchema;
-  }
-
-  public toJSON() {
+  public toJSON(): z.infer<typeof MpcWalletSchema> {
     return {
       homeChain: this._homeChainId,
-      owner: this._owner.toJSON()!,
+      owner: this._owner.toJSON(),
       userEntryAddress: UserEntryAddress.parse(this._userEntryAddress),
       encryptedShares: this._encryptedShares,
       ed25519KeyPair: this._ed25519KeyPair,

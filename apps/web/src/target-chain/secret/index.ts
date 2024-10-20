@@ -317,7 +317,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -349,7 +349,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

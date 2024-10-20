@@ -143,6 +143,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
             keyMetaData={keyMetaData}
             intentions={{
               signHashes: [],
+              decryptEasyShare: null,
               decryptMessages: [],
               decryptPrimaryKeyEncryptedMessages: [],
               decryptMultisigKeyEncryptedMessages:

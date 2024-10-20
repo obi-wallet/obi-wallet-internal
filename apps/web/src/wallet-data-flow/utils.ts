@@ -5,13 +5,13 @@ import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
   BackupShare,
   EasyShare,
-  MpcWallet,
-  Serialized,
+  MpcWalletSchema,
   UserEntryAddress,
   WalletData,
 } from "@obi-wallet/sdk";
 import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 export function useGetWallet() {
   const { state } = useWalletDataFlowContext();
@@ -19,7 +19,7 @@ export function useGetWallet() {
   return async function getWallet(payload: {
     shares: { easy: EasyShare; backup: BackupShare };
     ed25519KeyPair: Ed25519KeyPair | null;
-  }): Promise<Serialized<MpcWallet>> {
+  }): Promise<z.infer<typeof MpcWalletSchema>> {
     invariant(state.walletData, "Wallet data not found");
 
     const shares = payload.shares;
@@ -36,7 +36,7 @@ export function useGetWallet() {
 
     return {
       homeChain: owner.chainId,
-      owner: owner.toJSON()!,
+      owner: owner.toJSON(),
       userEntryAddress: UserEntryAddress.parse(
         state.walletData.userEntryAddress,
       ),
@@ -67,7 +67,7 @@ export function useFinishFlow() {
     invariant(state.walletData, "Wallet data not found");
     invariant(state.ownerDraft.value.primaryKey, "Primary key not found");
 
-    async function getWalletData(): Promise<Serialized<MpcWallet>> {
+    async function getWalletData(): Promise<z.infer<typeof MpcWalletSchema>> {
       const shares = payload.shares ?? state.shares;
 
       if (!shares) {

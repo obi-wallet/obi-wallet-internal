@@ -65,61 +65,61 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
 
     const txInfo = useQuery({
       queryKey: ["simulate", { walletMeta, targetChainId, messages }],
-      queryFn: async () => {
-        invariant(wallet, "Wallet not found");
+      queryFn: wallet
+        ? async () => {
+            if (isCosmosChainId(targetChainId)) {
+              const targetChain = TargetChain.chainId(targetChainId);
 
-        if (isCosmosChainId(targetChainId)) {
-          const targetChain = TargetChain.chainId(targetChainId);
-
-          const fee = await targetChain.calculateFee({
-            wallet,
-            messages,
-            memo,
-          });
-
-          invariant(fee, "Fee could not be calculated");
-
-          const hash = calculateHashToSign
-            ? await calculateHashToSign({ wallet, fee })
-            : await targetChain.calculateHashToSign({
+              const fee = await targetChain.calculateFee({
                 wallet,
-                fee,
                 messages,
                 memo,
               });
 
-          return {
-            fee,
-            hash: Encoding.fromBytes(hash).toHex(),
-          };
-        }
+              invariant(fee, "Fee could not be calculated");
 
-        if (isSecretChainId(targetChainId)) {
-          const targetChain = TargetChain.chainId(targetChainId);
+              const hash = calculateHashToSign
+                ? await calculateHashToSign({ wallet, fee })
+                : await targetChain.calculateHashToSign({
+                    wallet,
+                    fee,
+                    messages,
+                    memo,
+                  });
 
-          const fee = await targetChain.calculateFee({
-            wallet,
-            messages,
-            memo,
-          });
-
-          invariant(fee, "Fee could not be calculated");
-
-          const hash = calculateHashToSign
-            ? await calculateHashToSign({ wallet, fee })
-            : await targetChain.calculateHashToSign({
-                wallet,
+              return {
                 fee,
+                hash: Encoding.fromBytes(hash).toHex(),
+              };
+            }
+
+            if (isSecretChainId(targetChainId)) {
+              const targetChain = TargetChain.chainId(targetChainId);
+
+              const fee = await targetChain.calculateFee({
+                wallet,
                 messages,
                 memo,
               });
 
-          return {
-            fee,
-            hash: Encoding.fromBytes(hash).toHex(),
-          };
-        }
-      },
+              invariant(fee, "Fee could not be calculated");
+
+              const hash = calculateHashToSign
+                ? await calculateHashToSign({ wallet, fee })
+                : await targetChain.calculateHashToSign({
+                    wallet,
+                    fee,
+                    messages,
+                    memo,
+                  });
+
+              return {
+                fee,
+                hash: Encoding.fromBytes(hash).toHex(),
+              };
+            }
+          }
+        : skipToken,
       refetchOnWindowFocus: false,
       refetchOnMount: "always",
       refetchOnReconnect: false,
@@ -150,6 +150,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     const intentionsPayload: IntentionsPayload | null = txInfoData
       ? {
           signHashes: [Encoding.fromHex(txInfoData.hash).toBytes()],
+          decryptEasyShare: wallet.encryptedEasyShare,
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],

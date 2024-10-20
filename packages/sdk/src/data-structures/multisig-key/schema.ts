@@ -1,17 +1,17 @@
 import { z } from "zod";
 
 import { ArrayIndex } from "../array-index";
-import { Key, KeySchema } from "../key";
+import { LegacyKey, KeySchema } from "../key";
 import { migratable } from "../migratable";
 
 export const LegacyMultisigKeySchema = migratable(
   z.object({
-    keys: z.array(Key.schema.migratableSchema),
+    keys: z.array(LegacyKey.schema.migratableSchema),
     threshold: z.number().int().positive(),
   }),
 ).addMigration({
   nextSchema: z.object({
-    keys: z.array(Key.schema.migratableSchema),
+    keys: z.array(LegacyKey.schema.migratableSchema),
     primaryKeyIndex: ArrayIndex.nullable(),
     threshold: z.number().int().positive(),
   }),

@@ -9,7 +9,7 @@ import {
 } from "./schema";
 import { AbstractMigratable } from "../migratable";
 
-export function createKey(
+export function createLegacyKey(
   serialized: AbstractMigratable<typeof LegacyKeySchema>,
   serialize = R.identity,
 ) {
@@ -22,10 +22,10 @@ export function createKey(
   );
 }
 
-export function createObservableKey(
+export function createLegacyObservableKey(
   serialized: AbstractMigratable<typeof LegacyKeySchema>,
 ) {
-  const key = createKey(serialized, toJS);
+  const key = createLegacyKey(serialized, toJS);
   makeObservable<Key, "serialized">(
     key,
     {

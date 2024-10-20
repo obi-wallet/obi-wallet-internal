@@ -1,5 +1,10 @@
-import { Migratable, MpcWallets, ObservableMpcWallets } from "@obi-wallet/sdk";
+import {
+  MpcWallets,
+  MpcWalletsSchema,
+  ObservableMpcWallets,
+} from "@obi-wallet/sdk";
 import { autorun, observable, runInAction, toJS } from "mobx";
+import { z } from "zod";
 
 import { AbstractStorage } from "../storage";
 
@@ -12,7 +17,7 @@ export enum WalletState {
   READY = "READY",
 }
 
-export type WalletsStorage = AbstractStorage<Migratable<MpcWallets>>;
+export type WalletsStorage = AbstractStorage<z.infer<typeof MpcWalletsSchema>>;
 
 export class WalletsStore {
   protected readonly storage: WalletsStorage;
@@ -39,9 +44,7 @@ export class WalletsStore {
       });
 
       autorun(async () => {
-        const data = MpcWallets.schema.currentSchema.parse(
-          toJS(this.mpcWallets.toJSON()),
-        );
+        const data = MpcWallets.schema.parse(toJS(this.mpcWallets.toJSON()));
         // TODO: temporarily disable saving during refactoring
         console.log(data);
         return;

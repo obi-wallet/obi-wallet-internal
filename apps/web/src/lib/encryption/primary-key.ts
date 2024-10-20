@@ -18,9 +18,7 @@ export class PrimaryKeyEncryption {
   public constructor(protected readonly multisigKey: MultisigKey) {
     const primaryKey = multisigKey.primaryKey;
     invariant(primaryKey, "Primary key is not available");
-    this.primaryKeyEncryption = new Secp256k1Encryption(
-      primaryKey.payload.publicKey,
-    );
+    this.primaryKeyEncryption = new Secp256k1Encryption(primaryKey.publicKey);
     this.multisigKeyEncryption = new MultisigKeyEncryption(
       multisigKey.publicKey,
     );

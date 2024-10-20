@@ -4,6 +4,7 @@ import {
   HomeChainIdSchema,
   Messages,
   MultisigKey,
+  MultisigKeySchema,
   SecretJsClient,
 } from "@obi-wallet/sdk";
 import { NextResponse } from "next/server";
@@ -14,7 +15,7 @@ export const maxDuration = 45;
 
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
-  newOwner: MultisigKey.schema.migratableSchema,
+  newOwner: MultisigKeySchema,
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
   signatures: z.array(HexEncodedString),

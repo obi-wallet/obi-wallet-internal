@@ -2,9 +2,15 @@ import { KeyItems } from "@/components";
 import { Draft } from "@/stores";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { KeyMetaDataContainer } from "@/wallet-data-flow/state";
-import { Key, KeyType, MultisigKey, Secp256k1PublicKey } from "@obi-wallet/sdk";
+import {
+  KeySchema,
+  KeyType,
+  MultisigKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk";
 import { createContext, useContext } from "react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 export interface KeyTypePage {
   type: "key-type";
@@ -16,7 +22,7 @@ export interface KeyItemPage {
   payload: {
     id: string;
     label: string;
-    key: Key;
+    key: z.infer<typeof KeySchema>;
   };
 }
 

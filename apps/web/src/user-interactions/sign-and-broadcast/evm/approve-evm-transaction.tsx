@@ -134,6 +134,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           signHashes: [
             new Uint8Array(Buffer.from(userOperationData.hash, "hex")),
           ],
+          decryptEasyShare: wallet.encryptedEasyShare,
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],

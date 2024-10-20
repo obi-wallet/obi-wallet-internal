@@ -26,7 +26,7 @@ import {
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 
-async function mockApproveIntentions({
+export async function mockApproveIntentions({
   multisigKey,
   keyPair,
   intentions,
@@ -61,6 +61,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const results: IntentionsResults = new Map();
 
     const intentions = {
+      decryptEasyShare: null,
       decryptMultisigKeyEncryptedMessages: [encrypted],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMessages: [],
@@ -152,6 +153,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const results: IntentionsResults = new Map();
 
     const intentions = {
+      decryptEasyShare: null,
       decryptMultisigKeyEncryptedMessages: [],
       decryptPrimaryKeyEncryptedMessages: [encrypted],
       decryptMessages: [],

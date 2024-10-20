@@ -89,7 +89,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               wallet.revision++;
               const response = await SetWalletDataUserInteraction.start({
                 homeChainId: draft.value.chainId,
-                owner: draft.value.toJSON()!,
+                owner: draft.value.toJSON(),
                 keyMetaData: keyMetaDataDraft.value.value,
                 serializedWalletData: serialize(wallet),
               });

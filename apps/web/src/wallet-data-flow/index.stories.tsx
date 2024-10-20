@@ -87,7 +87,9 @@ const primaryKeyKeyPair = Secp256k1KeyPair.parse({
 
 const ownerWithPrimaryKey = ownerWithoutPrimaryKey.clone();
 ownerWithPrimaryKey.removeKeyByPublicKey(primaryKeyKeyPair.publicKey);
-const primaryKey = ownerWithPrimaryKey.addPasskeyKey(primaryKeyKeyPair);
+const primaryKey = ownerWithPrimaryKey.addPasskeyKey(
+  primaryKeyKeyPair.publicKey,
+);
 ownerWithPrimaryKey.setPrimaryKey(primaryKey);
 
 const newPrimaryKey = Secp256k1KeyPair.parse({
@@ -98,7 +100,7 @@ const newPrimaryKey = Secp256k1KeyPair.parse({
   },
 });
 const newOwner = ownerWithPrimaryKey.clone();
-newOwner.addPasskeyKey(newPrimaryKey);
+newOwner.addPasskeyKey(newPrimaryKey.publicKey);
 
 const easyShare = EasyShare.parse({
   preSignForNetworkShare: {

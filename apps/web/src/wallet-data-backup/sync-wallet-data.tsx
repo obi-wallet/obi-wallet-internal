@@ -9,10 +9,9 @@ import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
 import { useQuery } from "@obi-wallet/headless-ui";
 import {
   KeyType,
-  MultisigKey,
+  MultisigKeySchema,
   ObservableMpcWallet,
   ObservableMultisigKey,
-  Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
 import { skipToken } from "@tanstack/react-query";
@@ -21,6 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 export enum WalletDataStateType {
   NotAvailable = "NotAvailable",
@@ -40,7 +40,7 @@ export type WalletDataState =
       type: WalletDataStateType.Outdated;
       payload: {
         walletData: WalletData;
-        owner: Serialized<MultisigKey>;
+        owner: z.infer<typeof MultisigKeySchema>;
       };
     };
 
@@ -96,12 +96,12 @@ export function useWalletDataStateQuery() {
           owner.removeKeyByPublicKey(primaryKey.publicKey);
           switch (primaryKey.type) {
             case KeyType.Passkey: {
-              const passkey = owner.addPasskeyKey(primaryKey.payload);
+              const passkey = owner.addPasskeyKey(primaryKey.publicKey);
               owner.setPrimaryKey(passkey);
               break;
             }
             case KeyType.Cloud: {
-              const cloudKey = owner.addCloudKey(primaryKey.payload);
+              const cloudKey = owner.addCloudKey(primaryKey.publicKey);
               owner.setPrimaryKey(cloudKey);
               break;
             }
@@ -114,7 +114,7 @@ export function useWalletDataStateQuery() {
             type: WalletDataStateType.Outdated,
             payload: {
               walletData,
-              owner: owner.toJSON()!,
+              owner: owner.toJSON(),
             },
           };
         }

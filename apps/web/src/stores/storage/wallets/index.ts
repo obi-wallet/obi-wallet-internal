@@ -6,19 +6,18 @@ import {
 } from "@obi-wallet/headless-ui-store";
 import {
   AbstractSerialized,
+  KeySchema,
+  LegacyKey,
+  LegacyKeySchema,
+  LegacyMpcWalletSchema,
   LegacyMpcWalletsSchema,
+  LegacyMultisigKeySchema,
   Migratable,
   MpcWallets,
-  MpcWalletsSchema,
-  Serialized,
-  KeySchema,
-  LegacyKeySchema,
-  LegacyMultisigKeySchema,
-  MultisigKeySchema,
-  LegacyMpcWalletSchema,
   MpcWalletSchema,
-  MpcWallet,
-  Key,
+  MpcWalletsSchema,
+  MultisigKey,
+  MultisigKeySchema,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { Redacted } from "effect";
@@ -28,8 +27,7 @@ import { z } from "zod";
 
 export const walletsStorage = createMigratableStorage<
   Migratable<MpcWallets>,
-  // TODO: will be MpcWalletsSchema
-  Serialized<MpcWallets>
+  z.infer<typeof MpcWalletsSchema>
 >({
   storage: defaultStorage({
     prefix: "wallets-store",
@@ -38,22 +36,21 @@ export const walletsStorage = createMigratableStorage<
   migrate: async (data) => {
     if (!has("v", data)) {
       const current = LegacyMpcWalletsSchema.migratableSchema.parse(data);
-      const result = {
+      return MpcWalletsSchema.parse({
         v: 1,
         currentWalletIndex: current.currentWalletIndex,
         wallets: await Promise.all(current.wallets.map(migrateWallet)),
-      };
-      console.log(MpcWalletsSchema.parse(result));
+      });
     }
 
-    return LegacyMpcWalletsSchema.migratableSchema.parse(data);
+    return MpcWalletsSchema.parse(data);
   },
 });
 
 function migrateKey(
   data: AbstractSerialized<typeof LegacyKeySchema>,
 ): z.infer<typeof KeySchema> {
-  const key = Key.create(data);
+  const key = LegacyKey.create(data);
   return KeySchema.parse({
     type: key.type,
     publicKey: data.payload.publicKey,
@@ -70,7 +67,7 @@ function migrateMultisigKey(
   };
 }
 
-async function migrateWallet(
+export async function migrateWallet(
   data: AbstractSerialized<typeof LegacyMpcWalletSchema>,
 ): Promise<z.infer<typeof MpcWalletSchema>> {
   const primaryKeyIndex = data.owner.primaryKeyIndex ?? 0;
@@ -89,8 +86,10 @@ async function migrateWallet(
     ),
   );
 
-  const wallet = MpcWallet.create(data);
-  const easyShareEncryption = new PrimaryKeyEncryption(wallet.owner);
+  const owner = migrateMultisigKey(data.owner);
+  const easyShareEncryption = new PrimaryKeyEncryption(
+    MultisigKey.create(data.homeChain, owner),
+  );
   const encryptedEasyShare = await easyShareEncryption.encrypt(
     Redacted.value(easyShare),
   );

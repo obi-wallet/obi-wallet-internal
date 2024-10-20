@@ -13,10 +13,12 @@ import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { AsyncButton } from "@/ui/button";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
-import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { EasyShare, KeySchema, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
+import { z } from "zod";
 
 export const IntentionsResults = Map<string, IntentionsResult>;
 export type IntentionsResults = Map<string, IntentionsResult>;
@@ -111,6 +113,28 @@ export async function handlePrimaryKeyDecryptedMessage({
   });
 }
 
+export async function handleEncryptedEasyShare({
+  encryptedEasyShare,
+  multisigKey,
+  results,
+}: {
+  encryptedEasyShare: string;
+  multisigKey: MultisigKey;
+  results: IntentionsResults;
+}) {
+  const decryptedShares = multisigKey.keys.map((key) => {
+    return results.get(key.publicKey.value)?.decryptedEasyShareShare ?? null;
+  });
+  return EasyShare.parse(
+    deserialize(
+      await new PrimaryKeyDecryption().decryptWithMultisigKey({
+        data: encryptedEasyShare,
+        input: decryptedShares,
+      }),
+    ),
+  );
+}
+
 export interface ApproveIntentionsProps {
   multisigKey: MultisigKey;
   keyMetaData: KeyMetaData;
@@ -142,11 +166,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     const alert = useAlert();
     const { readFiles, readFileById } = useGoogleAuth();
 
-    const getResult = (key: Key) => {
+    const getResult = (key: z.infer<typeof KeySchema>) => {
       return results.get(key.publicKey.value);
     };
 
-    const setResultWithKey = (key: Key, result: IntentionsResult) => {
+    const setResultWithKey = (
+      key: z.infer<typeof KeySchema>,
+      result: IntentionsResult,
+    ) => {
       setResults((map) => {
         return new Map(map.set(key.publicKey.value, result));
       });

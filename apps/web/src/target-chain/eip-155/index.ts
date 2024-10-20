@@ -332,7 +332,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
     intentionsResults: IntentionsResults;
   }) {
     const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

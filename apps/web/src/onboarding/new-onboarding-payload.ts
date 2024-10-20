@@ -10,11 +10,11 @@ import {
   HomeChainId,
   HomeChainIdSchema,
   KeyType,
-  MpcWallet,
+  MpcWalletSchema,
   MultisigKey,
+  MultisigKeySchema,
   NetworkShare,
   ObservableMultisigKey,
-  Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
 import { generateEd25519KeyPair } from "@obi-wallet/sdk-ed25519";
@@ -34,7 +34,7 @@ type UnclaimedHomeAccount = z.TypeOf<typeof UnclaimedHomeAccount>;
 
 const OnboardingPayloadSchema = z.object({
   homeChain: HomeChainIdSchema,
-  multisigKey: MultisigKey.schema.migratableSchema,
+  multisigKey: MultisigKeySchema,
   userData: z.object({
     name: z.string(),
     image: z.string(),
@@ -114,7 +114,7 @@ export class NewOnboardingPayload implements Draftable {
   public toJSON(): z.infer<typeof OnboardingPayloadSchema> {
     return OnboardingPayloadSchema.parse({
       homeChain: this.homeChainId,
-      multisigKey: this._multisigKey.toJSON()!,
+      multisigKey: this._multisigKey.toJSON(),
       ownerConfirmed: this._ownerConfirmed,
       userData: {
         name: this._name,
@@ -128,15 +128,15 @@ export class NewOnboardingPayload implements Draftable {
     });
   }
 
-  public toMpcWalletData(): Serialized<MpcWallet> {
+  public toMpcWalletData(): z.infer<typeof MpcWalletSchema> {
     invariant(this._ed25519KeyPair, "Ed25519 key pair is not available");
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._distributedShares, "Shares have not been distributed");
 
-    return MpcWallet.schema.migratableSchema.parse({
+    return MpcWalletSchema.parse({
       homeChain: this.homeChainId,
-      owner: this._multisigKey.toJSON()!,
+      owner: this._multisigKey.toJSON(),
       encryptedShares: {
         easy: this._encryptedShares.easyShare,
         backup: this._encryptedShares.backupShare,
@@ -174,9 +174,9 @@ export class NewOnboardingPayload implements Draftable {
     const newKey = (() => {
       switch (key.type) {
         case KeyType.Passkey:
-          return this._multisigKey.addPasskeyKey(key.payload);
+          return this._multisigKey.addPasskeyKey(key.payload.publicKey);
         case KeyType.Cloud:
-          return this._multisigKey.addCloudKey(key.payload);
+          return this._multisigKey.addCloudKey(key.payload.publicKey);
         default:
           throw new Error(`Unsupported primary key type: ${key.type}`);
       }

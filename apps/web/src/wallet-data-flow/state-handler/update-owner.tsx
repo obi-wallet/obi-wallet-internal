@@ -1,8 +1,8 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
-import { Secp256k1Decryption } from "@/lib/encryption";
 import {
   ApproveIntentions,
+  handleEncryptedEasyShare,
   handleMultisigKeyDecryptedMessage,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions";
@@ -56,6 +56,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   );
   const [decrypted, setDecrypted] = useState<
     | {
+        easyShare: EasyShare;
         backupShare: BackupShare;
         ed25519KeyPair: Ed25519KeyPair;
       }
@@ -154,38 +155,12 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
       }
 
       if (proposedUpdate) {
-        const getEasyShare = async () => {
-          if (state.shares) {
-            return state.shares.easy;
-          }
-
-          invariant(
-            state.locallyEncryptedSharesByPreviousOwner,
-            "Shares not found",
-          );
-          const primaryKey = previousOwner.primaryKey;
-
-          invariant(primaryKey, "Primary key not found");
-          const easyShareDecryption = new Secp256k1Decryption(
-            primaryKey.payload.privateKey,
-          );
-
-          return EasyShare.parse(
-            deserialize(
-              await easyShareDecryption.decrypt(
-                state.locallyEncryptedSharesByPreviousOwner.easy,
-              ),
-            ),
-          );
-        };
-        const easyShare = await getEasyShare();
-
         invariant(decrypted, "Decrypted not found");
 
         const payload = {
           keyMetaData,
           shares: {
-            easy: easyShare,
+            easy: decrypted.easyShare,
             backup: decrypted.backupShare,
           },
           ed25519KeyPair: decrypted.ed25519KeyPair,
@@ -223,6 +198,24 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
       const result: { success: boolean } = await response.json();
       if (!result.success) {
         throw new Error("Failed to update owner");
+      }
+
+      async function getEasyShare() {
+        if (state.shares) {
+          return state.shares.easy;
+        }
+
+        invariant(results, "Results not found");
+        invariant(
+          state.locallyEncryptedSharesByPreviousOwner,
+          "Shares not found",
+        );
+
+        return await handleEncryptedEasyShare({
+          encryptedEasyShare: state.locallyEncryptedSharesByPreviousOwner.easy,
+          multisigKey: previousOwner,
+          results,
+        });
       }
 
       async function getBackupShare() {
@@ -274,10 +267,17 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         };
       }
 
-      const [decryptedBackupShare, decryptedEd25519KeyPair] = await Promise.all(
-        [getBackupShare(), getEd25519KeyPair()],
-      );
+      const [
+        decryptedEasyShare,
+        decryptedBackupShare,
+        decryptedEd25519KeyPair,
+      ] = await Promise.all([
+        getEasyShare(),
+        getBackupShare(),
+        getEd25519KeyPair(),
+      ]);
       setDecrypted({
+        easyShare: decryptedEasyShare,
         backupShare: decryptedBackupShare,
         ed25519KeyPair: decryptedEd25519KeyPair,
       });
@@ -289,6 +289,14 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
       console.error(error);
     },
   });
+
+  function getDecryptEasyShare(): string | null {
+    if (!proposedUpdate && state.locallyEncryptedSharesByPreviousOwner) {
+      return state.locallyEncryptedSharesByPreviousOwner.easy;
+    }
+
+    return null;
+  }
 
   function getMultisigKeyEncryptedMessages(): string[] {
     if (
@@ -338,6 +346,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
               keyMetaData={keyMetaData}
               intentions={{
                 signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
+                decryptEasyShare: getDecryptEasyShare(),
                 decryptMessages: [],
                 decryptPrimaryKeyEncryptedMessages: [],
                 decryptMultisigKeyEncryptedMessages:

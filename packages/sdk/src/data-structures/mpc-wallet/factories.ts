@@ -1,17 +1,16 @@
 import { action, makeObservable, observable } from "mobx";
+import { z } from "zod";
 
 import { MpcWallet } from "./implementation";
-import { LegacyMpcWalletSchema } from "./schema";
-import { AbstractMigratable } from "../migratable";
+import { MpcWalletSchema } from "./schema";
 import { MultisigKey, ObservableMultisigKey } from "../multisig-key";
 
 export function createMpcWallet(
-  migratable: AbstractMigratable<typeof LegacyMpcWalletSchema>,
+  serialized: z.infer<typeof MpcWalletSchema>,
   factories = {
     MultisigKey,
   },
 ) {
-  const serialized = LegacyMpcWalletSchema.migratableSchema.parse(migratable);
   return new MpcWallet(
     serialized.homeChain,
     factories.MultisigKey.create(serialized.homeChain, serialized.owner),
@@ -23,7 +22,7 @@ export function createMpcWallet(
 }
 
 export function createObservableMpcWallet(
-  serialized: AbstractMigratable<typeof LegacyMpcWalletSchema>,
+  serialized: z.infer<typeof MpcWalletSchema>,
 ) {
   const wallet = createMpcWallet(serialized, {
     MultisigKey: ObservableMultisigKey,

@@ -1,12 +1,13 @@
 import { Draft } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
+import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
   HomeChainId,
   KeyType,
   MpcWallet,
+  MpcWalletSchema,
   MultisigKey,
   ObservableMultisigKey,
   Serialized,
@@ -16,6 +17,7 @@ import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
 import { action, observable, toJS } from "mobx";
 import { Dispatch, useReducer } from "react";
+import { z } from "zod";
 
 export class KeyMetaDataContainer {
   @observable
@@ -58,7 +60,7 @@ export interface WalletDataFlowState {
     backup: BackupShare;
   } | null;
   locallyEncryptedSharesByPreviousOwner: {
-    easy: Base64EncodedString;
+    easy: string;
     backup: string;
   } | null;
   ed25519KeyPair: Ed25519KeyPair | null;
@@ -70,7 +72,7 @@ export interface WalletDataFlowState {
     wallet,
     keyMetaData,
   }: {
-    wallet: Serialized<MpcWallet>;
+    wallet: z.infer<typeof MpcWalletSchema>;
     keyMetaData: KeyMetaData;
   }): void;
   onBack(): void;
@@ -215,7 +217,7 @@ export interface WalletDataFlowStatePayload {
       backup: BackupShare;
     };
     locallyEncryptedSharesByPreviousOwner?: {
-      easy: Base64EncodedString;
+      easy: string;
       backup: string;
     };
     ed25519KeyPair?: Ed25519KeyPair;

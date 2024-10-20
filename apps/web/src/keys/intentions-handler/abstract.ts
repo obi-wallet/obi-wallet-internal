@@ -1,8 +1,9 @@
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { Base64EncodedString } from "@obi-wallet/encoding";
-import { Key, MultisigKey } from "@obi-wallet/sdk";
+import { KeySchema, MultisigKey } from "@obi-wallet/sdk";
 import { deserialize } from "@obi-wallet/sdk-json";
 import { fromPairs, splitAt } from "ramda";
+import { z } from "zod";
 
 interface PrimaryKeyEncryptedMessage {
   primaryKeyEncryptedMessage: Base64EncodedString;
@@ -26,6 +27,7 @@ interface NewMultisigKeyEncryptedMessage {
 
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
+  decryptEasyShare: string | null;
   decryptMessages: Base64EncodedString[];
   decryptPrimaryKeyEncryptedMessages: string[];
   decryptMultisigKeyEncryptedMessages: string[];
@@ -33,13 +35,14 @@ export interface IntentionsPayload {
 
 export interface IntentionsResult {
   signedHashes: Uint8Array[];
+  decryptedEasyShareShare: Base64EncodedString | null;
   decryptedMessages: string[];
   decryptedPrimaryKeyEncryptedMessagesShares: Base64EncodedString[];
   decryptedMultisigKeyEncryptedMessagesShares: Base64EncodedString[];
 }
 
 export abstract class IntentionsHandler {
-  protected key: Key;
+  protected key: z.infer<typeof KeySchema>;
   protected keyMetaData: SingleKeyMetaData;
   protected index: number;
   protected payload: IntentionsPayload;
@@ -50,7 +53,7 @@ export abstract class IntentionsHandler {
     index,
     payload,
   }: {
-    key: Key;
+    key: z.infer<typeof KeySchema>;
     keyMetaData: SingleKeyMetaData;
     index: number;
     payload: IntentionsPayload;
@@ -69,6 +72,9 @@ export abstract class IntentionsHandler {
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
+    const decryptedEasyShareShare = this.payload.decryptEasyShare
+      ? rest.shift()
+      : null;
     const [
       decryptedPrimaryKeyEncryptedMessagesShares,
       decryptedMultisigKeyEncryptedMessagesShares,
@@ -76,6 +82,9 @@ export abstract class IntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
+      decryptedEasyShareShare: decryptedEasyShareShare
+        ? Base64EncodedString.parse(decryptedEasyShareShare)
+        : null,
       decryptedPrimaryKeyEncryptedMessagesShares:
         decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
           return Base64EncodedString.parse(message);
@@ -155,6 +164,9 @@ export abstract class NewIntentionsHandler {
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
+    const decryptedEasyShareShare = this.payload.decryptEasyShare
+      ? rest.shift()
+      : null;
     const [
       decryptedPrimaryKeyEncryptedMessagesShares,
       decryptedMultisigKeyEncryptedMessagesShares,
@@ -163,6 +175,9 @@ export abstract class NewIntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
+      decryptedEasyShareShare: decryptedEasyShareShare
+        ? Base64EncodedString.parse(decryptedEasyShareShare)
+        : null,
       decryptedPrimaryKeyEncryptedMessagesShares:
         decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
           return Base64EncodedString.parse(message);
@@ -177,6 +192,13 @@ export abstract class NewIntentionsHandler {
   protected getMessagesToDecrypt(publicKey: string) {
     return [
       ...this.payload.decryptMessages,
+      ...(this.payload.decryptEasyShare
+        ? [
+            this.stringToPrimaryKeyEncryptedMessage(
+              this.payload.decryptEasyShare,
+            ).multisigKeyEncryptedMessage.encryptedShares[publicKey]!,
+          ]
+        : []),
       ...this.payload.decryptPrimaryKeyEncryptedMessages.map((m) => {
         return this.stringToPrimaryKeyEncryptedMessage(m)
           .multisigKeyEncryptedMessage.encryptedShares[publicKey]!;

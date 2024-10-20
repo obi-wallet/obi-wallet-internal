@@ -137,7 +137,9 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
                         keyMetaData: {},
                         modifyMultisigKey: (multisigKey) => {
                           multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-                          const primaryKey = multisigKey.addCloudKey(keyPair);
+                          const primaryKey = multisigKey.addCloudKey(
+                            keyPair.publicKey,
+                          );
                           multisigKey.setPrimaryKey(primaryKey);
                         },
                       });
@@ -211,7 +213,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
             keyMetaData: {},
             modifyMultisigKey: (multisigKey) => {
               multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-              const primaryKey = multisigKey.addPasskeyKey(keyPair);
+              const primaryKey = multisigKey.addPasskeyKey(keyPair.publicKey);
               multisigKey.setPrimaryKey(primaryKey);
             },
           });

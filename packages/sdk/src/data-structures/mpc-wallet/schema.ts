@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Secp256k1PublicKey } from "../../keys";
 import { HomeChainIdSchema } from "../home-chain-id";
 import { migratable } from "../migratable";
-import { MultisigKey, MultisigKeySchema } from "../multisig-key";
+import { LegacyMultisigKeySchema, MultisigKeySchema } from "../multisig-key";
 
 export const UserEntryAddress = z.string().brand("UserEntryAddress");
 
@@ -39,7 +39,7 @@ export type WalletData = z.infer<typeof WalletData>;
 export const LegacyMpcWalletSchema = migratable(
   z.object({
     homeChain: HomeChainIdSchema,
-    owner: MultisigKey.schema.migratableSchema,
+    owner: LegacyMultisigKeySchema.migratableSchema,
     userEntryAddress: UserEntryAddress,
     encryptedShares: z.object({
       easy: Base64EncodedString,
@@ -50,7 +50,7 @@ export const LegacyMpcWalletSchema = migratable(
   .addMigration({
     nextSchema: z.object({
       homeChain: HomeChainIdSchema,
-      owner: MultisigKey.schema.migratableSchema,
+      owner: LegacyMultisigKeySchema.migratableSchema,
       userEntryAddress: UserEntryAddress,
       encryptedShares: z.object({
         easy: Base64EncodedString,
@@ -68,7 +68,7 @@ export const LegacyMpcWalletSchema = migratable(
   .addMigration({
     nextSchema: z.object({
       homeChain: HomeChainIdSchema,
-      owner: MultisigKey.schema.migratableSchema,
+      owner: LegacyMultisigKeySchema.migratableSchema,
       userEntryAddress: UserEntryAddress,
       encryptedShares: z.object({
         easy: Base64EncodedString,

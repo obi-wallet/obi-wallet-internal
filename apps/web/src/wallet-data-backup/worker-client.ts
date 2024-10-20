@@ -1,13 +1,13 @@
 import {
   HomeChainId,
-  Migratable,
-  MultisigKey,
+  MultisigKeySchema,
   PendingRecoveryKeySchema,
   Secp256k1PublicKey,
   UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
+import { z } from "zod";
 
 export async function isPublicKeyInUse({
   homeChainId,
@@ -61,7 +61,7 @@ export async function lookupWallet({
   );
 }
 
-export function getOwnerData(owner: Migratable<MultisigKey>) {
+export function getOwnerData(owner: z.infer<typeof MultisigKeySchema>) {
   return {
     threshold: owner.threshold.toString(),
     keys: owner.keys.map((key) => {
@@ -102,7 +102,7 @@ export async function updateOwner({
   previousOwner,
 }: {
   walletData: WalletData;
-  previousOwner: Migratable<MultisigKey>;
+  previousOwner: z.infer<typeof MultisigKeySchema>;
 }) {
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",
