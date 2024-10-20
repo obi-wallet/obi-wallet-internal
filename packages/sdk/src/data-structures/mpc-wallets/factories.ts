@@ -2,19 +2,19 @@ import { action, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 
 import { MpcWallets } from "./implementation";
-import { MpcWalletsSchema } from "./schema";
+import { LegacyMpcWalletsSchema } from "./schema";
 import { AbstractMigratable } from "../migratable";
 import { MpcWallet, ObservableMpcWallet } from "../mpc-wallet";
 
 export function createMpcWallets(
-  migratable: AbstractMigratable<typeof MpcWalletsSchema> = {
+  migratable: AbstractMigratable<typeof LegacyMpcWalletsSchema> = {
     wallets: [],
     currentWalletIndex: null,
   },
   factory = MpcWallet,
   serialize = R.identity,
 ) {
-  const serialized = MpcWalletsSchema.migratableSchema.parse({
+  const serialized = LegacyMpcWalletsSchema.migratableSchema.parse({
     ...migratable,
     // Filter out wallets without easy shares
     wallets: migratable.wallets.filter((wallet) => {
@@ -32,7 +32,7 @@ export function createMpcWallets(
 }
 
 export function createObservableMpcWallets(
-  migratable?: AbstractMigratable<typeof MpcWalletsSchema>,
+  migratable?: AbstractMigratable<typeof LegacyMpcWalletsSchema>,
 ) {
   const wallets = createMpcWallets(migratable, ObservableMpcWallet, toJS);
   makeObservable<MpcWallets, "_wallets" | "_currentWalletIndex">(

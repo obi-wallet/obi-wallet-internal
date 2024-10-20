@@ -5,6 +5,7 @@ export * from "./flex-account";
 export * from "./gatekeeper-config";
 export * from "./home-chain-id";
 export * from "./key";
+export * from "./migratable";
 export * from "./mpc";
 export * from "./mpc-wallet";
 export * from "./mpc-wallets";

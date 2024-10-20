@@ -5,7 +5,7 @@ import {
 import * as R from "ramda";
 import invariant from "tiny-invariant";
 
-import { MultisigKeySchema } from "./schema";
+import { LegacyMultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
@@ -16,14 +16,14 @@ import {
   KeySubclassTypeMapping,
   KeyType,
 } from "../key";
-import { KeySchema } from "../key/schema";
+import { LegacyKeySchema } from "../key/schema";
 import { AbstractSerialized } from "../migratable";
 
 export class MultisigKey {
   protected _primaryKey: Key | null = null;
 
   public get schema() {
-    return MultisigKeySchema;
+    return LegacyMultisigKeySchema;
   }
 
   public constructor(
@@ -32,10 +32,10 @@ export class MultisigKey {
     _primaryKeyIndex: number | null,
     protected _threshold: number,
     protected _factories: {
-      Key: AbstractDataStructure<Key, typeof KeySchema>;
+      Key: AbstractDataStructure<Key, typeof LegacyKeySchema>;
       createMultisigKey: (
         chain: ChainId,
-        serialized?: AbstractSerialized<typeof MultisigKeySchema>,
+        serialized?: AbstractSerialized<typeof LegacyMultisigKeySchema>,
       ) => MultisigKey;
     },
   ) {
@@ -44,7 +44,9 @@ export class MultisigKey {
     }
   }
 
-  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
+  public toJSON():
+    | AbstractSerialized<typeof LegacyMultisigKeySchema>
+    | undefined {
     if (!this._keys) {
       return;
     }

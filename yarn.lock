@@ -3608,6 +3608,7 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     downshift: "npm:^9.0.8"
     ecies-wasm: "npm:^0.2.0"
+    effect: "npm:^3.9.2"
     elliptic: "npm:^6.5.7"
     eslint: "npm:^8.57.1"
     eslint-plugin-storybook: "npm:^0.9.0"
@@ -10888,6 +10889,13 @@ __metadata:
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
   checksum: 10c0/b5bb125ee93161bc16bfe6e56c6b04de5ad2aa44234d8f644813cc95d861a6910903132b05093706de2b706599367c4130eb6d170f6b46895686b95f87d017b7
+  languageName: node
+  linkType: hard
+
+"effect@npm:^3.9.2":
+  version: 3.9.2
+  resolution: "effect@npm:3.9.2"
+  checksum: 10c0/d868fa989deef7737ee59e54157f6abe02c71753f5f7d53156449dc2c325a16578f6ecfe5afc4aed5616db90bc908b2627ba1b56ab992a65a8c84222f203953b
   languageName: node
   linkType: hard
 

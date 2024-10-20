@@ -1,12 +1,12 @@
 import { uniqBy } from "ramda";
 
-import { MpcWalletsSchema } from "./schema";
+import { LegacyMpcWalletsSchema } from "./schema";
 import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MpcWallet } from "../mpc-wallet";
 
 export class MpcWallets {
   public get schema() {
-    return MpcWalletsSchema;
+    return LegacyMpcWalletsSchema;
   }
 
   public constructor(
@@ -16,7 +16,7 @@ export class MpcWallets {
     protected _serialize: <T>(serialized: T) => T,
   ) {}
 
-  public toJSON(): AbstractSerialized<typeof MpcWalletsSchema> {
+  public toJSON(): AbstractSerialized<typeof LegacyMpcWalletsSchema> {
     return {
       wallets: this._wallets.map((w) => {
         return w.toJSON();
@@ -25,8 +25,11 @@ export class MpcWallets {
     };
   }
 
-  public deserialize(migratable: AbstractMigratable<typeof MpcWalletsSchema>) {
-    const serialized = MpcWalletsSchema.migratableSchema.parse(migratable);
+  public deserialize(
+    migratable: AbstractMigratable<typeof LegacyMpcWalletsSchema>,
+  ) {
+    const serialized =
+      LegacyMpcWalletsSchema.migratableSchema.parse(migratable);
     const serializedWallets = uniqBy((wallet) => {
       return wallet.userEntryAddress;
     }, serialized.wallets);

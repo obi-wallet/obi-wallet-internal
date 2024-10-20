@@ -1,14 +1,14 @@
 import { action, makeObservable, observable } from "mobx";
 
 import { MultisigKey } from "./implementation";
-import { MultisigKeySchema } from "./schema";
+import { LegacyMultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { Key, ObservableKey } from "../key";
 import { AbstractMigratable } from "../migratable";
 
 export function createMultisigKey(
   chain: ChainId,
-  serialized: AbstractMigratable<typeof MultisigKeySchema> = {
+  serialized: AbstractMigratable<typeof LegacyMultisigKeySchema> = {
     keys: [],
     threshold: 1,
   },
@@ -18,7 +18,7 @@ export function createMultisigKey(
   },
 ): MultisigKey {
   const { keys, primaryKeyIndex, threshold } =
-    MultisigKeySchema.migratableSchema.parse(serialized);
+    LegacyMultisigKeySchema.migratableSchema.parse(serialized);
   let keysMapped: Key[];
   try {
     keysMapped = keys.map((key) => {
@@ -35,7 +35,7 @@ export function createMultisigKey(
 
 export function createObservableMultisigKey(
   chain: ChainId,
-  migratable?: AbstractMigratable<typeof MultisigKeySchema>,
+  migratable?: AbstractMigratable<typeof LegacyMultisigKeySchema>,
 ) {
   const key = createMultisigKey(chain, migratable, {
     Key: ObservableKey,

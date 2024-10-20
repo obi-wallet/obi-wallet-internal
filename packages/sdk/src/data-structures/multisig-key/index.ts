@@ -1,16 +1,18 @@
 import { createMultisigKey, createObservableMultisigKey } from "./factories";
 import { MultisigKey as MultisigKeyInterface } from "./implementation";
-import { MultisigKeySchema } from "./schema";
+import { LegacyMultisigKeySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
+
+export { LegacyMultisigKeySchema, MultisigKeySchema } from "./schema";
 
 export type MultisigKey = MultisigKeyInterface;
 
 export const MultisigKey = {
-  schema: MultisigKeySchema,
+  schema: LegacyMultisigKeySchema,
   create: createMultisigKey,
-} satisfies AbstractDataStructure<MultisigKey, typeof MultisigKeySchema>;
+} satisfies AbstractDataStructure<MultisigKey, typeof LegacyMultisigKeySchema>;
 
 export const ObservableMultisigKey = {
-  schema: MultisigKeySchema,
+  schema: LegacyMultisigKeySchema,
   create: createObservableMultisigKey,
-} satisfies AbstractDataStructure<MultisigKey, typeof MultisigKeySchema>;
+} satisfies AbstractDataStructure<MultisigKey, typeof LegacyMultisigKeySchema>;

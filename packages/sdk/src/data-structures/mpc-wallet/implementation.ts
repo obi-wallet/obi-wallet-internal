@@ -1,7 +1,7 @@
 import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import { toJS } from "mobx";
 
-import { MpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
+import { LegacyMpcWalletSchema, UserEntryAddress, WalletData } from "./schema";
 import { HomeChainId, SecretJsHomeChains } from "../../home-chains";
 import { MultisigKey } from "../multisig-key";
 
@@ -80,7 +80,7 @@ export class MpcWallet {
   }
 
   public get schema() {
-    return MpcWalletSchema;
+    return LegacyMpcWalletSchema;
   }
 
   public toJSON() {
