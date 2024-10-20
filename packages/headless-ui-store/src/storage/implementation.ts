@@ -1,7 +1,7 @@
 import { AbstractStorage } from "./abstract";
 import { AbstractKVStore, KVStore } from "../kv-store";
 
-function storageFromKVStore<T>({
+export function storageFromKVStore<T>({
   store,
   key,
 }: {
