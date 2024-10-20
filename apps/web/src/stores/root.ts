@@ -1,6 +1,7 @@
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
+  defaultStorage,
   KVStore as DefaultKVStore,
   RootStore as SdkRootStore,
 } from "@obi-wallet/headless-ui-store";
@@ -57,7 +58,12 @@ export class RootStore {
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
     this.keyMetaDataStore = new KeyMetaDataStore(new KVStore("key-meta-data"));
-    this.sdkRootStore = new SdkRootStore(KVStore);
+    this.sdkRootStore = new SdkRootStore({
+      walletsStorage: defaultStorage({
+        prefix: "wallets-store",
+        key: "mpc-wallets",
+      }),
+    });
     this.targetChainsStore = new TargetChainsStore(
       new KVStore("target-chains-store"),
     );

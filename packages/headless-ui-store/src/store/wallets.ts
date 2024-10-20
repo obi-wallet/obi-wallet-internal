@@ -1,7 +1,7 @@
 import { Migratable, MpcWallets, ObservableMpcWallets } from "@obi-wallet/sdk";
 import { autorun, observable, runInAction, toJS } from "mobx";
 
-import { AbstractKVStore } from "../kv-store";
+import { AbstractStorage } from "../storage";
 
 export enum WalletState {
   /** We are still loading the data from the KV stores. */
@@ -12,24 +12,24 @@ export enum WalletState {
   READY = "READY",
 }
 
+export type WalletsStorage = AbstractStorage<Migratable<MpcWallets>>;
+
 export class WalletsStore {
-  protected readonly kvStore: AbstractKVStore;
+  protected readonly storage: WalletsStorage;
 
   @observable public accessor state: WalletState = WalletState.LOADING;
   public initPromise: Promise<void>;
   @observable public accessor mpcWallets: MpcWallets;
 
-  constructor({ kvStore }: { kvStore: AbstractKVStore }) {
-    this.kvStore = kvStore;
+  constructor({ storage }: { storage: WalletsStorage }) {
+    this.storage = storage;
     this.mpcWallets = ObservableMpcWallets.create();
     this.initPromise = this.init();
   }
 
   protected async init() {
     try {
-      const data = await this.kvStore.get<Migratable<MpcWallets> | undefined>(
-        "mpc-wallets",
-      );
+      const data = await this.storage.get();
 
       runInAction(() => {
         if (data) {
@@ -42,7 +42,7 @@ export class WalletsStore {
         const data = MpcWallets.schema.currentSchema.parse(
           toJS(this.mpcWallets.toJSON()),
         );
-        await this.kvStore.set("mpc-wallets", data);
+        await this.storage.set(data);
       });
     } catch (e) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
