@@ -1,5 +1,8 @@
 import { HomeChain } from "@/home-chain";
-import { MultisigKeyEncryption, SharesLocalEncryption } from "@/lib/encryption";
+import {
+  MultisigKeyEncryption,
+  SharesEncryptionForClient,
+} from "@/lib/encryption";
 import { rootStore } from "@/stores";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
@@ -222,7 +225,9 @@ export class NewOnboardingPayload implements Draftable {
     if (this._encryptedShares) return;
     invariant(this._shares, "Shares are not available");
 
-    const sharesLocalEncryption = new SharesLocalEncryption(this._multisigKey);
+    const sharesLocalEncryption = new SharesEncryptionForClient(
+      this._multisigKey,
+    );
     const { easy, backup } = await sharesLocalEncryption.encrypt({
       easy: this._shares.easyShare,
       backup: this._shares.backupShare,

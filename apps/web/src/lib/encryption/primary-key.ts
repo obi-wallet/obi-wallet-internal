@@ -7,8 +7,12 @@ import {
   Secp256k1Encryption,
 } from "@/lib/encryption/secp256k1";
 import { Base64EncodedString } from "@obi-wallet/encoding";
-import { MultisigKey } from "@obi-wallet/sdk";
-import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import {
+  MultisigKey,
+  parsePrimaryKeyEncryptedData,
+  PrimaryKeyEncryptedData,
+} from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 
 export class PrimaryKeyEncryption {
@@ -24,11 +28,13 @@ export class PrimaryKeyEncryption {
     );
   }
 
-  public async encrypt(data: string): Promise<string> {
-    return serialize([
-      await this.primaryKeyEncryption.encrypt(data),
-      await this.multisigKeyEncryption.encrypt(data),
-    ]);
+  public async encrypt(data: string): Promise<PrimaryKeyEncryptedData> {
+    return PrimaryKeyEncryptedData.parse(
+      serialize([
+        await this.primaryKeyEncryption.encrypt(data),
+        await this.multisigKeyEncryption.encrypt(data),
+      ]),
+    );
   }
 }
 
@@ -37,14 +43,11 @@ export class PrimaryKeyDecryption {
     data,
     privateKey,
   }: {
-    data: string;
+    data: PrimaryKeyEncryptedData;
     privateKey: Base64EncodedString;
   }) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [primaryKeyEncrypted, _multisigKeyEncrypted] = deserialize(data) as [
-      Base64EncodedString,
-      string,
-    ];
+    const [primaryKeyEncrypted, _multisigKeyEncrypted] =
+      parsePrimaryKeyEncryptedData(data);
     return await new Secp256k1Decryption(privateKey).decrypt(
       primaryKeyEncrypted,
     );
@@ -54,14 +57,11 @@ export class PrimaryKeyDecryption {
     data,
     input,
   }: {
-    data: string;
+    data: PrimaryKeyEncryptedData;
     input: (Base64EncodedString | null)[];
   }) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [_primaryKeyEncrypted, multisigKeyEncrypted] = deserialize(data) as [
-      Base64EncodedString,
-      string,
-    ];
+    const [_primaryKeyEncrypted, multisigKeyEncrypted] =
+      parsePrimaryKeyEncryptedData(data);
     return await new MultisigKeyDecryption(input).decrypt(multisigKeyEncrypted);
   }
 }

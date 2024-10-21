@@ -1,6 +1,12 @@
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { MultisigKeyDecryption, PrimaryKeyDecryption } from "@/lib/encryption";
-import { EasyShare, MultisigKey } from "@obi-wallet/sdk";
+import {
+  EasyShare,
+  EncryptedEasyShareForClient,
+  MultisigKey,
+  MultisigKeyEncryptedData,
+  PrimaryKeyEncryptedData,
+} from "@obi-wallet/sdk";
 import { deserialize } from "@obi-wallet/sdk-json";
 
 export const IntentionsResults = Map<string, IntentionsResult>;
@@ -11,7 +17,7 @@ export async function handleMultisigKeyDecryptedMessages({
   multisigKey,
   results,
 }: {
-  multisigKeyEncryptedMessages: string[];
+  multisigKeyEncryptedMessages: MultisigKeyEncryptedData[];
   multisigKey: MultisigKey;
   results: IntentionsResults;
 }): Promise<string[]> {
@@ -33,7 +39,7 @@ export async function handleMultisigKeyDecryptedMessage({
   results,
   index,
 }: {
-  multisigKeyEncryptedMessage: string;
+  multisigKeyEncryptedMessage: MultisigKeyEncryptedData;
   multisigKey: MultisigKey;
   results: IntentionsResults;
   index: number;
@@ -53,7 +59,7 @@ export async function handlePrimaryKeyDecryptedMessages({
   multisigKey,
   results,
 }: {
-  primaryKeyEncryptedMessages: string[];
+  primaryKeyEncryptedMessages: PrimaryKeyEncryptedData[];
   multisigKey: MultisigKey;
   results: IntentionsResults;
 }) {
@@ -75,7 +81,7 @@ export async function handlePrimaryKeyDecryptedMessage({
   results,
   index,
 }: {
-  primaryKeyEncryptedMessage: string;
+  primaryKeyEncryptedMessage: PrimaryKeyEncryptedData;
   multisigKey: MultisigKey;
   results: IntentionsResults;
   index: number;
@@ -97,7 +103,7 @@ export async function handleEncryptedEasyShare({
   multisigKey,
   results,
 }: {
-  encryptedEasyShare: string;
+  encryptedEasyShare: EncryptedEasyShareForClient;
   multisigKey: MultisigKey;
   results: IntentionsResults;
 }) {

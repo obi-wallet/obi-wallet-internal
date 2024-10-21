@@ -1,5 +1,8 @@
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { MultisigKeyEncryption, SharesLocalEncryption } from "@/lib/encryption";
+import {
+  MultisigKeyEncryption,
+  SharesEncryptionForClient,
+} from "@/lib/encryption";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
@@ -25,7 +28,7 @@ export function useGetWallet() {
     const shares = payload.shares;
 
     const owner = state.ownerDraft.value;
-    const localEncryption = new SharesLocalEncryption(owner);
+    const localEncryption = new SharesEncryptionForClient(owner);
     const multisigKeyEncryption = new MultisigKeyEncryption(owner.publicKey);
     const [encryptedShares, encryptedPrivateKey] = await Promise.all([
       localEncryption.encrypt(shares),

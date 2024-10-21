@@ -1,5 +1,11 @@
 import { PrimaryKeyEncryption } from "@/lib/encryption/primary-key";
-import { BackupShare, EasyShare, MultisigKey } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  EncryptedBackupShare,
+  EncryptedEasyShareForClient,
+  MultisigKey,
+} from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 
 import { MultisigKeyEncryption } from "./multisig-key";
@@ -11,12 +17,14 @@ export class EasyShareEncryption {
     this.primaryKeyEncryption = new PrimaryKeyEncryption(multisigKey);
   }
 
-  public async encrypt(share: EasyShare): Promise<string> {
-    return await this.primaryKeyEncryption.encrypt(serialize(share));
+  public async encrypt(share: EasyShare): Promise<EncryptedEasyShareForClient> {
+    return EncryptedEasyShareForClient.parse(
+      await this.primaryKeyEncryption.encrypt(serialize(share)),
+    );
   }
 }
 
-export class SharesLocalEncryption {
+export class SharesEncryptionForClient {
   protected easyEncryption: EasyShareEncryption;
   protected backupEncryption: MultisigKeyEncryption;
 
@@ -28,11 +36,17 @@ export class SharesLocalEncryption {
   public async encrypt(shares: {
     easy: EasyShare;
     backup: BackupShare;
-  }): Promise<{ easy: string; backup: string }>;
+  }): Promise<{
+    easy: EncryptedEasyShareForClient;
+    backup: EncryptedBackupShare;
+  }>;
   public async encrypt(shares: {
     easy?: EasyShare;
     backup: BackupShare;
-  }): Promise<{ easy?: string | undefined; backup: string }>;
+  }): Promise<{
+    easy?: EncryptedEasyShareForClient | undefined;
+    backup: EncryptedBackupShare;
+  }>;
   public async encrypt(shares: { easy?: EasyShare; backup: BackupShare }) {
     const [easy, backup] = await Promise.all([
       shares.easy ? this.easyEncryption.encrypt(shares.easy) : undefined,
@@ -40,7 +54,7 @@ export class SharesLocalEncryption {
     ]);
     return {
       easy,
-      backup,
+      backup: EncryptedBackupShare.parse(backup),
     };
   }
 }

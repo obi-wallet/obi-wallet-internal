@@ -4,11 +4,14 @@ import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
+  EncryptedBackupShare,
+  EncryptedEasyShareForClient,
   HomeChainId,
   KeyType,
   MpcWallet,
   MpcWalletSchema,
   MultisigKey,
+  MultisigKeyEncryptedData,
   ObservableMultisigKey,
   Serialized,
   WalletData,
@@ -60,13 +63,13 @@ export interface WalletDataFlowState {
     backup: BackupShare;
   } | null;
   locallyEncryptedSharesByPreviousOwner: {
-    easy: string;
-    backup: string;
+    easy: EncryptedEasyShareForClient;
+    backup: EncryptedBackupShare;
   } | null;
   ed25519KeyPair: Ed25519KeyPair | null;
   ed25519KeyPairPreviousOwner: {
     publicKey: Base58EncodedString;
-    encryptedPrivateKey: string;
+    encryptedPrivateKey: MultisigKeyEncryptedData;
   } | null;
   onDone({
     wallet,
@@ -120,10 +123,7 @@ export function walletDataToMultisigKey({
   wallet.owner.keys.forEach((key) => {
     switch (key.type) {
       case KeyType.Passkey:
-        multisigKey.addPendingRecoveryKey({
-          type: KeyType.Passkey,
-          publicKey: key.publicKey,
-        });
+        multisigKey.addPasskeyKey(key.publicKey);
         break;
       case KeyType.Phone:
         multisigKey.addPhoneKey(key.publicKey);
@@ -132,10 +132,7 @@ export function walletDataToMultisigKey({
         multisigKey.addTelegramKey(key.publicKey);
         break;
       case KeyType.Cloud:
-        multisigKey.addPendingRecoveryKey({
-          type: KeyType.Cloud,
-          publicKey: key.publicKey,
-        });
+        multisigKey.addCloudKey(key.publicKey);
         break;
     }
   });
@@ -217,14 +214,14 @@ export interface WalletDataFlowStatePayload {
       backup: BackupShare;
     };
     locallyEncryptedSharesByPreviousOwner?: {
-      easy: string;
-      backup: string;
+      easy: EncryptedEasyShareForClient;
+      backup: EncryptedBackupShare;
     };
     ed25519KeyPair?: Ed25519KeyPair;
     ed25519KeyPairPreviousOwner?:
       | {
           publicKey: Base58EncodedString;
-          encryptedPrivateKey: string;
+          encryptedPrivateKey: MultisigKeyEncryptedData;
         }
       | undefined;
   };

@@ -121,20 +121,6 @@ export class MultisigKey {
     });
   }
 
-  // TODO: probably no longer needed
-  public addPendingRecoveryKey({
-    type,
-    publicKey,
-  }: {
-    type: KeyType;
-    publicKey: Secp256k1PublicKey;
-  }) {
-    return this.addKey({
-      type,
-      publicKey,
-    });
-  }
-
   public removeKeyByPublicKey(publicKey: Secp256k1PublicKey) {
     this.setKeys(
       this._keys.filter((key) => {
@@ -152,8 +138,11 @@ export class MultisigKey {
   }
 
   protected get primaryKeyIndex() {
-    if (!this._primaryKey) return null;
-    const index = this._keys.indexOf(this._primaryKey);
+    const primaryKey = this._primaryKey;
+    if (!primaryKey) return null;
+    const index = this._keys.findIndex((key) => {
+      return key.publicKey.value === primaryKey.publicKey.value;
+    });
     return index !== -1 ? index : null;
   }
 
@@ -176,15 +165,6 @@ export class MultisigKey {
   }
 
   protected isKeyOfType<T extends KeyType>(type: T) {
-    return (
-      key: z.infer<typeof KeySchema>,
-    ): key is KeySubclassTypeMapping[T] => {
-      return key.type === type;
-    };
-  }
-
-  // TODO: probably no longer needed
-  protected isUsableKeyOfType<T extends KeyType>(type: T) {
     return (
       key: z.infer<typeof KeySchema>,
     ): key is KeySubclassTypeMapping[T] => {

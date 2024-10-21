@@ -1,7 +1,16 @@
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { Base64EncodedString } from "@obi-wallet/encoding";
-import { KeySchema, MultisigKey } from "@obi-wallet/sdk";
-import { deserialize } from "@obi-wallet/sdk-json";
+import {
+  AesGcmEncryptedData,
+  EncryptedEasyShareForClient,
+  KeySchema,
+  MultisigKey,
+  MultisigKeyEncryptedData,
+  parseMultisigKeyEncryptedData,
+  parsePrimaryKeyEncryptedData,
+  PrimaryKeyEncryptedData,
+  Secp256k1EncryptedData,
+} from "@obi-wallet/sdk";
 import { fromPairs, splitAt } from "ramda";
 import { z } from "zod";
 
@@ -21,16 +30,16 @@ interface MultisigKeyEncryptedMessage {
 }
 
 interface NewMultisigKeyEncryptedMessage {
-  encryptedMessage: Base64EncodedString;
-  encryptedShares: Record<string, Base64EncodedString>;
+  encryptedMessage: AesGcmEncryptedData;
+  encryptedShares: Record<string, Secp256k1EncryptedData>;
 }
 
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
-  decryptEasyShare: string | null;
-  decryptMessages: Base64EncodedString[];
-  decryptPrimaryKeyEncryptedMessages: string[];
-  decryptMultisigKeyEncryptedMessages: string[];
+  decryptEasyShare: EncryptedEasyShareForClient | null;
+  decryptMessages: Secp256k1EncryptedData[];
+  decryptPrimaryKeyEncryptedMessages: PrimaryKeyEncryptedData[];
+  decryptMultisigKeyEncryptedMessages: MultisigKeyEncryptedData[];
 }
 
 export interface IntentionsResult {
@@ -112,13 +121,10 @@ export abstract class IntentionsHandler {
   }
 
   protected stringToMultisigKeyEncryptedMessage(
-    message: string,
+    message: MultisigKeyEncryptedData,
   ): MultisigKeyEncryptedMessage {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encryptedMessage, ...encryptedShares] = deserialize(message) as [
-      Base64EncodedString,
-      ...Base64EncodedString[],
-    ];
+    const [encryptedMessage, ...encryptedShares] =
+      parseMultisigKeyEncryptedData(message);
 
     return {
       encryptedMessage,
@@ -127,11 +133,10 @@ export abstract class IntentionsHandler {
   }
 
   protected stringToPrimaryKeyEncryptedMessage(
-    message: string,
+    message: PrimaryKeyEncryptedData,
   ): PrimaryKeyEncryptedMessage {
     const [primaryKeyEncryptedMessage, multisigKeyEncryptedMessage] =
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      deserialize(message) as [Base64EncodedString, string];
+      parsePrimaryKeyEncryptedData(message);
     return {
       primaryKeyEncryptedMessage,
       multisigKeyEncryptedMessage: this.stringToMultisigKeyEncryptedMessage(
@@ -189,7 +194,7 @@ export abstract class NewIntentionsHandler {
     };
   }
 
-  protected getMessagesToDecrypt(publicKey: string) {
+  protected getMessagesToDecrypt(publicKey: string): Secp256k1EncryptedData[] {
     return [
       ...this.payload.decryptMessages,
       ...(this.payload.decryptEasyShare
@@ -212,14 +217,10 @@ export abstract class NewIntentionsHandler {
   }
 
   protected stringToMultisigKeyEncryptedMessage(
-    message: string,
+    message: MultisigKeyEncryptedData,
   ): NewMultisigKeyEncryptedMessage {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encryptedMessage, ...encryptedShares] = deserialize(message) as [
-      Base64EncodedString,
-      ...Base64EncodedString[],
-    ];
-
+    const [encryptedMessage, ...encryptedShares] =
+      parseMultisigKeyEncryptedData(message);
     return {
       encryptedMessage,
       encryptedShares: fromPairs(
@@ -231,11 +232,10 @@ export abstract class NewIntentionsHandler {
   }
 
   protected stringToPrimaryKeyEncryptedMessage(
-    message: string,
+    message: PrimaryKeyEncryptedData,
   ): NewPrimaryKeyEncryptedMessage {
     const [primaryKeyEncryptedMessage, multisigKeyEncryptedMessage] =
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      deserialize(message) as [Base64EncodedString, string];
+      parsePrimaryKeyEncryptedData(message);
     return {
       primaryKeyEncryptedMessage,
       multisigKeyEncryptedMessage: this.stringToMultisigKeyEncryptedMessage(

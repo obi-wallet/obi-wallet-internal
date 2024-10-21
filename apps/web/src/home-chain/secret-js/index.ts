@@ -6,23 +6,21 @@ import {
   getOwnerData,
   lookupPublicKey,
 } from "@/wallet-data-backup/worker-client";
-import {
-  Base64EncodedString,
-  Encoding,
-  HexEncodedString,
-} from "@obi-wallet/encoding";
+import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import {
+  EncryptedEasyShareForBackup,
   HomeChainId,
   MpcWallet,
   MpcWalletSchema,
+  parsePrimaryKeyEncryptedData,
   Secp256k1PublicKey,
   SecretJsClient,
   SecretJsHomeChains,
   WalletData,
 } from "@obi-wallet/sdk";
 import { Ed25519PublicKey } from "@obi-wallet/sdk-ed25519";
-import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import { serialize } from "@obi-wallet/sdk-json";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -124,11 +122,9 @@ export class SecretJsHomeChain {
   }): Promise<WalletData> {
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const [_primaryKeyEncrypted, multisigKeyEncrypted] = deserialize(
-        wallet.encryptedShares.easy,
-      ) as [Base64EncodedString, string];
-      return multisigKeyEncrypted;
+      const [_primaryKeyEncrypted, multisigKeyEncrypted] =
+        parsePrimaryKeyEncryptedData(wallet.encryptedShares.easy);
+      return EncryptedEasyShareForBackup.parse(multisigKeyEncrypted);
     }
     const encryptedEasyShare = await getEncryptedEasyShare();
 

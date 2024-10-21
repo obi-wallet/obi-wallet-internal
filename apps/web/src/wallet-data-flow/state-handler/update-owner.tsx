@@ -18,6 +18,8 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
   EasyShare,
+  EncryptedEasyShareForClient,
+  MultisigKeyEncryptedData,
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
@@ -290,7 +292,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
     },
   });
 
-  function getDecryptEasyShare(): string | null {
+  function getDecryptEasyShare(): EncryptedEasyShareForClient | null {
     if (!proposedUpdate && state.locallyEncryptedSharesByPreviousOwner) {
       return state.locallyEncryptedSharesByPreviousOwner.easy;
     }
@@ -298,7 +300,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
     return null;
   }
 
-  function getMultisigKeyEncryptedMessages(): string[] {
+  function getMultisigKeyEncryptedMessages(): MultisigKeyEncryptedData[] {
     if (
       !proposedUpdate &&
       state.locallyEncryptedSharesByPreviousOwner &&

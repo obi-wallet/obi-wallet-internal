@@ -99,7 +99,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
     },
   });
 
-  function getMultisigKeyEncryptedMessages(): string[] {
+  function getMultisigKeyEncryptedMessages() {
     const encryptedKeyMetaData = walletData.encryptedKeyMetaData;
     const encryptedEasyShare = walletData.encryptedShares.easy;
     const encryptedBackupShare = walletData.encryptedShares.backup;

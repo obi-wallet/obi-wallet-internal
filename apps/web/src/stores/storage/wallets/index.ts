@@ -6,6 +6,7 @@ import {
 } from "@obi-wallet/headless-ui-store";
 import {
   AbstractSerialized,
+  EncryptedEasyShareForClient,
   KeySchema,
   LegacyKey,
   LegacyKeySchema,
@@ -81,17 +82,15 @@ export async function migrateWallet(
   );
 
   const easyShare = Redacted.make(
-    await easyShareDecryption.decrypt(
-      Base64EncodedString.parse(data.encryptedShares.easy),
-    ),
+    await easyShareDecryption.decrypt(data.encryptedShares.easy),
   );
 
   const owner = migrateMultisigKey(data.owner);
   const easyShareEncryption = new PrimaryKeyEncryption(
     MultisigKey.create(data.homeChain, owner),
   );
-  const encryptedEasyShare = await easyShareEncryption.encrypt(
-    Redacted.value(easyShare),
+  const encryptedEasyShare = EncryptedEasyShareForClient.parse(
+    await easyShareEncryption.encrypt(Redacted.value(easyShare)),
   );
   Redacted.unsafeWipe(easyShare);
 

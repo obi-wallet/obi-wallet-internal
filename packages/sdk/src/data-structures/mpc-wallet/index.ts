@@ -8,6 +8,9 @@ export {
   WalletData,
   LegacyMpcWalletSchema,
   MpcWalletSchema,
+  EncryptedEasyShareForClient,
+  EncryptedEasyShareForBackup,
+  EncryptedBackupShare,
 } from "./schema";
 
 export type MpcWallet = MpcWalletInterface;
