@@ -1,11 +1,9 @@
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { HomeChainId, WalletData } from "@obi-wallet/sdk";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import invariant from "tiny-invariant";
 
 export enum WalletDataFlowStateType {
   Initial = "initial",
-  NoWalletsFound = "noWalletsFound",
   DecryptData = "decryptData",
 }
 
@@ -14,10 +12,6 @@ export interface WalletDataFlowInitialState {
   payload: {
     chainId: HomeChainId;
   };
-}
-
-export interface WalletDataFlowNoWalletsFoundState {
-  type: WalletDataFlowStateType.NoWalletsFound;
 }
 
 export interface WalletDataFlowDecryptDataState {
@@ -30,7 +24,6 @@ export interface WalletDataFlowDecryptDataState {
 
 export type WalletDataFlowState =
   | WalletDataFlowInitialState
-  | WalletDataFlowNoWalletsFoundState
   | WalletDataFlowDecryptDataState;
 
 export interface SomeOtherAction {
@@ -40,7 +33,7 @@ export interface SomeOtherAction {
 export async function initialStateTransition(
   state: WalletDataFlowInitialState,
   recoverKeyPublicKey: Secp256k1PublicKey,
-): Promise<WalletDataFlowNoWalletsFoundState | WalletDataFlowDecryptDataState> {
+): Promise<WalletDataFlowInitialState | WalletDataFlowDecryptDataState> {
   const wallet = await new SecretJsHomeChain(
     state.payload.chainId,
   ).lookupWalletBackup({
@@ -50,7 +43,8 @@ export async function initialStateTransition(
 
   if (!wallet) {
     return {
-      type: WalletDataFlowStateType.NoWalletsFound,
+      type: WalletDataFlowStateType.Initial,
+      payload: state.payload,
     };
   }
 
@@ -63,32 +57,14 @@ export async function initialStateTransition(
   };
 }
 
-export async function noWalletsFoundTransition(
-  state: WalletDataFlowNoWalletsFoundState,
-  _action: unknown,
-): Promise<WalletDataFlowNoWalletsFoundState | WalletDataFlowDecryptDataState> {
-  return state;
-}
-
 export async function decryptDataTransition(
   state: WalletDataFlowDecryptDataState,
   _action: unknown,
-): Promise<WalletDataFlowNoWalletsFoundState | WalletDataFlowDecryptDataState> {
+): Promise<WalletDataFlowDecryptDataState> {
   return state;
 }
 
 export const transitions = {
   [WalletDataFlowStateType.Initial]: initialStateTransition,
-  [WalletDataFlowStateType.NoWalletsFound]: noWalletsFoundTransition,
   [WalletDataFlowStateType.DecryptData]: decryptDataTransition,
-};
-
-export type WalletDataFlowDispatch = typeof initialStateTransition &
-  typeof noWalletsFoundTransition &
-  typeof decryptDataTransition;
-
-export const dispatch: WalletDataFlowDispatch = async (state, action) => {
-  invariant(state.type in transitions, "Invalid state");
-  // @ts-expect-error Something TypeScript can't figure out completely
-  return await transitions[state.type](state, action);
 };

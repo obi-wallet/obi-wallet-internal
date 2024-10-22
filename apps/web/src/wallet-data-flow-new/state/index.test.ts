@@ -2,8 +2,8 @@ import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_WITH_RECOVERY_KEY } from "@/mocks/wallet";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
-  dispatch,
   SomeOtherAction,
+  transitions,
   WalletDataFlowDecryptDataState,
   WalletDataFlowInitialState,
   WalletDataFlowStateType,
@@ -21,7 +21,7 @@ test("TS fails for non-expected actions", async () => {
   };
   const action: SomeOtherAction = { type: "someOtherAction" };
   // @ts-expect-error Asserted failure
-  await dispatch(state, action);
+  await transitions[state.type](state, action);
 });
 
 test("Recover by primary key, no wallets found", async () => {
@@ -39,8 +39,11 @@ test("Recover by primary key, no wallets found", async () => {
     type: WalletDataFlowStateType.Initial,
     payload: { chainId: SecretJsHomeChainId.MAINNET },
   };
-  const nextState = await dispatch(state, MOCK_PRIMARY_KEY_KEYPAIR.publicKey);
-  expect(nextState.type).toBe(WalletDataFlowStateType.NoWalletsFound);
+  const nextState = await transitions[state.type](
+    state,
+    MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
+  );
+  expect(nextState.type).toBe(WalletDataFlowStateType.Initial);
 
   server.close();
 });
@@ -71,7 +74,10 @@ test("Recover by primary key, wallet found", async () => {
     type: WalletDataFlowStateType.Initial,
     payload: { chainId: SecretJsHomeChainId.MAINNET },
   };
-  const nextState = await dispatch(state, MOCK_PRIMARY_KEY_KEYPAIR.publicKey);
+  const nextState = await transitions[state.type](
+    state,
+    MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
+  );
   expect(nextState.type).toBe(WalletDataFlowStateType.DecryptData);
   expect(
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

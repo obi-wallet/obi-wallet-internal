@@ -1,15 +1,14 @@
-import { Text } from "@/components";
 import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
-import { AsyncButton } from "@/ui/button";
 import { SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 import {
-  dispatch,
+  transitions,
   WalletDataFlowState,
   WalletDataFlowStateType,
 } from "./state";
+import { FirstKeyStep } from "./state-handler/first-key";
 
 export const WalletDataFlow = observer(function WalletDataFlow() {
   const [state, setState] = useState<WalletDataFlowState>({
@@ -19,20 +18,19 @@ export const WalletDataFlow = observer(function WalletDataFlow() {
     },
   });
 
-  console.log(state);
-
   if (state.type === WalletDataFlowStateType.Initial) {
     return (
-      <>
-        <Text>First Key</Text>
-        <AsyncButton
-          onClick={async () => {
-            setState(await dispatch(state, MOCK_PRIMARY_KEY_KEYPAIR.publicKey));
-          }}
-        >
-          Mock first key
-        </AsyncButton>
-      </>
+      <FirstKeyStep
+        state={state}
+        onChooseKey={async () => {
+          const nextState = await transitions[state.type](
+            state,
+            MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
+          );
+          setState(nextState);
+          return nextState;
+        }}
+      />
     );
   }
 
