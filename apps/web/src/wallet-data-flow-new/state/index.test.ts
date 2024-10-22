@@ -2,10 +2,7 @@ import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_WITH_RECOVERY_KEY } from "@/mocks/wallet";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
-  SomeOtherAction,
-  transitions,
-  WalletDataFlowDecryptDataState,
-  WalletDataFlowInitialState,
+  InitialState,
   WalletDataFlowStateType,
 } from "@/wallet-data-flow-new/state/index";
 import { SecretJsHomeChainId, WalletData } from "@obi-wallet/sdk";
@@ -13,16 +10,7 @@ import { SecretJsHomeChainId, WalletData } from "@obi-wallet/sdk";
 import { http, HttpResponse } from "msw";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { setupServer } from "msw/node";
-
-test("TS fails for non-expected actions", async () => {
-  const state: WalletDataFlowInitialState = {
-    type: WalletDataFlowStateType.Initial,
-    payload: { chainId: SecretJsHomeChainId.MAINNET },
-  };
-  const action: SomeOtherAction = { type: "someOtherAction" };
-  // @ts-expect-error Asserted failure
-  await transitions[state.type](state, action);
-});
+import invariant from "tiny-invariant";
 
 test("Recover by primary key, no wallets found", async () => {
   const server = setupServer(
@@ -35,15 +23,11 @@ test("Recover by primary key, no wallets found", async () => {
   );
   server.listen();
 
-  const state: WalletDataFlowInitialState = {
-    type: WalletDataFlowStateType.Initial,
-    payload: { chainId: SecretJsHomeChainId.MAINNET },
-  };
-  const nextState = await transitions[state.type](
-    state,
+  const state = new InitialState({ chainId: SecretJsHomeChainId.MAINNET });
+  const nextState = await state.setRecoverPublicKey(
     MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
   );
-  expect(nextState.type).toBe(WalletDataFlowStateType.Initial);
+  expect(nextState._tag).toEqual(WalletDataFlowStateType.NoWalletFound);
 
   server.close();
 });
@@ -70,19 +54,15 @@ test("Recover by primary key, wallet found", async () => {
   );
   server.listen();
 
-  const state: WalletDataFlowInitialState = {
-    type: WalletDataFlowStateType.Initial,
-    payload: { chainId: SecretJsHomeChainId.MAINNET },
-  };
-  const nextState = await transitions[state.type](
-    state,
+  const state = new InitialState({ chainId: SecretJsHomeChainId.MAINNET });
+  const nextState = await state.setRecoverPublicKey(
     MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
   );
-  expect(nextState.type).toBe(WalletDataFlowStateType.DecryptData);
-  expect(
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    (nextState as WalletDataFlowDecryptDataState).payload.walletData,
-  ).toEqual(data);
+  invariant(nextState._tag === WalletDataFlowStateType.DecryptData);
+  expect(nextState.recoverKeyPublicKey).toEqual(
+    MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
+  );
+  expect(nextState.walletData).toEqual(data);
 
   server.close();
 });

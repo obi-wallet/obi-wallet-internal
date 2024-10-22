@@ -6,24 +6,24 @@ import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
 import { AsyncButton } from "@/ui/button";
 import {
-  WalletDataFlowInitialState,
+  InitialState,
+  NoWalletFoundState,
   WalletDataFlowState,
+  WalletDataFlowStateType,
 } from "@/wallet-data-flow-new/state";
 import { getPasskey, KeyType, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 export interface FirstKeyStepProps {
-  state: WalletDataFlowInitialState;
-  onChooseKey: (publicKey: Secp256k1PublicKey) => Promise<WalletDataFlowState>;
+  state: InitialState | NoWalletFoundState;
+  setState: (state: WalletDataFlowState) => void;
 }
 
 export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
   state,
-  onChooseKey,
+  setState,
 }) {
-  const [noWalletsFoundModal, setNoWalletsFoundModal] =
-    useState<boolean>(false);
   const [modal, setModal] = useState<KeyType | null>(null);
   const [cloudKeyFiles, setCloudKeyFiles] = useState<
     { id: string; name: string }[] | null
@@ -31,9 +31,8 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
   const { readFiles, readFileById } = useGoogleAuth();
 
   async function setKey(publicKey: Secp256k1PublicKey) {
-    const nextState = await onChooseKey(publicKey);
-    if (state.type === nextState.type) {
-      setNoWalletsFoundModal(true);
+    if (state._tag === WalletDataFlowStateType.Initial) {
+      setState(await state.setRecoverPublicKey(publicKey));
     }
   }
 
@@ -52,7 +51,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           onClose={onClose}
         >
           <AddPhoneKey
-            onSubmit={async ({ publicKey, keyMetaData }) => {
+            onSubmit={async ({ publicKey }) => {
               // TODO: handle extra keyMetaData
               await setKey(publicKey);
             }}
@@ -71,7 +70,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           onClose={onClose}
         >
           <AddTelegramKey
-            onSubmit={async ({ publicKey, keyMetaData }) => {
+            onSubmit={async ({ publicKey }) => {
               // TODO: handle extra keyMetaData
               await setKey(publicKey);
             }}
@@ -114,7 +113,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
   }
 
   function renderProxyWalletsModal() {
-    if (noWalletsFoundModal) {
+    if (state._tag === WalletDataFlowStateType.NoWalletFound) {
       return renderModal(
         <Modal title="Existing Wallets">
           <Text color="zinc" size="xs">
@@ -123,7 +122,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           </Text>
           <Button
             onClick={() => {
-              setNoWalletsFoundModal(false);
+              setState(state.closeModal());
             }}
             variant="primary"
             className="w-full"
