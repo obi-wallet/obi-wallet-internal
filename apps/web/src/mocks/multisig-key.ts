@@ -9,7 +9,7 @@ export const MOCK_PRIMARY_KEY_KEYPAIR = Secp256k1KeyPair.parse({
   },
 });
 
-export const MOCK_NON_PRIMARY_KEY_KEYPAIR = Secp256k1KeyPair.parse({
+export const MOCK_RECOVERY_KEY_KEYPAIR = Secp256k1KeyPair.parse({
   privateKey: "LMG9tQFAJrGuq8pMT7jZtecewV6226I5zguHHg94qIU=",
   publicKey: {
     type: "tendermint/PubKeySecp256k1",
@@ -24,8 +24,8 @@ export const MOCK_MULTISIG_KEY_DATA = MultisigKeySchema.parse({
       publicKey: MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
     },
     {
-      type: KeyType.Passkey,
-      publicKey: MOCK_NON_PRIMARY_KEY_KEYPAIR.publicKey,
+      type: KeyType.Telegram,
+      publicKey: MOCK_RECOVERY_KEY_KEYPAIR.publicKey,
     },
   ],
   primaryKeyIndex: 0,

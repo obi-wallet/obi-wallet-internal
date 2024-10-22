@@ -1,9 +1,7 @@
 import {
   HomeChainId,
   MultisigKeySchema,
-  PendingRecoveryKeySchema,
   Secp256k1PublicKey,
-  UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
@@ -65,23 +63,7 @@ export function getOwnerData(owner: z.infer<typeof MultisigKeySchema>) {
   return {
     threshold: owner.threshold.toString(),
     keys: owner.keys.map((key) => {
-      const usableKeyResponse = UsableKeySchema.migratableSchema.safeParse(key);
-      if (usableKeyResponse.success) {
-        return {
-          type: usableKeyResponse.data.type,
-          publicKey: usableKeyResponse.data.payload.publicKey,
-        };
-      }
-      const pendingRecoveryKeyResponse =
-        PendingRecoveryKeySchema.migratableSchema.safeParse(key);
-      if (pendingRecoveryKeyResponse.success) {
-        return {
-          type: pendingRecoveryKeyResponse.data.payload.type,
-          publicKey: pendingRecoveryKeyResponse.data.payload.publicKey,
-        };
-      }
-
-      throw new Error(`Invalid key: ${serialize(key)}`);
+      return key;
     }),
   };
 }

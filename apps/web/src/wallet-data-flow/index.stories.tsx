@@ -1,6 +1,9 @@
+import {
+  MOCK_PRIMARY_KEY_KEYPAIR,
+  MOCK_RECOVERY_KEY_KEYPAIR,
+} from "@/mocks/multisig-key";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
-import { Base64EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
@@ -8,16 +11,11 @@ import {
   SecretJsHomeChainId,
   WalletData,
 } from "@obi-wallet/sdk";
-import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { serialize } from "@obi-wallet/sdk-json";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DateTime } from "luxon";
 
 import { WalletDataFlow } from ".";
-import {
-  MOCK_NON_PRIMARY_KEY_KEYPAIR,
-  MOCK_PRIMARY_KEY_KEYPAIR,
-} from "@/mocks/multisig-key";
-import { serialize } from "@obi-wallet/sdk-json";
 
 const meta = {
   // TODO: handle missing ed25510 key pair in WalletDataFlow
@@ -90,7 +88,7 @@ const primaryKey = ownerWithPrimaryKey.addPasskeyKey(
 );
 ownerWithPrimaryKey.setPrimaryKey(primaryKey);
 
-const newPrimaryKey = MOCK_NON_PRIMARY_KEY_KEYPAIR;
+const newPrimaryKey = MOCK_RECOVERY_KEY_KEYPAIR;
 const newOwner = ownerWithPrimaryKey.clone();
 newOwner.addPasskeyKey(newPrimaryKey.publicKey);
 

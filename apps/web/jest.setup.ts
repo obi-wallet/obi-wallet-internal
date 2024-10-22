@@ -7,3 +7,13 @@ jest.mock("nanoid/non-secure", () => {
     },
   };
 });
+
+// To avoid WASM issues
+jest.mock("sss-wasm", () => {
+  return {};
+});
+
+// To avoid ESM issues
+jest.mock("lodash-es", () => {
+  return {};
+});

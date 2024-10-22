@@ -3609,7 +3609,7 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     downshift: "npm:^9.0.8"
     ecies-wasm: "npm:^0.2.0"
-    effect: "npm:^3.9.2"
+    effect: "npm:^3.10.0"
     elliptic: "npm:^6.5.7"
     eslint: "npm:^8.57.1"
     eslint-plugin-storybook: "npm:^0.9.0"
@@ -10893,10 +10893,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:^3.9.2":
-  version: 3.9.2
-  resolution: "effect@npm:3.9.2"
-  checksum: 10c0/d868fa989deef7737ee59e54157f6abe02c71753f5f7d53156449dc2c325a16578f6ecfe5afc4aed5616db90bc908b2627ba1b56ab992a65a8c84222f203953b
+"effect@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "effect@npm:3.10.0"
+  dependencies:
+    fast-check: "npm:^3.21.0"
+  checksum: 10c0/9d59b7c50ece9e9f9b87df587941927f206e863226ebad607a0880aab3287d67d751288e796db138d6682a130c97a92361a881c2fa1b6864810905372ecff159
   languageName: node
   linkType: hard
 
@@ -12415,6 +12417,15 @@ __metadata:
   version: 0.1.8
   resolution: "eyes@npm:0.1.8"
   checksum: 10c0/4c79a9cbf45746d8c9f48cc957e35ad8ea336add1c7b8d5a0e002efc791a7a62b27b2188184ef1a1eea7bc3cd06b161791421e0e6c5fe78309705a162c53eea8
+  languageName: node
+  linkType: hard
+
+"fast-check@npm:^3.21.0":
+  version: 3.22.0
+  resolution: "fast-check@npm:3.22.0"
+  dependencies:
+    pure-rand: "npm:^6.1.0"
+  checksum: 10c0/15c70f83df655f9bdcec4f8ed7e3207a933bf6e22c220a4fafc7ea17a28a009bc5d0a85588689f5726e3514796745cb5b35e7295ce469ac286992548fd55cc1d
   languageName: node
   linkType: hard
 
@@ -18199,7 +18210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pure-rand@npm:^6.0.0":
+"pure-rand@npm:^6.0.0, pure-rand@npm:^6.1.0":
   version: 6.1.0
   resolution: "pure-rand@npm:6.1.0"
   checksum: 10c0/1abe217897bf74dcb3a0c9aba3555fe975023147b48db540aa2faf507aee91c03bf54f6aef0eb2bf59cc259a16d06b28eca37f0dc426d94f4692aeff02fb0e65

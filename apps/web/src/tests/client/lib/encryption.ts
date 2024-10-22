@@ -9,7 +9,7 @@ import {
 } from "@/lib/encryption";
 import {
   MOCK_MULTISIG_KEY_DATA,
-  MOCK_NON_PRIMARY_KEY_KEYPAIR,
+  MOCK_RECOVERY_KEY_KEYPAIR,
   MOCK_PRIMARY_KEY_KEYPAIR,
 } from "@/mocks/multisig-key";
 import { createTestSuite, expect } from "@/tests";
@@ -107,7 +107,7 @@ export const testSuite = createTestSuite(({ test }) => {
     // Two keys provided, should succeed
     await mockApproveIntentions({
       multisigKey,
-      keyPair: MOCK_NON_PRIMARY_KEY_KEYPAIR,
+      keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
       intentions,
       results,
     });
@@ -199,7 +199,7 @@ export const testSuite = createTestSuite(({ test }) => {
     // Two keys provided, should succeed
     await mockApproveIntentions({
       multisigKey,
-      keyPair: MOCK_NON_PRIMARY_KEY_KEYPAIR,
+      keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
       intentions,
       results,
     });
