@@ -7,6 +7,7 @@ import {
   WalletDataFlowState,
   WalletDataFlowStateType,
 } from "./state";
+import { DecryptData } from "./state-handler/decrypt-data";
 import { FirstKeyStep } from "./state-handler/first-key";
 
 export const WalletDataFlow = observer(function WalletDataFlow() {
@@ -24,6 +25,10 @@ export const WalletDataFlow = observer(function WalletDataFlow() {
     state._tag === WalletDataFlowStateType.NoWalletFound
   ) {
     return <FirstKeyStep state={state} dispatch={dispatch} />;
+  }
+
+  if (state._tag === WalletDataFlowStateType.WalletData) {
+    return <DecryptData state={state} dispatch={dispatch} />;
   }
 
   return null;
