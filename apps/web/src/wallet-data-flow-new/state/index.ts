@@ -1,5 +1,5 @@
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
-import { KeyMetaData } from "@/stores/key-meta-data";
+import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
 import {
   BackupShare,
@@ -31,19 +31,23 @@ export class InitialState extends Data.TaggedClass(
 )<{
   chainId: HomeChainId;
 }> {
-  public setRecoverPublicKey(recoverKeyPublicKey: Secp256k1PublicKey) {
+  public recoverByPublicKey(payload: {
+    publicKey: Secp256k1PublicKey;
+    keyMetaData: SingleKeyMetaData | null;
+  }) {
     return Effect.gen(this, function* () {
       const state = yield* WalletDataFlowState;
       const wallet = yield* Effect.promise(() => {
         return new SecretJsHomeChain(this.chainId).lookupWalletBackup({
           homeChainId: this.chainId,
-          publicKey: recoverKeyPublicKey,
+          publicKey: payload.publicKey,
         });
       });
       if (wallet) {
         yield* Ref.update(state, (_) => {
           return new WalletDataState({
-            recoverKeyPublicKey,
+            recoverKeyPublicKey: payload.publicKey,
+            recoverKeyMetaData: payload.keyMetaData,
             walletData: wallet,
           });
         });
@@ -79,11 +83,13 @@ export class WalletDataState extends Data.TaggedClass(
   WalletDataFlowStateType.WalletData,
 )<{
   recoverKeyPublicKey: Secp256k1PublicKey;
+  keyMetaData: KeyMetaData;
   walletData: WalletData;
   owner: MultisigKey;
 }> {
   public constructor(data: {
     recoverKeyPublicKey: Secp256k1PublicKey;
+    recoverKeyMetaData: SingleKeyMetaData | null;
     walletData: WalletData;
   }) {
     const owner = walletDataToMultisigKey({
@@ -97,7 +103,12 @@ export class WalletDataState extends Data.TaggedClass(
     ) {
       owner.setPrimaryKey(recoverKey);
     }
-    super({ ...data, owner });
+    const keyMetaData = data.recoverKeyMetaData
+      ? {
+          [data.recoverKeyPublicKey.value]: data.recoverKeyMetaData,
+        }
+      : {};
+    super({ ...data, owner, keyMetaData });
   }
 
   public setDecryptedData(data: {
@@ -109,6 +120,7 @@ export class WalletDataState extends Data.TaggedClass(
   }) {
     return Effect.gen(this, function* () {
       console.log("set decrypted data", data);
+      yield* Effect.void;
     });
   }
 

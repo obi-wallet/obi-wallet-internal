@@ -5,6 +5,7 @@ import { EffectStateDispatch } from "@/hooks/use-effect-state";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { AsyncButton } from "@/ui/button";
 import {
   InitialState,
@@ -31,9 +32,12 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
   >(null);
   const { readFiles, readFileById } = useGoogleAuth();
 
-  async function setKey(publicKey: Secp256k1PublicKey) {
+  async function setKey(data: {
+    publicKey: Secp256k1PublicKey;
+    keyMetaData: SingleKeyMetaData | null;
+  }) {
     if (state._tag === WalletDataFlowStateType.Initial) {
-      await dispatch(state.setRecoverPublicKey(publicKey));
+      await dispatch(state.recoverByPublicKey(data));
     }
   }
 
@@ -52,9 +56,8 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           onClose={onClose}
         >
           <AddPhoneKey
-            onSubmit={async ({ publicKey }) => {
-              // TODO: handle extra keyMetaData
-              await setKey(publicKey);
+            onSubmit={async ({ publicKey, keyMetaData }) => {
+              await setKey({ publicKey, keyMetaData });
             }}
             onCancel={onClose}
             askForName={false}
@@ -71,9 +74,8 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           onClose={onClose}
         >
           <AddTelegramKey
-            onSubmit={async ({ publicKey }) => {
-              // TODO: handle extra keyMetaData
-              await setKey(publicKey);
+            onSubmit={async ({ publicKey, keyMetaData }) => {
+              await setKey({ publicKey, keyMetaData });
             }}
             onCancel={onClose}
             askForName={false}
@@ -97,7 +99,10 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
                   onClick={async () => {
                     const keyPair = await readFileById(file.id);
                     if (keyPair) {
-                      await setKey(keyPair.publicKey);
+                      await setKey({
+                        publicKey: keyPair.publicKey,
+                        keyMetaData: null,
+                      });
                     }
                   }}
                   className="block w-full"
@@ -161,7 +166,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
       <AsyncButton
         onClick={async () => {
           const keyPair = await getPasskey();
-          await setKey(keyPair.publicKey);
+          await setKey({ publicKey: keyPair.publicKey, keyMetaData: null });
         }}
         className="block w-full"
         variant="primary"
