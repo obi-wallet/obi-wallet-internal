@@ -26,15 +26,25 @@ export type EffectStateDispatch<T extends EffectStateTag> = (
   p: EffectStateChanger<T>,
 ) => Promise<void>;
 
-export function useEffectState<T extends EffectStateTag>(
+export function useEffectState<
+  T extends EffectStateTag,
+  F extends EffectStateValue<T>,
+>(
   Tag: T,
   initialState: EffectStateValue<T>,
+  endOptions?:
+    | {
+        isFinalState: (state: EffectStateValue<T>) => state is F;
+        onDone: (state: F) => Promise<void>;
+      }
+    | undefined,
 ): {
   state: EffectStateValue<T>;
   dispatch: EffectStateDispatch<T>;
 } {
   const stateRef = useRef<Layer.Layer<Context.Tag.Identifier<T>> | null>(null);
   const initialStateRef = useRef<EffectStateValue<T>>(initialState);
+  const endOptionsRef = useRef(endOptions);
 
   const getLayer = useCallback((): Layer.Layer<Context.Tag.Identifier<T>> => {
     if (stateRef.current === null) {
@@ -58,6 +68,13 @@ export function useEffectState<T extends EffectStateTag>(
       > = Effect.gen(function* () {
         const state = yield* Tag;
         yield* Stream.runForEach(state.changes, (n) => {
+          const endOptions = endOptionsRef.current;
+          if (endOptions && endOptions.isFinalState(n)) {
+            return Effect.promise(async () => {
+              return await endOptions.onDone(n);
+            });
+          }
+
           listener(n);
           return Effect.void;
         });

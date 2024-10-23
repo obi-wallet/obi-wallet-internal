@@ -17,12 +17,13 @@ export enum WalletDataFlowStateType {
   Initial = "Initial",
   NoWalletFound = "NoWalletFound",
   WalletData = "WalletData",
+  Done = "Done",
 }
 
 export class WalletDataFlowState extends Context.Tag("WalletDataFlowState")<
   WalletDataFlowState,
   SubscriptionRef.SubscriptionRef<
-    InitialState | NoWalletFoundState | WalletDataState
+    InitialState | NoWalletFoundState | WalletDataState | DoneState
   >
 >() {}
 
@@ -111,7 +112,7 @@ export class WalletDataState extends Data.TaggedClass(
     super({ ...data, owner, keyMetaData });
   }
 
-  public setDecryptedData(data: {
+  public setDecryptedData(_data: {
     easyShare: EasyShare;
     backupShare: BackupShare;
     keyMetaData: KeyMetaData;
@@ -119,8 +120,14 @@ export class WalletDataState extends Data.TaggedClass(
     ed25519KeyPair: Ed25519KeyPair | null;
   }) {
     return Effect.gen(this, function* () {
-      console.log("set decrypted data", data);
-      yield* Effect.void;
+      // TODO: here we have three cases:
+      // 1) If we have a primary key and an ed25519KeyPair, we are done (previously: finishFlow)
+      // 2) If we have a primary key but no ed25519KeyPair, we need to generate one and then update the wallet data accordingly (set data)
+      // 3) If we have no primary key, we need to proceed to security settings
+      const state = yield* WalletDataFlowState;
+      yield* Ref.update(state, () => {
+        return new DoneState();
+      });
     });
   }
 
@@ -135,3 +142,5 @@ export class WalletDataState extends Data.TaggedClass(
     });
   }
 }
+
+export class DoneState extends Data.TaggedClass(WalletDataFlowStateType.Done) {}

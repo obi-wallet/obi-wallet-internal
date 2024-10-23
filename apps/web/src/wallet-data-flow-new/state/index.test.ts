@@ -1,3 +1,4 @@
+import { EffectStateValue } from "@/hooks/use-effect-state";
 import { MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE } from "@/mocks/mpc";
 import {
   MOCK_PRIMARY_KEY_KEYPAIR,
@@ -7,10 +8,8 @@ import { MOCK_WALLET_WITH_RECOVERY_KEY } from "@/mocks/wallet";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
   InitialState,
-  NoWalletFoundState,
   WalletDataFlowState,
   WalletDataFlowStateType,
-  WalletDataState,
 } from "@/wallet-data-flow-new/state/index";
 import { KeyType, SecretJsHomeChainId, WalletData } from "@obi-wallet/sdk";
 import { Effect, Layer, Ref, SubscriptionRef } from "effect";
@@ -41,9 +40,7 @@ function runTest(p: Effect.Effect<void, never, WalletDataFlowState>) {
       Layer.succeed(
         WalletDataFlowState,
         Effect.runSync(
-          SubscriptionRef.make<
-            InitialState | NoWalletFoundState | WalletDataState
-          >(
+          SubscriptionRef.make<EffectStateValue<typeof WalletDataFlowState>>(
             new InitialState({
               chainId: SecretJsHomeChainId.MAINNET,
             }),

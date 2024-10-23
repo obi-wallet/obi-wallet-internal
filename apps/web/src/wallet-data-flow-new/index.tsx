@@ -16,6 +16,14 @@ export const WalletDataFlow = observer(function WalletDataFlow() {
     new InitialState({
       chainId: SecretJsHomeChainId.MAINNET,
     }),
+    {
+      isFinalState: (state) => {
+        return state._tag === WalletDataFlowStateType.Done;
+      },
+      onDone: async (state) => {
+        console.log(state);
+      },
+    },
   );
 
   console.log(state._tag);
