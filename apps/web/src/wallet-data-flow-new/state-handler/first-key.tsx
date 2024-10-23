@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
+import { EffectStateDispatch } from "@/hooks/use-effect-state";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
@@ -17,12 +18,12 @@ import { useState } from "react";
 
 export interface FirstKeyStepProps {
   state: InitialState | NoWalletFoundState;
-  setState: (state: WalletDataFlowState) => void;
+  dispatch: EffectStateDispatch<typeof WalletDataFlowState>;
 }
 
 export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
   state,
-  setState,
+  dispatch,
 }) {
   const [modal, setModal] = useState<KeyType | null>(null);
   const [cloudKeyFiles, setCloudKeyFiles] = useState<
@@ -32,7 +33,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
 
   async function setKey(publicKey: Secp256k1PublicKey) {
     if (state._tag === WalletDataFlowStateType.Initial) {
-      setState(await state.setRecoverPublicKey(publicKey));
+      await dispatch(state.setRecoverPublicKey(publicKey));
     }
   }
 
@@ -120,15 +121,15 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
             We found no wallets associated with this key. Would you like to
             create a new wallet?
           </Text>
-          <Button
-            onClick={() => {
-              setState(state.closeModal());
+          <AsyncButton
+            onClick={async () => {
+              await dispatch(state.retry());
             }}
             variant="primary"
             className="w-full"
           >
             Recover another wallet
-          </Button>
+          </AsyncButton>
           <ButtonLink
             href="/onboarding/internal"
             variant="outline"
