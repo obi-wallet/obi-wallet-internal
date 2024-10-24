@@ -1,8 +1,12 @@
 "use client";
 
+import { EffectStateDispatch } from "@/hooks/use-effect-state";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
-import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
+import {
+  SecuritySettingsState,
+  WalletDataFlowState,
+} from "@/wallet-data-flow/state";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -17,57 +21,65 @@ import { SecuritySettingsKeyAddPage } from "./page/key-add";
 import { SecuritySettingsKeyItemPage } from "./page/key-item";
 import { SecuritySettingsKeyTypePage } from "./page/key-type";
 
-export const SecuritySettings = observer(function SecuritySettings() {
-  const { state } = useWalletDataFlowContext();
-  const [navigationStack, setNavigationStack] = useState<Page[]>([]);
+export interface SecuritySettingsProps {
+  state: SecuritySettingsState;
+  dispatch: EffectStateDispatch<typeof WalletDataFlowState>;
+}
 
-  const keyMetaData = state.keyMetaDataDraft.value.value;
-  const keyList = useKeyListForMultisigKey({
-    multisigKey: state.ownerDraft.value,
-    keyMetaData,
-  });
+export const SecuritySettings = observer<SecuritySettingsProps>(
+  function SecuritySettings({ state, dispatch }) {
+    const [navigationStack, setNavigationStack] = useState<Page[]>([]);
 
-  const pushPage = (page: Page) => {
-    setNavigationStack((stack) => {
-      return [page, ...stack];
+    const keyMetaData = state.keyMetaDataDraft.value.value;
+    const keyList = useKeyListForMultisigKey({
+      multisigKey: state.ownerDraft.value,
+      keyMetaData,
     });
-  };
 
-  const popPage = () => {
-    setNavigationStack((stack) => {
-      return stack.slice(1);
-    });
-  };
+    const pushPage = (page: Page) => {
+      setNavigationStack((stack) => {
+        return [page, ...stack];
+      });
+    };
 
-  const setKeyMetaData = (
-    publicKey: Secp256k1PublicKey,
-    singleKeyMetaData: SingleKeyMetaData,
-  ) => {
-    state.keyMetaDataDraft.value.set({
-      ...keyMetaData,
-      [publicKey.value]: {
-        ...keyMetaData[publicKey.value],
-        ...singleKeyMetaData,
-      },
-    });
-  };
+    const popPage = () => {
+      setNavigationStack((stack) => {
+        return stack.slice(1);
+      });
+    };
 
-  return (
-    <SecuritySettingsContext.Provider
-      value={{
-        draft: state.ownerDraft,
-        keyMetaDataDraft: state.keyMetaDataDraft,
-        keyList,
-        setKeyMetaData,
-        navigationStack,
-        pushPage,
-        popPage,
-      }}
-    >
-      <SecuritySettingsPageHandler />
-    </SecuritySettingsContext.Provider>
-  );
-});
+    const setKeyMetaData = (
+      publicKey: Secp256k1PublicKey,
+      singleKeyMetaData: SingleKeyMetaData,
+    ) => {
+      state.keyMetaDataDraft.value.set({
+        ...keyMetaData,
+        [publicKey.value]: {
+          ...keyMetaData[publicKey.value],
+          ...singleKeyMetaData,
+        },
+      });
+    };
+
+    return (
+      <SecuritySettingsContext.Provider
+        value={{
+          state,
+          dispatch,
+          draft: state.ownerDraft,
+          keyMetaDataDraft: state.keyMetaDataDraft,
+          keyList,
+          setKeyMetaData,
+          navigationStack,
+          pushPage,
+          popPage,
+        }}
+      >
+        <SecuritySettingsPageHandler />
+      </SecuritySettingsContext.Provider>
+    );
+  },
+);
 
 const SecuritySettingsPageHandler = observer(
   function SecuritySettingsPageHandler() {

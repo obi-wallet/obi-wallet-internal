@@ -1,18 +1,11 @@
 import { Box, Divider, KeyListItem, Text } from "@/components";
-import { HomeChain } from "@/home-chain";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { AsyncButton } from "@/ui/button";
-import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
-import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { serialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const currentWallet = useCurrentWallet({});
-  const { state, dispatch } = useWalletDataFlowContext();
-  const { draft, keyMetaDataDraft, keyList, pushPage } =
+  const { state, dispatch, draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const missingPrimaryKey = !draft.value.primaryKey;
 
@@ -75,36 +68,13 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingPrimaryKey
           }
           onClick={async () => {
-            if (
-              draft.value.address === draft.original.address &&
-              currentWallet
-            ) {
-              const keyMetaData = keyMetaDataDraft.value.value;
-              const wallet = await HomeChain.chainId(
-                draft.value.chainId,
-              ).getWalletData({
-                wallet: currentWallet.toJSON(),
-                keyMetaData: keyMetaDataDraft.value.value,
-              });
-              wallet.revision++;
-              const response = await SetWalletDataUserInteraction.start({
-                homeChainId: draft.value.chainId,
-                owner: draft.value.toJSON(),
-                keyMetaData: keyMetaDataDraft.value.value,
-                serializedWalletData: serialize(wallet),
-              });
-              if (response.approved) {
-                currentWallet.setPreviousWalletData(wallet);
-                state.onDone({
-                  wallet: currentWallet.toJSON(),
-                  keyMetaData,
-                });
-              }
-            } else {
-              dispatch({
-                type: "update-owner",
-              });
-            }
+            await dispatch(
+              state.commitDraft({
+                walletData: state.walletData,
+                ownerDraft: draft,
+                keyMetaDataDraft: keyMetaDataDraft,
+              }),
+            );
           }}
         >
           Save

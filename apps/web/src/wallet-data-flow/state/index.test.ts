@@ -6,11 +6,11 @@ import {
 import { MOCK_WALLET_WITH_RECOVERY_KEY } from "@/mocks/wallet";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
-  EncryptionTools,
   InitialState,
   WalletDataFlowState,
   WalletDataFlowStateType,
-} from "@/wallet-data-flow-new/state/index";
+} from "@/wallet-data-flow/state";
+import { EncryptionTools } from "@/wallet-data-flow/state/encryption-tools";
 import {
   EncryptedBackupShare,
   EncryptedEasyShareForBackup,

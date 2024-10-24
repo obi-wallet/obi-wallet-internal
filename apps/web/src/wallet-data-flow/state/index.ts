@@ -5,18 +5,14 @@ import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
-import {
-  KeyMetaDataContainer,
-  walletDataToMultisigKey,
-} from "@/wallet-data-flow/state";
+import { EncryptionTools } from "@/wallet-data-flow/state/encryption-tools";
+import { KeyMetaDataContainer } from "@/wallet-data-flow/state/key-meta-data-container";
+import { walletDataToMultisigKey } from "@/wallet-data-flow/state/wallet-data-to-multisig-key";
 import { Base58EncodedString, Encoding } from "@obi-wallet/encoding";
 import {
   BackupShare,
   createHash,
   EasyShare,
-  EncryptedBackupShare,
-  EncryptedEasyShareForBackup,
-  EncryptedEasyShareForClient,
   HomeChainId,
   KeyType,
   MpcWalletSchema,
@@ -69,77 +65,6 @@ export class WalletDataFlowState extends Context.Tag("WalletDataFlowState")<
     | DoneState
   >
 >() {}
-
-export interface IEncryptionTools {
-  encryptSharesForClient: (payload: {
-    multisigKey: MultisigKey;
-    easy: EasyShare;
-    backup: BackupShare;
-  }) => Promise<{
-    easy: EncryptedEasyShareForClient;
-    backup: EncryptedBackupShare;
-  }>;
-  encryptSharesForBackup: (payload: {
-    multisigKey: MultisigKey;
-    easy: EasyShare;
-    backup: BackupShare;
-  }) => Promise<{
-    easy: EncryptedEasyShareForBackup;
-    backup: EncryptedBackupShare;
-  }>;
-  encryptWithMultisigKey: (payload: {
-    multisigKey: MultisigKey;
-    data: string;
-  }) => Promise<MultisigKeyEncryptedData>;
-  handleIntentions: (payload: {
-    multisigKey: MultisigKey;
-    intentionsPayload: IntentionsPayload;
-    results: IntentionsResults;
-  }) => Promise<{
-    decryptedEasyShare: EasyShare | null;
-    decryptedPrimaryKeyEncryptedMessages: string[];
-    decryptedMultisigKeyEncryptedMessages: string[];
-  }>;
-}
-
-export class EncryptionTools extends Context.Tag("EncryptionTools")<
-  EncryptionTools,
-  IEncryptionTools
->() {}
-
-function addEd25519KeyPair(data: {
-  walletData: WalletData;
-}): Effect.Effect<WalletDataWithEd25519KeyPair, never, EncryptionTools> {
-  return Effect.gen(function* () {
-    if (data.walletData.ed25519KeyPair) {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      return data.walletData as WalletDataWithEd25519KeyPair;
-    }
-
-    const owner = walletDataToMultisigKey({
-      homeChainId: data.walletData.homeChainId,
-      wallet: data.walletData,
-    });
-    const encryptionTools = yield* EncryptionTools;
-    const ed25519KeyPair = generateEd25519KeyPair();
-
-    const encryptedEd25519KeyPair = {
-      publicKey: ed25519KeyPair.publicKey.value,
-      encryptedPrivateKey: yield* Effect.promise(() => {
-        return encryptionTools.encryptWithMultisigKey({
-          multisigKey: owner,
-          data: ed25519KeyPair.privateKey,
-        });
-      }),
-    };
-    const walletData: WalletDataWithEd25519KeyPair = {
-      ...data.walletData,
-      ed25519KeyPair: encryptedEd25519KeyPair,
-      revision: data.walletData.revision + 1,
-    };
-    return walletData;
-  });
-}
 
 export class InitialState extends Data.TaggedClass(
   WalletDataFlowStateType.Initial,
@@ -203,8 +128,8 @@ export enum WalletDataFlow {
 export class WalletDataState extends Data.TaggedClass(
   WalletDataFlowStateType.WalletData,
 )<{
-  keyMetaData: KeyMetaData;
   walletData: WalletDataWithEd25519KeyPair;
+  keyMetaData: KeyMetaData;
   serializedWalletData: string | null;
   owner: MultisigKey;
   previousState: InitialState | SecuritySettingsState;
@@ -670,3 +595,37 @@ export class DoneState extends Data.TaggedClass(WalletDataFlowStateType.Done)<{
   wallet: WalletWithEd25519KeyPair;
   keyMetaData: KeyMetaData;
 }> {}
+
+function addEd25519KeyPair(data: {
+  walletData: WalletData;
+}): Effect.Effect<WalletDataWithEd25519KeyPair, never, EncryptionTools> {
+  return Effect.gen(function* () {
+    if (data.walletData.ed25519KeyPair) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return data.walletData as WalletDataWithEd25519KeyPair;
+    }
+
+    const owner = walletDataToMultisigKey({
+      homeChainId: data.walletData.homeChainId,
+      wallet: data.walletData,
+    });
+    const encryptionTools = yield* EncryptionTools;
+    const ed25519KeyPair = generateEd25519KeyPair();
+
+    const encryptedEd25519KeyPair = {
+      publicKey: ed25519KeyPair.publicKey.value,
+      encryptedPrivateKey: yield* Effect.promise(() => {
+        return encryptionTools.encryptWithMultisigKey({
+          multisigKey: owner,
+          data: ed25519KeyPair.privateKey,
+        });
+      }),
+    };
+    const walletData: WalletDataWithEd25519KeyPair = {
+      ...data.walletData,
+      ed25519KeyPair: encryptedEd25519KeyPair,
+      revision: data.walletData.revision + 1,
+    };
+    return walletData;
+  });
+}

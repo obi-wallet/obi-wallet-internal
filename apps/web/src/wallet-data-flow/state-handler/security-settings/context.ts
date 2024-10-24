@@ -1,7 +1,12 @@
 import { KeyItems } from "@/components";
+import { EffectStateDispatch } from "@/hooks/use-effect-state";
 import { Draft } from "@/stores";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
-import { KeyMetaDataContainer } from "@/wallet-data-flow/state";
+import {
+  SecuritySettingsState,
+  WalletDataFlowState,
+} from "@/wallet-data-flow/state";
+import { KeyMetaDataContainer } from "@/wallet-data-flow/state/key-meta-data-container";
 import {
   KeySchema,
   KeyType,
@@ -34,6 +39,8 @@ export interface KeyAddPage {
 export type Page = KeyTypePage | KeyItemPage | KeyAddPage;
 
 export const SecuritySettingsContext = createContext<{
+  state: SecuritySettingsState;
+  dispatch: EffectStateDispatch<typeof WalletDataFlowState>;
   draft: Draft<MultisigKey>;
   keyMetaDataDraft: Draft<KeyMetaDataContainer>;
   keyList: KeyItems[];

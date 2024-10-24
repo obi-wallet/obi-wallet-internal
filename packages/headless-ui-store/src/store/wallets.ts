@@ -45,9 +45,6 @@ export class WalletsStore {
 
       autorun(async () => {
         const data = MpcWallets.schema.parse(toJS(this.mpcWallets.toJSON()));
-        // TODO: temporarily disable saving during refactoring
-        console.log(data);
-        return;
         await this.storage.set(data);
       });
     } catch (e) {

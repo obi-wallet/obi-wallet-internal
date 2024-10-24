@@ -7,7 +7,7 @@ import {
   handleMultisigKeyDecryptedMessages,
   handlePrimaryKeyDecryptedMessages,
 } from "@/user-interactions/approve-intentions/utils";
-import { EncryptionTools } from "@/wallet-data-flow-new/state";
+import { EncryptionTools } from "@/wallet-data-flow/state/encryption-tools";
 import {
   EncryptedBackupShare,
   EncryptedEasyShareForBackup,
@@ -16,7 +16,7 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { Context, Effect, Fiber, Layer, Stream, SubscriptionRef } from "effect";
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-const encryptionToolsLayer = Layer.succeed(EncryptionTools, {
+export const encryptionToolsLayer = Layer.succeed(EncryptionTools, {
   encryptSharesForClient: async function ({ multisigKey, easy, backup }) {
     return await new SharesEncryptionForClient(multisigKey).encrypt({
       easy,
