@@ -49,7 +49,6 @@ export class MpcWallet {
     return this._userEntryAddress;
   }
 
-  // TODO: fix usages of this method
   public get encryptedEasyShare() {
     return this._encryptedShares.easy;
   }
