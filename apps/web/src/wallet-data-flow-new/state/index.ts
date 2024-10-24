@@ -4,6 +4,7 @@ import { IntentionsPayload } from "@/keys/intentions-handler";
 import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
+import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
   KeyMetaDataContainer,
   walletDataToMultisigKey,
@@ -52,6 +53,7 @@ export enum WalletDataFlowStateType {
   WalletData = "WalletData",
   CommitData = "CommitData",
   SecuritySettings = "SecuritySettings",
+  UpdateOwner = "UpdateOwner",
   Done = "Done",
 }
 
@@ -63,6 +65,7 @@ export class WalletDataFlowState extends Context.Tag("WalletDataFlowState")<
     | WalletDataState
     | CommitDataState
     | SecuritySettingsState
+    | UpdateOwnerState
     | DoneState
   >
 >() {}
@@ -103,6 +106,40 @@ export class EncryptionTools extends Context.Tag("EncryptionTools")<
   EncryptionTools,
   IEncryptionTools
 >() {}
+
+function addEd25519KeyPair(data: {
+  walletData: WalletData;
+}): Effect.Effect<WalletDataWithEd25519KeyPair, never, EncryptionTools> {
+  return Effect.gen(function* () {
+    if (data.walletData.ed25519KeyPair) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return data.walletData as WalletDataWithEd25519KeyPair;
+    }
+
+    const owner = walletDataToMultisigKey({
+      homeChainId: data.walletData.homeChainId,
+      wallet: data.walletData,
+    });
+    const encryptionTools = yield* EncryptionTools;
+    const ed25519KeyPair = generateEd25519KeyPair();
+
+    const encryptedEd25519KeyPair = {
+      publicKey: ed25519KeyPair.publicKey.value,
+      encryptedPrivateKey: yield* Effect.promise(() => {
+        return encryptionTools.encryptWithMultisigKey({
+          multisigKey: owner,
+          data: ed25519KeyPair.privateKey,
+        });
+      }),
+    };
+    const walletData: WalletDataWithEd25519KeyPair = {
+      ...data.walletData,
+      ed25519KeyPair: encryptedEd25519KeyPair,
+      revision: data.walletData.revision + 1,
+    };
+    return walletData;
+  });
+}
 
 export class InitialState extends Data.TaggedClass(
   WalletDataFlowStateType.Initial,
@@ -243,22 +280,9 @@ export class WalletDataState extends Data.TaggedClass(
         });
       }
 
-      const encryptionTools = yield* EncryptionTools;
-      const ed25519KeyPair = generateEd25519KeyPair();
-      const encryptedEd25519KeyPair = {
-        publicKey: ed25519KeyPair.publicKey.value,
-        encryptedPrivateKey: yield* Effect.promise(() => {
-          return encryptionTools.encryptWithMultisigKey({
-            multisigKey: data.owner,
-            data: ed25519KeyPair.privateKey,
-          });
-        }),
-      };
-      const walletData = {
-        ...data.walletData,
-        ed25519KeyPair: encryptedEd25519KeyPair,
-        revision: data.walletData.revision + 1,
-      };
+      const walletData = yield* addEd25519KeyPair({
+        walletData: data.walletData,
+      });
       return new WalletDataState({
         walletData,
         serializedWalletData: serialize(walletData),
@@ -477,11 +501,6 @@ export class SecuritySettingsState extends Data.TaggedClass(
   }
 
   public commitDraft({
-    // TODO: here we have two cases, depending on whether we have a wallet with
-    // a primary key or not.
-    // If primary key: we more or less have the whole wallet data already
-    // No primary key: we can only work with backup-encrypted shares.
-    // Question: does this stuff work if we only work with backup-encrypted shares?
     walletData,
     ownerDraft,
     keyMetaDataDraft,
@@ -502,11 +521,147 @@ export class SecuritySettingsState extends Data.TaggedClass(
           return nextState;
         });
       } else {
-        // update owner flow, possibly with a new ed25519 key pair
-        // decrypt on propose, encrypt on confirm
-        console.log("update owner flow");
+        const nextWalletData = yield* addEd25519KeyPair({
+          walletData,
+        });
+        yield* Ref.update(yield* WalletDataFlowState, () => {
+          return new UpdateOwnerState({
+            walletData: nextWalletData,
+            previous: {
+              owner: ownerDraft.original,
+              keyMetaData: keyMetaDataDraft.original.value,
+            },
+            next: {
+              owner: ownerDraft.value,
+              keyMetaData: keyMetaDataDraft.value.value,
+            },
+            previousState: this,
+          });
+        });
       }
       yield* Effect.void;
+    });
+  }
+}
+
+export class UpdateOwnerState extends Data.TaggedClass(
+  WalletDataFlowStateType.UpdateOwner,
+)<{
+  walletData: WalletDataWithEd25519KeyPair;
+  previous: {
+    owner: MultisigKey;
+    keyMetaData: KeyMetaData;
+  };
+  next: {
+    owner: MultisigKey;
+    keyMetaData: KeyMetaData;
+  };
+  previousState: SecuritySettingsState;
+}> {
+  public cancel() {
+    return Effect.gen(this, function* () {
+      const state = yield* WalletDataFlowState;
+      yield* Ref.update(state, () => {
+        return this.previousState;
+      });
+    });
+  }
+
+  public confirmOwner({
+    userAccountAddress,
+    userAccountCodeHash,
+    easyShare,
+    backupShare,
+    ed25519KeyPair,
+    results,
+  }: {
+    userAccountAddress: string;
+    userAccountCodeHash: string;
+    easyShare: EasyShare;
+    backupShare: BackupShare;
+    ed25519KeyPair: Ed25519KeyPair;
+    results: IntentionsResults;
+  }) {
+    return Effect.gen(this, function* () {
+      const encryptionTools = yield* EncryptionTools;
+      const encryptedEd25519KeyPair = {
+        publicKey: ed25519KeyPair.publicKey.value,
+        encryptedPrivateKey: yield* Effect.promise(() => {
+          return encryptionTools.encryptWithMultisigKey({
+            multisigKey: this.next.owner,
+            data: ed25519KeyPair.privateKey,
+          });
+        }),
+      };
+      const encryptedSharesForBackup = yield* Effect.promise(() => {
+        return encryptionTools.encryptSharesForBackup({
+          multisigKey: this.next.owner,
+          easy: easyShare,
+          backup: backupShare,
+        });
+      });
+      const encryptedSharesForClient = yield* Effect.promise(() => {
+        return encryptionTools.encryptSharesForClient({
+          multisigKey: this.next.owner,
+          easy: easyShare,
+          backup: backupShare,
+        });
+      });
+      const encryptedKeyMetaData = yield* Effect.promise(() => {
+        return encryptionTools.encryptWithMultisigKey({
+          multisigKey: this.next.owner,
+          data: serialize(this.next.keyMetaData),
+        });
+      });
+      const walletData: WalletDataWithEd25519KeyPair = {
+        homeChainId: this.walletData.homeChainId,
+        userEntryAddress: this.walletData.userEntryAddress,
+        encryptedKeyMetaData: encryptedKeyMetaData,
+        owner: getOwnerData(this.next.owner.toJSON()),
+        encryptedShares: encryptedSharesForBackup,
+        ed25519KeyPair: encryptedEd25519KeyPair,
+        revision: this.walletData.revision + 1,
+      };
+
+      yield* Effect.promise(async () => {
+        const response = await fetch("/api/confirm-update-owner", {
+          method: "POST",
+          body: serialize({
+            homeChainId: this.next.owner.chainId,
+            userAccountAddress,
+            userAccountCodeHash,
+            signatures: [...results.values()].map((value) => {
+              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
+            }),
+            walletData,
+            previousOwner: this.previous.owner.toJSON(),
+          }),
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to update owner: ${response.status}`);
+        }
+
+        const result: { success: boolean } = await response.json();
+        if (!result.success) {
+          throw new Error("Failed to update owner");
+        }
+      });
+
+      const state = yield* WalletDataFlowState;
+      yield* Ref.update(state, () => {
+        return new DoneState({
+          wallet: {
+            homeChain: walletData.homeChainId,
+            owner: this.next.owner.toJSON(),
+            userEntryAddress: this.walletData.userEntryAddress,
+            encryptedShares: encryptedSharesForClient,
+            ed25519KeyPair: encryptedEd25519KeyPair,
+            previousWalletData: walletData,
+          },
+          keyMetaData: this.next.keyMetaData,
+        });
+      });
     });
   }
 }

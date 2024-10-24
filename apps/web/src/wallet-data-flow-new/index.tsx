@@ -1,6 +1,7 @@
 import { EffectStateValue, useEffectState } from "@/hooks/use-effect-state";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { SecuritySettings } from "@/wallet-data-flow-new/state-handler/security-settings";
+import { UpdateOwner } from "@/wallet-data-flow-new/state-handler/update-owner";
 import { MpcWalletSchema } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { z } from "zod";
@@ -51,6 +52,10 @@ export const WalletDataFlow = observer<WalletDataFlowProps>(
 
     if (state._tag === WalletDataFlowStateType.SecuritySettings) {
       return <SecuritySettings state={state} dispatch={dispatch} />;
+    }
+
+    if (state._tag === WalletDataFlowStateType.UpdateOwner) {
+      return <UpdateOwner state={state} dispatch={dispatch} />;
     }
   },
 );
