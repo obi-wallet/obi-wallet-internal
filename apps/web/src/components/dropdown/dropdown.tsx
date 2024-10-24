@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState, type JSX } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface DropDownOption<T extends string | number> {

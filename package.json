@@ -30,5 +30,9 @@
   "packageManager": "yarn@4.5.0",
   "engines": {
     "node": "^20.0.0"
+  },
+  "resolutions": {
+    "@types/react": "npm:types-react@rc",
+    "@types/react-dom": "npm:types-react-dom@rc"
   }
 }

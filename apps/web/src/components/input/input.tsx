@@ -27,7 +27,7 @@ interface InputProps
     endIcon?: string;
   };
   onChange?: (value: string) => void;
-  InputRef?: RefObject<HTMLInputElement>;
+  InputRef?: RefObject<HTMLInputElement | null>;
   defaultValue?: string;
 }
 interface ParentRef {
