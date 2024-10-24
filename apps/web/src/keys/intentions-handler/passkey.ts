@@ -27,7 +27,7 @@ export class PasskeyIntentionsHandler extends NewIntentionsHandler {
 
 export class KeyPairIntentionsHandler extends NewIntentionsHandler {
   protected keyPair: Secp256k1KeyPair;
-  protected type: KeyType;
+  protected type: KeyType | null;
 
   public constructor({
     owner,
@@ -38,11 +38,11 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
     owner: MultisigKey;
     payload: IntentionsPayload;
     keyPair: Secp256k1KeyPair;
-    type: KeyType;
+    type: KeyType | null;
   }) {
     super({ owner, payload });
     this.keyPair = keyPair;
-    this.type = type;
+    this.type = type ?? null;
   }
 
   public async handle() {
@@ -51,7 +51,7 @@ export class KeyPairIntentionsHandler extends NewIntentionsHandler {
       return key.publicKey.value === keyPair.publicKey.value;
     });
     invariant(
-      key && key.type === this.type,
+      key && (!this.type || key.type === this.type),
       "No key found with the given public key",
     );
 

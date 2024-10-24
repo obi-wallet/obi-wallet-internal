@@ -19,7 +19,6 @@ import {
   IntentionsResults,
 } from "@/user-interactions/approve-intentions/utils";
 import {
-  KeyType,
   MultisigKey,
   ObservableMultisigKey,
   SecretJsHomeChainId,
@@ -41,7 +40,7 @@ export async function mockApproveIntentions({
     owner: multisigKey,
     payload: intentions,
     keyPair,
-    type: KeyType.Passkey,
+    type: null,
   });
   const { intentionsResult, publicKey } = await intentionsHandler.handle();
   results.set(publicKey, intentionsResult);
