@@ -23,10 +23,13 @@ type TokenResponseError = Pick<
 export function useGoogleAuth() {
   const { showSuccess, showWarning } = useAlert();
 
-  const callbackRef = useRef<{
-    resolve: (value: TokenResponseSuccess) => void;
-    reject: (error: TokenResponseError) => void;
-  }>();
+  const callbackRef = useRef<
+    | {
+        resolve: (value: TokenResponseSuccess) => void;
+        reject: (error: TokenResponseError) => void;
+      }
+    | undefined
+  >(undefined);
   const tokenResponseRef = useRef<TokenResponseSuccess | null>(null);
 
   const googleLogin = useGoogleLogin({

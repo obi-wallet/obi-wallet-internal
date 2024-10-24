@@ -8,7 +8,6 @@ export * from "./input";
 export * from "./links";
 export * from "./list";
 export * from "./navbar";
-export * from "./next-image";
 export * from "./stepper";
 export * from "./text";
 export * from "./transaction";

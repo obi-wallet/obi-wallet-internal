@@ -74,11 +74,10 @@ export async function generateStaticParams() {
   );
 }
 
-export default function OnboardingStateHandler({
-  params,
-}: {
-  params: { state: string[] };
+export default async function OnboardingStateHandler(props: {
+  params: Promise<{ state: string[] }>;
 }) {
+  const params = await props.params;
   const { state } = params;
 
   const flowKey = state[0];
