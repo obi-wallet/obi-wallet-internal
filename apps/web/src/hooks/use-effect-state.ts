@@ -2,6 +2,11 @@ import {
   MultisigKeyEncryption,
   SharesEncryptionForClient,
 } from "@/lib/encryption";
+import {
+  handleEncryptedEasyShare,
+  handleMultisigKeyDecryptedMessages,
+  handlePrimaryKeyDecryptedMessages,
+} from "@/user-interactions/approve-intentions/utils";
 import { EncryptionTools } from "@/wallet-data-flow-new/state";
 import {
   EncryptedBackupShare,
@@ -33,6 +38,35 @@ const encryptionToolsLayer = Layer.succeed(EncryptionTools, {
   },
   encryptWithMultisigKey: async function ({ multisigKey, data }) {
     return await new MultisigKeyEncryption(multisigKey.publicKey).encrypt(data);
+  },
+  handleIntentions: async function ({
+    multisigKey,
+    intentionsPayload,
+    results,
+  }) {
+    return {
+      decryptedEasyShare: intentionsPayload.decryptEasyShare
+        ? await handleEncryptedEasyShare({
+            multisigKey,
+            encryptedEasyShare: intentionsPayload.decryptEasyShare,
+            results,
+          })
+        : null,
+      decryptedPrimaryKeyEncryptedMessages:
+        await handlePrimaryKeyDecryptedMessages({
+          primaryKeyEncryptedMessages:
+            intentionsPayload.decryptPrimaryKeyEncryptedMessages,
+          multisigKey,
+          results,
+        }),
+      decryptedMultisigKeyEncryptedMessages:
+        await handleMultisigKeyDecryptedMessages({
+          multisigKeyEncryptedMessages:
+            intentionsPayload.decryptMultisigKeyEncryptedMessages,
+          multisigKey,
+          results,
+        }),
+    };
   },
 });
 
