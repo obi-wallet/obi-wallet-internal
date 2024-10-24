@@ -39,6 +39,7 @@ import { useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
+import { use } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { MsgExecuteContract, MsgSend } from "secretjs";
 import invariant from "tiny-invariant";
@@ -85,74 +86,75 @@ const schema = z
   );
 type FormData = z.infer<typeof schema>;
 
-export default observer<{ params: { asset?: string[] } }>(function Send({
-  params,
-}) {
-  const balances = useBalances();
-  const balance = balances
-    .filter((b) => {
-      return b.isSuccess;
-    })
-    .map((b) => {
-      return b.data;
-    })
-    .filter((b): b is PrettyCaip19Asset[] => {
-      return !!b;
-    });
-
-  const withChainId = balance.flat();
-
-  const balanceOptions = withChainId
-    .map((b) => {
-      const { chainId } = parseCaip19AssetId(b.assetId);
-      if (!b.assetInfo) return null;
-
-      invariant(
-        isCosmosChainId(chainId) ||
-          isEip155ChainId(chainId) ||
-          isSecretChainId(chainId) ||
-          isSolanaChainId(chainId),
-        "Expected valid targetChainId",
-      );
-
-      const result: IBalanceOption = {
-        image: b.assetInfo.image ?? undefined,
-        targetChainId: chainId,
-        denom: b.assetId,
-        network: TargetChain.chainId(chainId).label,
-        assetUnit: b.assetInfo.symbol,
-        balance: new BigNumber(b.prettyAmount),
-        asset: b,
-        assetInfo: b.assetInfo,
-      };
-      return result;
-    })
-    .filter((option): option is IBalanceOption => {
-      return !!option;
-    });
-
-  const getAsset = () => {
-    const initialAssetParam = urlDecodeCatchAllParam(params.asset ?? []);
-    if (initialAssetParam) {
-      const balanceOption = balanceOptions.find((balance) => {
-        return balance.asset.assetId === initialAssetParam;
+export default observer<{ params: Promise<{ asset?: string[] }> }>(
+  function Send(props) {
+    const params = use(props.params);
+    const balances = useBalances();
+    const balance = balances
+      .filter((b) => {
+        return b.isSuccess;
+      })
+      .map((b) => {
+        return b.data;
+      })
+      .filter((b): b is PrettyCaip19Asset[] => {
+        return !!b;
       });
-      if (balanceOption) {
-        return balanceOption;
+
+    const withChainId = balance.flat();
+
+    const balanceOptions = withChainId
+      .map((b) => {
+        const { chainId } = parseCaip19AssetId(b.assetId);
+        if (!b.assetInfo) return null;
+
+        invariant(
+          isCosmosChainId(chainId) ||
+            isEip155ChainId(chainId) ||
+            isSecretChainId(chainId) ||
+            isSolanaChainId(chainId),
+          "Expected valid targetChainId",
+        );
+
+        const result: IBalanceOption = {
+          image: b.assetInfo.image ?? undefined,
+          targetChainId: chainId,
+          denom: b.assetId,
+          network: TargetChain.chainId(chainId).label,
+          assetUnit: b.assetInfo.symbol,
+          balance: new BigNumber(b.prettyAmount),
+          asset: b,
+          assetInfo: b.assetInfo,
+        };
+        return result;
+      })
+      .filter((option): option is IBalanceOption => {
+        return !!option;
+      });
+
+    const getAsset = () => {
+      const initialAssetParam = urlDecodeCatchAllParam(params.asset ?? []);
+      if (initialAssetParam) {
+        const balanceOption = balanceOptions.find((balance) => {
+          return balance.asset.assetId === initialAssetParam;
+        });
+        if (balanceOption) {
+          return balanceOption;
+        }
       }
+
+      return balanceOptions[0];
+    };
+
+    const asset = getAsset();
+
+    if (asset) {
+      return <SendInner asset={asset} balanceOptions={balanceOptions} />;
     }
 
-    return balanceOptions[0];
-  };
-
-  const asset = getAsset();
-
-  if (asset) {
-    return <SendInner asset={asset} balanceOptions={balanceOptions} />;
-  }
-
-  return null;
-});
+    return null;
+  },
+);
 
 const SendInner = observer<{
   asset: IBalanceOption;
