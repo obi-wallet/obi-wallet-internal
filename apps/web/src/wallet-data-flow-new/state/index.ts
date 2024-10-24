@@ -1,9 +1,13 @@
 import { HomeChain } from "@/home-chain";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
-import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
+import {
+  KeyMetaDataContainer,
+  walletDataToMultisigKey,
+} from "@/wallet-data-flow/state";
 import { Base58EncodedString, Encoding } from "@obi-wallet/encoding";
 import {
   BackupShare,
@@ -118,7 +122,7 @@ export class InitialState extends Data.TaggedClass(
         });
       });
       if (wallet) {
-        const nextState = yield* WalletDataState.from({
+        const nextState = yield* WalletDataState.recover({
           recoverKeyPublicKey: payload.publicKey,
           recoverKeyMetaData: payload.keyMetaData,
           walletData: wallet,
@@ -154,16 +158,21 @@ export class NoWalletFoundState extends Data.TaggedClass(
   }
 }
 
+export enum WalletDataFlow {
+  Recovery = "Recovery",
+  Backup = "Backup",
+}
+
 export class WalletDataState extends Data.TaggedClass(
   WalletDataFlowStateType.WalletData,
 )<{
-  recoverKeyPublicKey: Secp256k1PublicKey;
   keyMetaData: KeyMetaData;
   walletData: WalletDataWithEd25519KeyPair;
   serializedWalletData: string | null;
   owner: MultisigKey;
+  previousState: InitialState | SecuritySettingsState;
 }> {
-  public static from(data: {
+  public static recover(data: {
     recoverKeyPublicKey: Secp256k1PublicKey;
     recoverKeyMetaData: SingleKeyMetaData | null;
     walletData: WalletData;
@@ -174,6 +183,7 @@ export class WalletDataState extends Data.TaggedClass(
         wallet: data.walletData,
       });
       const recoverKey = owner.findKeyByPublicKey(data.recoverKeyPublicKey);
+      console.log("recoverKey", recoverKey);
       if (
         recoverKey &&
         (recoverKey.type === KeyType.Passkey ||
@@ -189,7 +199,6 @@ export class WalletDataState extends Data.TaggedClass(
 
       if (data.walletData.ed25519KeyPair) {
         return new WalletDataState({
-          recoverKeyPublicKey: data.recoverKeyPublicKey,
           walletData: {
             ...data.walletData,
             ed25519KeyPair: data.walletData.ed25519KeyPair,
@@ -197,32 +206,66 @@ export class WalletDataState extends Data.TaggedClass(
           serializedWalletData: null,
           owner,
           keyMetaData,
+          previousState: new InitialState({
+            chainId: data.walletData.homeChainId,
+          }),
         });
       } else {
-        const encryptionTools = yield* EncryptionTools;
-        const ed25519KeyPair = generateEd25519KeyPair();
-        const encryptedEd25519KeyPair = {
-          publicKey: ed25519KeyPair.publicKey.value,
-          encryptedPrivateKey: yield* Effect.promise(() => {
-            return encryptionTools.encryptWithMultisigKey({
-              multisigKey: owner,
-              data: ed25519KeyPair.privateKey,
-            });
-          }),
-        };
-        const walletData = {
-          ...data.walletData,
-          ed25519KeyPair: encryptedEd25519KeyPair,
-          revision: data.walletData.revision + 1,
-        };
-        return new WalletDataState({
-          recoverKeyPublicKey: data.recoverKeyPublicKey,
-          walletData,
-          serializedWalletData: serialize(walletData),
+        return yield* WalletDataState.from({
+          walletData: data.walletData,
           owner,
           keyMetaData,
+          previousState: new InitialState({
+            chainId: data.walletData.homeChainId,
+          }),
         });
       }
+    });
+  }
+
+  public static from(data: {
+    owner: MultisigKey;
+    walletData: WalletData;
+    keyMetaData: KeyMetaData;
+    previousState: InitialState | SecuritySettingsState;
+  }) {
+    return Effect.gen(function* () {
+      if (data.walletData.ed25519KeyPair) {
+        return new WalletDataState({
+          walletData: {
+            ...data.walletData,
+            ed25519KeyPair: data.walletData.ed25519KeyPair,
+          },
+          serializedWalletData: serialize(data.walletData),
+          owner: data.owner,
+          keyMetaData: data.keyMetaData,
+          previousState: data.previousState,
+        });
+      }
+
+      const encryptionTools = yield* EncryptionTools;
+      const ed25519KeyPair = generateEd25519KeyPair();
+      const encryptedEd25519KeyPair = {
+        publicKey: ed25519KeyPair.publicKey.value,
+        encryptedPrivateKey: yield* Effect.promise(() => {
+          return encryptionTools.encryptWithMultisigKey({
+            multisigKey: data.owner,
+            data: ed25519KeyPair.privateKey,
+          });
+        }),
+      };
+      const walletData = {
+        ...data.walletData,
+        ed25519KeyPair: encryptedEd25519KeyPair,
+        revision: data.walletData.revision + 1,
+      };
+      return new WalletDataState({
+        walletData,
+        serializedWalletData: serialize(walletData),
+        owner: data.owner,
+        keyMetaData: data.keyMetaData,
+        previousState: data.previousState,
+      });
     });
   }
 
@@ -343,9 +386,7 @@ export class WalletDataState extends Data.TaggedClass(
     return Effect.gen(this, function* () {
       const state = yield* WalletDataFlowState;
       yield* Ref.update(state, () => {
-        return new InitialState({
-          chainId: this.walletData.homeChainId,
-        });
+        return this.previousState;
       });
     });
   }
@@ -404,9 +445,11 @@ export class CommitDataState extends Data.TaggedClass(
           keyMetaData,
         });
       } else {
-        return new SecuritySettingsState();
-        // 3) If we have no primary key, we need to proceed to security settings
-        // Proceed to security settings
+        return SecuritySettingsState.from({
+          walletData,
+          keyMetaData,
+          owner,
+        });
       }
     });
   }
@@ -414,8 +457,59 @@ export class CommitDataState extends Data.TaggedClass(
 
 export class SecuritySettingsState extends Data.TaggedClass(
   WalletDataFlowStateType.SecuritySettings,
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-)<{}> {}
+)<{
+  walletData: WalletData;
+  keyMetaDataDraft: Draft<KeyMetaDataContainer>;
+  ownerDraft: Draft<MultisigKey>;
+}> {
+  static from(payload: {
+    walletData: WalletData;
+    keyMetaData: KeyMetaData;
+    owner: MultisigKey;
+  }) {
+    return new SecuritySettingsState({
+      walletData: payload.walletData,
+      keyMetaDataDraft: new Draft({
+        original: new KeyMetaDataContainer(payload.keyMetaData),
+      }),
+      ownerDraft: new Draft({ original: payload.owner }),
+    });
+  }
+
+  public commitDraft({
+    // TODO: here we have two cases, depending on whether we have a wallet with
+    // a primary key or not.
+    // If primary key: we more or less have the whole wallet data already
+    // No primary key: we can only work with backup-encrypted shares.
+    // Question: does this stuff work if we only work with backup-encrypted shares?
+    walletData,
+    ownerDraft,
+    keyMetaDataDraft,
+  }: {
+    walletData: WalletData;
+    ownerDraft: Draft<MultisigKey>;
+    keyMetaDataDraft: Draft<KeyMetaDataContainer>;
+  }) {
+    return Effect.gen(this, function* () {
+      if (ownerDraft.value.address === ownerDraft.original.address) {
+        const nextState = yield* WalletDataState.from({
+          walletData,
+          owner: ownerDraft.value,
+          keyMetaData: keyMetaDataDraft.value.value,
+          previousState: this,
+        });
+        yield* Ref.update(yield* WalletDataFlowState, () => {
+          return nextState;
+        });
+      } else {
+        // update owner flow, possibly with a new ed25519 key pair
+        // decrypt on propose, encrypt on confirm
+        console.log("update owner flow");
+      }
+      yield* Effect.void;
+    });
+  }
+}
 
 export class DoneState extends Data.TaggedClass(WalletDataFlowStateType.Done)<{
   wallet: WalletWithEd25519KeyPair;

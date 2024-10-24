@@ -6,6 +6,7 @@ import { IntentionsResults } from "@/user-interactions/approve-intentions/utils"
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import {
   WalletDataFlowState,
+  WalletDataFlowStateType,
   WalletDataState,
 } from "@/wallet-data-flow-new/state";
 import { useMutation } from "@tanstack/react-query";
@@ -40,6 +41,39 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
     },
   });
 
+  function getTransactionProps() {
+    switch (state.previousState._tag) {
+      case WalletDataFlowStateType.Initial:
+        return {
+          descriptions: ["Recover Wallet"],
+          rawData: {
+            userEntryAddress: state.walletData.userEntryAddress,
+            owner: state.walletData.owner,
+          },
+        };
+      case WalletDataFlowStateType.SecuritySettings:
+        return {
+          descriptions: ["Backup non-sensitive wallet information"],
+          rawData: {
+            homeChainId: state.walletData.homeChainId,
+            userEntryAddress: state.walletData.userEntryAddress,
+            owner: state.walletData.owner,
+            encryptedShares: {
+              easy: "...",
+              backup: "...",
+            },
+            encryptedKeyMetaData: "...",
+            ed25519KeyPair: state.walletData.ed25519KeyPair
+              ? {
+                  publicKey: state.walletData.ed25519KeyPair.publicKey,
+                  encryptedPrivateKey: "...",
+                }
+              : undefined,
+          },
+        };
+    }
+  }
+
   return (
     <div className="relative w-full md:mt-24">
       <div className="flex justify-center">
@@ -56,12 +90,8 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
           <Transaction
             amountInfo={[]}
             feeInfo={[]}
-            descriptions={["Recover Wallet"]}
             memo=""
-            rawData={{
-              userEntryAddress: state.walletData.userEntryAddress,
-              owner: state.walletData.owner,
-            }}
+            {...getTransactionProps()}
           />
 
           <ApproveIntentions
