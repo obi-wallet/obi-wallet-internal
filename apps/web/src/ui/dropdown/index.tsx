@@ -12,7 +12,7 @@ import {
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface DropdownItem {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface CustomDropdownProps<T extends DropdownItem> {

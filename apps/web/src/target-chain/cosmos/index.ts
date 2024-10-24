@@ -8,7 +8,7 @@ import {
   CosmosChains,
 } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { filterMap } from "@/util/filter-map";
@@ -303,7 +303,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {
-          gasPrice: this.gasPrice,
+          ...(this.gasPrice ? { gasPrice: this.gasPrice } : {}),
         });
       } catch (e) {
         console.error(e);
@@ -398,7 +398,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -425,7 +425,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

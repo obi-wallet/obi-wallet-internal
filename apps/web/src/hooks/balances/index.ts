@@ -52,7 +52,7 @@ async function fetchBalances({
     rawAmount,
   }: {
     id: Caip19AssetId;
-    tokenConfig?: TokenConfig;
+    tokenConfig?: TokenConfig | undefined;
     rawAmount: string;
   }) => {
     if (!tokenConfig?.enabled) return [];

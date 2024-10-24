@@ -29,6 +29,7 @@ const preview: Preview = {
             <MainContainer>
               <Story />
             </MainContainer>
+            <div id="modal-root" />
           </Provider>
         </RootContainer>
       );

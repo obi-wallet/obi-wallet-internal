@@ -3,6 +3,8 @@ import { MpcWallets as MpcWalletsInterface } from "./implementation";
 import { MpcWalletsSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
+export { LegacyMpcWalletsSchema, MpcWalletsSchema } from "./schema";
+
 export type MpcWallets = MpcWalletsInterface;
 
 export const MpcWallets = {

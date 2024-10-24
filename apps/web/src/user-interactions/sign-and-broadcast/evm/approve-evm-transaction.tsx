@@ -9,10 +9,8 @@ import {
   SerializedEvmUserOperationCalls,
 } from "@/target-chain/eip-155";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
-import {
-  ApproveIntentions,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
@@ -134,6 +132,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           signHashes: [
             new Uint8Array(Buffer.from(userOperationData.hash, "hex")),
           ],
+          decryptEasyShare: wallet.encryptedEasyShare,
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
@@ -198,7 +197,7 @@ const PrettyPrint = observer(function PrettyPrint({
   targetChainId,
 }: {
   calls: SerializedEvmUserOperationCalls;
-  userOperation?: SerializedEvmUserOperation;
+  userOperation?: SerializedEvmUserOperation | undefined;
   targetChainId: Eip155ChainId;
 }) {
   const prettyPrintData = useQuery({

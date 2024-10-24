@@ -1,14 +1,17 @@
 import { Button, Text, Transaction } from "@/components";
 import { HomeChain } from "@/home-chain";
-import { Secp256k1Decryption } from "@/lib/encryption";
+import { EffectStateDispatch } from "@/hooks/use-effect-state";
+import { AsyncButton } from "@/ui/button";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
-  ApproveIntentions,
-  handleMultisigKeyDecryptedMessage,
+  handleMultisigKeyDecryptedMessages,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
-import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { useFinishFlow, useGetWallet } from "@/wallet-data-flow/utils";
+import {
+  UpdateOwnerState,
+  WalletDataFlowState,
+} from "@/wallet-data-flow/state";
 import {
   Base58EncodedString,
   Encoding,
@@ -18,8 +21,8 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import {
   BackupShare,
   EasyShare,
+  MultisigKeyEncryptedData,
   SecretJsClient,
-  WalletData,
 } from "@obi-wallet/sdk";
 import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
@@ -31,31 +34,30 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 export interface UpdateOwnerProps {
-  walletData: WalletData;
+  state: UpdateOwnerState;
+  dispatch: EffectStateDispatch<typeof WalletDataFlowState>;
 }
 
 export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
-  walletData,
+  state,
+  dispatch,
 }) {
-  const { state, dispatch } = useWalletDataFlowContext();
-  const finishFlow = useFinishFlow();
-  const getWallet = useGetWallet();
+  const userEntryAddress = state.walletData.userEntryAddress;
 
-  const userEntryAddress = walletData.userEntryAddress;
-
-  const previousOwner = state.ownerDraft.original;
-  const newOwner = state.ownerDraft.value;
+  const previousOwner = state.previous.owner;
+  const nextOwner = state.next.owner;
 
   const [proposedUpdate, setProposedUpdate] = useState(false);
   const keyMetaData = proposedUpdate
-    ? state.keyMetaDataDraft.value.value
-    : state.keyMetaDataDraft.original.value;
+    ? state.next.keyMetaData
+    : state.previous.keyMetaData;
 
   const [results, setResults] = useState<IntentionsResults | undefined>(
     undefined,
   );
   const [decrypted, setDecrypted] = useState<
     | {
+        easyShare: EasyShare;
         backupShare: BackupShare;
         ed25519KeyPair: Ed25519KeyPair;
       }
@@ -63,9 +65,9 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   >(undefined);
 
   const userAccount = useQuery({
-    queryKey: ["user-account", { walletData }],
+    queryKey: ["user-account", { walletData: state.walletData }],
     queryFn: async () => {
-      const homeChain = HomeChain.chainId(newOwner.chainId);
+      const homeChain = HomeChain.chainId(nextOwner.chainId);
       const userEntryCodeHash =
         await homeChain.userEntryCodeHash(userEntryAddress);
       return await homeChain.userAccount({
@@ -76,10 +78,10 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
   });
 
   const nextHash = useQuery({
-    queryKey: ["next-hash", { walletData }],
+    queryKey: ["next-hash", { walletData: state.walletData }],
     queryFn: userAccount.data
       ? async () => {
-          const client = new SecretJsClient(newOwner.chainId);
+          const client = new SecretJsClient(nextOwner.chainId);
           const { next_hash } = await client.queryContract({
             contract: userAccount.data.userAccountAddress,
             codeHash: userAccount.data.userAccountCodeHash,
@@ -102,115 +104,35 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         invariant(userAccount.data, "Message not found");
         invariant(results, "Results not found");
 
-        if (state.mockOnly) {
-          return {
-            status: 200,
-            async json() {
-              return { success: true };
-            },
-          };
-        }
-
         return await fetch("/api/propose-update-owner", {
           method: "POST",
           body: serialize({
-            homeChainId: newOwner.chainId,
-            newOwner: newOwner.toJSON(),
+            homeChainId: nextOwner.chainId,
+            newOwner: nextOwner.toJSON(),
             userAccountAddress: userAccount.data.userAccountAddress,
             userAccountCodeHash: userAccount.data.userAccountCodeHash,
             signatures: [...results.values()].map((value) => {
               return Encoding.fromBytes(value.signedHashes[0]!).toHex();
             }),
-          }),
-        });
-      }
-
-      async function getConfirmOwnerResponse(walletData: WalletData) {
-        invariant(userAccount.data, "Message not found");
-        invariant(results, "Results not found");
-
-        if (state.mockOnly) {
-          return {
-            status: 200,
-            async json() {
-              return { success: true };
-            },
-          };
-        }
-
-        return await fetch("/api/confirm-update-owner", {
-          method: "POST",
-          body: serialize({
-            homeChainId: newOwner.chainId,
-            userAccountAddress: userAccount.data.userAccountAddress,
-            userAccountCodeHash: userAccount.data.userAccountCodeHash,
-            signatures: [...results.values()].map((value) => {
-              return Encoding.fromBytes(value.signedHashes[0]!).toHex();
-            }),
-            walletData,
-            previousOwner: previousOwner.toJSON(),
           }),
         });
       }
 
       if (proposedUpdate) {
-        const getEasyShare = async () => {
-          if (state.shares) {
-            return state.shares.easy;
-          }
-
-          invariant(
-            state.locallyEncryptedSharesByPreviousOwner,
-            "Shares not found",
-          );
-          const primaryKey = previousOwner.primaryKey;
-
-          invariant(primaryKey, "Primary key not found");
-          const easyShareDecryption = new Secp256k1Decryption(
-            primaryKey.payload.privateKey,
-          );
-
-          return EasyShare.parse(
-            deserialize(
-              await easyShareDecryption.decrypt(
-                state.locallyEncryptedSharesByPreviousOwner.easy,
-              ),
-            ),
-          );
-        };
-        const easyShare = await getEasyShare();
-
+        invariant(userAccount.data, "Message not found");
+        invariant(results, "Results not found");
         invariant(decrypted, "Decrypted not found");
 
-        const payload = {
-          keyMetaData,
-          shares: {
-            easy: easyShare,
-            backup: decrypted.backupShare,
-          },
-          ed25519KeyPair: decrypted.ed25519KeyPair,
-        };
-
-        const wallet = await getWallet(payload);
-        const walletData = await HomeChain.chainId(
-          newOwner.chainId,
-        ).getWalletData({ wallet, keyMetaData: payload.keyMetaData });
-        walletData.revision++;
-        const response = await getConfirmOwnerResponse(walletData);
-
-        if (response.status !== 200) {
-          throw new Error(`Failed to update owner: ${response.status}`);
-        }
-
-        const result: { success: boolean } = await response.json();
-        if (!result.success) {
-          throw new Error("Failed to update owner");
-        }
-
-        await finishFlow({
-          ...payload,
-          walletData,
-        });
+        await dispatch(
+          state.confirmOwner({
+            userAccountAddress: userAccount.data.userAccountAddress,
+            userAccountCodeHash: userAccount.data.userAccountCodeHash,
+            easyShare: decrypted.easyShare,
+            backupShare: decrypted.backupShare,
+            ed25519KeyPair: decrypted.ed25519KeyPair,
+            results: results,
+          }),
+        );
         return;
       }
 
@@ -225,61 +147,33 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
         throw new Error("Failed to update owner");
       }
 
-      async function getBackupShare() {
-        if (state.shares) {
-          return state.shares.backup;
-        }
+      invariant(results, "Results not found");
 
-        invariant(results, "Results not found");
-        invariant(
-          state.locallyEncryptedSharesByPreviousOwner,
-          "Shares not found",
-        );
-
-        const response = await handleMultisigKeyDecryptedMessage({
-          multisigKeyEncryptedMessage:
-            state.locallyEncryptedSharesByPreviousOwner.backup,
-          multisigKey: previousOwner,
+      const [easyShareRaw, backupShareRaw, ed25519PrivateKeyRaw] =
+        await handleMultisigKeyDecryptedMessages({
+          multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
+          multisigKey: nextOwner,
           results,
-          index: 0,
-        });
-        return BackupShare.parse(deserialize(response));
-      }
-
-      async function getEd25519KeyPair(): Promise<Ed25519KeyPair> {
-        if (state.ed25519KeyPair) {
-          return state.ed25519KeyPair;
-        }
-
-        invariant(results, "Results not found");
-        invariant(
-          state.ed25519KeyPairPreviousOwner,
-          "Ed25519 key pair not found",
-        );
-
-        const response = await handleMultisigKeyDecryptedMessage({
-          multisigKeyEncryptedMessage:
-            state.ed25519KeyPairPreviousOwner.encryptedPrivateKey,
-          multisigKey: previousOwner,
-          results,
-          index: 1,
         });
 
-        return {
-          publicKey: {
-            type: "tendermint/PubKeyEd25519",
-            value: state.ed25519KeyPairPreviousOwner.publicKey,
-          },
-          privateKey: Base58EncodedString.parse(response),
-        };
-      }
+      invariant(easyShareRaw, "Easy share not found");
+      invariant(backupShareRaw, "Backup share not found");
+      invariant(ed25519PrivateKeyRaw, "Ed25519 private key not found");
 
-      const [decryptedBackupShare, decryptedEd25519KeyPair] = await Promise.all(
-        [getBackupShare(), getEd25519KeyPair()],
-      );
+      const easyShare = EasyShare.parse(deserialize(easyShareRaw));
+      const backupShare = BackupShare.parse(deserialize(backupShareRaw));
+      const ed25519KeyPair: Ed25519KeyPair = {
+        publicKey: {
+          type: "tendermint/PubKeyEd25519",
+          value: state.walletData.ed25519KeyPair.publicKey,
+        },
+        privateKey: Base58EncodedString.parse(ed25519PrivateKeyRaw),
+      };
+
       setDecrypted({
-        backupShare: decryptedBackupShare,
-        ed25519KeyPair: decryptedEd25519KeyPair,
+        easyShare,
+        backupShare,
+        ed25519KeyPair,
       });
       await nextHash.refetch();
       setResults(undefined);
@@ -290,15 +184,12 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
     },
   });
 
-  function getMultisigKeyEncryptedMessages(): string[] {
-    if (
-      !proposedUpdate &&
-      state.locallyEncryptedSharesByPreviousOwner &&
-      state.ed25519KeyPairPreviousOwner
-    ) {
+  function getMultisigKeyEncryptedMessages(): MultisigKeyEncryptedData[] {
+    if (!proposedUpdate) {
       return [
-        state.locallyEncryptedSharesByPreviousOwner.backup,
-        state.ed25519KeyPairPreviousOwner.encryptedPrivateKey,
+        state.walletData.encryptedShares.easy,
+        state.walletData.encryptedShares.backup,
+        state.walletData.ed25519KeyPair.encryptedPrivateKey,
       ];
     }
 
@@ -327,17 +218,18 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
                 : `Propose new key schema`,
             ]}
             memo=""
-            rawData={`Changes:\n\n${diffString(previousOwner.toJSON(), newOwner.toJSON())}\n\nProposed Owner:\n\n${serialize(newOwner.toJSON(), null, 2)}\n\nCurrent Owner:\n\n${serialize(previousOwner.toJSON(), null, 2)}
+            rawData={`Changes:\n\n${diffString(previousOwner.toJSON(), nextOwner.toJSON())}\n\nProposed Owner:\n\n${serialize(nextOwner.toJSON(), null, 2)}\n\nCurrent Owner:\n\n${serialize(previousOwner.toJSON(), null, 2)}
               `}
           />
 
           {nextHash.data ? (
             <ApproveIntentions
               key={`${proposedUpdate}-${nextHash.data.toString()}`}
-              multisigKey={proposedUpdate ? newOwner : previousOwner}
+              multisigKey={proposedUpdate ? nextOwner : previousOwner}
               keyMetaData={keyMetaData}
               intentions={{
                 signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
+                decryptEasyShare: null,
                 decryptMessages: [],
                 decryptPrimaryKeyEncryptedMessages: [],
                 decryptMultisigKeyEncryptedMessages:
@@ -350,15 +242,15 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
           ) : null}
 
           <div className="mt-6 flex w-full flex-row space-x-6">
-            <Button
+            <AsyncButton
               block
               variant="outline"
-              onClick={() => {
-                dispatch({ type: "reject-update-owner" });
+              onClick={async () => {
+                await dispatch(state.cancel());
               }}
             >
               Reject
-            </Button>
+            </AsyncButton>
             <Button
               block
               disabled={!results || approve.isPending}

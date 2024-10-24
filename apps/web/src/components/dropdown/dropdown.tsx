@@ -17,7 +17,7 @@ export interface DropDownProps<
   description: string;
   options: O[];
   onSelectOption?: (option: O) => void;
-  value?: T;
+  value?: T | undefined;
   customSelectedItemComponent?: (option?: O) => JSX.Element;
   customItemComponent?: (
     option: O,

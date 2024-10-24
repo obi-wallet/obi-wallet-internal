@@ -6,7 +6,7 @@ import {
   SecretChains,
 } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { Chain } from "@chain-registry/types";
 import { GasPrice, StdFee } from "@cosmjs/stargate";
 import { queryClient } from "@obi-wallet/query-client";
@@ -317,7 +317,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
   }) {
     invariant(this.validateMessages(messages), "Invalid messages");
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -349,7 +349,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -499,7 +499,9 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
             });
             const response =
               await secretNetworkClient.query.compute.codeHashByCodeId({
-                code_id: info.contract_info?.code_id,
+                ...(info.contract_info?.code_id
+                  ? { code_id: info.contract_info.code_id }
+                  : {}),
               });
             return response.code_hash;
           },

@@ -1,13 +1,17 @@
-import { KeySchema, PendingRecoveryKeySchema, UsableKeySchema } from "./schema";
+import {
+  LegacyKeySchema,
+  PendingRecoveryKeySchema,
+  UsableKeySchema,
+} from "./schema";
 import { AbstractSerialized } from "../migratable";
 
 export abstract class Key {
   public static get schema() {
-    return KeySchema;
+    return LegacyKeySchema;
   }
 
   protected constructor(
-    protected serialized: AbstractSerialized<typeof KeySchema>,
+    protected serialized: AbstractSerialized<typeof LegacyKeySchema>,
     protected _serialize: <T>(serialized: T) => T,
   ) {}
   public get publicKey() {
@@ -19,7 +23,7 @@ export abstract class Key {
     return this._serialize(this.serialized);
   }
 
-  public setSerialized(serialized: AbstractSerialized<typeof KeySchema>) {
+  public setSerialized(serialized: AbstractSerialized<typeof LegacyKeySchema>) {
     this.serialized = serialized;
   }
 }

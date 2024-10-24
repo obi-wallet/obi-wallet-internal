@@ -365,7 +365,7 @@ export const AssetRow = observer(function AssetRow({
   editMode,
 }: {
   asset: PrettyCaip19Asset;
-  editMode?: boolean;
+  editMode?: boolean | undefined;
 }) {
   const router = useRouter();
   const wallet = useCurrentWallet({});

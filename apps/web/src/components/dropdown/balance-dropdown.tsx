@@ -28,7 +28,7 @@ export interface IBalanceOption {
 
 export const BalanceDropDown = observer<{
   options: IBalanceOption[];
-  selectedOptionProp?: IBalanceOption;
+  selectedOptionProp?: IBalanceOption | undefined;
   onSelectOption?: (option: IBalanceOption) => void;
 }>(function BalanceDropDown({ options, onSelectOption, selectedOptionProp }) {
   const ref = useRef<HTMLDivElement>(null);

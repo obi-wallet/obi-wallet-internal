@@ -4,22 +4,17 @@ import { Text } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { WalletDataFlow } from "@/wallet-data-flow";
-import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
+import { encryptionToolsLayer } from "@/hooks/use-effect-state";
+import { WalletDataState as WalletDataFlowWalletDataState } from "@/wallet-data-flow/state";
+import { walletDataToMultisigKey } from "@/wallet-data-flow/state/wallet-data-to-multisig-key";
 import { useQuery } from "@obi-wallet/headless-ui";
-import {
-  KeyType,
-  MultisigKey,
-  ObservableMpcWallet,
-  ObservableMultisigKey,
-  Serialized,
-  WalletData,
-} from "@obi-wallet/sdk";
+import { ObservableMpcWallet, WalletData } from "@obi-wallet/sdk";
 import { skipToken } from "@tanstack/react-query";
+import { Effect } from "effect";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { WalletDataFlow } from "src/wallet-data-flow";
 import invariant from "tiny-invariant";
 
 export enum WalletDataStateType {
@@ -38,14 +33,12 @@ export type WalletDataState =
     }
   | {
       type: WalletDataStateType.Outdated;
-      payload: {
-        walletData: WalletData;
-        owner: Serialized<MultisigKey>;
-      };
+      payload: WalletDataFlowWalletDataState;
     };
 
 export function useWalletDataStateQuery() {
   const wallet = useCurrentWallet({});
+
   return useQuery({
     queryKey: [
       "wallet-data",
@@ -93,29 +86,18 @@ export function useWalletDataStateQuery() {
             };
           }
 
-          owner.removeKeyByPublicKey(primaryKey.publicKey);
-          switch (primaryKey.type) {
-            case KeyType.Passkey: {
-              const passkey = owner.addPasskeyKey(primaryKey.payload);
-              owner.setPrimaryKey(passkey);
-              break;
-            }
-            case KeyType.Cloud: {
-              const cloudKey = owner.addCloudKey(primaryKey.payload);
-              owner.setPrimaryKey(cloudKey);
-              break;
-            }
-            default:
-              console.error("Invalid Primary Key Type");
-              break;
-          }
-
           return {
             type: WalletDataStateType.Outdated,
-            payload: {
-              walletData,
-              owner: owner.toJSON()!,
-            },
+            payload: await Effect.runPromise(
+              Effect.provide(
+                WalletDataFlowWalletDataState.recover({
+                  recoverKeyPublicKey: primaryKey.publicKey,
+                  recoverKeyMetaData: null,
+                  walletData,
+                }),
+                encryptionToolsLayer,
+              ),
+            ),
           };
         }
       : skipToken,
@@ -123,15 +105,8 @@ export function useWalletDataStateQuery() {
 }
 
 export const SyncWalletData = observer(function SyncWalletData() {
-  const { chainStore, mpcWalletsStore, keyMetaDataStore } = useStore();
+  const { mpcWalletsStore, keyMetaDataStore } = useStore();
   const router = useRouter();
-
-  const [key, setKey] = useState(0);
-  const increaseKey = () => {
-    return setKey((key) => {
-      return key + 1;
-    });
-  };
 
   const walletDataState = useWalletDataStateQuery();
 
@@ -155,15 +130,7 @@ export const SyncWalletData = observer(function SyncWalletData() {
     case WalletDataStateType.Outdated: {
       return (
         <WalletDataFlow
-          key={key}
-          homeChainId={chainStore.currentChain}
-          initialValues={{
-            walletData: walletDataState.data.payload.walletData,
-            owner: ObservableMultisigKey.create(
-              walletDataState.data.payload.walletData.homeChainId,
-              walletDataState.data.payload.owner,
-            ),
-          }}
+          initialState={walletDataState.data.payload}
           onDone={({ wallet: walletData, keyMetaData }) => {
             const wallet = ObservableMpcWallet.create(walletData);
 
@@ -173,9 +140,6 @@ export const SyncWalletData = observer(function SyncWalletData() {
             );
             mpcWalletsStore.upsertWallet(wallet);
             router.push("/dashboard/settings");
-          }}
-          onBack={() => {
-            increaseKey();
           }}
         />
       );

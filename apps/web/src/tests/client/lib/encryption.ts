@@ -9,7 +9,7 @@ import {
 } from "@/lib/encryption";
 import {
   MOCK_MULTISIG_KEY_DATA,
-  MOCK_NON_PRIMARY_KEY_KEYPAIR,
+  MOCK_RECOVERY_KEY_KEYPAIR,
   MOCK_PRIMARY_KEY_KEYPAIR,
 } from "@/mocks/multisig-key";
 import { createTestSuite, expect } from "@/tests";
@@ -17,16 +17,15 @@ import {
   handleMultisigKeyDecryptedMessages,
   handlePrimaryKeyDecryptedMessages,
   IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+} from "@/user-interactions/approve-intentions/utils";
 import {
-  KeyType,
   MultisigKey,
   ObservableMultisigKey,
   SecretJsHomeChainId,
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 
-async function mockApproveIntentions({
+export async function mockApproveIntentions({
   multisigKey,
   keyPair,
   intentions,
@@ -41,7 +40,7 @@ async function mockApproveIntentions({
     owner: multisigKey,
     payload: intentions,
     keyPair,
-    type: KeyType.Passkey,
+    type: null,
   });
   const { intentionsResult, publicKey } = await intentionsHandler.handle();
   results.set(publicKey, intentionsResult);
@@ -61,6 +60,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const results: IntentionsResults = new Map();
 
     const intentions = {
+      decryptEasyShare: null,
       decryptMultisigKeyEncryptedMessages: [encrypted],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMessages: [],
@@ -106,7 +106,7 @@ export const testSuite = createTestSuite(({ test }) => {
     // Two keys provided, should succeed
     await mockApproveIntentions({
       multisigKey,
-      keyPair: MOCK_NON_PRIMARY_KEY_KEYPAIR,
+      keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
       intentions,
       results,
     });
@@ -152,6 +152,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const results: IntentionsResults = new Map();
 
     const intentions = {
+      decryptEasyShare: null,
       decryptMultisigKeyEncryptedMessages: [],
       decryptPrimaryKeyEncryptedMessages: [encrypted],
       decryptMessages: [],
@@ -197,7 +198,7 @@ export const testSuite = createTestSuite(({ test }) => {
     // Two keys provided, should succeed
     await mockApproveIntentions({
       multisigKey,
-      keyPair: MOCK_NON_PRIMARY_KEY_KEYPAIR,
+      keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
       intentions,
       results,
     });

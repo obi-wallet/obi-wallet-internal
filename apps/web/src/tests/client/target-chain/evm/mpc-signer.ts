@@ -1,10 +1,12 @@
+import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { Eip155ChainId, Eip155Chains } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
-import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
+import { mockApproveIntentions } from "@/tests/client/lib/encryption";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
+import { MpcWallet } from "@obi-wallet/sdk";
 import { toEcdsaKernelSmartAccount } from "permissionless/accounts";
 import invariant from "tiny-invariant";
 import { createPublicClient, http } from "viem";
@@ -45,23 +47,19 @@ export const testSuite = createTestSuite(({ test }) => {
     const intentionsPayload = {
       signHashes: [hash],
       decryptMessages: [],
+      decryptEasyShare: wallet.encryptedEasyShare,
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     };
 
     const intentionsResults = new IntentionsResults();
-    intentionsResults.set(wallet.owner.primaryKey.publicKey.value, {
-      signedHashes: [
-        await new Secp256k1PrivateKeySigner(
-          wallet.owner.primaryKey.payload.privateKey,
-        ).signHash(hash),
-      ],
-      decryptedMessages: [],
-      decryptedPrimaryKeyEncryptedMessagesShares: [],
-      decryptedMultisigKeyEncryptedMessagesShares: [],
+    await mockApproveIntentions({
+      multisigKey: wallet.owner,
+      keyPair: MOCK_PRIMARY_KEY_KEYPAIR,
+      intentions: intentionsPayload,
+      results: intentionsResults,
     });
-
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });

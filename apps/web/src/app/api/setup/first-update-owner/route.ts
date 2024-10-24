@@ -4,6 +4,7 @@ import {
   HomeChainIdSchema,
   Messages,
   MultisigKey,
+  MultisigKeySchema,
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
@@ -15,7 +16,7 @@ export const maxDuration = 45;
 
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
-  owner: MultisigKey.schema.migratableSchema,
+  owner: MultisigKeySchema,
   ownerAddress: z.string(),
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
@@ -24,11 +25,6 @@ const schema = z.object({
   ownerIndex: z.number(),
   walletData: WalletData,
 });
-
-export interface UserAccountAddress {
-  user_account_address: string;
-  user_account_code_hash: string;
-}
 
 /// Calls first_update_owner to update the pre-created account's owner to
 /// the user's multisig key

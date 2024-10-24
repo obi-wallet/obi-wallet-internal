@@ -1,41 +1,26 @@
-import {
-  Secp256k1KeyPair,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk-secp256k1";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import * as R from "ramda";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
-import { MultisigKeySchema } from "./schema";
 import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
-import { AbstractDataStructure } from "../abstract";
-import {
-  Key,
-  KeyAbstractSerializedMapping,
-  KeySubclassTypeMapping,
-  KeyType,
-} from "../key";
-import { KeySchema } from "../key/schema";
-import { AbstractSerialized } from "../migratable";
+import { KeySchema, KeySubclassTypeMapping, KeyType } from "../key";
+import { MultisigKeySchema } from "./schema";
 
 export class MultisigKey {
-  protected _primaryKey: Key | null = null;
-
-  public get schema() {
-    return MultisigKeySchema;
-  }
+  protected _primaryKey: z.infer<typeof KeySchema> | null = null;
 
   public constructor(
     protected _chainId: ChainId,
-    protected _keys: Key[],
+    protected _keys: z.infer<typeof KeySchema>[],
     _primaryKeyIndex: number | null,
     protected _threshold: number,
     protected _factories: {
-      Key: AbstractDataStructure<Key, typeof KeySchema>;
       createMultisigKey: (
         chain: ChainId,
-        serialized?: AbstractSerialized<typeof MultisigKeySchema>,
+        serialized?: z.infer<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },
   ) {
@@ -44,14 +29,9 @@ export class MultisigKey {
     }
   }
 
-  public toJSON(): AbstractSerialized<typeof MultisigKeySchema> | undefined {
-    if (!this._keys) {
-      return;
-    }
+  public toJSON(): z.infer<typeof MultisigKeySchema> {
     return {
-      keys: this._keys.map((key: Key) => {
-        return key.toJSON();
-      }),
+      keys: this._keys,
       primaryKeyIndex: this.primaryKeyIndex,
       threshold: this._threshold,
     };
@@ -101,72 +81,50 @@ export class MultisigKey {
     return this._keys.filter(this.isKeyOfType(type));
   }
 
-  public get primaryKey():
-    | KeySubclassTypeMapping[KeyType.Passkey | KeyType.Cloud]
-    | null {
-    if (
-      this._primaryKey &&
-      (this.isUsableKeyOfType(KeyType.Passkey)(this._primaryKey) ||
-        this.isUsableKeyOfType(KeyType.Cloud)(this._primaryKey)) &&
-      this._keys.includes(this._primaryKey)
-    ) {
+  public get primaryKey(): z.infer<typeof KeySchema> | null {
+    if (this._primaryKey && this.isKeyInMultisig(this._primaryKey)) {
       return this._primaryKey;
     }
     return null;
   }
 
-  public setPrimaryKey(key: Key) {
-    invariant(this._keys.includes(key), "Key not in multisig");
+  public setPrimaryKey(key: z.infer<typeof KeySchema>) {
+    invariant(this.isKeyInMultisig(key), "Key not in multisig");
     this._primaryKey = key;
   }
 
-  public addPasskeyKey(keyPair: Secp256k1KeyPair) {
+  public addPasskeyKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Passkey,
-      payload: keyPair,
+      publicKey,
     });
   }
 
   public addPhoneKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Phone,
-      payload: {
-        publicKey,
-      },
+      publicKey,
     });
   }
 
   public addTelegramKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Telegram,
-      payload: {
-        publicKey,
-      },
+      publicKey,
     });
   }
 
-  public addCloudKey(keyPair: Secp256k1KeyPair) {
+  public addCloudKey(publicKey: Secp256k1PublicKey) {
     return this.addKey({
       type: KeyType.Cloud,
-      payload: keyPair,
+      publicKey,
     });
   }
 
-  public addPendingRecoveryKey({
-    type,
-    publicKey,
-  }: {
-    type: KeyType;
-    publicKey: Secp256k1PublicKey;
-  }) {
-    const key = this._factories.Key.create({
-      payload: {
-        type,
-        publicKey,
-      },
+  public findKeyByPublicKey(publicKey: Secp256k1PublicKey) {
+    return this._keys.find((key) => {
+      return key.publicKey.value === publicKey.value;
     });
-    this.setKeys([...this._keys, key]);
-    return key;
   }
 
   public removeKeyByPublicKey(publicKey: Secp256k1PublicKey) {
@@ -177,7 +135,7 @@ export class MultisigKey {
     );
   }
 
-  public removeKey(key: Key) {
+  public removeKey(key: z.infer<typeof KeySchema>) {
     this.setKeys(
       this._keys.filter((k) => {
         return k !== key;
@@ -186,23 +144,25 @@ export class MultisigKey {
   }
 
   protected get primaryKeyIndex() {
-    if (!this._primaryKey) return null;
-    const index = this._keys.indexOf(this._primaryKey);
+    const primaryKey = this._primaryKey;
+    if (!primaryKey) return null;
+    const index = this._keys.findIndex((key) => {
+      return key.publicKey.value === primaryKey.publicKey.value;
+    });
     return index !== -1 ? index : null;
   }
 
-  protected addKey<T extends KeyType>(key: KeyAbstractSerializedMapping[T]) {
-    const newKey = this._factories.Key.create(key);
-    this.setKeys([...this._keys, newKey]);
-    return newKey;
+  protected addKey(key: z.infer<typeof KeySchema>) {
+    this.setKeys([...this._keys, key]);
+    return key;
   }
 
-  protected setKeys(keys: Key[]) {
+  protected setKeys(keys: z.infer<typeof KeySchema>[]) {
     this._keys = this.sortKeys(keys);
   }
 
-  protected sortKeys(keys: Key[]) {
-    return R.sortWith<Key>([
+  protected sortKeys(keys: z.infer<typeof KeySchema>[]) {
+    return R.sortWith<z.infer<typeof KeySchema>>([
       R.ascend(R.prop("type")),
       R.ascend((key) => {
         return key.publicKey.value;
@@ -211,15 +171,17 @@ export class MultisigKey {
   }
 
   protected isKeyOfType<T extends KeyType>(type: T) {
-    return (key: Key): key is KeySubclassTypeMapping[T] => {
+    return (
+      key: z.infer<typeof KeySchema>,
+    ): key is KeySubclassTypeMapping[T] => {
       return key.type === type;
     };
   }
 
-  protected isUsableKeyOfType<T extends KeyType>(type: T) {
-    return (key: Key): key is KeySubclassTypeMapping[T] => {
-      return key.type === type && key.isUsable;
-    };
+  protected isKeyInMultisig(key: z.infer<typeof KeySchema>) {
+    return this._keys.some((k) => {
+      return k.type === key.type && k.publicKey.value === key.publicKey.value;
+    });
   }
 
   protected get sdk() {

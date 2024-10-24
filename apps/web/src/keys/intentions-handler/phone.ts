@@ -8,9 +8,10 @@ import {
   TelegramSingleKeyMetaData,
 } from "@/stores/key-meta-data";
 import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
-import { Key, KeyType } from "@obi-wallet/sdk";
+import { KeySchema, KeyType } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 export type PhoneKeyWorkerVia = "sms" | "voice" | "telegram";
 
@@ -89,7 +90,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     payload,
     answer,
   }: {
-    key: Key;
+    key: z.infer<typeof KeySchema>;
     keyMetaData: SingleKeyMetaData;
     index: number;
     payload: IntentionsPayload;

@@ -19,7 +19,7 @@ interface InputProps
   startIcon?: IconType;
   endIcon?: IconType;
   labelBgColor?: string;
-  labelText?: string;
+  labelText?: string | undefined;
   value?: string;
   errorMessage?: string;
   classNames?: {

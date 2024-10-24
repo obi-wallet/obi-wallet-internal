@@ -7,108 +7,22 @@ import {
   KeyPairIntentionsHandler,
   PasskeyIntentionsHandler,
 } from "@/keys/intentions-handler";
-import { MultisigKeyDecryption, PrimaryKeyDecryption } from "@/lib/encryption";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { cn } from "@/lib/utils";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { AsyncButton } from "@/ui/button";
 import { PhoneKeyModal } from "@/user-interactions/approve-intentions/modals/phone";
-import { Key, KeyType, MultisigKey } from "@obi-wallet/sdk";
+import { KeySchema, KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useEffectOnceWhen } from "rooks";
+import { z } from "zod";
 
-export const IntentionsResults = Map<string, IntentionsResult>;
-export type IntentionsResults = Map<string, IntentionsResult>;
+import { IntentionsResults } from "./utils";
+
 interface CloudKeyFile {
   id: string;
   name: string;
-}
-
-export async function handleMultisigKeyDecryptedMessages({
-  multisigKeyEncryptedMessages,
-  multisigKey,
-  results,
-}: {
-  multisigKeyEncryptedMessages: string[];
-  multisigKey: MultisigKey;
-  results: IntentionsResults;
-}): Promise<string[]> {
-  return await Promise.all(
-    multisigKeyEncryptedMessages.map(async (message, index) => {
-      return await handleMultisigKeyDecryptedMessage({
-        multisigKeyEncryptedMessage: message,
-        multisigKey,
-        results,
-        index,
-      });
-    }),
-  );
-}
-
-export async function handleMultisigKeyDecryptedMessage({
-  multisigKeyEncryptedMessage,
-  multisigKey,
-  results,
-  index,
-}: {
-  multisigKeyEncryptedMessage: string;
-  multisigKey: MultisigKey;
-  results: IntentionsResults;
-  index: number;
-}) {
-  const decryptedShares = multisigKey.keys.map((key) => {
-    return (
-      results.get(key.publicKey.value)
-        ?.decryptedMultisigKeyEncryptedMessagesShares[index] ?? null
-    );
-  });
-  const decryption = new MultisigKeyDecryption(decryptedShares);
-  return await decryption.decrypt(multisigKeyEncryptedMessage);
-}
-
-export async function handlePrimaryKeyDecryptedMessages({
-  primaryKeyEncryptedMessages,
-  multisigKey,
-  results,
-}: {
-  primaryKeyEncryptedMessages: string[];
-  multisigKey: MultisigKey;
-  results: IntentionsResults;
-}) {
-  return await Promise.all(
-    primaryKeyEncryptedMessages.map(async (message, index) => {
-      return await handlePrimaryKeyDecryptedMessage({
-        primaryKeyEncryptedMessage: message,
-        multisigKey,
-        results,
-        index,
-      });
-    }),
-  );
-}
-
-export async function handlePrimaryKeyDecryptedMessage({
-  primaryKeyEncryptedMessage,
-  multisigKey,
-  results,
-  index,
-}: {
-  primaryKeyEncryptedMessage: string;
-  multisigKey: MultisigKey;
-  results: IntentionsResults;
-  index: number;
-}) {
-  const decryptedShares = multisigKey.keys.map((key) => {
-    return (
-      results.get(key.publicKey.value)
-        ?.decryptedPrimaryKeyEncryptedMessagesShares[index] ?? null
-    );
-  });
-  return await new PrimaryKeyDecryption().decryptWithMultisigKey({
-    data: primaryKeyEncryptedMessage,
-    input: decryptedShares,
-  });
 }
 
 export interface ApproveIntentionsProps {
@@ -142,11 +56,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
     const alert = useAlert();
     const { readFiles, readFileById } = useGoogleAuth();
 
-    const getResult = (key: Key) => {
+    const getResult = (key: z.infer<typeof KeySchema>) => {
       return results.get(key.publicKey.value);
     };
 
-    const setResultWithKey = (key: Key, result: IntentionsResult) => {
+    const setResultWithKey = (
+      key: z.infer<typeof KeySchema>,
+      result: IntentionsResult,
+    ) => {
       setResults((map) => {
         return new Map(map.set(key.publicKey.value, result));
       });

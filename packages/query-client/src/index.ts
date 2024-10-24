@@ -84,15 +84,17 @@ export class QueryClientNamespace<
         queryFn: (): Promise<TFnReturn> => {
           return queryInfo.fn(params);
         },
-        staleTime: queryInfo.staleTime
-          ? (query) => {
-              const staleTime =
-                typeof queryInfo.staleTime === "function"
-                  ? queryInfo.staleTime(query)
-                  : queryInfo.staleTime!;
-              return queryClientDuration(staleTime);
+        ...(queryInfo.staleTime
+          ? {
+              staleTime: (query) => {
+                const staleTime =
+                  typeof queryInfo.staleTime === "function"
+                    ? queryInfo.staleTime(query)
+                    : queryInfo.staleTime!;
+                return queryClientDuration(staleTime);
+              },
             }
-          : undefined,
+          : {}),
       };
     };
   }

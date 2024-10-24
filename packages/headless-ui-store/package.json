@@ -13,10 +13,10 @@
   "dependencies": {
     "@obi-wallet/sdk": "workspace:*",
     "@obi-wallet/sdk-json": "workspace:*",
-    "@react-native-async-storage/async-storage": "^2.0.0",
-    "dexie": "^4.0.8",
+    "localforage": "^1.10.0",
     "mobx": "^6.13.5",
-    "ramda": "^0.30.1"
+    "ramda": "^0.30.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

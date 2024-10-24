@@ -4,7 +4,7 @@ import { HexEncodedString } from "@obi-wallet/encoding";
 import {
   HomeChainIdSchema,
   Messages,
-  MultisigKey,
+  MultisigKeySchema,
   SecretJsClient,
   WalletData,
 } from "@obi-wallet/sdk";
@@ -19,7 +19,7 @@ const schema = z.object({
   userAccountAddress: z.string(),
   userAccountCodeHash: z.string(),
   signatures: z.array(HexEncodedString),
-  previousOwner: MultisigKey.schema.migratableSchema,
+  previousOwner: MultisigKeySchema,
   walletData: WalletData,
 });
 

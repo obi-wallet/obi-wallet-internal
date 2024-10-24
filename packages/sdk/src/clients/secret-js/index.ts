@@ -11,13 +11,7 @@ import {
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
 import { serialize } from "@obi-wallet/sdk-json";
-import {
-  BroadcastMode,
-  Msg,
-  SecretNetworkClient,
-  TxOptions,
-  TxResponse,
-} from "secretjs";
+import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -274,7 +268,7 @@ export class SecretJsClient {
     };
   }
 
-  public get defaultTxOptions(): TxOptions {
+  public get defaultTxOptions() {
     return {
       gasLimit: 800_000,
       gasPriceInFeeDenom: 0.05,

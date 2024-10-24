@@ -110,7 +110,7 @@ export function useWalletBackupMutation() {
       walletData.revision++;
       const response = await SetWalletDataUserInteraction.start({
         homeChainId: wallet.homeChainId,
-        owner: wallet.owner.toJSON()!,
+        owner: wallet.owner.toJSON(),
         keyMetaData: keyMetaData,
         serializedWalletData: serialize(walletData),
       });

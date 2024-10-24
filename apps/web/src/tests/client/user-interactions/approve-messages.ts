@@ -1,13 +1,12 @@
 import { HomeChain } from "@/home-chain";
 import { KeyPairIntentionsHandler } from "@/keys/intentions-handler";
+import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { createTestSuite } from "@/tests";
-import {
-  ApproveIntentionsProps,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentionsProps } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import {
   ApproveMessagesProps,
   cosmosSignAminoToApproveMessagesProps,
@@ -25,17 +24,20 @@ import {
   ObservableMpcWallet,
   SignAndBroadcastTransactionUserInteraction,
 } from "@obi-wallet/sdk";
-import { toJS } from "mobx";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
 
 async function mockApproveIntentions({
   multisigKey,
+  keyPair,
   intentions,
   onApprove,
-}: ApproveIntentionsProps) {
+}: ApproveIntentionsProps & { keyPair: Secp256k1KeyPair }) {
   const intentionsResults = new IntentionsResults();
-  invariant(multisigKey.primaryKey, "Expected primary key to exist");
-  const keyPair = toJS(multisigKey.primaryKey.payload);
+  invariant(
+    multisigKey.primaryKey?.publicKey.value === keyPair.publicKey.value,
+    "Expected primary key to match provided key pair",
+  );
   const intentionsHandler = new KeyPairIntentionsHandler({
     owner: multisigKey,
     payload: intentions,
@@ -81,6 +83,7 @@ async function mockApproveMessages({
   };
 
   const intentionsPayload = {
+    decryptEasyShare: wallet.encryptedEasyShare,
     signHashes: [Encoding.fromHex(txInfo.hash).toBytes()],
     decryptMessages: [],
     decryptPrimaryKeyEncryptedMessages: [],
@@ -90,6 +93,7 @@ async function mockApproveMessages({
   let intentionsResults: IntentionsResults | null = null;
   await mockApproveIntentions({
     multisigKey: wallet.owner,
+    keyPair: MOCK_PRIMARY_KEY_KEYPAIR,
     keyMetaData: {},
     intentions: intentionsPayload,
     onApprove(result: IntentionsResults) {
