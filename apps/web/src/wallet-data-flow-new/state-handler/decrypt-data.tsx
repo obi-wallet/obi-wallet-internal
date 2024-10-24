@@ -33,8 +33,7 @@ export const DecryptData = observer<DecryptDataProps>(function DecryptData({
 }) {
   const alert = useAlert();
   const owner = state.owner;
-  // TODO:
-  const keyMetaData = {};
+  const keyMetaData = state.keyMetaData;
 
   const [results, setResults] = useState<IntentionsResults | undefined>(
     undefined,

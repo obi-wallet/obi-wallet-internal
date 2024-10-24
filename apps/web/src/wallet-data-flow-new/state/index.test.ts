@@ -7,11 +7,21 @@ import {
 import { MOCK_WALLET_WITH_RECOVERY_KEY } from "@/mocks/wallet";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
 import {
+  EncryptionTools,
   InitialState,
   WalletDataFlowState,
   WalletDataFlowStateType,
 } from "@/wallet-data-flow-new/state/index";
-import { KeyType, SecretJsHomeChainId, WalletData } from "@obi-wallet/sdk";
+import { Base58EncodedString } from "@obi-wallet/encoding";
+import {
+  EncryptedBackupShare,
+  EncryptedEasyShareForBackup,
+  EncryptedEasyShareForClient,
+  KeyType,
+  MultisigKeyEncryptedData,
+  SecretJsHomeChainId,
+  WalletData,
+} from "@obi-wallet/sdk";
 import { Effect, Layer, Ref, SubscriptionRef } from "effect";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
@@ -33,22 +43,43 @@ afterAll(() => {
   return server.close();
 });
 
-function runTest(p: Effect.Effect<void, never, WalletDataFlowState>) {
-  return Effect.runPromise(
-    Effect.provide(
-      p,
-      Layer.succeed(
-        WalletDataFlowState,
-        Effect.runSync(
-          SubscriptionRef.make<EffectStateValue<typeof WalletDataFlowState>>(
-            new InitialState({
-              chainId: SecretJsHomeChainId.MAINNET,
-            }),
-          ),
-        ),
+function runTest(
+  p: Effect.Effect<void, never, EncryptionTools | WalletDataFlowState>,
+) {
+  const walletDataFlowStateLayer = Layer.succeed(
+    WalletDataFlowState,
+    Effect.runSync(
+      SubscriptionRef.make<EffectStateValue<typeof WalletDataFlowState>>(
+        new InitialState({
+          chainId: SecretJsHomeChainId.MAINNET,
+        }),
       ),
     ),
   );
+  const mockEncryptionToolsLayer = Layer.succeed(EncryptionTools, {
+    encryptSharesForClient: async function (_) {
+      return {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        easy: "<EncryptedEasyShareForClient>" as EncryptedEasyShareForClient,
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        backup: "<EncryptedBackupShare>" as EncryptedBackupShare,
+      };
+    },
+    encryptSharesForBackup: async function (_) {
+      return {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        easy: "<EncryptedEasyShareForBackup>" as EncryptedEasyShareForBackup,
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        backup: "<EncryptedBackupShare>" as EncryptedBackupShare,
+      };
+    },
+    encryptWithMultisigKey: async function (_) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return "<MultisigKeyEncryptedData>" as MultisigKeyEncryptedData;
+    },
+  });
+  const layer = Layer.merge(walletDataFlowStateLayer, mockEncryptionToolsLayer);
+  return Effect.runPromise(Effect.provide(p, layer));
 }
 
 test("Recover by primary key, no wallets found", async () => {
@@ -99,7 +130,7 @@ test("Recover by recovery key, wallets found", async () => {
   await runTest(
     Effect.gen(function* () {
       const ref = yield* WalletDataFlowState;
-      const state = yield* Ref.get(ref);
+      let state = yield* Ref.get(ref);
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       yield* (state as InitialState).recoverByPublicKey({
         publicKey: MOCK_RECOVERY_KEY_KEYPAIR.publicKey,
@@ -107,14 +138,21 @@ test("Recover by recovery key, wallets found", async () => {
           name: "foobar",
         },
       });
-      const nextState = yield* Ref.get(ref);
-      invariant(nextState._tag === WalletDataFlowStateType.WalletData);
-      expect(nextState.walletData).toEqual(data);
-      expect(nextState.owner.primaryKey).toEqual(null);
-      console.log(nextState.keyMetaData);
+      state = yield* Ref.get(ref);
+      invariant(state._tag === WalletDataFlowStateType.WalletData);
+      expect(state.walletData).toEqual(data);
+      expect(state.owner.primaryKey).toEqual(null);
       expect(
-        nextState.keyMetaData[MOCK_RECOVERY_KEY_KEYPAIR.publicKey.value]?.name,
+        state.keyMetaData[MOCK_RECOVERY_KEY_KEYPAIR.publicKey.value]?.name,
       ).toEqual("foobar");
+      yield* state.setDecryptedData({
+        easyShare: MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE.easyShare,
+        backupShare: MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE.backupShare,
+        keyMetaData: {},
+        ed25519KeyPair: null,
+      });
+      state = yield* Ref.get(ref);
+      expect(state._tag).toEqual(WalletDataFlowStateType.SecuritySettings);
     }),
   );
 });
@@ -173,7 +211,36 @@ describe("Recover by primary key, wallet found", () => {
     );
   });
 
-  test("setDecryptedData", async () => {
+  test("setDecryptedData, ed25519 key pair", async () => {
+    await runTest(
+      Effect.gen(function* () {
+        yield* recoverByPrimaryKey;
+
+        const ref = yield* WalletDataFlowState;
+        const state = yield* Ref.get(ref);
+        invariant(state._tag === WalletDataFlowStateType.WalletData);
+        yield* state.setDecryptedData({
+          easyShare: MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE.easyShare,
+          backupShare: MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE.backupShare,
+          keyMetaData: {},
+          ed25519KeyPair: {
+            // TODO: mock key pair
+            publicKey: {
+              type: "tendermint/PubKeyEd25519",
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              value: "foobar" as Base58EncodedString,
+            },
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            privateKey: "barfoo" as Base58EncodedString,
+          },
+        });
+        const nextState = yield* Ref.get(ref);
+        expect(nextState._tag).toEqual(WalletDataFlowStateType.Done);
+      }),
+    );
+  });
+
+  test("setDecryptedData, no ed25519 key pair", async () => {
     await runTest(
       Effect.gen(function* () {
         yield* recoverByPrimaryKey;
@@ -187,6 +254,8 @@ describe("Recover by primary key, wallet found", () => {
           keyMetaData: {},
           ed25519KeyPair: null,
         });
+        const nextState = yield* Ref.get(ref);
+        expect(nextState._tag).toEqual(WalletDataFlowStateType.SetWalletData);
       }),
     );
   });

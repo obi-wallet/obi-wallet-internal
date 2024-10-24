@@ -1,5 +1,40 @@
+import {
+  MultisigKeyEncryption,
+  SharesEncryptionForClient,
+} from "@/lib/encryption";
+import { EncryptionTools } from "@/wallet-data-flow-new/state";
+import {
+  EncryptedBackupShare,
+  EncryptedEasyShareForBackup,
+} from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { Context, Effect, Fiber, Layer, Stream, SubscriptionRef } from "effect";
 import { useCallback, useRef, useSyncExternalStore } from "react";
+
+const encryptionToolsLayer = Layer.succeed(EncryptionTools, {
+  encryptSharesForClient: async function ({ multisigKey, easy, backup }) {
+    return await new SharesEncryptionForClient(multisigKey).encrypt({
+      easy,
+      backup,
+    });
+  },
+  encryptSharesForBackup: async function ({ multisigKey, easy, backup }) {
+    const multisigKeyEncryption = new MultisigKeyEncryption(
+      multisigKey.publicKey,
+    );
+    return {
+      easy: EncryptedEasyShareForBackup.parse(
+        await multisigKeyEncryption.encrypt(serialize(easy)),
+      ),
+      backup: EncryptedBackupShare.parse(
+        await multisigKeyEncryption.encrypt(serialize(backup)),
+      ),
+    };
+  },
+  encryptWithMultisigKey: async function ({ multisigKey, data }) {
+    return await new MultisigKeyEncryption(multisigKey.publicKey).encrypt(data);
+  },
+});
 
 // maps a SubscriptionRef type to its inner value type
 export type SubscriptionRefValue<T> =
@@ -18,7 +53,7 @@ export type EffectStateValue<T extends EffectStateTag> = SubscriptionRefValue<
 export type EffectStateChanger<T extends EffectStateTag> = Effect.Effect<
   void,
   never,
-  Context.Tag.Identifier<T>
+  Context.Tag.Identifier<T> | EncryptionTools
 >;
 
 // eslint-disable-next-line etc/prefer-interface
@@ -42,18 +77,25 @@ export function useEffectState<
   state: EffectStateValue<T>;
   dispatch: EffectStateDispatch<T>;
 } {
-  const stateRef = useRef<Layer.Layer<Context.Tag.Identifier<T>> | null>(null);
+  const stateRef = useRef<Layer.Layer<
+    Context.Tag.Identifier<T> | EncryptionTools
+  > | null>(null);
   const initialStateRef = useRef<EffectStateValue<T>>(initialState);
   const endOptionsRef = useRef(endOptions);
 
-  const getLayer = useCallback((): Layer.Layer<Context.Tag.Identifier<T>> => {
+  const getLayer = useCallback((): Layer.Layer<
+    Context.Tag.Identifier<T> | EncryptionTools
+  > => {
     if (stateRef.current === null) {
-      stateRef.current = Layer.succeed(
-        Tag,
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        Effect.runSync(
-          SubscriptionRef.make(initialStateRef.current),
-        ) as Context.Tag.Service<T>,
+      stateRef.current = Layer.merge(
+        encryptionToolsLayer,
+        Layer.succeed(
+          Tag,
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          Effect.runSync(
+            SubscriptionRef.make(initialStateRef.current),
+          ) as Context.Tag.Service<T>,
+        ),
       );
     }
     return stateRef.current;
@@ -93,7 +135,11 @@ export function useEffectState<
   return {
     state,
     dispatch: async (
-      p: Effect.Effect<void, never, Context.Tag.Identifier<T>>,
+      p: Effect.Effect<
+        void,
+        never,
+        Context.Tag.Identifier<T> | EncryptionTools
+      >,
     ) => {
       await Effect.runPromise(Effect.provide(p, getLayer()));
     },

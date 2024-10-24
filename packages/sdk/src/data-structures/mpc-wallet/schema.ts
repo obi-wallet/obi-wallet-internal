@@ -34,7 +34,7 @@ export const UserEntryAddress = z.string().brand("UserEntryAddress");
 
 export const WalletData = z.object({
   homeChainId: HomeChainIdSchema,
-  userEntryAddress: z.string(),
+  userEntryAddress: UserEntryAddress,
   owner: z.object({
     threshold: z.string(),
     keys: z.array(

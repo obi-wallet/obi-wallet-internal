@@ -1,30 +1,77 @@
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state";
+import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
+  EncryptedBackupShare,
+  EncryptedEasyShareForBackup,
+  EncryptedEasyShareForClient,
   HomeChainId,
   KeyType,
+  MpcWalletSchema,
   MultisigKey,
+  MultisigKeyEncryptedData,
   WalletData,
 } from "@obi-wallet/sdk";
-import { Ed25519KeyPair } from "@obi-wallet/sdk-ed25519";
+import {
+  Ed25519KeyPair,
+  generateEd25519KeyPair,
+} from "@obi-wallet/sdk-ed25519";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { Context, Data, Effect, Ref, SubscriptionRef } from "effect";
+import { z } from "zod";
 
 export enum WalletDataFlowStateType {
   Initial = "Initial",
   NoWalletFound = "NoWalletFound",
   WalletData = "WalletData",
+  CommitData = "CommitData",
+  SetWalletData = "SetWalletData",
+  SecuritySettings = "SecuritySettings",
   Done = "Done",
 }
 
 export class WalletDataFlowState extends Context.Tag("WalletDataFlowState")<
   WalletDataFlowState,
   SubscriptionRef.SubscriptionRef<
-    InitialState | NoWalletFoundState | WalletDataState | DoneState
+    | InitialState
+    | NoWalletFoundState
+    | WalletDataState
+    | CommitDataState
+    | SetWalletDataState
+    | SecuritySettingsState
+    | DoneState
   >
+>() {}
+
+export interface IEncryptionTools {
+  encryptSharesForClient: (payload: {
+    multisigKey: MultisigKey;
+    easy: EasyShare;
+    backup: BackupShare;
+  }) => Promise<{
+    easy: EncryptedEasyShareForClient;
+    backup: EncryptedBackupShare;
+  }>;
+  encryptSharesForBackup: (payload: {
+    multisigKey: MultisigKey;
+    easy: EasyShare;
+    backup: BackupShare;
+  }) => Promise<{
+    easy: EncryptedEasyShareForBackup;
+    backup: EncryptedBackupShare;
+  }>;
+  encryptWithMultisigKey: (payload: {
+    multisigKey: MultisigKey;
+    data: string;
+  }) => Promise<MultisigKeyEncryptedData>;
+}
+
+export class EncryptionTools extends Context.Tag("EncryptionTools")<
+  EncryptionTools,
+  IEncryptionTools
 >() {}
 
 export class InitialState extends Data.TaggedClass(
@@ -112,7 +159,7 @@ export class WalletDataState extends Data.TaggedClass(
     super({ ...data, owner, keyMetaData });
   }
 
-  public setDecryptedData(_data: {
+  public setDecryptedData(data: {
     easyShare: EasyShare;
     backupShare: BackupShare;
     keyMetaData: KeyMetaData;
@@ -120,14 +167,16 @@ export class WalletDataState extends Data.TaggedClass(
     ed25519KeyPair: Ed25519KeyPair | null;
   }) {
     return Effect.gen(this, function* () {
-      // TODO: here we have three cases:
-      // 1) If we have a primary key and an ed25519KeyPair, we are done (previously: finishFlow)
-      // 2) If we have a primary key but no ed25519KeyPair, we need to generate one and then update the wallet data accordingly (set data)
-      // 3) If we have no primary key, we need to proceed to security settings
       const state = yield* WalletDataFlowState;
-      yield* Ref.update(state, () => {
-        return new DoneState();
+      const nextState = yield* CommitDataState.decryptedData({
+        owner: this.owner,
+        walletData: this.walletData,
+        ...data,
       });
+      yield* Ref.update(state, () => {
+        return nextState;
+      });
+      yield* Effect.void;
     });
   }
 
@@ -143,4 +192,121 @@ export class WalletDataState extends Data.TaggedClass(
   }
 }
 
-export class DoneState extends Data.TaggedClass(WalletDataFlowStateType.Done) {}
+export class CommitDataState extends Data.TaggedClass(
+  WalletDataFlowStateType.CommitData,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+)<{}> {
+  static decryptedData({
+    owner,
+    easyShare,
+    backupShare,
+    keyMetaData,
+    ed25519KeyPair,
+    walletData,
+  }: {
+    owner: MultisigKey;
+    easyShare: EasyShare;
+    backupShare: BackupShare;
+    keyMetaData: KeyMetaData;
+    ed25519KeyPair: Ed25519KeyPair | null;
+    walletData: WalletData;
+  }) {
+    return Effect.gen(function* () {
+      if (owner.primaryKey) {
+        const encryptionTools = yield* EncryptionTools;
+        const { easy, backup } = yield* Effect.promise(() => {
+          return encryptionTools.encryptSharesForClient({
+            multisigKey: owner,
+            easy: easyShare,
+            backup: backupShare,
+          });
+        });
+
+        if (ed25519KeyPair) {
+          return new DoneState({
+            wallet: {
+              homeChain: walletData.homeChainId,
+              owner: owner.toJSON(),
+              userEntryAddress: walletData.userEntryAddress,
+              encryptedShares: {
+                easy,
+                backup,
+              },
+              ed25519KeyPair: {
+                publicKey: ed25519KeyPair.publicKey.value,
+                encryptedPrivateKey: yield* Effect.promise(() => {
+                  return encryptionTools.encryptWithMultisigKey({
+                    multisigKey: owner,
+                    data: ed25519KeyPair.privateKey,
+                  });
+                }),
+              },
+              previousWalletData: walletData,
+            },
+            keyMetaData,
+          });
+        } else {
+          const ed25519KeyPair = generateEd25519KeyPair();
+          const encryptedEd25519KeyPair = {
+            publicKey: ed25519KeyPair.publicKey.value,
+            encryptedPrivateKey: yield* Effect.promise(() => {
+              return encryptionTools.encryptWithMultisigKey({
+                multisigKey: owner,
+                data: ed25519KeyPair.privateKey,
+              });
+            }),
+          };
+          const nextWalletData = {
+            ...walletData,
+            ed25519KeyPair: encryptedEd25519KeyPair,
+            revision: walletData.revision + 1,
+          };
+          return new SetWalletDataState({
+            owner,
+            wallet: {
+              homeChain: walletData.homeChainId,
+              owner: owner.toJSON(),
+              userEntryAddress: walletData.userEntryAddress,
+              encryptedShares: {
+                easy,
+                backup,
+              },
+              ed25519KeyPair: encryptedEd25519KeyPair,
+              previousWalletData: nextWalletData,
+            },
+            walletData: nextWalletData,
+            keyMetaData,
+          });
+        }
+      } else {
+        return new SecuritySettingsState();
+        // 3) If we have no primary key, we need to proceed to security settings
+        // Proceed to security settings
+      }
+    });
+  }
+}
+
+export class SetWalletDataState extends Data.TaggedClass(
+  WalletDataFlowStateType.SetWalletData,
+)<{
+  owner: MultisigKey;
+  wallet: z.infer<typeof MpcWalletSchema>;
+  walletData: WalletData & {
+    ed25519KeyPair: {
+      publicKey: Base58EncodedString;
+      encryptedPrivateKey: MultisigKeyEncryptedData;
+    };
+  };
+  keyMetaData: KeyMetaData;
+}> {}
+
+export class SecuritySettingsState extends Data.TaggedClass(
+  WalletDataFlowStateType.SecuritySettings,
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+)<{}> {}
+
+export class DoneState extends Data.TaggedClass(WalletDataFlowStateType.Done)<{
+  wallet: z.infer<typeof MpcWalletSchema>;
+  keyMetaData: KeyMetaData;
+}> {}
