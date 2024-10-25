@@ -1,7 +1,7 @@
-import { vi } from "vitest";
-import fs from "node:fs/promises";
-import { createRootStore } from "./src/stores";
+import { createRootStore } from "@/stores";
 import { obiModalConfig } from "@obi-wallet/config";
+import fs from "node:fs/promises";
+import { vi } from "vitest";
 
 vi.stubGlobal(
   "Worker",
