@@ -1,13 +1,13 @@
 import { MsgExecuteContract } from "secretjs";
 
-import { SecretJsChainId } from "../../../chains";
 import { MultisigKey } from "../../../data-structures";
+import { SecretJsHomeChainId } from "../../../home-chains";
 import { Message } from "../../../transactions";
 import { Sdk } from "../../sdk";
 import { AbstractMessages } from "../abstract";
 
 export class SecretJsMessages extends AbstractMessages {
-  protected constructor(protected override chainId: SecretJsChainId) {
+  protected constructor(protected override chainId: SecretJsHomeChainId) {
     super(chainId);
   }
 
@@ -99,7 +99,7 @@ export class SecretJsMessages extends AbstractMessages {
     return Sdk.chainId(this.chainId);
   }
 
-  public static chainId(chainId: SecretJsChainId) {
+  public static chainId(chainId: SecretJsHomeChainId) {
     return new SecretJsMessages(chainId);
   }
 }

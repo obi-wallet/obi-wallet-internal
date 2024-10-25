@@ -1,5 +1,5 @@
-import { ChainId } from "../../chains";
 import { MultisigKey } from "../../data-structures";
+import { HomeChainId } from "../../home-chains";
 import { Message } from "../../transactions";
 
 /**
@@ -7,7 +7,7 @@ import { Message } from "../../transactions";
  * for generating message fixtures for testing.
  */
 export abstract class AbstractMessages {
-  protected constructor(protected chainId: ChainId) {}
+  protected constructor(protected chainId: HomeChainId) {}
 
   /**
    * Message to update a new wallet's owner for the first time.

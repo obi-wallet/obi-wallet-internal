@@ -1,19 +1,19 @@
 import { pubkeyToAddress } from "@cosmjs/amino";
 
-import { SecretJsChainId, SecretJsChains } from "../../../chains";
 import { SecretJsClient } from "../../../clients";
+import { SecretJsHomeChainId, SecretJsHomeChains } from "../../../home-chains";
 import { PublicKey } from "../../../keys";
 import { AbstractTransactionsSdk } from "../abstract";
 
 export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
-  protected override chainId: SecretJsChainId;
+  protected override chainId: SecretJsHomeChainId;
   protected client: SecretJsClient;
 
   public constructor({
     chainId,
     client,
   }: {
-    chainId: SecretJsChainId;
+    chainId: SecretJsHomeChainId;
     client: SecretJsClient;
   }) {
     super(chainId);
@@ -26,6 +26,6 @@ export class SecretJsTransactionsSdk extends AbstractTransactionsSdk {
   }
 
   protected get chain() {
-    return SecretJsChains[this.chainId];
+    return SecretJsHomeChains[this.chainId];
   }
 }

@@ -3,11 +3,11 @@ import { z } from "zod";
 
 import { MultisigKey } from "./implementation";
 import { MultisigKeySchema } from "./schema";
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import { LegacyKey, LegacyObservableKey } from "../key";
 
 export function createMultisigKey(
-  chain: ChainId,
+  chain: HomeChainId,
   serialized: z.infer<typeof MultisigKeySchema> = {
     keys: [],
     threshold: 1,
@@ -25,7 +25,7 @@ export function createMultisigKey(
 }
 
 export function createObservableMultisigKey(
-  chain: ChainId,
+  chain: HomeChainId,
   serialized?: z.infer<typeof MultisigKeySchema>,
 ) {
   const key = createMultisigKey(chain, serialized, {
