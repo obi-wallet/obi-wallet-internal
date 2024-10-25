@@ -32,7 +32,7 @@ const config: StorybookConfig = {
       decoratorVersion: "2022-03",
     };
   },
-  // Should be kept in sync with next.config.js
+  // Should be kept in sync with next.config.ts
   env: (config) => {
     const configWithBrowserEnvironmentVariables = { ...config };
 

@@ -3739,7 +3739,6 @@ __metadata:
     "@types/eslint": "npm:^8.56.12"
     "@types/json-diff": "npm:^1.0.3"
     "@types/luxon": "npm:^3.4.2"
-    "@types/mocha": "npm:^10.0.9"
     "@types/node": "npm:^20.17.0"
     "@types/ramda": "npm:^0.30.2"
     "@types/react": "npm:types-react@rc"
@@ -3751,7 +3750,6 @@ __metadata:
     axios: "npm:^1.7.7"
     bech32: "npm:^2.0.0"
     bignumber.js: "npm:^9.1.2"
-    chai: "npm:^5.1.2"
     chain-registry: "npm:^1.69.10"
     clsx: "npm:^2.1.1"
     copy-to-clipboard: "npm:^3.3.3"
@@ -6858,13 +6856,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^10.0.9":
-  version: 10.0.9
-  resolution: "@types/mocha@npm:10.0.9"
-  checksum: 10c0/76dd782ac7e971ea159d4a7fd40c929afa051e040be3f41187ff03a2d7b3279e19828ddaa498ba1757b3e6b91316263bb7640db0e906938275b97a06e087b989
-  languageName: node
-  linkType: hard
-
 "@types/mysql@npm:2.15.26":
   version: 2.15.26
   resolution: "@types/mysql@npm:2.15.26"
@@ -9715,7 +9706,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chai@npm:^5.1.1, chai@npm:^5.1.2":
+"chai@npm:^5.1.1":
   version: 5.1.2
   resolution: "chai@npm:5.1.2"
   dependencies:

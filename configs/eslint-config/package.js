@@ -63,8 +63,9 @@ module.exports = {
         devDependencies: [
           "{.storybook,__fixtures__,__stories__,__tests__,__tests-e2e__,__tests-integration__,scripts}/**/*",
           "**/storybook-helpers/**/*",
-          "next.config.js",
-          "playwright.config.ts",
+          "next.config.ts",
+          "vitest.config.mts",
+          "vitest.setup.mts",
           "**/*.stories.*",
           "**/*.spec*",
           "**/*.test.*",

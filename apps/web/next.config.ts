@@ -1,8 +1,9 @@
-const { withSentryConfig } = require("@sentry/nextjs");
-const WebpackHookPlugin = require("webpack-hook-plugin");
+import { withSentryConfig } from "@sentry/nextjs";
+import { NextConfig } from "next";
+import WebpackHookPlugin from "webpack-hook-plugin";
 
-/** @type {import('next').NextConfig} */
-module.exports = withSentryConfig(
+// eslint-disable-next-line import/no-default-export
+export default withSentryConfig<NextConfig>(
   {
     // Should be kept in sync with .storybook/main.ts
     env: {
@@ -55,7 +56,9 @@ module.exports = withSentryConfig(
     org: "obi-64",
     project: "obi-wallet",
 
-    authToken: process.env.SENTRY_AUTH_TOKEN,
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? { authToken: process.env.SENTRY_AUTH_TOKEN }
+      : {}),
 
     // Only print logs for uploading source maps in CI
     silent: !process.env.CI,
@@ -65,9 +68,6 @@ module.exports = withSentryConfig(
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: false,
 
     // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
     // This can increase your server load as well as your hosting bill.
