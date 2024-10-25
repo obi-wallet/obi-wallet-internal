@@ -2,7 +2,7 @@ import { getFeeLender } from "@/lib/fee-lender";
 import { isTest } from "@/lib/testing";
 import { Encoding } from "@obi-wallet/encoding";
 import {
-  ChainIdSchema,
+  HomeChainIdSchema,
   SecretJsClient,
   SecretJsHomeChains,
 } from "@obi-wallet/sdk";
@@ -14,7 +14,7 @@ import { z } from "zod";
 export const maxDuration = 45;
 
 const schema = z.object({
-  chainId: ChainIdSchema,
+  chainId: HomeChainIdSchema,
 });
 
 export async function POST(request: Request) {

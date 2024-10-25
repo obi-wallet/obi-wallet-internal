@@ -1,5 +1,4 @@
 export * from "./abstract";
-export * from "./chain-id";
 export * from "./home-chain-id";
 export * from "./key";
 export * from "./migratable";
