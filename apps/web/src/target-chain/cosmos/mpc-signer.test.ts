@@ -2,7 +2,6 @@ import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
-import { expect, test } from "vitest";
 import { mockApproveIntentions } from "@/tests/helpers/mock-approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { fromBase64 } from "@cosmjs/encoding";
@@ -10,6 +9,7 @@ import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";
 import { createHash, MpcWallet } from "@obi-wallet/sdk";
 import * as secp256k1 from "secp256k1";
 import invariant from "tiny-invariant";
+import { expect, test } from "vitest";
 
 test("signHash", async () => {
   const wallet = MpcWallet.create(MOCK_WALLET_DATA);

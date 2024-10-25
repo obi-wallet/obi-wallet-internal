@@ -3,7 +3,6 @@ import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { Eip155ChainId, Eip155Chains } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
-import { test, expect } from "vitest";
 import { mockApproveIntentions } from "@/tests/helpers/mock-approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { MpcWallet } from "@obi-wallet/sdk";
@@ -11,6 +10,7 @@ import { toEcdsaKernelSmartAccount } from "permissionless/accounts";
 import invariant from "tiny-invariant";
 import { createPublicClient, http } from "viem";
 import { toAccount } from "viem/accounts";
+import { test, expect } from "vitest";
 
 test("signMessage", async () => {
   const wallet = MpcWallet.create(MOCK_WALLET_DATA);
