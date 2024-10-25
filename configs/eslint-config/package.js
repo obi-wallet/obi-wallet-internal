@@ -63,11 +63,11 @@ module.exports = {
         devDependencies: [
           "{.storybook,__fixtures__,__stories__,__tests__,__tests-e2e__,__tests-integration__,scripts}/**/*",
           "**/storybook-helpers/**/*",
-          "jest*.[jt]s",
           "next.config.js",
           "playwright.config.ts",
-          "test-setup.ts",
           "**/*.stories.*",
+          "**/*.spec*",
+          "**/*.test.*",
         ],
         optionalDependencies: false,
       },

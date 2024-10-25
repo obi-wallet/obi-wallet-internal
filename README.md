@@ -39,9 +39,9 @@ See docs.obi.money
 
 - Client-side tests that require UI or a specific "setup" (e.g., hooks requiring the store).
 
-### Jest
+### Vitest
 
-- We also have a Jest setup that is run in a Node.js environment.
+- We also have a Vitest setup that is run in a happy-dom environment.
 - The tests are defined in `app/web/src/__tests__`.
 - You can execute the tests via `yarn test`.
 - If you run into complications that do not occur in the Next.js environment (e.g., ESM modules, browser APIs, differences in bundler behavior), you probably want to use the Next.js test runner instead.

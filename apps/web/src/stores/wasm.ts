@@ -26,7 +26,7 @@ export class WasmStore {
   }
 
   protected async _getEciesWasm() {
-    const wasmPackage = await import("ecies-wasm");
+    const wasmPackage = await import("ecies-wasm/ecies_wasm");
     await wasmPackage.default();
     return wasmPackage;
   }

@@ -7,13 +7,13 @@ import {
   useWalletDataStateQuery,
   WalletDataStateType,
 } from "@/wallet-data-backup/sync-wallet-data";
+import { WalletDataFlow } from "@/wallet-data-flow";
 import { SecuritySettingsState } from "@/wallet-data-flow/state";
 import { useWalletBackupMutation } from "@/wallet-health/checks";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffectOnceWhen } from "rooks";
-import { WalletDataFlow } from "src/wallet-data-flow";
 
 export const SecuritySettings = observer(function SecuritySettings() {
   const wallet = useCurrentWallet({});

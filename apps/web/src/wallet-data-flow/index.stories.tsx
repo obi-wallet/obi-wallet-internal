@@ -2,6 +2,7 @@ import {
   MOCK_MULTISIG_KEY_DATA,
   MOCK_PRIMARY_KEY_KEYPAIR,
 } from "@/mocks/multisig-key";
+import { WalletDataFlow } from "@/wallet-data-flow";
 import { InitialState, SecuritySettingsState } from "@/wallet-data-flow/state";
 import {
   ObservableMultisigKey,
@@ -9,7 +10,6 @@ import {
   WalletData,
 } from "@obi-wallet/sdk";
 import { Meta, StoryObj } from "@storybook/react";
-import { WalletDataFlow } from "src/wallet-data-flow";
 
 const meta = {
   // TODO: handle missing ed25510 key pair in WalletDataFlow

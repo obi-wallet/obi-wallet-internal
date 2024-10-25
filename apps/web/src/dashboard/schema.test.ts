@@ -1,4 +1,5 @@
 import { SimulationEntry } from "@/dashboard/schema";
+import { test } from "vitest";
 
 test("SimulationEntry", () => {
   const data = [

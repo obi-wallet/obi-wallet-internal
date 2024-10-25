@@ -5,6 +5,7 @@ import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { encryptionToolsLayer } from "@/hooks/use-effect-state";
+import { WalletDataFlow } from "@/wallet-data-flow";
 import { WalletDataState as WalletDataFlowWalletDataState } from "@/wallet-data-flow/state";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state/wallet-data-to-multisig-key";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -14,7 +15,6 @@ import { Effect } from "effect";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { WalletDataFlow } from "src/wallet-data-flow";
 import invariant from "tiny-invariant";
 
 export enum WalletDataStateType {
