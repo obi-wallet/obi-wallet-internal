@@ -12,7 +12,6 @@
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "test": "vitest",
-    "test-next": "playwright test",
     "test-storybook": "test-storybook --browsers chromium firefox webkit --maxWorkers 1",
     "tsc": "tsc --noEmit"
   },
@@ -95,7 +94,6 @@
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.0.1",
-    "@playwright/test": "^1.48.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@storybook/addon-essentials": "^8.3.6",
@@ -126,7 +124,6 @@
     "msw": "^2.5.1",
     "msw-storybook-addon": "^2.0.3",
     "next-test-api-route-handler": "^4.0.14",
-    "playwright": "^1.48.1",
     "postcss": "^8.4.47",
     "storybook": "^8.3.6",
     "tailwindcss": "^3.4.14",

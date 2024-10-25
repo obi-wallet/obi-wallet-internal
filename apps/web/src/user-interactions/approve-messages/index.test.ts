@@ -4,7 +4,6 @@ import { MOCK_PRIMARY_KEY_KEYPAIR } from "@/mocks/multisig-key";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId, isCosmosChainId } from "@/target-chain/cosmos/chains";
-import { createTestSuite } from "@/tests";
 import { ApproveIntentionsProps } from "@/user-interactions/approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import {
@@ -26,6 +25,7 @@ import {
 } from "@obi-wallet/sdk";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import invariant from "tiny-invariant";
+import { test } from "vitest";
 
 async function mockApproveIntentions({
   multisigKey,
@@ -111,118 +111,116 @@ async function mockApproveMessages({
   });
 }
 
-export const testSuite = createTestSuite(({ test }) => {
-  test("SignAndBroadcastTransactionUserInteractionHandler", async () => {
-    const sendMessage = {
-      typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-      value: {
-        fromAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
-        toAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
-        amount: [
-          {
-            denom: "usei",
-            amount: "1000000",
-          },
-        ],
-      },
-    };
-
-    const interaction: SignAndBroadcastTransactionUserInteraction = {
-      payload: {
-        messages: [sendMessage],
-        memo: "a memo",
-        mockOnly: true,
-        cancelable: true,
-        targetChainId: CosmosChainId.Sei,
-        walletMeta: {
-          userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+test("SignAndBroadcastTransactionUserInteractionHandler", async () => {
+  const sendMessage = {
+    typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+    value: {
+      fromAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
+      toAddress: "sei1kvjg92ldmughvhcynu72ef3zjgrx9rdkdct83l",
+      amount: [
+        {
+          denom: "usei",
+          amount: "1000000",
         },
+      ],
+    },
+  };
+
+  const interaction: SignAndBroadcastTransactionUserInteraction = {
+    payload: {
+      messages: [sendMessage],
+      memo: "a memo",
+      mockOnly: true,
+      cancelable: true,
+      targetChainId: CosmosChainId.Sei,
+      walletMeta: {
+        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
       },
-      resolve: () => {},
-      reject: () => {},
-    };
+    },
+    resolve: () => {},
+    reject: () => {},
+  };
 
-    const props =
-      signAndBroadcastTransactionUserInteractionToApproveMessagesProps(
-        interaction,
-      );
-
-    await mockApproveMessages(props);
-  });
-
-  test("CosmosSignAminoUserInteraction", async () => {
-    const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
+  const props =
+    signAndBroadcastTransactionUserInteractionToApproveMessagesProps(
+      interaction,
     );
 
-    const interaction: CosmosSignAminoUserInteraction = {
-      payload: {
-        walletMeta: {
-          userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
-        },
-        signerAddress: await TargetChain.chainId(
-          CosmosChainId.Sei,
-        ).obiAccountAddress(publicKeys),
-        signDoc: {
-          chain_id: "pacific-1",
-          account_number: "1",
-          sequence: "",
-          fee: {
-            amount: [],
-            gas: "2",
-          },
-          msgs: [],
-          memo: "",
-        },
-        cancelable: true,
+  await mockApproveMessages(props);
+});
+
+test("CosmosSignAminoUserInteraction", async () => {
+  const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
+  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+    wallet.userEntryAddress,
+  );
+
+  const interaction: CosmosSignAminoUserInteraction = {
+    payload: {
+      walletMeta: {
+        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
       },
-      resolve(result) {
-        console.log(result);
-      },
-      reject: () => {},
-    };
-
-    const props = cosmosSignAminoToApproveMessagesProps(interaction);
-
-    await mockApproveMessages(props);
-  });
-
-  test("CosmosSignDirectUserInteraction", async () => {
-    const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
-    );
-
-    const interaction: CosmosSignDirectUserInteraction = {
-      payload: {
-        walletMeta: {
-          userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      signerAddress: await TargetChain.chainId(
+        CosmosChainId.Sei,
+      ).obiAccountAddress(publicKeys),
+      signDoc: {
+        chain_id: "pacific-1",
+        account_number: "1",
+        sequence: "",
+        fee: {
+          amount: [],
+          gas: "2",
         },
-        signerAddress: await TargetChain.chainId(
-          CosmosChainId.Sei,
-        ).obiAccountAddress(publicKeys),
-        signDoc: makeSignDoc(
-          fromHex(
-            "0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637",
-          ),
-          fromHex(
-            "0a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c7029012040a02080112130a0d0a0575636f736d12043230303010c09a0c",
-          ),
-          "pacific-1",
-          1,
+        msgs: [],
+        memo: "",
+      },
+      cancelable: true,
+    },
+    resolve(result) {
+      console.log(result);
+    },
+    reject: () => {},
+  };
+
+  const props = cosmosSignAminoToApproveMessagesProps(interaction);
+
+  await mockApproveMessages(props);
+});
+
+test("CosmosSignDirectUserInteraction", async () => {
+  const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
+  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+    wallet.userEntryAddress,
+  );
+
+  const interaction: CosmosSignDirectUserInteraction = {
+    payload: {
+      walletMeta: {
+        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      },
+      signerAddress: await TargetChain.chainId(
+        CosmosChainId.Sei,
+      ).obiAccountAddress(publicKeys),
+      signDoc: makeSignDoc(
+        fromHex(
+          "0a90010a1c2f636f736d6f732e62616e6b2e763162657461312e4d736753656e6412700a2d636f736d6f7331706b707472653766646b6c366766727a6c65736a6a766878686c63337234676d6d6b38727336122d636f736d6f7331717970717870713971637273737a673270767871367273307a716733797963356c7a763778751a100a0575636f736d120731323334353637",
         ),
-        cancelable: true,
-      },
-      resolve(result) {
-        console.log(result);
-      },
-      reject: () => {},
-    };
+        fromHex(
+          "0a4e0a460a1f2f636f736d6f732e63727970746f2e736563703235366b312e5075624b657912230a21034f04181eeba35391b858633a765c4a0c189697b40d216354d50890d350c7029012040a02080112130a0d0a0575636f736d12043230303010c09a0c",
+        ),
+        "pacific-1",
+        1,
+      ),
+      cancelable: true,
+    },
+    resolve(result) {
+      console.log(result);
+    },
+    reject: () => {},
+  };
 
-    const props =
-      cosmosSignDirectUserInteractionToApproveMessagesProps(interaction);
+  const props =
+    cosmosSignDirectUserInteractionToApproveMessagesProps(interaction);
 
-    await mockApproveMessages(props);
-  });
+  await mockApproveMessages(props);
 });
