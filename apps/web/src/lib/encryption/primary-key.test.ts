@@ -1,4 +1,4 @@
-import { MultisigKeyEncryption } from "@/lib/encryption/multisig-key";
+import { PrimaryKeyDecryption, PrimaryKeyEncryption } from "@/lib/encryption";
 import {
   MOCK_MULTISIG_KEY_DATA,
   MOCK_PRIMARY_KEY_KEYPAIR,
@@ -6,37 +6,56 @@ import {
 } from "@/mocks/multisig-key";
 import { mockApproveIntentions } from "@/tests/helpers/mock-approve-intentions";
 import {
-  handleMultisigKeyDecryptedMessages,
+  handlePrimaryKeyDecryptedMessages,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions/utils";
 import { ObservableMultisigKey, SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { expect, test } from "vitest";
 
-test("MultisigKeyEncryption", async () => {
+test("PrimaryKeyEncryption: decrypt with primary key", async () => {
   const multisigKey = ObservableMultisigKey.create(
     SecretJsHomeChainId.MAINNET,
     MOCK_MULTISIG_KEY_DATA,
   );
 
   const payload = "foo";
-  const encryption = new MultisigKeyEncryption(multisigKey.publicKey);
+  const encryption = new PrimaryKeyEncryption(multisigKey);
+  const encrypted = await encryption.encrypt(payload);
+
+  const decryption = new PrimaryKeyDecryption();
+  const decrypted = await decryption.decryptWithPrimaryKey({
+    data: encrypted,
+    privateKey: MOCK_PRIMARY_KEY_KEYPAIR.privateKey,
+  });
+
+  expect(decrypted).to.equal(payload);
+});
+
+test("PrimaryKeyEncryption: decrypt with multisig key", async () => {
+  const multisigKey = ObservableMultisigKey.create(
+    SecretJsHomeChainId.MAINNET,
+    MOCK_MULTISIG_KEY_DATA,
+  );
+
+  const payload = "foo";
+  const encryption = new PrimaryKeyEncryption(multisigKey);
   const encrypted = await encryption.encrypt(payload);
 
   const results: IntentionsResults = new Map();
 
   const intentions = {
     decryptEasyShare: null,
-    decryptMultisigKeyEncryptedMessages: [encrypted],
-    decryptPrimaryKeyEncryptedMessages: [],
+    decryptMultisigKeyEncryptedMessages: [],
+    decryptPrimaryKeyEncryptedMessages: [encrypted],
     decryptMessages: [],
     signHashes: [],
   };
 
   // No shares provided, should fail
   await expect(
-    handleMultisigKeyDecryptedMessages({
-      multisigKeyEncryptedMessages:
-        intentions.decryptMultisigKeyEncryptedMessages,
+    handlePrimaryKeyDecryptedMessages({
+      primaryKeyEncryptedMessages:
+        intentions.decryptPrimaryKeyEncryptedMessages,
       multisigKey,
       results,
     }),
@@ -52,9 +71,9 @@ test("MultisigKeyEncryption", async () => {
     results,
   });
   await expect(
-    handleMultisigKeyDecryptedMessages({
-      multisigKeyEncryptedMessages:
-        intentions.decryptMultisigKeyEncryptedMessages,
+    handlePrimaryKeyDecryptedMessages({
+      primaryKeyEncryptedMessages:
+        intentions.decryptPrimaryKeyEncryptedMessages,
       multisigKey,
       results,
     }),
@@ -69,9 +88,9 @@ test("MultisigKeyEncryption", async () => {
     intentions,
     results,
   });
-  const decrypted = await handleMultisigKeyDecryptedMessages({
-    multisigKeyEncryptedMessages:
-      intentions.decryptMultisigKeyEncryptedMessages,
+
+  const decrypted = await handlePrimaryKeyDecryptedMessages({
+    primaryKeyEncryptedMessages: intentions.decryptPrimaryKeyEncryptedMessages,
     multisigKey,
     results,
   });

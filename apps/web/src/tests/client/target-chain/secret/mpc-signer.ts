@@ -3,7 +3,7 @@ import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { SecretChainId } from "@/target-chain/secret/chains";
 import { SecretMpcSigner } from "@/target-chain/secret/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
-import { mockApproveIntentions } from "@/tests/client/lib/encryption";
+import { mockApproveIntentions } from "@/tests/helpers/mock-approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { fromBase64 } from "@cosmjs/encoding";
 import { Encoding, Utf8EncodedString } from "@obi-wallet/encoding";

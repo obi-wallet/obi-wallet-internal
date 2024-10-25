@@ -4,7 +4,7 @@ import { TargetChain } from "@/target-chain";
 import { Eip155ChainId, Eip155Chains } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
 import { createTestSuite, expect } from "@/tests";
-import { mockApproveIntentions } from "@/tests/client/lib/encryption";
+import { mockApproveIntentions } from "@/tests/helpers/mock-approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { MpcWallet } from "@obi-wallet/sdk";
 import { toEcdsaKernelSmartAccount } from "permissionless/accounts";
