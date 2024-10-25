@@ -2,19 +2,14 @@ import {
   IntentionsPayload,
   KeyPairIntentionsHandler,
 } from "@/keys/intentions-handler";
-import {
-  MultisigKeyEncryption,
-  PrimaryKeyDecryption,
-  PrimaryKeyEncryption,
-} from "@/lib/encryption";
+import { PrimaryKeyDecryption, PrimaryKeyEncryption } from "@/lib/encryption";
 import {
   MOCK_MULTISIG_KEY_DATA,
-  MOCK_RECOVERY_KEY_KEYPAIR,
   MOCK_PRIMARY_KEY_KEYPAIR,
+  MOCK_RECOVERY_KEY_KEYPAIR,
 } from "@/mocks/multisig-key";
 import { createTestSuite, expect } from "@/tests";
 import {
-  handleMultisigKeyDecryptedMessages,
   handlePrimaryKeyDecryptedMessages,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions/utils";
@@ -47,79 +42,6 @@ export async function mockApproveIntentions({
 }
 
 export const testSuite = createTestSuite(({ test }) => {
-  test("MultisigKeyEncryption", async () => {
-    const multisigKey = ObservableMultisigKey.create(
-      SecretJsHomeChainId.MAINNET,
-      MOCK_MULTISIG_KEY_DATA,
-    );
-
-    const payload = "foo";
-    const encryption = new MultisigKeyEncryption(multisigKey.publicKey);
-    const encrypted = await encryption.encrypt(payload);
-
-    const results: IntentionsResults = new Map();
-
-    const intentions = {
-      decryptEasyShare: null,
-      decryptMultisigKeyEncryptedMessages: [encrypted],
-      decryptPrimaryKeyEncryptedMessages: [],
-      decryptMessages: [],
-      signHashes: [],
-    };
-
-    // No shares provided, should fail
-    try {
-      await handleMultisigKeyDecryptedMessages({
-        multisigKeyEncryptedMessages:
-          intentions.decryptMultisigKeyEncryptedMessages,
-        multisigKey,
-        results,
-      });
-      throw new Error("Expected to fail");
-    } catch (e) {
-      expect(e).to.equal(
-        "InvalidAccessError: invalid or too few shares provided",
-      );
-    }
-
-    // One key provided, should still fail
-    await mockApproveIntentions({
-      multisigKey,
-      keyPair: MOCK_PRIMARY_KEY_KEYPAIR,
-      intentions,
-      results,
-    });
-    try {
-      await handleMultisigKeyDecryptedMessages({
-        multisigKeyEncryptedMessages:
-          intentions.decryptMultisigKeyEncryptedMessages,
-        multisigKey,
-        results,
-      });
-      throw new Error("Expected to fail");
-    } catch (e) {
-      expect(e).to.equal(
-        "InvalidAccessError: invalid or too few shares provided",
-      );
-    }
-
-    // Two keys provided, should succeed
-    await mockApproveIntentions({
-      multisigKey,
-      keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
-      intentions,
-      results,
-    });
-    const decrypted = await handleMultisigKeyDecryptedMessages({
-      multisigKeyEncryptedMessages:
-        intentions.decryptMultisigKeyEncryptedMessages,
-      multisigKey,
-      results,
-    });
-
-    expect(decrypted[0]).to.equal(payload);
-  });
-
   test("PrimaryKeyEncryption: decrypt with primary key", async () => {
     const multisigKey = ObservableMultisigKey.create(
       SecretJsHomeChainId.MAINNET,

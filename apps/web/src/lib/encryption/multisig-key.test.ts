@@ -1,0 +1,115 @@
+import {
+  IntentionsPayload,
+  KeyPairIntentionsHandler,
+} from "@/keys/intentions-handler";
+import { MultisigKeyEncryption } from "@/lib/encryption/multisig-key";
+import {
+  MOCK_MULTISIG_KEY_DATA,
+  MOCK_PRIMARY_KEY_KEYPAIR,
+  MOCK_RECOVERY_KEY_KEYPAIR,
+} from "@/mocks/multisig-key";
+import {
+  handleMultisigKeyDecryptedMessages,
+  IntentionsResults,
+} from "@/user-interactions/approve-intentions/utils";
+import {
+  MultisigKey,
+  ObservableMultisigKey,
+  SecretJsHomeChainId,
+} from "@obi-wallet/sdk";
+import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { expect, test } from "vitest";
+
+async function mockApproveIntentions({
+  multisigKey,
+  keyPair,
+  intentions,
+  results,
+}: {
+  multisigKey: MultisigKey;
+  keyPair: Secp256k1KeyPair;
+  intentions: IntentionsPayload;
+  results: IntentionsResults;
+}) {
+  const intentionsHandler = new KeyPairIntentionsHandler({
+    owner: multisigKey,
+    payload: intentions,
+    keyPair,
+    type: null,
+  });
+  const { intentionsResult, publicKey } = await intentionsHandler.handle();
+  results.set(publicKey, intentionsResult);
+}
+
+test("MultisigKeyEncryption", async () => {
+  const multisigKey = ObservableMultisigKey.create(
+    SecretJsHomeChainId.MAINNET,
+    MOCK_MULTISIG_KEY_DATA,
+  );
+
+  const payload = "foo";
+  const encryption = new MultisigKeyEncryption(multisigKey.publicKey);
+  const encrypted = await encryption.encrypt(payload);
+
+  const results: IntentionsResults = new Map();
+
+  const intentions = {
+    decryptEasyShare: null,
+    decryptMultisigKeyEncryptedMessages: [encrypted],
+    decryptPrimaryKeyEncryptedMessages: [],
+    decryptMessages: [],
+    signHashes: [],
+  };
+
+  // No shares provided, should fail
+  try {
+    await handleMultisigKeyDecryptedMessages({
+      multisigKeyEncryptedMessages:
+        intentions.decryptMultisigKeyEncryptedMessages,
+      multisigKey,
+      results,
+    });
+    throw new Error("Expected to fail");
+  } catch (e) {
+    expect(e).to.equal(
+      "InvalidAccessError: invalid or too few shares provided",
+    );
+  }
+
+  // One key provided, should still fail
+  await mockApproveIntentions({
+    multisigKey,
+    keyPair: MOCK_PRIMARY_KEY_KEYPAIR,
+    intentions,
+    results,
+  });
+  try {
+    await handleMultisigKeyDecryptedMessages({
+      multisigKeyEncryptedMessages:
+        intentions.decryptMultisigKeyEncryptedMessages,
+      multisigKey,
+      results,
+    });
+    throw new Error("Expected to fail");
+  } catch (e) {
+    expect(e).to.equal(
+      "InvalidAccessError: invalid or too few shares provided",
+    );
+  }
+
+  // Two keys provided, should succeed
+  await mockApproveIntentions({
+    multisigKey,
+    keyPair: MOCK_RECOVERY_KEY_KEYPAIR,
+    intentions,
+    results,
+  });
+  const decrypted = await handleMultisigKeyDecryptedMessages({
+    multisigKeyEncryptedMessages:
+      intentions.decryptMultisigKeyEncryptedMessages,
+    multisigKey,
+    results,
+  });
+
+  expect(decrypted[0]).to.equal(payload);
+});
