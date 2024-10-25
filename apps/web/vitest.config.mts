@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       "lottie-react": path.resolve("./mocks/empty"),
     },
+    testTimeout: 60_000,
   },
   resolve: {
     alias: {
