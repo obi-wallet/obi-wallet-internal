@@ -5,6 +5,5 @@ export * from "./keys";
 export * from "./schemas";
 export * from "./sdk";
 export * from "./signers";
-export * from "./target-chains";
 export * from "./transactions";
 export * from "./user-interactions";
