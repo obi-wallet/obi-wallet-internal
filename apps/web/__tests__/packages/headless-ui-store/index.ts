@@ -3,6 +3,7 @@ import {
   MockKVStore,
   storageFromKVStore,
 } from "@obi-wallet/headless-ui-store";
+import { beforeEach, describe, expect, test } from "vitest";
 
 describe("migratable storage", () => {
   interface V0Data {

@@ -1,4 +1,5 @@
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
+import { expect, test } from "vitest";
 
 test("local", () => {
   const param = [

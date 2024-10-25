@@ -2,10 +2,10 @@
 
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { WalletDataFlow } from "@/wallet-data-flow";
 import { InitialState } from "@/wallet-data-flow/state";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { WalletDataFlow } from "src/wallet-data-flow";
 
 export const Recovery = observer(function Recovery() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });

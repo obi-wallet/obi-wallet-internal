@@ -21,11 +21,18 @@ import {
   WalletData,
 } from "@obi-wallet/sdk";
 import { Effect, Layer, Ref, SubscriptionRef } from "effect";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { http, HttpResponse } from "msw";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { setupServer } from "msw/node";
 import invariant from "tiny-invariant";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "vitest";
 
 const server = setupServer();
 
