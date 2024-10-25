@@ -1,8 +1,5 @@
 export * from "./abstract";
-export * from "./beneficiary";
 export * from "./chain-id";
-export * from "./flex-account";
-export * from "./gatekeeper-config";
 export * from "./home-chain-id";
 export * from "./key";
 export * from "./migratable";
@@ -10,5 +7,4 @@ export * from "./mpc";
 export * from "./mpc-wallet";
 export * from "./mpc-wallets";
 export * from "./multisig-key";
-export * from "./multisig-wallet";
 export * from "./user-interactions";
