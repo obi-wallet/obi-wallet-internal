@@ -1,8 +1,8 @@
 import invariant from "tiny-invariant";
 
 import { AbstractContractsSdk } from "./abstract";
-import { SecretJsChainId } from "../../chains";
 import { SecretJsClient } from "../../clients";
+import { SecretJsHomeChainId } from "../../home-chains";
 
 export class SecretJsContractsSdk extends AbstractContractsSdk {
   protected client: SecretJsClient;
@@ -11,7 +11,7 @@ export class SecretJsContractsSdk extends AbstractContractsSdk {
     chainId,
     client,
   }: {
-    chainId: SecretJsChainId;
+    chainId: SecretJsHomeChainId;
     client: SecretJsClient;
   }) {
     super(chainId);

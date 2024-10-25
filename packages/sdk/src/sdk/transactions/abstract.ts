@@ -1,8 +1,8 @@
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import { PublicKey } from "../../keys";
 
 export abstract class AbstractTransactionsSdk {
-  protected constructor(protected chainId: ChainId) {}
+  protected constructor(protected chainId: HomeChainId) {}
 
   /**
    * Address of the given public key.

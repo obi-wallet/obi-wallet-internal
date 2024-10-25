@@ -1,10 +1,11 @@
 import { SecretJsMessages } from "./secret-js";
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 
 export class Messages {
-  protected static instances: Partial<Record<ChainId, SecretJsMessages>> = {};
+  protected static instances: Partial<Record<HomeChainId, SecretJsMessages>> =
+    {};
 
-  public static chainId(chainId: ChainId) {
+  public static chainId(chainId: HomeChainId) {
     const cache = this.instances[chainId];
     if (cache) return cache;
 

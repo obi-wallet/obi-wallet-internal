@@ -1,6 +1,6 @@
 import { AbstractSdk } from "./abstract";
-import { SecretJsChainId } from "../../chains";
 import { SecretJsClient } from "../../clients";
+import { SecretJsHomeChainId } from "../../home-chains";
 import { SecretJsBankSdk } from "../bank";
 import { SecretJsContractsSdk } from "../contracts";
 import { NotImplementedGatekeeperSdk } from "../gatekeeper";
@@ -14,7 +14,7 @@ export class SecretJsSdk extends AbstractSdk {
   public staking: NotImplementedStakingSdk;
   public transactions: SecretJsTransactionsSdk;
 
-  protected constructor(protected override chainId: SecretJsChainId) {
+  protected constructor(protected override chainId: SecretJsHomeChainId) {
     super(chainId);
     const client = new SecretJsClient(chainId);
     this.bank = new SecretJsBankSdk({ chainId });
@@ -24,7 +24,7 @@ export class SecretJsSdk extends AbstractSdk {
     this.transactions = new SecretJsTransactionsSdk({ chainId, client });
   }
 
-  public static chainId(chainId: SecretJsChainId) {
+  public static chainId(chainId: SecretJsHomeChainId) {
     return new SecretJsSdk(chainId);
   }
 }

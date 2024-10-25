@@ -1,6 +1,6 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import {
   Delegation,
   EnrichedValidator,
@@ -11,10 +11,10 @@ import {
 export abstract class AbstractStakingSdk {
   protected queryNamespace: QueryClientNamespace<
     "staking-sdk",
-    { chainId: ChainId }
+    { chainId: HomeChainId }
   >;
 
-  protected constructor(protected chainId: ChainId) {
+  protected constructor(protected chainId: HomeChainId) {
     this.queryNamespace = new QueryClientNamespace("staking-sdk", { chainId });
   }
 

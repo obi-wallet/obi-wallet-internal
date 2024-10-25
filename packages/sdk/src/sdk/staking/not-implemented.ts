@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
 import { AbstractStakingSdk } from "./abstract";
-import { Chain, ChainId } from "../../chains";
+import { HomeChainId, SecretJsHomeChains } from "../../home-chains";
 import {
   Delegation,
   EnrichedValidator,
@@ -14,7 +14,7 @@ function notImplemented(message: string) {
 }
 
 export class NotImplementedStakingSdk extends AbstractStakingSdk {
-  public constructor(chainId: ChainId) {
+  public constructor(chainId: HomeChainId) {
     super(chainId);
   }
 
@@ -47,6 +47,6 @@ export class NotImplementedStakingSdk extends AbstractStakingSdk {
   }
 
   protected get chain() {
-    return Chain.information(this.chainId);
+    return SecretJsHomeChains[this.chainId];
   }
 }

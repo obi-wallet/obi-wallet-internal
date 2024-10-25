@@ -1,6 +1,6 @@
 import warning from "tiny-warning";
 
-import { SecretJsChainId, SecretJsChains } from "../../../chains";
+import { SecretJsHomeChainId, SecretJsHomeChains } from "../../../home-chains";
 import { EnrichedToken, Token } from "../../common";
 import { AbstractBankSdk } from "../abstract";
 
@@ -9,9 +9,9 @@ function notImplemented(message: string) {
 }
 
 export class SecretJsBankSdk extends AbstractBankSdk {
-  protected override chainId: SecretJsChainId;
+  protected override chainId: SecretJsHomeChainId;
 
-  public constructor({ chainId }: { chainId: SecretJsChainId }) {
+  public constructor({ chainId }: { chainId: SecretJsHomeChainId }) {
     super(chainId);
     this.chainId = chainId;
   }
@@ -33,6 +33,6 @@ export class SecretJsBankSdk extends AbstractBankSdk {
   }
 
   protected get chain() {
-    return SecretJsChains[this.chainId];
+    return SecretJsHomeChains[this.chainId];
   }
 }

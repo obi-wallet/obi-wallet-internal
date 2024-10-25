@@ -1,4 +1,3 @@
-export * from "./chains";
 export * from "./clients";
 export * from "./data-structures";
 export * from "./home-chains";

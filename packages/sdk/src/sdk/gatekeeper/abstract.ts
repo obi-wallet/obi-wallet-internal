@@ -1,15 +1,15 @@
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 export abstract class AbstractGatekeeperSdk {
   protected queryNamespace: QueryClientNamespace<
     "gatekeeper-sdk",
-    { chainId: ChainId }
+    { chainId: HomeChainId }
   >;
 
-  protected constructor(protected chainId: ChainId) {
+  protected constructor(protected chainId: HomeChainId) {
     this.queryNamespace = new QueryClientNamespace("gatekeeper-sdk", {
       chainId,
     });

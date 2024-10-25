@@ -1,4 +1,4 @@
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import { AbstractBankSdk } from "../bank";
 import { AbstractContractsSdk } from "../contracts";
 import { AbstractGatekeeperSdk } from "../gatekeeper";
@@ -12,5 +12,5 @@ export abstract class AbstractSdk {
   public abstract staking: AbstractStakingSdk;
   public abstract transactions: AbstractTransactionsSdk;
 
-  protected constructor(protected chainId: ChainId) {}
+  protected constructor(protected chainId: HomeChainId) {}
 }

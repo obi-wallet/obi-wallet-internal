@@ -3,23 +3,23 @@ import * as R from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { ChainId } from "../../chains";
 import { MultisigPublicKey } from "../../keys";
 import { Sdk } from "../../sdk";
 import { KeySchema, KeySubclassTypeMapping, KeyType } from "../key";
 import { MultisigKeySchema } from "./schema";
+import { HomeChainId } from "../../home-chains";
 
 export class MultisigKey {
   protected _primaryKey: z.infer<typeof KeySchema> | null = null;
 
   public constructor(
-    protected _chainId: ChainId,
+    protected _chainId: HomeChainId,
     protected _keys: z.infer<typeof KeySchema>[],
     _primaryKeyIndex: number | null,
     protected _threshold: number,
     protected _factories: {
       createMultisigKey: (
-        chain: ChainId,
+        chain: HomeChainId,
         serialized?: z.infer<typeof MultisigKeySchema>,
       ) => MultisigKey;
     },

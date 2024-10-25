@@ -1,7 +1,7 @@
 import warning from "tiny-warning";
 
 import { AbstractGatekeeperSdk } from "./abstract";
-import { ChainId } from "../../chains";
+import { HomeChainId } from "../../home-chains";
 import { GatekeeperContractAddresses, PermissionedAddress } from "../common";
 
 function notImplemented(message: string) {
@@ -9,7 +9,7 @@ function notImplemented(message: string) {
 }
 
 export class NotImplementedGatekeeperSdk extends AbstractGatekeeperSdk {
-  public constructor(chainId: ChainId) {
+  public constructor(chainId: HomeChainId) {
     super(chainId);
   }
 
