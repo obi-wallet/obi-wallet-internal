@@ -121,11 +121,6 @@ export class NoWalletFoundState extends Data.TaggedClass(
   }
 }
 
-export enum WalletDataFlow {
-  Recovery = "Recovery",
-  Backup = "Backup",
-}
-
 export class WalletDataState extends Data.TaggedClass(
   WalletDataFlowStateType.WalletData,
 )<{
