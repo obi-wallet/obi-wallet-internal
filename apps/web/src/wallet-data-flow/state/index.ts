@@ -146,7 +146,6 @@ export class WalletDataState extends Data.TaggedClass(
         wallet: data.walletData,
       });
       const recoverKey = owner.findKeyByPublicKey(data.recoverKeyPublicKey);
-      console.log("recoverKey", recoverKey);
       if (
         recoverKey &&
         (recoverKey.type === KeyType.Passkey ||
@@ -248,8 +247,6 @@ export class WalletDataState extends Data.TaggedClass(
 
   public setIntentionsResults(results: IntentionsResults) {
     return Effect.gen(this, function* () {
-      console.log(results);
-
       const encryptionTools = yield* EncryptionTools;
       const {
         decryptedMultisigKeyEncryptedMessages: [
@@ -267,7 +264,6 @@ export class WalletDataState extends Data.TaggedClass(
       });
 
       if (this.serializedWalletData) {
-        console.log(this.walletData);
         const userAccount = yield* Effect.promise(async () => {
           const homeChain = HomeChain.chainId(this.walletData.homeChainId);
           const userEntryCodeHash = await homeChain.userEntryCodeHash(
