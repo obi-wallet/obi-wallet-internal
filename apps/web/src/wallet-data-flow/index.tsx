@@ -1,4 +1,5 @@
-import { EffectStateValue, useEffectState } from "@/hooks/use-effect-state";
+import { EffectStateValue } from "@/effect/effect-state";
+import { useEffectState } from "@/effect/effect-state/use-effect-state";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { SecuritySettings } from "@/wallet-data-flow/state-handler/security-settings";
 import { UpdateOwner } from "@/wallet-data-flow/state-handler/update-owner";

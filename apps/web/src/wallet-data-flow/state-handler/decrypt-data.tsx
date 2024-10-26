@@ -1,5 +1,5 @@
 import { Button, Text, Transaction } from "@/components";
-import { EffectStateDispatch } from "@/hooks/use-effect-state";
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { AsyncButton } from "@/ui/button";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";

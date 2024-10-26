@@ -2,9 +2,9 @@
 
 import { Text } from "@/components";
 import { useStore } from "@/contexts";
+import { encryptionToolsLayer } from "@/effect/encryption-tools-layer/production";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
-import { encryptionToolsLayer } from "@/hooks/use-effect-state";
 import { WalletDataFlow } from "@/wallet-data-flow";
 import { WalletDataState as WalletDataFlowWalletDataState } from "@/wallet-data-flow/state";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state/wallet-data-to-multisig-key";

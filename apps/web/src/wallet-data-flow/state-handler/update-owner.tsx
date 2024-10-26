@@ -1,6 +1,6 @@
 import { Button, Text, Transaction } from "@/components";
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { HomeChain } from "@/home-chain";
-import { EffectStateDispatch } from "@/hooks/use-effect-state";
 import { AsyncButton } from "@/ui/button";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {

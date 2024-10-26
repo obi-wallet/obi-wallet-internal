@@ -1,5 +1,5 @@
 import { KeyItems } from "@/components";
-import { EffectStateDispatch } from "@/hooks/use-effect-state";
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { Draft } from "@/stores";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import {

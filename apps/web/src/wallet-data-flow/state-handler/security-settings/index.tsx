@@ -1,6 +1,6 @@
 "use client";
 
-import { EffectStateDispatch } from "@/hooks/use-effect-state";
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { useKeyListForMultisigKey } from "@/lib/keys";
 import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import {

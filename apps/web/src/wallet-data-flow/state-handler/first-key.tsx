@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
-import { EffectStateDispatch } from "@/hooks/use-effect-state";
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
