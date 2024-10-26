@@ -1,15 +1,26 @@
 import { cn } from "@/lib/utils";
-import { IColors, ISizes } from "@/types/styles";
-import { IFontWeights } from "@/types/styles";
-import { ILeadings } from "@/types/styles";
 import { ComponentPropsWithRef, ReactNode } from "react";
 
 export type TypographyProps = {
   mono?: boolean;
-  size?: ISizes;
-  color?: IColors;
-  fontWeight?: IFontWeights;
-  leading?: ILeadings;
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+  color?:
+    | "black"
+    | "white"
+    | "gray"
+    | "light-gray"
+    | "dark-gray"
+    | "orange"
+    | "light-orange"
+    | "blue"
+    | "lime"
+    | "red"
+    | "sky"
+    | "green"
+    | "zinc"
+    | "transparent";
+  fontWeight?: "light" | "normal" | "medium" | "semibold" | "bold";
+  leading?: "none" | "tight" | "snug" | "normal" | "relaxed" | "loose";
   tracking?: boolean;
   uppercase?: boolean;
   className?: string | undefined;
