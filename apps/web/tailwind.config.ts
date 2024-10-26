@@ -1,5 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import { Config } from "tailwindcss";
+
+const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
@@ -45,3 +46,6 @@ module.exports = {
   },
   plugins: [],
 };
+
+// eslint-disable-next-line import/no-default-export
+export default config;

@@ -64,6 +64,7 @@ module.exports = {
           "{.storybook,__fixtures__,__stories__,__tests__,__tests-e2e__,__tests-integration__,scripts}/**/*",
           "**/storybook-helpers/**/*",
           "next.config.ts",
+          "tailwind.config.ts",
           "vitest.config.mts",
           "vitest.setup.mts",
           "**/*.stories.*",
