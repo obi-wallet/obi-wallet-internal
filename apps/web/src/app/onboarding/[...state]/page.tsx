@@ -1,4 +1,3 @@
-import { toAssets } from "@/dashboard/assets";
 import { Onboarding } from "@/onboarding";
 import {
   OnboardingFromType,
@@ -6,32 +5,7 @@ import {
   OnboardingStepType,
 } from "@/onboarding/onboarding-step";
 import { notFound, redirect } from "next/navigation";
-import { flatten, fromPairs, keys, times } from "ramda";
-
-function getExternalFlows(): Record<string, OnboardingStep[]> {
-  const targetAssets = Object.keys(toAssets).filter((key) => {
-    return !toAssets[key]?.disabled;
-  });
-  return fromPairs(
-    targetAssets.map((targetAsset) => {
-      return [`external-${targetAsset}`, getExternalFlow(targetAsset)];
-    }),
-  );
-
-  function getExternalFlow(targetAsset: string): OnboardingStep[] {
-    return [
-      {
-        type: OnboardingStepType.PrimaryKey,
-        from: OnboardingFromType.External,
-      },
-      {
-        type: OnboardingStepType.CreateWallet,
-        waitUntilDone: true,
-        redirectTo: `/onboarding/fast-travel/${targetAsset}`,
-      },
-    ];
-  }
-}
+import { flatten, keys, times } from "ramda";
 
 const flows: Record<string, OnboardingStep[]> = {
   internal: [
@@ -44,7 +18,6 @@ const flows: Record<string, OnboardingStep[]> = {
       redirectTo: "/dashboard",
     },
   ],
-  ...getExternalFlows(),
 };
 
 export async function generateStaticParams() {
