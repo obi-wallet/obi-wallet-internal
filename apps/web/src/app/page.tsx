@@ -26,7 +26,7 @@ export default observer(function Introduction() {
     //   </BitButton>
     // </section>
     <section className="flex min-h-screen w-full flex-col gap-12 text-white lg:gap-24">
-      <section className="px-6 text-center flex flex-col justify-center min-h-full lg:px-28 pb-48 lg:text-left">
+      <section className="flex min-h-full flex-col justify-center px-6 pb-48 text-center lg:px-28 lg:text-left">
         <h1 className="text-xl font-light lg:text-5xl lg:leading-tight">
           RECOVERABLE ACCOUNTS THAT <br /> MAKE NAVIGATING CRYPTO <br />{" "}
           <span className="font-bold">SIMPLE AND SECURE</span>

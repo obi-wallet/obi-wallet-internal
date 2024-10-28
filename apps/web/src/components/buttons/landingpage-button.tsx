@@ -15,7 +15,7 @@ export const LandingPageButton = forwardRef<
   ref,
 ) {
   const style = cn(
-    "font-press-start-2p cursor-pointer opacity-100 px-5 py-2 lg:px-10 lg:py-4 text-sm lg:text-xl",
+    "font-press-start-2p cursor-pointer opacity-100 px-5 py-2 lg:px-4 lg:py-4 text-sm text-center lg:text-xl w-52 lg:w-72",
     "hover:opacity-80",
     [colorScheme === "dark" && ["bg-sky-500 text-white"]],
     [colorScheme === "light" && ["bg-white text-sky-500"]],

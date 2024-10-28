@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageDropzone, Text } from "@/components";
+import { TOSModal } from "@/components/modals/tos";
 import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
@@ -71,6 +72,7 @@ export const UserDataStep = observer(function UserDataStep({
         nextLabel="Continue"
         nextDisabled={!draft.value.name || !draft.value.image}
       />
+      <TOSModal />
     </>
   );
 });

@@ -1,7 +1,6 @@
 "use client";
 import { Alert } from "@/alert";
 import { Header } from "@/components";
-import { TOSModal } from "@/components/modals/tos";
 import { MainContainer, RootContainer } from "@/layouts/root";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
@@ -41,7 +40,6 @@ export function RootLayoutClient({
       <Provider>
         <Header />
         <MainContainer>{children}</MainContainer>
-        <TOSModal />
         <div id="modal-root" />
         <Alert />
       </Provider>

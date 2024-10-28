@@ -5,8 +5,8 @@ import { ReactNode, Suspense } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Obi - Anything In Two Clicks",
-  description: "Anything In Two Clicks",
+  title: "Obi - Simple and Secure Accounts",
+  description: "Simple and Secure Accounts",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
