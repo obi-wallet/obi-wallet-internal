@@ -37,10 +37,10 @@ export const Header = observer(function Header() {
     <header className="flex items-center justify-between px-6 py-3">
       <PrimaryLink href={primaryLinkHref}>
         <Image
-          alt="logo"
+          alt="landing-logo"
           width="68"
           height="50"
-          src="https://s3-alpha-sig.figma.com/img/d4f6/d4b9/ccd39a894801a8a40be1f68f010d8f14?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=jf03qZRdF2VGXCi0hgv3JxzG8FDhElboagcfLm~Axet8mn0SaMHYSFmHQeQlq-dIkCDC3FdzXcG6m3VUk10qjWsaJVJ2gmdeOC9dcqoAfuoCmhd2HQPmq-wzc-rH7XjKLr0FMnjZGCx~AumeVyC6tT4LP5SFpQp6njIk4znsDIGDGy5kh2jgMtItu07Oei1z8nHrd7zm3Rku19gWz46rScHuw-2PVTvcrr5TGgChpyj4kaevjf5oUMPm~CxvHu8S4PZEKmjRNuUdz-ytSfGvkHnVzpNvl7yU9rlMiXfX2LeCcia6L36fm5PnvoOvvHqaeDjIyso~kag~elB~HEHFig__"
+          src="/assets/icons/landing-logo.svg"
         />
       </PrimaryLink>
       <button className="text-2xl text-white lg:hidden" onClick={toggleMenu}>
