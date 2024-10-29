@@ -117,20 +117,6 @@ export interface NewKeyRefreshItem {
 
 export type KeyRefreshItem = ExistingKeyRefreshItem | NewKeyRefreshItem;
 
-export interface RustEthUserOp {
-  sender: string;
-  nonce: string;
-  init_code: number[];
-  call_data: number[];
-  call_gas_limit: string;
-  verification_gas_limit: string;
-  pre_verification_gas: string;
-  max_fee_per_gas: string;
-  max_priority_fee_per_gas: string;
-  paymaster_and_data: number[];
-  signature: number[];
-}
-
 export interface EcValueType {
   curve: string;
   scalar: string;

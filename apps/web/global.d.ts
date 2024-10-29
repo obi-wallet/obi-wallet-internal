@@ -1,5 +1,4 @@
-import { Eip1193Provider } from "ethers";
-import { BrowserProvider } from "ethers";
+import { Eip1193Provider, BrowserProvider } from "ethers";
 
 declare global {
   interface Window {

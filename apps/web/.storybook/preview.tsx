@@ -1,9 +1,9 @@
+import Provider from "@/components/provider";
+import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 
 import "@/app/globals.css";
-import { MainContainer, RootContainer } from "@/layouts/root";
-import Provider from "@/components/provider";
 
 initialize({ onUnhandledRequest: "warn" });
 
