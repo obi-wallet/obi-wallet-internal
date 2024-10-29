@@ -4,7 +4,6 @@ export enum OnboardingFromType {
 }
 export enum OnboardingStepType {
   UserData,
-  Explanation,
   PrimaryKey,
   FastTravel,
   CreateWallet,
@@ -12,10 +11,6 @@ export enum OnboardingStepType {
 
 export interface UserDataOnboardingStep {
   type: OnboardingStepType.UserData;
-}
-
-export interface ExplanationOnboardingStep {
-  type: OnboardingStepType.Explanation;
 }
 
 export interface PrimaryKeyOnboardingStep {
@@ -37,7 +32,6 @@ export interface FastTravelOnboardingStep {
 
 export type OnboardingStep =
   | UserDataOnboardingStep
-  | ExplanationOnboardingStep
   | PrimaryKeyOnboardingStep
   | CreateWalletOnboardingStep
   | FastTravelOnboardingStep;

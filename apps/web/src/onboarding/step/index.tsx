@@ -5,7 +5,6 @@ import {
   OnboardingStepType,
 } from "@/onboarding/onboarding-step";
 import { CreateWalletStep } from "@/onboarding/step/create-wallet";
-import { ExplanationStep } from "@/onboarding/step/explanation";
 import { PrimaryKeyStep } from "@/onboarding/step/primary-key";
 import { UserDataStep } from "@/onboarding/step/user-data";
 import { Draft } from "@/stores";
@@ -23,8 +22,6 @@ export const Step = observer(function Step(props: StepProps) {
   switch (props.step.type) {
     case OnboardingStepType.UserData:
       return <UserDataStep {...props} step={props.step} />;
-    case OnboardingStepType.Explanation:
-      return <ExplanationStep {...props} step={props.step} />;
     case OnboardingStepType.PrimaryKey:
       return <PrimaryKeyStep {...props} step={props.step} />;
     case OnboardingStepType.CreateWallet:
