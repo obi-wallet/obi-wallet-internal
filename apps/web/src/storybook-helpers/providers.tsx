@@ -1,7 +1,6 @@
 import Provider from "@/components/provider";
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
-import { rootStore } from "@/stores";
-import { RootStore } from "@/stores";
+import { rootStore, RootStore } from "@/stores";
 import { obiModalConfig } from "@obi-wallet/config";
 import { MockKVStore, storageFromKVStore } from "@obi-wallet/headless-ui-store";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";

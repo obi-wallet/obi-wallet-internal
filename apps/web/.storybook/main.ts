@@ -1,5 +1,4 @@
 import type { StorybookConfig } from "@storybook/nextjs";
-
 import { join, dirname } from "path";
 import webpack from "webpack";
 
@@ -25,6 +24,7 @@ const config: StorybookConfig = {
       builder: {},
     },
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   swc: (config: any) => {
     return {
       ...config,

@@ -12,7 +12,7 @@ vi.stubGlobal(
 
 async function getEciesWasm() {
   const ecies = await import("ecies-wasm/ecies_wasm");
-  // @ts-expect-error
+  // @ts-expect-error URL import
   const wasmURL = await import("ecies-wasm/ecies_wasm_bg.wasm?url");
   const wasmSource = await fs.readFile(wasmURL.default.replace("/@fs", ""));
   const wasmModule = await WebAssembly.compile(wasmSource);
@@ -22,7 +22,7 @@ async function getEciesWasm() {
 
 async function getMpcEcdsaWasm() {
   const wasmPackage = await import("@obi-wallet/mpc-ecdsa-wasm");
-  // @ts-expect-error
+  // @ts-expect-error URL import
   const wasmURL = await import("@obi-wallet/mpc-ecdsa-wasm?url");
   const wasmSource = await fs.readFile(
     wasmURL.default

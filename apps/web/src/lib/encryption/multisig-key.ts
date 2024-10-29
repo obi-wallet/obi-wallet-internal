@@ -6,7 +6,7 @@ import {
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import { SHA256, Word32Array } from "jscrypto";
-import * as sss from "sss-wasm";
+import { combineShares, createShares } from "sss-wasm";
 
 import { AesGcmDecryption, AesGcmEncryption } from "./aes-gcm";
 import { Secp256k1Encryption } from "./secp256k1";
@@ -20,7 +20,7 @@ export class MultisigKeyEncryption {
 
     const totalShares = this.multisigPublicKey.value.pubkeys.length;
     const threshold = parseInt(this.multisigPublicKey.value.threshold, 10);
-    const shares = await sss.createShares(sssSecret, totalShares, threshold);
+    const shares = await createShares(sssSecret, totalShares, threshold);
     const encryptedShares = await Promise.all(
       shares.map(async (share, index) => {
         const encryption = new Secp256k1Encryption(
@@ -60,7 +60,7 @@ export class MultisigKeyDecryption {
     const decryptedShares = this.input.map((share) => {
       return share ? Encoding.fromBase64(share).toBytes() : null;
     });
-    const sssSecret = await sss.combineShares(
+    const sssSecret = await combineShares(
       decryptedShares.filter((v): v is Uint8Array => {
         return !!v;
       }),
