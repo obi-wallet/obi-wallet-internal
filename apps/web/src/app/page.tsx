@@ -9,22 +9,6 @@ export default observer(function Introduction() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
 
   return (
-    //** Deprecated  Landing Page */
-    // <section className="flex w-full flex-col items-center space-y-9 p-5 max-sm:px-10">
-    //   <Image
-    //     width="306"
-    //     height="234"
-    //     src="/assets/images/obi-wizard.png"
-    //     alt="OBI Logo"
-    //     className="mt-48"
-    //   />
-    //   <BitButton
-    //     href="/onboarding/internal"
-    //     className="font-press-start-2p before:contents: bg-transparent"
-    //   >
-    //     Press Start
-    //   </BitButton>
-    // </section>
     <section className="flex min-h-screen w-full flex-col gap-12 text-white lg:gap-24">
       <section className="flex min-h-full flex-col justify-center px-6 pb-48 text-center lg:px-28 lg:text-left">
         <h1 className="text-xl font-light lg:text-5xl lg:leading-tight">
@@ -50,7 +34,6 @@ export default observer(function Introduction() {
         </h2>
         <div className="gap-52 space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-center lg:space-y-0">
           <div>
-            {/* <svg className="mx-auto mb-4" width="101" height="100" viewBox="0 0 101 100" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"> */}
             <Image
               alt="landing-close"
               className="mx-auto mb-4"
@@ -176,7 +159,6 @@ export default observer(function Introduction() {
         </p>
 
         <div className="my-16 items-center justify-items-center space-y-10 lg:flex lg:flex-row lg:justify-between lg:space-y-0">
-          {/* Placeholder for partner logos */}
           <p className="text-sm">Supported By</p>
           <Image
             alt="landing-artboard-12"
