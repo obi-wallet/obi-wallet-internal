@@ -1,3 +1,5 @@
+import { EffectState } from "@/effect/effect-state";
+import { EncryptionTools } from "@/effect/encryption-tools-layer";
 import { HomeChain } from "@/home-chain";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { IntentionsPayload } from "@/keys/intentions-handler";
@@ -5,7 +7,6 @@ import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { getOwnerData } from "@/wallet-data-backup/worker-client";
-import { EncryptionTools } from "@/wallet-data-flow/state/encryption-tools";
 import { KeyMetaDataContainer } from "@/wallet-data-flow/state/key-meta-data-container";
 import { walletDataToMultisigKey } from "@/wallet-data-flow/state/wallet-data-to-multisig-key";
 import { Base58EncodedString, Encoding } from "@obi-wallet/encoding";
@@ -26,7 +27,7 @@ import {
 } from "@obi-wallet/sdk-ed25519";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
-import { Context, Data, Effect, Ref, SubscriptionRef } from "effect";
+import { Context, Data, Effect } from "effect";
 import { z } from "zod";
 
 export type WalletWithEd25519KeyPair = z.infer<typeof MpcWalletSchema> & {
@@ -55,7 +56,7 @@ export enum WalletDataFlowStateType {
 
 export class WalletDataFlowState extends Context.Tag("WalletDataFlowState")<
   WalletDataFlowState,
-  SubscriptionRef.SubscriptionRef<
+  EffectState<
     | InitialState
     | NoWalletFoundState
     | WalletDataState
@@ -89,11 +90,11 @@ export class InitialState extends Data.TaggedClass(
           recoverKeyMetaData: payload.keyMetaData,
           walletData: wallet,
         });
-        yield* Ref.update(state, (_) => {
+        yield* state.set((_) => {
           return nextState;
         });
       } else {
-        yield* Ref.update(state, () => {
+        yield* state.set(() => {
           return new NoWalletFoundState({
             chainId: this.chainId,
           });
@@ -111,18 +112,13 @@ export class NoWalletFoundState extends Data.TaggedClass(
   public retry() {
     return Effect.gen(this, function* () {
       const state = yield* WalletDataFlowState;
-      yield* Ref.update(state, () => {
+      yield* state.set(() => {
         return new InitialState({
           chainId: this.chainId,
         });
       });
     });
   }
-}
-
-export enum WalletDataFlow {
-  Recovery = "Recovery",
-  Backup = "Backup",
 }
 
 export class WalletDataState extends Data.TaggedClass(
@@ -145,7 +141,6 @@ export class WalletDataState extends Data.TaggedClass(
         wallet: data.walletData,
       });
       const recoverKey = owner.findKeyByPublicKey(data.recoverKeyPublicKey);
-      console.log("recoverKey", recoverKey);
       if (
         recoverKey &&
         (recoverKey.type === KeyType.Passkey ||
@@ -247,8 +242,6 @@ export class WalletDataState extends Data.TaggedClass(
 
   public setIntentionsResults(results: IntentionsResults) {
     return Effect.gen(this, function* () {
-      console.log(results);
-
       const encryptionTools = yield* EncryptionTools;
       const {
         decryptedMultisigKeyEncryptedMessages: [
@@ -266,7 +259,6 @@ export class WalletDataState extends Data.TaggedClass(
       });
 
       if (this.serializedWalletData) {
-        console.log(this.walletData);
         const userAccount = yield* Effect.promise(async () => {
           const homeChain = HomeChain.chainId(this.walletData.homeChainId);
           const userEntryCodeHash = await homeChain.userEntryCodeHash(
@@ -324,7 +316,7 @@ export class WalletDataState extends Data.TaggedClass(
           keyMetaData,
           ed25519KeyPair,
         });
-        yield* Ref.update(state, () => {
+        yield* state.set(() => {
           return nextState;
         });
       }
@@ -334,7 +326,7 @@ export class WalletDataState extends Data.TaggedClass(
   public cancel() {
     return Effect.gen(this, function* () {
       const state = yield* WalletDataFlowState;
-      yield* Ref.update(state, () => {
+      yield* state.set(() => {
         return this.previousState;
       });
     });
@@ -435,6 +427,7 @@ export class SecuritySettingsState extends Data.TaggedClass(
     keyMetaDataDraft: Draft<KeyMetaDataContainer>;
   }) {
     return Effect.gen(this, function* () {
+      const state = yield* WalletDataFlowState;
       if (ownerDraft.value.address === ownerDraft.original.address) {
         const nextState = yield* WalletDataState.from({
           walletData,
@@ -442,14 +435,14 @@ export class SecuritySettingsState extends Data.TaggedClass(
           keyMetaData: keyMetaDataDraft.value.value,
           previousState: this,
         });
-        yield* Ref.update(yield* WalletDataFlowState, () => {
+        yield* state.set(() => {
           return nextState;
         });
       } else {
         const nextWalletData = yield* addEd25519KeyPair({
           walletData,
         });
-        yield* Ref.update(yield* WalletDataFlowState, () => {
+        yield* state.set(() => {
           return new UpdateOwnerState({
             walletData: nextWalletData,
             previous: {
@@ -486,7 +479,7 @@ export class UpdateOwnerState extends Data.TaggedClass(
   public cancel() {
     return Effect.gen(this, function* () {
       const state = yield* WalletDataFlowState;
-      yield* Ref.update(state, () => {
+      yield* state.set(() => {
         return this.previousState;
       });
     });
@@ -574,7 +567,7 @@ export class UpdateOwnerState extends Data.TaggedClass(
       });
 
       const state = yield* WalletDataFlowState;
-      yield* Ref.update(state, () => {
+      yield* state.set(() => {
         return new DoneState({
           wallet: {
             homeChain: walletData.homeChainId,

@@ -1,4 +1,5 @@
-import { EffectStateValue } from "@/hooks/use-effect-state";
+import { EffectState, EffectStateValue } from "@/effect/effect-state";
+import { EncryptionTools } from "@/effect/encryption-tools-layer";
 import {
   MOCK_PRIMARY_KEY_KEYPAIR,
   MOCK_RECOVERY_KEY_KEYPAIR,
@@ -10,7 +11,6 @@ import {
   WalletDataFlowState,
   WalletDataFlowStateType,
 } from "@/wallet-data-flow/state";
-import { EncryptionTools } from "@/wallet-data-flow/state/encryption-tools";
 import {
   EncryptedBackupShare,
   EncryptedEasyShareForBackup,
@@ -20,7 +20,7 @@ import {
   SecretJsHomeChainId,
   WalletData,
 } from "@obi-wallet/sdk";
-import { Effect, Layer, Ref, SubscriptionRef } from "effect";
+import { Effect, Layer } from "effect";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import invariant from "tiny-invariant";
@@ -54,7 +54,7 @@ function runTest(
   const walletDataFlowStateLayer = Layer.succeed(
     WalletDataFlowState,
     Effect.runSync(
-      SubscriptionRef.make<EffectStateValue<typeof WalletDataFlowState>>(
+      EffectState.make<EffectStateValue<typeof WalletDataFlowState>>(
         new InitialState({
           chainId: SecretJsHomeChainId.MAINNET,
         }),
@@ -110,13 +110,13 @@ test("Recover by primary key, no wallets found", async () => {
   await runTest(
     Effect.gen(function* () {
       const ref = yield* WalletDataFlowState;
-      const state = yield* Ref.get(ref);
+      const state = yield* ref.get();
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       yield* (state as InitialState).recoverByPublicKey({
         publicKey: MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
         keyMetaData: null,
       });
-      expect((yield* Ref.get(ref))._tag).toEqual(
+      expect((yield* ref.get())._tag).toEqual(
         WalletDataFlowStateType.NoWalletFound,
       );
     }),
@@ -145,7 +145,7 @@ test("Recover by recovery key, wallets found", async () => {
   await runTest(
     Effect.gen(function* () {
       const ref = yield* WalletDataFlowState;
-      let state = yield* Ref.get(ref);
+      let state = yield* ref.get();
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       yield* (state as InitialState).recoverByPublicKey({
         publicKey: MOCK_RECOVERY_KEY_KEYPAIR.publicKey,
@@ -153,7 +153,7 @@ test("Recover by recovery key, wallets found", async () => {
           name: "foobar",
         },
       });
-      state = yield* Ref.get(ref);
+      state = yield* ref.get();
       invariant(state._tag === WalletDataFlowStateType.WalletData);
       expect(state.walletData).toEqual(data);
       expect(state.owner.primaryKey).toEqual(null);
@@ -187,13 +187,13 @@ describe("Recover by primary key, wallet found", () => {
   });
   const recoverByPrimaryKey = Effect.gen(function* () {
     const ref = yield* WalletDataFlowState;
-    const state = yield* Ref.get(ref);
+    const state = yield* ref.get();
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     yield* (state as InitialState).recoverByPublicKey({
       publicKey: MOCK_PRIMARY_KEY_KEYPAIR.publicKey,
       keyMetaData: null,
     });
-    const nextState = yield* Ref.get(ref);
+    const nextState = yield* ref.get();
     invariant(nextState._tag === WalletDataFlowStateType.WalletData);
     expect(nextState.walletData).toEqual(data);
     expect(nextState.owner.primaryKey).toEqual({
@@ -219,10 +219,10 @@ describe("Recover by primary key, wallet found", () => {
         yield* recoverByPrimaryKey;
 
         const ref = yield* WalletDataFlowState;
-        const state = yield* Ref.get(ref);
+        const state = yield* ref.get();
         invariant(state._tag === WalletDataFlowStateType.WalletData);
         yield* state.cancel();
-        expect((yield* Ref.get(ref))._tag).toEqual(
+        expect((yield* ref.get())._tag).toEqual(
           WalletDataFlowStateType.Initial,
         );
       }),
@@ -235,7 +235,7 @@ describe("Recover by primary key, wallet found", () => {
         yield* recoverByPrimaryKey;
 
         const ref = yield* WalletDataFlowState;
-        const state = yield* Ref.get(ref);
+        const state = yield* ref.get();
         invariant(state._tag === WalletDataFlowStateType.WalletData);
         // TODO:
         // yield* state.setDecryptedData({
@@ -265,7 +265,7 @@ describe("Recover by primary key, wallet found", () => {
         yield* recoverByPrimaryKey;
 
         const ref = yield* WalletDataFlowState;
-        const state = yield* Ref.get(ref);
+        const state = yield* ref.get();
         invariant(state._tag === WalletDataFlowStateType.WalletData);
         // TODO:
         // yield* state.setDecryptedData({

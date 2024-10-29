@@ -12,8 +12,7 @@ import {
 import { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
-  // TODO: handle missing ed25510 key pair in WalletDataFlow
-  title: "WalletDataFlowNew",
+  title: "WalletDataFlow",
   component: WalletDataFlow,
   tags: ["autodocs"],
   decorators: [],

@@ -9,9 +9,8 @@ import {
   MultisigKey,
   MultisigKeyEncryptedData,
 } from "@obi-wallet/sdk";
-import { Context } from "effect";
 
-export interface IEncryptionTools {
+export interface EncryptionTools {
   encryptSharesForClient: (payload: {
     multisigKey: MultisigKey;
     easy: EasyShare;
@@ -42,8 +41,3 @@ export interface IEncryptionTools {
     decryptedMultisigKeyEncryptedMessages: string[];
   }>;
 }
-
-export class EncryptionTools extends Context.Tag("EncryptionTools")<
-  EncryptionTools,
-  IEncryptionTools
->() {}

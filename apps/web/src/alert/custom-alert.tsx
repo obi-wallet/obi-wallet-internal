@@ -1,17 +1,16 @@
+import { AlertType } from "@/alert/type";
+import { DangerAnimation } from "@/animations/danger";
+import { SuccessAnimation } from "@/animations/success";
+import { WarningAnimation } from "@/animations/warning";
 import { cn } from "@/lib/utils";
 import { Alert } from "@/stores";
-import Lottie from "lottie-react";
 import { observer } from "mobx-react-lite";
 
-import error from "./danger.json";
-import success from "./success.json";
-import warning from "./warning.json";
-
-export enum AlertType {
-  SUCCESS = "success",
-  ERROR = "error",
-  WARNING = "warning",
-}
+const animations = {
+  [AlertType.Error]: DangerAnimation,
+  [AlertType.Success]: SuccessAnimation,
+  [AlertType.Warning]: WarningAnimation,
+};
 
 export interface CustomAlertProps {
   alert: Alert;
@@ -22,22 +21,13 @@ export const CustomAlert = observer<CustomAlertProps>(function CustomAlert({
   alert,
   onClose,
 }) {
-  const getIcon = () => {
-    switch (alert.type) {
-      case AlertType.SUCCESS:
-        return success;
-      case AlertType.ERROR:
-        return error;
-      case AlertType.WARNING:
-        return warning;
-    }
-  };
+  const Animation = animations[alert.type];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="min-w-56 max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
         <div className={cn("m-0 ml-auto mr-auto w-20")}>
-          <Lottie animationData={getIcon()} loop={false} />
+          <Animation />
         </div>
         <p className="mb-4 p-5 text-white">{alert.message}</p>
         <button
