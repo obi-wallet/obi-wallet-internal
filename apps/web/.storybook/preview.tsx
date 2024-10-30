@@ -1,9 +1,9 @@
+import Provider from "@/components/provider";
+import { MainContainer, RootContainer } from "@/layouts/root";
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 
-import "../src/app/globals.css";
-import { MainContainer, RootContainer } from "@/layouts/root";
-import Provider from "@/components/provider";
+import "@/app/globals.css";
 
 initialize({ onUnhandledRequest: "warn" });
 
@@ -29,6 +29,7 @@ const preview: Preview = {
             <MainContainer>
               <Story />
             </MainContainer>
+            <div id="modal-root" />
           </Provider>
         </RootContainer>
       );

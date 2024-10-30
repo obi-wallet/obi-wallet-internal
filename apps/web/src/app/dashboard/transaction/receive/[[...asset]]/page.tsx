@@ -9,52 +9,53 @@ import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
-import { useState } from "react";
+import { use, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-export default observer<{ params: { asset?: string[] } }>(function Receive({
-  params,
-}) {
-  const [chainId, setChainId] = useState<TargetChainId | null>(null);
-  const { options, initialValue } = useChainOptions();
+export default observer<{ params: Promise<{ asset?: string[] }> }>(
+  function Receive(props) {
+    const params = use(props.params);
+    const [chainId, setChainId] = useState<TargetChainId | null>(null);
+    const { options, initialValue } = useChainOptions();
 
-  const getChainId = () => {
-    // User has selected a chain
-    if (chainId) {
-      return chainId;
-    }
-
-    // User has not selected a chain, but the URL has a chain
-    try {
-      const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
-      if (assetParam) {
-        const { chainId } = parseCaip19AssetId(
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-          assetParam as Caip19AssetId,
-        );
-        const chainOption = options.find((chain) => {
-          return chain.value === chainId;
-        });
-        if (chainOption) {
-          return chainOption.value;
-        }
+    const getChainId = () => {
+      // User has selected a chain
+      if (chainId) {
+        return chainId;
       }
-    } catch (e) {
-      console.error(e);
+
+      // User has not selected a chain, but the URL has a chain
+      try {
+        const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
+        if (assetParam) {
+          const { chainId } = parseCaip19AssetId(
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            assetParam as Caip19AssetId,
+          );
+          const chainOption = options.find((chain) => {
+            return chain.value === chainId;
+          });
+          if (chainOption) {
+            return chainOption.value;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      // User has not selected a chain and the URL does not have a chain
+      return initialValue;
+    };
+
+    const chainIdToUse = getChainId();
+
+    if (chainIdToUse) {
+      return <ReceiveInner chainId={chainIdToUse} setChainId={setChainId} />;
     }
 
-    // User has not selected a chain and the URL does not have a chain
-    return initialValue;
-  };
-
-  const chainIdToUse = getChainId();
-
-  if (chainIdToUse) {
-    return <ReceiveInner chainId={chainIdToUse} setChainId={setChainId} />;
-  }
-
-  return null;
-});
+    return null;
+  },
+);
 
 const ReceiveInner = observer<{
   chainId: TargetChainId;

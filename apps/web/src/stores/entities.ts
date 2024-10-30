@@ -26,7 +26,7 @@ export class Entities<T> implements Draftable {
   }
 
   @action
-  public add({ entity, id }: { entity: T; id?: EntityId }) {
+  public add({ entity, id }: { entity: T; id?: EntityId | undefined }) {
     const idToUse = id ?? Entities.generateId();
     this._ids.push(idToUse);
     this._entities[idToUse] = entity;

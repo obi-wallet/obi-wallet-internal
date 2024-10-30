@@ -1,0 +1,90 @@
+import { withSentryConfig } from "@sentry/nextjs";
+import { NextConfig } from "next";
+import WebpackHookPlugin from "webpack-hook-plugin";
+
+// eslint-disable-next-line import/no-default-export
+export default withSentryConfig<NextConfig>(
+  {
+    // Should be kept in sync with .storybook/main.ts
+    env: {
+      NEXT_PUBLIC_FAST_TRAVEL_API_URL: process.env.FAST_TRAVEL_API_URL,
+      NEXT_PUBLIC_ENV: process.env.VERCEL_ENV,
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    },
+    transpilePackages: [
+      "@obi-wallet/config",
+      "@obi-wallet/encoding",
+      "@obi-wallet/headless-ui",
+      "@obi-wallet/mpc-ecdsa-wasm",
+      "@obi-wallet/mpc-ecdsa-wasm-types",
+      "@obi-wallet/query-client",
+      "@obi-wallet/sdk",
+      "@obi-wallet/sdk-abstract-target-chain",
+      "@obi-wallet/sdk-abstract-user-interaction",
+      "@obi-wallet/sdk-asset-registry",
+      "@obi-wallet/sdk-caip",
+      "@obi-wallet/sdk-ed25519",
+      "@obi-wallet/sdk-json",
+      "@obi-wallet/sdk-obi-account",
+      "@obi-wallet/sdk-secp256k1",
+      "@obi-wallet/wallet-connect",
+    ],
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "**",
+        },
+      ],
+    },
+    webpack: (config) => {
+      config.externals.push("pino-pretty", "lokijs", "encoding");
+      if (process.env.NODE_ENV === "development" && process.env.CI !== "true") {
+        config.plugins.push(
+          new WebpackHookPlugin({
+            onBuildStart: ["yarn spotlight"],
+          }),
+        );
+      }
+      return config;
+    },
+  },
+  {
+    // For all available options, see:
+    // https://github.com/getsentry/sentry-webpack-plugin#options
+
+    org: "obi-64",
+    project: "obi-wallet",
+
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? { authToken: process.env.SENTRY_AUTH_TOKEN }
+      : {}),
+
+    // Only print logs for uploading source maps in CI
+    silent: !process.env.CI,
+
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
+
+    // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+    // This can increase your server load as well as your hosting bill.
+    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+    // side errors will fail.
+    // tunnelRoute: "/monitoring",
+
+    // Hides source maps from generated client bundles
+    hideSourceMaps: true,
+
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    disableLogger: true,
+
+    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+    // See the following for more information:
+    // https://docs.sentry.io/product/crons/
+    // https://vercel.com/docs/cron-jobs
+    automaticVercelMonitors: true,
+  },
+);

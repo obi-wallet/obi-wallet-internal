@@ -5,7 +5,7 @@ import { IconType } from "react-icons";
 import { Text } from "../text/text";
 
 type BoxProps = {
-  title?: string;
+  title?: string | undefined;
   RightIcon?: IconType;
   titleClassName?: string;
 } & ComponentPropsWithoutRef<"div">;

@@ -9,8 +9,8 @@ export function InputContainer({
   onClick,
 }: {
   children: ReactNode;
-  label?: string;
-  className?: string;
+  label?: string | undefined;
+  className?: string | undefined;
   labelClassname: string;
   onClick?: () => void;
 }) {

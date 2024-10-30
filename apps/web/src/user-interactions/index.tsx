@@ -2,6 +2,7 @@
 
 import { SetWalletDataUserInteractionHandler } from "@/user-interactions/set-wallet-data";
 import { SignAndBroadcastEvmHandler } from "@/user-interactions/sign-and-broadcast/evm";
+import { SignAndBroadcastSvmHandler } from "@/user-interactions/sign-and-broadcast/svm/handler";
 import { SignAndBroadcastTransactionUserInteractionHandler } from "@/user-interactions/sign-and-broadcast-transaction-handler";
 import { SignUserInteractionHandler } from "@/user-interactions/sign-handler";
 import { WalletConnectPairingUserInteractionHandler } from "@/user-interactions/wallet-connect-pairing-handler";
@@ -13,13 +14,15 @@ export const UserInteractionsHandlers = observer(
     return (
       <SignAndBroadcastTransactionUserInteractionHandler>
         <SignAndBroadcastEvmHandler>
-          <WalletConnectPairingUserInteractionHandler>
-            <SignUserInteractionHandler>
-              <SetWalletDataUserInteractionHandler>
-                {children}
-              </SetWalletDataUserInteractionHandler>
-            </SignUserInteractionHandler>
-          </WalletConnectPairingUserInteractionHandler>
+          <SignAndBroadcastSvmHandler>
+            <WalletConnectPairingUserInteractionHandler>
+              <SignUserInteractionHandler>
+                <SetWalletDataUserInteractionHandler>
+                  {children}
+                </SetWalletDataUserInteractionHandler>
+              </SignUserInteractionHandler>
+            </WalletConnectPairingUserInteractionHandler>
+          </SignAndBroadcastSvmHandler>
         </SignAndBroadcastEvmHandler>
       </SignAndBroadcastTransactionUserInteractionHandler>
     );

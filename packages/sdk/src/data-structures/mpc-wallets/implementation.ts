@@ -1,14 +1,10 @@
 import { uniqBy } from "ramda";
+import { z } from "zod";
 
 import { MpcWalletsSchema } from "./schema";
-import { AbstractMigratable, AbstractSerialized } from "../migratable";
 import { MpcWallet } from "../mpc-wallet";
 
 export class MpcWallets {
-  public get schema() {
-    return MpcWalletsSchema;
-  }
-
   public constructor(
     protected _wallets: MpcWallet[],
     protected _currentWalletIndex: number | null,
@@ -16,17 +12,17 @@ export class MpcWallets {
     protected _serialize: <T>(serialized: T) => T,
   ) {}
 
-  public toJSON(): AbstractSerialized<typeof MpcWalletsSchema> {
-    return {
+  public toJSON(): z.infer<typeof MpcWalletsSchema> {
+    return this._serialize({
+      v: 1,
       wallets: this._wallets.map((w) => {
         return w.toJSON();
       }),
       currentWalletIndex: this._currentWalletIndex,
-    };
+    });
   }
 
-  public deserialize(migratable: AbstractMigratable<typeof MpcWalletsSchema>) {
-    const serialized = MpcWalletsSchema.migratableSchema.parse(migratable);
+  public deserialize(serialized: z.infer<typeof MpcWalletsSchema>) {
     const serializedWallets = uniqBy((wallet) => {
       return wallet.userEntryAddress;
     }, serialized.wallets);

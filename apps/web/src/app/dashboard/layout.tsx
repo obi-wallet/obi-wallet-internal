@@ -1,6 +1,7 @@
 import {
+  Ed25519KeyPairNotification,
   Navbar,
-  PasskeyNotification,
+  NoRecoveryKeysNotification,
   WalletDataNotification,
 } from "@/components";
 import { DashboardCustomLayout } from "@/layouts/dashboard";
@@ -16,7 +17,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <DashboardCustomLayout nav={<Navbar />}>
       <WalletDataNotification />
-      <PasskeyNotification />
+      <NoRecoveryKeysNotification />
+      <Ed25519KeyPairNotification />
       {children}
     </DashboardCustomLayout>
   );

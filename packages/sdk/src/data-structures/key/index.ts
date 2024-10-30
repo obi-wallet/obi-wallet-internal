@@ -1,18 +1,20 @@
-import { createKey, createObservableKey } from "./factories";
+import { createLegacyKey, createLegacyObservableKey } from "./factories";
 import { Key as KeyInterface } from "./implementation";
-import { KeySchema } from "./schema";
+import { LegacyKeySchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
 export { UsableKeySchema, PendingRecoveryKeySchema } from "./schema";
 export * from "./types";
-export type Key = KeyInterface;
+export type LegacyKey = KeyInterface;
 
-export const Key = {
-  schema: KeySchema,
-  create: createKey,
-} satisfies AbstractDataStructure<Key, typeof KeySchema>;
+export { KeySchema, LegacyKeySchema } from "./schema";
 
-export const ObservableKey = {
-  schema: KeySchema,
-  create: createObservableKey,
-} satisfies AbstractDataStructure<Key, typeof KeySchema>;
+export const LegacyKey = {
+  schema: LegacyKeySchema,
+  create: createLegacyKey,
+} satisfies AbstractDataStructure<LegacyKey, typeof LegacyKeySchema>;
+
+export const LegacyObservableKey = {
+  schema: LegacyKeySchema,
+  create: createLegacyObservableKey,
+} satisfies AbstractDataStructure<LegacyKey, typeof LegacyKeySchema>;

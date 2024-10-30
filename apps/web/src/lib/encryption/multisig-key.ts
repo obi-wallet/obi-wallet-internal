@@ -1,8 +1,12 @@
 import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
-import { MultisigPublicKey } from "@obi-wallet/sdk";
-import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import {
+  MultisigKeyEncryptedData,
+  MultisigPublicKey,
+  parseMultisigKeyEncryptedData,
+} from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { SHA256, Word32Array } from "jscrypto";
-import * as sss from "sss-wasm";
+import { combineShares, createShares } from "sss-wasm";
 
 import { AesGcmDecryption, AesGcmEncryption } from "./aes-gcm";
 import { Secp256k1Encryption } from "./secp256k1";
@@ -10,13 +14,13 @@ import { Secp256k1Encryption } from "./secp256k1";
 export class MultisigKeyEncryption {
   public constructor(protected readonly multisigPublicKey: MultisigPublicKey) {}
 
-  public async encrypt(data: string): Promise<string> {
+  public async encrypt(data: string): Promise<MultisigKeyEncryptedData> {
     // Generate a random secret that will be split into shares using SSS.
     const sssSecret = window.crypto.getRandomValues(new Uint8Array(64));
 
     const totalShares = this.multisigPublicKey.value.pubkeys.length;
     const threshold = parseInt(this.multisigPublicKey.value.threshold, 10);
-    const shares = await sss.createShares(sssSecret, totalShares, threshold);
+    const shares = await createShares(sssSecret, totalShares, threshold);
     const encryptedShares = await Promise.all(
       shares.map(async (share, index) => {
         const encryption = new Secp256k1Encryption(
@@ -36,10 +40,12 @@ export class MultisigKeyEncryption {
       ["encrypt", "decrypt"],
     );
 
-    return serialize([
-      await new AesGcmEncryption(key).encrypt(data),
-      ...encryptedShares,
-    ]);
+    return MultisigKeyEncryptedData.parse(
+      serialize([
+        await new AesGcmEncryption(key).encrypt(data),
+        ...encryptedShares,
+      ]),
+    );
   }
 }
 
@@ -48,16 +54,13 @@ export class MultisigKeyDecryption {
     protected readonly input: (Base64EncodedString | null)[],
   ) {}
 
-  public async decrypt(data: string): Promise<string> {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-    const [encrypted, ..._encryptedShares] = deserialize(data) as [
-      Base64EncodedString,
-      ...string[],
-    ];
+  public async decrypt(data: MultisigKeyEncryptedData): Promise<string> {
+    const [encrypted, ..._encryptedShares] =
+      parseMultisigKeyEncryptedData(data);
     const decryptedShares = this.input.map((share) => {
       return share ? Encoding.fromBase64(share).toBytes() : null;
     });
-    const sssSecret = await sss.combineShares(
+    const sssSecret = await combineShares(
       decryptedShares.filter((v): v is Uint8Array => {
         return !!v;
       }),

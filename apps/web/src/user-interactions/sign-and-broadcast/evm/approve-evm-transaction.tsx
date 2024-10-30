@@ -4,24 +4,24 @@ import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain } from "@/target-chain";
 import {
   deserializeUserOperation,
+  deserializeUserOperationCalls,
   SerializedEvmUserOperation,
+  SerializedEvmUserOperationCalls,
 } from "@/target-chain/eip-155";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
-import {
-  ApproveIntentions,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SendingAnimation } from "@/user-interactions/approve-messages/sending-animation";
-import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { MpcWallet } from "@obi-wallet/sdk";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
 import { skipToken, useMutation } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import invariant from "tiny-invariant";
-import { decodeFunctionData, hexToBigInt, size, sliceHex } from "viem";
+import { decodeFunctionData, erc20Abi } from "viem";
 import { z } from "zod";
 
 export interface ApproveEvmTransactionProps {
@@ -29,7 +29,7 @@ export interface ApproveEvmTransactionProps {
     userEntryAddress: string;
   };
   targetChainId: Eip155ChainId;
-  callData: HexEncodedStringWithPrefix;
+  calls: SerializedEvmUserOperationCalls;
   onReject(): void;
   onApprove(args: {
     wallet: MpcWallet;
@@ -43,7 +43,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
   function ApproveEvmTransaction({
     walletMeta,
     targetChainId,
-    callData,
+    calls,
     onApprove,
     onReject,
   }) {
@@ -58,7 +58,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
     const targetChain = TargetChain.chainId(targetChainId);
 
     const userOperation = useQuery({
-      queryKey: ["user-operation", { walletMeta, targetChainId, callData }],
+      queryKey: ["user-operation", { walletMeta, targetChainId, calls }],
       queryFn: wallet
         ? async () => {
             const response = await fetch(
@@ -69,7 +69,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
                   homeChainId: wallet.homeChainId,
                   targetChainId,
                   userEntryAddress: wallet.userEntryAddress,
-                  callData,
+                  calls,
                 }),
               },
             );
@@ -96,9 +96,12 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           }
         : skipToken,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
+      refetchOnMount: "always",
       refetchOnReconnect: false,
     });
+    const userOperationData = userOperation.isFetchedAfterMount
+      ? userOperation.data
+      : undefined;
 
     const approve = useMutation({
       mutationFn: async () => {
@@ -124,12 +127,14 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
     const keyMetaData = keyMetaDataStore.getKeyMetaData(
       wallet.userEntryAddress,
     );
-    const intentionsPayload: IntentionsPayload | null = userOperation.data
+    const intentionsPayload: IntentionsPayload | null = userOperationData
       ? {
           signHashes: [
-            new Uint8Array(Buffer.from(userOperation.data.hash, "hex")),
+            new Uint8Array(Buffer.from(userOperationData.hash, "hex")),
           ],
+          decryptEasyShare: wallet.encryptedEasyShare,
           decryptMessages: [],
+          decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
         }
       : null;
@@ -147,9 +152,9 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
           </Text>
 
           <PrettyPrint
-            callData={callData}
+            calls={calls}
             targetChainId={targetChainId}
-            userOperation={userOperation.data?.userOperation}
+            userOperation={userOperationData?.userOperation}
           />
 
           {intentionsPayload ? (
@@ -170,9 +175,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
             <Button
               block
               disabled={
-                !userOperation.isSuccess ||
-                approve.isPending ||
-                !intentionsResults
+                !userOperationData || approve.isPending || !intentionsResults
               }
               onClick={() => {
                 approve.mutate();
@@ -190,149 +193,105 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
 );
 
 const PrettyPrint = observer(function PrettyPrint({
-  callData,
+  calls,
   targetChainId,
 }: {
-  callData: HexEncodedStringWithPrefix;
-  userOperation?: SerializedEvmUserOperation;
+  calls: SerializedEvmUserOperationCalls;
+  userOperation?: SerializedEvmUserOperation | undefined;
   targetChainId: Eip155ChainId;
 }) {
-  // TODO: copy-pasted from permissionless
-  const KernelV3ExecuteAbi = [
-    {
-      type: "function",
-      name: "execute",
-      inputs: [
-        { name: "execMode", type: "bytes32", internalType: "ExecMode" },
-        { name: "executionCalldata", type: "bytes", internalType: "bytes" },
-      ],
-      outputs: [],
-      stateMutability: "payable",
-    },
-    {
-      type: "function",
-      name: "executeFromExecutor",
-      inputs: [
-        { name: "execMode", type: "bytes32", internalType: "ExecMode" },
-        { name: "executionCalldata", type: "bytes", internalType: "bytes" },
-      ],
-      outputs: [
-        { name: "returnData", type: "bytes[]", internalType: "bytes[]" },
-      ],
-      stateMutability: "payable",
-    },
-    {
-      type: "function",
-      name: "executeUserOp",
-      inputs: [
-        {
-          name: "userOp",
-          type: "tuple",
-          internalType: "struct PackedUserOperation",
-          components: [
-            {
-              name: "sender",
-              type: "address",
-              internalType: "address",
-            },
-            { name: "nonce", type: "uint256", internalType: "uint256" },
-            { name: "initCode", type: "bytes", internalType: "bytes" },
-            { name: "callData", type: "bytes", internalType: "bytes" },
-            {
-              name: "accountGasLimits",
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-            {
-              name: "preVerificationGas",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
-              name: "gasFees",
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-            {
-              name: "paymasterAndData",
-              type: "bytes",
-              internalType: "bytes",
-            },
-            { name: "signature", type: "bytes", internalType: "bytes" },
-          ],
-        },
-        { name: "userOpHash", type: "bytes32", internalType: "bytes32" },
-      ],
-      outputs: [],
-      stateMutability: "payable",
-    },
-  ] as const;
+  const prettyPrintData = useQuery({
+    queryKey: ["pretty-print-data", calls],
+    queryFn: async () => {
+      const targetChain = TargetChain.chainId(targetChainId);
 
-  const functionData = decodeFunctionData({
-    abi: KernelV3ExecuteAbi,
-    data: callData,
+      const getAmountInfo = async ({
+        id,
+        rawAmount,
+      }: {
+        id: Caip19AssetId;
+        rawAmount: string;
+      }) => {
+        const asset = await targetChain.assetInfo(id);
+        return {
+          denom: asset?.symbol ?? id,
+          amount: new BigNumber(rawAmount)
+            .dividedBy(10 ** (asset?.decimals ?? 0))
+            .toString(),
+        };
+      };
+
+      return (
+        await Promise.all(
+          deserializeUserOperationCalls(calls).map(async (call) => {
+            // Native transfer
+            if (!call.data || call.data === "0x") {
+              const value = call.value ?? 0n;
+
+              return {
+                to: call.to,
+                amountInfo: await getAmountInfo({
+                  id: targetChain.nativeCaip19AssetId,
+                  rawAmount: value.toString(10),
+                }),
+              };
+            }
+
+            try {
+              const data = decodeFunctionData({
+                abi: erc20Abi,
+                data: call.data,
+              });
+
+              if (data.functionName === "transfer") {
+                const to = data.args[0];
+                const rawAmount = data.args[1];
+
+                const id = targetChain.denomToCaip19AssetId(call.to);
+
+                if (id) {
+                  return {
+                    to,
+                    amountInfo: await getAmountInfo({
+                      id,
+                      rawAmount: rawAmount.toString(10),
+                    }),
+                  };
+                }
+              }
+            } catch (error) {
+              console.error(error);
+            }
+
+            return null;
+          }),
+        )
+      ).filter((data) => {
+        return !!data;
+      });
+    },
   });
 
-  if (functionData.functionName === "execute") {
-    const [_execMode, executionCallData] = functionData.args;
-
-    // First 20 bytes is the recipient
-    const to = sliceHex(executionCallData, 0, 20);
-    // Next 32 bytes is the value
-    const value = sliceHex(executionCallData, 20, 52);
-    // The rest is the data
-    const data =
-      size(executionCallData) > 52 ? sliceHex(executionCallData, 52) : null;
-
-    const targetChain = TargetChain.chainId(targetChainId);
-
-    const getImage = () => {
-      switch (targetChain.nativeCurrency.symbol) {
-        case "AVAX":
-          return "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png?1696512369";
-        case "ETH":
-          return "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1696501628";
-        case "BNB":
-        case "tBNB":
-          return "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png?1696501970";
-        case "CRO":
-          return "https://assets.coingecko.com/coins/images/7310/standard/cro_token_logo.png?1696507599";
-        case "MATIC":
-          return "https://assets.coingecko.com/coins/images/4713/standard/polygon.png?1698233745";
-        default:
-          return null;
-      }
-    };
-    const asset = {
-      name: targetChain.nativeCurrency.name,
-      symbol: targetChain.nativeCurrency.symbol,
-      decimals: targetChain.nativeCurrency.decimals,
-      image: getImage(),
-    };
-
-    const amount = new BigNumber(hexToBigInt(value).toString(10))
-      .dividedBy(10 ** (asset?.decimals ?? 0))
-      .toString();
-
-    return (
-      <Transaction
-        amountInfo={[
-          {
-            denom: asset?.symbol ?? targetChain.nativeCurrency.symbol,
-            amount,
-          },
-        ]}
-        feeInfo={[]}
-        descriptions={[]}
-        addresses={[to]}
-        memo=""
-        targetChainId={targetChainId}
-        rawData={data}
-      />
-    );
+  if (!prettyPrintData.data) {
+    return null;
   }
 
-  console.warn("Unknown function name", functionData.functionName);
+  const tos = prettyPrintData.data.map((data) => {
+    return data.to;
+  });
+  const amountInfos = prettyPrintData.data.map((data) => {
+    return data.amountInfo;
+  });
 
-  return null;
+  return (
+    <Transaction
+      amountInfo={amountInfos}
+      feeInfo={[]}
+      descriptions={[]}
+      addresses={tos}
+      memo=""
+      targetChainId={targetChainId}
+      rawData={deserializeUserOperationCalls(calls)}
+    />
+  );
 });

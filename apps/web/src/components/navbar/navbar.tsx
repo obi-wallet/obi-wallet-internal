@@ -38,16 +38,6 @@ const navMenu: NavMenu[] = [
     mobileOrder: 3,
   },
   {
-    href: "/dashboard/fast-travel",
-    text: "Fast Travel",
-    mobileText: "FT",
-    module: "fast-travel",
-    icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
-    mobileOrder: 1,
-  },
-  {
     href: "/dashboard/buy-crypto",
     mobileText: "Buy",
     text: "Buy Crypto",

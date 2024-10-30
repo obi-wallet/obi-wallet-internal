@@ -1,6 +1,8 @@
 import {
   FetchQueryOptions,
+  MutationCache,
   Query,
+  QueryCache,
   QueryClient,
   skipToken,
   WithRequired,
@@ -17,6 +19,16 @@ export const queryClient = new QueryClient({
       gcTime: queryClientDuration({ day: 1 }),
     },
   },
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      console.error("Error thrown during query", query.queryKey, error);
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error, _variables, _context, _mutation) => {
+      console.error("Error thrown during mutation", error);
+    },
+  }),
 });
 
 // eslint-disable-next-line etc/prefer-interface
@@ -72,15 +84,17 @@ export class QueryClientNamespace<
         queryFn: (): Promise<TFnReturn> => {
           return queryInfo.fn(params);
         },
-        staleTime: queryInfo.staleTime
-          ? (query) => {
-              const staleTime =
-                typeof queryInfo.staleTime === "function"
-                  ? queryInfo.staleTime(query)
-                  : queryInfo.staleTime!;
-              return queryClientDuration(staleTime);
+        ...(queryInfo.staleTime
+          ? {
+              staleTime: (query) => {
+                const staleTime =
+                  typeof queryInfo.staleTime === "function"
+                    ? queryInfo.staleTime(query)
+                    : queryInfo.staleTime!;
+                return queryClientDuration(staleTime);
+              },
             }
-          : undefined,
+          : {}),
       };
     };
   }

@@ -1,8 +1,6 @@
-import { TargetChain } from "@/target-chain";
 import { Eip155ChainIdSchema } from "@/target-chain/eip-155/chains";
+import { preparePimlicoClient } from "@/target-chain/eip-155/pimlico";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
-import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
-import { http } from "viem";
 import { z } from "zod";
 
 export const maxDuration = 45;
@@ -22,16 +20,10 @@ export async function POST(request: Request) {
   }
 
   const { hash, targetChainId } = result.data;
-  const targetChain = TargetChain.chainId(targetChainId);
 
-  const pimlicoUrl = `https://api.pimlico.io/v2/${targetChain.eip155ChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
-  const bundlerClient = createPimlicoBundlerClient({
-    chain: targetChain.chainData.chain,
-    transport: http(pimlicoUrl),
-    entryPoint: targetChain.entryPoint,
-  });
+  const pimlicoClient = preparePimlicoClient(targetChainId);
 
-  const receipt = await bundlerClient.waitForUserOperationReceipt({
+  const receipt = await pimlicoClient.waitForUserOperationReceipt({
     hash,
   });
 

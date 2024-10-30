@@ -2,7 +2,10 @@ import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { fetchOwner } from "@/hooks/use-owner";
-import { usePublicKeyQuery } from "@/hooks/use-public-key";
+import {
+  useEd25519PublicKeyQuery,
+  useSecp256k1PublicKeyQuery,
+} from "@/hooks/use-public-key";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import {
   useWalletDataStateQuery,
@@ -28,11 +31,20 @@ export interface WalletHealthCheck {
   resolve?: UseMutationResult<void, Error, void, unknown>;
 }
 
-export function usePublicKeyKnownCheck(): WalletHealthCheck {
-  const query = usePublicKeyQuery();
+export function useSecp256k1PublicKeyKnownCheck(): WalletHealthCheck {
+  const query = useSecp256k1PublicKeyQuery();
 
   return {
-    label: "Secret signer has public key for this wallet",
+    label: "Secret signer has Secp256k1 public key for this wallet",
+    query,
+  };
+}
+
+export function useEd25519PublicKeyKnownCheck(): WalletHealthCheck {
+  const query = useEd25519PublicKeyQuery();
+
+  return {
+    label: "Secret signer has Ed25519 public key for this wallet",
     query,
   };
 }
@@ -98,7 +110,7 @@ export function useWalletBackupMutation() {
       walletData.revision++;
       const response = await SetWalletDataUserInteraction.start({
         homeChainId: wallet.homeChainId,
-        owner: wallet.owner.toJSON()!,
+        owner: wallet.owner.toJSON(),
         keyMetaData: keyMetaData,
         serializedWalletData: serialize(walletData),
       });

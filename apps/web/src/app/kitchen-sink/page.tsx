@@ -6,7 +6,6 @@ import {
   Switcher,
   Table,
   Notification,
-  Chart,
   Button,
   IconButton,
   Input,
@@ -82,7 +81,7 @@ const Homepage = observer(function Homepage() {
             </IconButton>
           </div>
           <div>
-            <DropDown options={options} description="Select option"></DropDown>
+            <DropDown options={options} description="Select option" />
           </div>
         </div>
         <div className="col-span-6 space-y-3">
@@ -120,21 +119,6 @@ const Homepage = observer(function Homepage() {
             endIcon={FaGoogle}
             disabled
             id="input-disabled"
-          />
-        </div>
-        <div className="col-span-6">
-          <Chart
-            series={[
-              {
-                name: "BTC",
-                data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-              },
-
-              {
-                name: "ETH",
-                data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-              },
-            ]}
           />
         </div>
 

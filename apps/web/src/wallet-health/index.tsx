@@ -1,9 +1,10 @@
 import { Box, Button, Divider, Text } from "@/components";
 import { cn } from "@/lib/utils";
 import {
+  useEd25519PublicKeyKnownCheck,
   useLocalDataIsUpToDateCheck,
   useOwnerUpToDateCheck,
-  usePublicKeyKnownCheck,
+  useSecp256k1PublicKeyKnownCheck,
   useWalletBackupCheck,
   useWalletBackupIncludesEasyShareCheck,
   useWalletHasEasyShareCheck,
@@ -12,7 +13,8 @@ import {
 import { observer } from "mobx-react-lite";
 
 export const HealthChecks = observer(function HealthChecks() {
-  const publicKeyKnownCheck = usePublicKeyKnownCheck();
+  const secp256k1PublicKeyKnownCheck = useSecp256k1PublicKeyKnownCheck();
+  const ed25519PublicKeyKnownCheck = useEd25519PublicKeyKnownCheck();
   const ownerUpToDateCheck = useOwnerUpToDateCheck();
   const walletBackupCheck = useWalletBackupCheck();
   const walletBackupIncludesEasyShare = useWalletBackupIncludesEasyShareCheck();
@@ -32,7 +34,8 @@ export const HealthChecks = observer(function HealthChecks() {
 
         <Divider className="mb-7 mt-5" />
 
-        <HealthCheckRow check={publicKeyKnownCheck} />
+        <HealthCheckRow check={secp256k1PublicKeyKnownCheck} />
+        <HealthCheckRow check={ed25519PublicKeyKnownCheck} />
         <HealthCheckRow check={ownerUpToDateCheck} />
         <HealthCheckRow check={walletBackupCheck} />
         <HealthCheckRow check={walletBackupIncludesEasyShare} />

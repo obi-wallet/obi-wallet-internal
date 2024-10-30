@@ -19,7 +19,7 @@ interface InputProps
   startIcon?: IconType;
   endIcon?: IconType;
   labelBgColor?: string;
-  labelText?: string;
+  labelText?: string | undefined;
   value?: string;
   errorMessage?: string;
   classNames?: {
@@ -27,7 +27,7 @@ interface InputProps
     endIcon?: string;
   };
   onChange?: (value: string) => void;
-  InputRef?: RefObject<HTMLInputElement>;
+  InputRef?: RefObject<HTMLInputElement | null>;
   defaultValue?: string;
 }
 interface ParentRef {

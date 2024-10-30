@@ -1,10 +1,7 @@
-import {
-  EasyShareDecryption,
-  MultisigKeyEncryption,
-  SharesBackupEncryption,
-} from "@/lib/encryption";
+import { MultisigKeyEncryption } from "@/lib/encryption";
+import { rootStore } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
-import { LegacyWalletData, LegacyWalletDataBackup } from "@/wallet-data-backup";
+import { LegacyWalletData } from "@/wallet-data-backup";
 import {
   getOwnerData,
   lookupPublicKey,
@@ -12,17 +9,19 @@ import {
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import { queryClient, QueryClientNamespace } from "@obi-wallet/query-client";
 import {
+  EncryptedEasyShareForBackup,
   HomeChainId,
   MpcWallet,
-  PendingRecoveryKeySchema,
+  MpcWalletSchema,
+  parsePrimaryKeyEncryptedData,
   Secp256k1PublicKey,
   SecretJsClient,
   SecretJsHomeChains,
-  Serialized,
-  UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
+import { Ed25519PublicKey } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -59,7 +58,9 @@ export class SecretJsHomeChain {
             });
             const response =
               await secretNetworkClient.query.compute.codeHashByCodeId({
-                code_id: info.contract_info?.code_id,
+                ...(info.contract_info?.code_id
+                  ? { code_id: info.contract_info.code_id }
+                  : {}),
               });
             return response.code_hash;
           },
@@ -116,17 +117,14 @@ export class SecretJsHomeChain {
     wallet,
     keyMetaData,
   }: {
-    wallet: Serialized<MpcWallet>;
+    wallet: z.infer<typeof MpcWalletSchema>;
     keyMetaData: KeyMetaData;
   }): Promise<WalletData> {
     const w = MpcWallet.create(wallet);
     async function getEncryptedEasyShare() {
-      const easyShare = await new EasyShareDecryption(w.owner).decrypt(
-        wallet.encryptedShares.easy,
-      );
-      return await new SharesBackupEncryption(w.owner).encryptEasyShare(
-        easyShare,
-      );
+      const [_primaryKeyEncrypted, multisigKeyEncrypted] =
+        parsePrimaryKeyEncryptedData(wallet.encryptedShares.easy);
+      return EncryptedEasyShareForBackup.parse(multisigKeyEncrypted);
     }
     const encryptedEasyShare = await getEncryptedEasyShare();
 
@@ -143,69 +141,10 @@ export class SecretJsHomeChain {
         backup: wallet.encryptedShares.backup,
       },
       encryptedKeyMetaData,
+      ed25519KeyPair: wallet.ed25519KeyPair ? wallet.ed25519KeyPair : undefined,
       revision: wallet.previousWalletData?.revision ?? 0,
     };
     return WalletData.parse(data);
-  }
-
-  public async getWalletDataBackup({
-    wallet,
-    keyMetaData,
-  }: {
-    wallet: Serialized<MpcWallet>;
-    keyMetaData: KeyMetaData;
-  }): Promise<LegacyWalletDataBackup> {
-    const w = MpcWallet.create(wallet);
-    async function getEncryptedEasyShare() {
-      if (!wallet.encryptedShares.easy) return undefined;
-
-      const easyShare = await new EasyShareDecryption(w.owner).decrypt(
-        wallet.encryptedShares.easy,
-      );
-      return await new SharesBackupEncryption(w.owner).encryptEasyShare(
-        easyShare,
-      );
-    }
-    const encryptedEasyShare = await getEncryptedEasyShare();
-
-    const encryptedKeyMetaData = await new MultisigKeyEncryption(
-      w.owner.publicKey,
-    ).encrypt(serialize(keyMetaData));
-
-    return LegacyWalletDataBackup.parse({
-      chainId: wallet.homeChain,
-      proxyWallet: {
-        proxyAddress: {
-          address: wallet.userEntryAddress,
-        },
-        owner: {
-          threshold: String(wallet.owner.threshold),
-          keys: wallet.owner.keys.map((key) => {
-            const usableKeyResponse =
-              UsableKeySchema.migratableSchema.safeParse(key);
-            if (usableKeyResponse.success) {
-              return {
-                type: usableKeyResponse.data.type,
-                publicKey: usableKeyResponse.data.payload.publicKey,
-              };
-            }
-            const pendingRecoveryKeyResponse =
-              PendingRecoveryKeySchema.migratableSchema.safeParse(key);
-            if (pendingRecoveryKeyResponse.success) {
-              return {
-                type: pendingRecoveryKeyResponse.data.payload.type,
-                publicKey: pendingRecoveryKeyResponse.data.payload.publicKey,
-              };
-            }
-
-            throw new Error(`Invalid key: ${serialize(key)}`);
-          }),
-        },
-        encryptedEasyShare,
-        encryptedBackupShare: wallet.encryptedShares.backup,
-        encryptedKeyMetaData,
-      },
-    });
   }
 
   public async lookupWalletBackup({
@@ -260,17 +199,32 @@ export class SecretJsHomeChain {
     return result.data;
   }
 
-  public publicKey(userEntryAddress: string) {
-    return queryClient.fetchQuery(this.publicKeyQuery(userEntryAddress));
+  public async publicKeys(
+    userEntryAddresss: string,
+  ): Promise<ObiAccountPublicKeys> {
+    const [secp256k1, ed25519] = await Promise.all([
+      this.secp256k1PublicKey(userEntryAddresss),
+      this.ed25519PublicKey(userEntryAddresss),
+    ]);
+    return {
+      secp256k1,
+      ed25519,
+    };
   }
-  public get publicKeyQuery() {
+
+  public secp256k1PublicKey(userEntryAddress: string) {
+    return queryClient.fetchQuery(
+      this.secp256k1PublicKeyQuery(userEntryAddress),
+    );
+  }
+  public get secp256k1PublicKeyQuery() {
     return this.queryNamespace.createQuery({
-      name: "obiAccountAddress",
-      fn: this.publicKeyQueryFn.bind(this),
+      name: "sec256k1PublicKey",
+      fn: this.secp256k1PublicKeyQueryFn.bind(this),
       staleTime: { day: 1 },
     });
   }
-  protected async publicKeyQueryFn(
+  protected async secp256k1PublicKeyQueryFn(
     userEntryAddress: string,
   ): Promise<Secp256k1PublicKey> {
     const response = await this.client.queryContract({
@@ -289,6 +243,32 @@ export class SecretJsHomeChain {
         Encoding.fromHex(HexEncodedString.parse("04")),
         Encoding.fromHex(response),
       ).toBase64(),
+    };
+  }
+
+  public ed25519PublicKey(userEntryAddress: string) {
+    return queryClient.fetchQuery(this.ed25519PublicKeyQuery(userEntryAddress));
+  }
+  public get ed25519PublicKeyQuery() {
+    return this.queryNamespace.createQuery({
+      name: "ed25519PublicKey",
+      fn: this.ed25519PublicKeyQueryFn.bind(this),
+    });
+  }
+  protected async ed25519PublicKeyQueryFn(
+    userEntryAddress: string,
+  ): Promise<Ed25519PublicKey | null> {
+    const wallet =
+      rootStore.current?.mpcWalletsStore.getWalletByUserEntryAddress(
+        userEntryAddress,
+      );
+    const value = wallet?.ed25519PublicKey;
+
+    if (!value) return null;
+
+    return {
+      type: "tendermint/PubKeyEd25519",
+      value,
     };
   }
 }

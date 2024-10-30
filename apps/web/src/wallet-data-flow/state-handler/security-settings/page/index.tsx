@@ -1,20 +1,13 @@
 import { Box, Divider, KeyListItem, Text } from "@/components";
-import { HomeChain } from "@/home-chain";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { AsyncButton } from "@/ui/button";
-import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
-import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
-import { serialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 
 import { useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const currentWallet = useCurrentWallet({});
-  const { state, dispatch } = useWalletDataFlowContext();
-  const { draft, keyMetaDataDraft, keyList, pushPage } =
+  const { state, dispatch, draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
-  const missingMandatoryKey = !draft.value.primaryKey;
+  const missingPrimaryKey = !draft.value.primaryKey;
 
   return (
     <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
@@ -36,9 +29,9 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       <Divider className="my-2" />
 
       <div className="space-y-2">
-        {missingMandatoryKey ? (
+        {missingPrimaryKey ? (
           <Box className="mt-4 bg-red-500 text-white">
-            Please add a passkey on this device to continue using your Obi
+            Please add a primary key on this device to continue using your Obi
             account.
           </Box>
         ) : null}
@@ -47,6 +40,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             <KeyListItem
               key={sigKey.type}
               keyData={sigKey}
+              alert={missingPrimaryKey && sigKey.possiblePrimaryKey}
               onClick={() => {
                 pushPage({
                   type: "key-type",
@@ -71,39 +65,16 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           variant="primary"
           block
           disabled={
-            (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingMandatoryKey
+            (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingPrimaryKey
           }
           onClick={async () => {
-            if (
-              draft.value.address === draft.original.address &&
-              currentWallet
-            ) {
-              const keyMetaData = keyMetaDataDraft.value.value;
-              const wallet = await HomeChain.chainId(
-                draft.value.chainId,
-              ).getWalletData({
-                wallet: currentWallet.toJSON(),
-                keyMetaData: keyMetaDataDraft.value.value,
-              });
-              wallet.revision++;
-              const response = await SetWalletDataUserInteraction.start({
-                homeChainId: draft.value.chainId,
-                owner: draft.value.toJSON()!,
-                keyMetaData: keyMetaDataDraft.value.value,
-                serializedWalletData: serialize(wallet),
-              });
-              if (response.approved) {
-                currentWallet.setPreviousWalletData(wallet);
-                state.onDone({
-                  wallet: currentWallet.toJSON(),
-                  keyMetaData,
-                });
-              }
-            } else {
-              dispatch({
-                type: "update-owner",
-              });
-            }
+            await dispatch(
+              state.commitDraft({
+                walletData: state.walletData,
+                ownerDraft: draft,
+                keyMetaDataDraft: keyMetaDataDraft,
+              }),
+            );
           }}
         >
           Save

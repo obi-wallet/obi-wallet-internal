@@ -1,21 +1,26 @@
 import { HomeChain } from "@/home-chain";
-import { SharesLocalEncryption } from "@/lib/encryption";
+import {
+  MultisigKeyEncryption,
+  SharesEncryptionForClient,
+} from "@/lib/encryption";
 import { rootStore } from "@/stores";
 import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
+import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
   BackupShare,
   EasyShare,
   HomeChainId,
   HomeChainIdSchema,
   KeyType,
-  MpcWallet,
+  MpcWalletSchema,
   MultisigKey,
+  MultisigKeySchema,
   NetworkShare,
   ObservableMultisigKey,
-  Serialized,
   WalletData,
 } from "@obi-wallet/sdk";
+import { generateEd25519KeyPair } from "@obi-wallet/sdk-ed25519";
 import { serialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { action, observable, toJS } from "mobx";
@@ -32,7 +37,7 @@ type UnclaimedHomeAccount = z.TypeOf<typeof UnclaimedHomeAccount>;
 
 const OnboardingPayloadSchema = z.object({
   homeChain: HomeChainIdSchema,
-  multisigKey: MultisigKey.schema.migratableSchema,
+  multisigKey: MultisigKeySchema,
   userData: z.object({
     name: z.string(),
     image: z.string(),
@@ -78,6 +83,10 @@ export class NewOnboardingPayload implements Draftable {
   protected accessor _unclaimedHomeAccount: UnclaimedHomeAccount | null = null;
   @observable protected accessor _homeAccountClaimed: boolean = false;
   @observable protected accessor _walletData: WalletData | null = null;
+  @observable protected accessor _ed25519KeyPair: {
+    publicKey: Base58EncodedString;
+    encryptedPrivateKey: string;
+  } | null = null;
 
   public constructor(homeChainId: HomeChainId) {
     this._multisigKey = ObservableMultisigKey.create(homeChainId);
@@ -108,7 +117,7 @@ export class NewOnboardingPayload implements Draftable {
   public toJSON(): z.infer<typeof OnboardingPayloadSchema> {
     return OnboardingPayloadSchema.parse({
       homeChain: this.homeChainId,
-      multisigKey: this._multisigKey.toJSON()!,
+      multisigKey: this._multisigKey.toJSON(),
       ownerConfirmed: this._ownerConfirmed,
       userData: {
         name: this._name,
@@ -122,18 +131,20 @@ export class NewOnboardingPayload implements Draftable {
     });
   }
 
-  public toMpcWalletData(): Serialized<MpcWallet> {
+  public toMpcWalletData(): z.infer<typeof MpcWalletSchema> {
+    invariant(this._ed25519KeyPair, "Ed25519 key pair is not available");
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._distributedShares, "Shares have not been distributed");
 
-    return MpcWallet.schema.migratableSchema.parse({
+    return MpcWalletSchema.parse({
       homeChain: this.homeChainId,
-      owner: this._multisigKey.toJSON()!,
+      owner: this._multisigKey.toJSON(),
       encryptedShares: {
         easy: this._encryptedShares.easyShare,
         backup: this._encryptedShares.backupShare,
       },
+      ed25519KeyPair: this._ed25519KeyPair,
       userEntryAddress: this._unclaimedHomeAccount.homeAccountAddress,
       previousWalletData: toJS(this._walletData),
     });
@@ -149,6 +160,7 @@ export class NewOnboardingPayload implements Draftable {
     // Next steps require the owner
     if (!this._ownerConfirmed) return;
     await this.encryptSharesIfNecessary();
+    await this.encryptEd25519KeyPairIfNecessary();
     await this.distributeSharesIfNecessary();
     await this.claimHomeAccountIfNecessary();
   }
@@ -158,14 +170,16 @@ export class NewOnboardingPayload implements Draftable {
     key,
   }: {
     key: {
-      type: KeyType.Passkey;
+      type: KeyType.Passkey | KeyType.Cloud;
       payload: Secp256k1KeyPair;
     };
   }) {
     const newKey = (() => {
       switch (key.type) {
         case KeyType.Passkey:
-          return this._multisigKey.addPasskeyKey(key.payload);
+          return this._multisigKey.addPasskeyKey(key.payload.publicKey);
+        case KeyType.Cloud:
+          return this._multisigKey.addCloudKey(key.payload.publicKey);
         default:
           throw new Error(`Unsupported primary key type: ${key.type}`);
       }
@@ -211,7 +225,9 @@ export class NewOnboardingPayload implements Draftable {
     if (this._encryptedShares) return;
     invariant(this._shares, "Shares are not available");
 
-    const sharesLocalEncryption = new SharesLocalEncryption(this._multisigKey);
+    const sharesLocalEncryption = new SharesEncryptionForClient(
+      this._multisigKey,
+    );
     const { easy, backup } = await sharesLocalEncryption.encrypt({
       easy: this._shares.easyShare,
       backup: this._shares.backupShare,
@@ -219,6 +235,20 @@ export class NewOnboardingPayload implements Draftable {
     this._encryptedShares = {
       easyShare: easy,
       backupShare: backup,
+    };
+  }
+
+  protected async encryptEd25519KeyPairIfNecessary() {
+    if (this._ed25519KeyPair) return;
+    const keyPair = generateEd25519KeyPair();
+    const multisigKeyEncryption = new MultisigKeyEncryption(
+      this._multisigKey.publicKey,
+    );
+    this._ed25519KeyPair = {
+      publicKey: keyPair.publicKey.value,
+      encryptedPrivateKey: await multisigKeyEncryption.encrypt(
+        keyPair.privateKey,
+      ),
     };
   }
 

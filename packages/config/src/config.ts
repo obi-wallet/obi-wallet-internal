@@ -1,4 +1,4 @@
-import { ChainId, KeyType } from "@obi-wallet/sdk";
+import { HomeChainId, KeyType } from "@obi-wallet/sdk";
 
 import { Feature } from "./feature";
 import { ComingSoonKeyType } from "./key";
@@ -6,8 +6,8 @@ import { Language } from "./language";
 
 export interface Config {
   chains: {
-    enabled: ChainId[];
-    default: ChainId;
+    enabled: HomeChainId[];
+    default: HomeChainId;
   };
   languages: {
     enabled: Language[];

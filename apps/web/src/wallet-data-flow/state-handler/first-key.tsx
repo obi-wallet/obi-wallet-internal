@@ -1,63 +1,45 @@
 "use client";
 
 import { Button, ButtonLink, Modal, renderModal, Text } from "@/components";
-import { SecretJsHomeChain } from "@/home-chain/secret-js";
+import { EffectStateDispatch } from "@/effect/effect-state";
+import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { AddPhoneKey } from "@/keys/phone/add-phone-key";
 import { AddTelegramKey } from "@/keys/phone/add-telegram-key";
-import { KeyMetaData } from "@/stores/key-meta-data";
+import { SingleKeyMetaData } from "@/stores/key-meta-data";
 import { AsyncButton } from "@/ui/button";
-import { LegacyWalletData } from "@/wallet-data-backup";
-import { useWalletDataFlowContext } from "@/wallet-data-flow/context";
 import {
-  getPasskey,
-  KeyType,
-  MultisigKey,
-  Secp256k1PublicKey,
-} from "@obi-wallet/sdk";
-import { useMutation } from "@tanstack/react-query";
+  InitialState,
+  NoWalletFoundState,
+  WalletDataFlowState,
+  WalletDataFlowStateType,
+} from "@/wallet-data-flow/state";
+import { getPasskey, KeyType, Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export const FirstKeyStep = observer(function FirstKeyStep() {
-  const { state, dispatch } = useWalletDataFlowContext();
-  const [proxyWallets, setProxyWallets] = useState<LegacyWalletData[] | null>(
-    null,
-  );
+export interface FirstKeyStepProps {
+  state: InitialState | NoWalletFoundState;
+  dispatch: EffectStateDispatch<typeof WalletDataFlowState>;
+}
+
+export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
+  state,
+  dispatch,
+}) {
   const [modal, setModal] = useState<KeyType | null>(null);
+  const [cloudKeyFiles, setCloudKeyFiles] = useState<
+    { id: string; name: string }[] | null
+  >(null);
+  const { readFiles, readFileById } = useGoogleAuth();
 
-  const recoverByPublicKey = useMutation({
-    mutationFn: async ({
-      publicKey,
-      keyMetaData,
-      modifyMultisigKey,
-    }: {
-      publicKey: Secp256k1PublicKey;
-      keyMetaData: KeyMetaData;
-      modifyMultisigKey?(multisigKey: MultisigKey): void;
-    }) => {
-      const chainId = state.ownerDraft.value.chainId;
-      const wallet = await new SecretJsHomeChain(chainId).lookupWalletBackup({
-        homeChainId: chainId,
-        publicKey,
-      });
-
-      if (wallet) {
-        dispatch({
-          type: "set-wallet-data",
-          payload: {
-            wallet,
-            modifyMultisigKey,
-            extraKeyMetaData: keyMetaData,
-          },
-        });
-      } else {
-        setProxyWallets([]);
-      }
-    },
-    onError(error) {
-      console.error(error);
-    },
-  });
+  async function setKey(data: {
+    publicKey: Secp256k1PublicKey;
+    keyMetaData: SingleKeyMetaData | null;
+  }) {
+    if (state._tag === WalletDataFlowStateType.Initial) {
+      await dispatch(state.recoverByPublicKey(data));
+    }
+  }
 
   function renderKeyTypeModal() {
     if (!modal) return null;
@@ -75,12 +57,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         >
           <AddPhoneKey
             onSubmit={async ({ publicKey, keyMetaData }) => {
-              await recoverByPublicKey.mutateAsync({
-                publicKey,
-                keyMetaData: {
-                  [publicKey.value]: keyMetaData,
-                },
-              });
+              await setKey({ publicKey, keyMetaData });
             }}
             onCancel={onClose}
             askForName={false}
@@ -98,12 +75,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         >
           <AddTelegramKey
             onSubmit={async ({ publicKey, keyMetaData }) => {
-              await recoverByPublicKey.mutateAsync({
-                publicKey,
-                keyMetaData: {
-                  [publicKey.value]: keyMetaData,
-                },
-              });
+              await setKey({ publicKey, keyMetaData });
             }}
             onCancel={onClose}
             askForName={false}
@@ -111,26 +83,58 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
         </Modal>
       );
     }
+
+    if (modal === KeyType.Cloud) {
+      return (
+        <Modal
+          title="Cloud Key"
+          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full overflow-y-auto max-h-[400px]"
+          onClose={onClose}
+        >
+          <section className="flex flex-col items-center space-y-4">
+            {cloudKeyFiles?.map((file, index) => {
+              return (
+                <AsyncButton
+                  key={index}
+                  onClick={async () => {
+                    const keyPair = await readFileById(file.id);
+                    if (keyPair) {
+                      await setKey({
+                        publicKey: keyPair.publicKey,
+                        keyMetaData: null,
+                      });
+                    }
+                  }}
+                  className="block w-full"
+                  variant="primary"
+                >
+                  {file.name}
+                </AsyncButton>
+              );
+            })}
+          </section>
+        </Modal>
+      );
+    }
   }
 
   function renderProxyWalletsModal() {
-    if (!proxyWallets) return null;
-    if (proxyWallets.length === 0) {
+    if (state._tag === WalletDataFlowStateType.NoWalletFound) {
       return renderModal(
         <Modal title="Existing Wallets">
           <Text color="zinc" size="xs">
             We found no wallets associated with this key. Would you like to
             create a new wallet?
           </Text>
-          <Button
-            onClick={() => {
-              setProxyWallets(null);
+          <AsyncButton
+            onClick={async () => {
+              await dispatch(state.retry());
             }}
             variant="primary"
             className="w-full"
           >
             Recover another wallet
-          </Button>
+          </AsyncButton>
           <ButtonLink
             href="/onboarding/internal"
             variant="outline"
@@ -162,16 +166,7 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       <AsyncButton
         onClick={async () => {
           const keyPair = await getPasskey();
-
-          await recoverByPublicKey.mutateAsync({
-            publicKey: keyPair.publicKey,
-            keyMetaData: {},
-            modifyMultisigKey: (multisigKey) => {
-              multisigKey.removeKeyByPublicKey(keyPair.publicKey);
-              const primaryKey = multisigKey.addPasskeyKey(keyPair);
-              multisigKey.setPrimaryKey(primaryKey);
-            },
-          });
+          await setKey({ publicKey: keyPair.publicKey, keyMetaData: null });
         }}
         className="block w-full"
         variant="primary"
@@ -196,6 +191,28 @@ export const FirstKeyStep = observer(function FirstKeyStep() {
       >
         Telegram Key
       </Button>
+      <AsyncButton
+        onClick={async () => {
+          const files = await readFiles();
+          const keyFiles =
+            files &&
+            files
+              .filter((file) => {
+                return file.name.startsWith("obi-");
+              })
+              .filter((file) => {
+                return file.name.endsWith(".key");
+              });
+          if (keyFiles) {
+            setCloudKeyFiles(keyFiles);
+            setModal(KeyType.Cloud);
+          }
+        }}
+        className="block w-full"
+        variant="primary"
+      >
+        Cloud Key
+      </AsyncButton>
       <Button disabled className="block w-full" variant="primary">
         More Recovery Options Coming Soon
       </Button>

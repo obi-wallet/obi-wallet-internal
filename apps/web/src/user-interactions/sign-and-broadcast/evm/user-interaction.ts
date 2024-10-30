@@ -1,3 +1,4 @@
+import { SerializedEvmUserOperationCalls } from "@/target-chain/eip-155";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
 import {
@@ -11,7 +12,7 @@ export interface SignAndBroadcastEvmPayload {
   };
   readonly targetChainId: Eip155ChainId;
   readonly cancelable: boolean;
-  readonly callData: HexEncodedStringWithPrefix;
+  readonly calls: SerializedEvmUserOperationCalls;
   readonly mockOnly?: boolean;
 }
 

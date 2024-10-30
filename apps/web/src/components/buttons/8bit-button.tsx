@@ -16,6 +16,7 @@ export const BitButton = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <div className="relative">
         {href ? (
+          // @ts-expect-error This is only an `exactOptionalPropertyTypes` error in third-party types
           <Link href={href} className={style} {...rest}>
             {children}
           </Link>

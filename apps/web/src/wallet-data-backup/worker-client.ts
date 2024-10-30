@@ -1,13 +1,11 @@
 import {
   HomeChainId,
-  Migratable,
-  MultisigKey,
-  PendingRecoveryKeySchema,
+  MultisigKeySchema,
   Secp256k1PublicKey,
-  UsableKeySchema,
   WalletData,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
+import { z } from "zod";
 
 export async function isPublicKeyInUse({
   homeChainId,
@@ -61,27 +59,11 @@ export async function lookupWallet({
   );
 }
 
-export function getOwnerData(owner: Migratable<MultisigKey>) {
+export function getOwnerData(owner: z.infer<typeof MultisigKeySchema>) {
   return {
     threshold: owner.threshold.toString(),
     keys: owner.keys.map((key) => {
-      const usableKeyResponse = UsableKeySchema.migratableSchema.safeParse(key);
-      if (usableKeyResponse.success) {
-        return {
-          type: usableKeyResponse.data.type,
-          publicKey: usableKeyResponse.data.payload.publicKey,
-        };
-      }
-      const pendingRecoveryKeyResponse =
-        PendingRecoveryKeySchema.migratableSchema.safeParse(key);
-      if (pendingRecoveryKeyResponse.success) {
-        return {
-          type: pendingRecoveryKeyResponse.data.payload.type,
-          publicKey: pendingRecoveryKeyResponse.data.payload.publicKey,
-        };
-      }
-
-      throw new Error(`Invalid key: ${serialize(key)}`);
+      return key;
     }),
   };
 }
@@ -102,7 +84,7 @@ export async function updateOwner({
   previousOwner,
 }: {
   walletData: WalletData;
-  previousOwner: Migratable<MultisigKey>;
+  previousOwner: z.infer<typeof MultisigKeySchema>;
 }) {
   return await fetch("https://wallets.obiwallet.workers.dev", {
     method: "POST",

@@ -3,10 +3,8 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
 import { HomeChain } from "@/home-chain";
-import {
-  ApproveIntentions,
-  IntentionsResults,
-} from "@/user-interactions/approve-intentions";
+import { ApproveIntentions } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SetWalletDataUserInteraction } from "@/user-interactions/set-wallet-data-user-interaction";
 import { Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -125,6 +123,12 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
                 backup: "...",
               },
               encryptedKeyMetaData: "...",
+              ed25519KeyPair: walletData.ed25519KeyPair
+                ? {
+                    publicKey: walletData.ed25519KeyPair.publicKey,
+                    encryptedPrivateKey: "...",
+                  }
+                : undefined,
             }}
           />
 
@@ -139,7 +143,9 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
                   ).toBytes(),
                 ),
               ],
+              decryptEasyShare: null,
               decryptMessages: [],
+              decryptPrimaryKeyEncryptedMessages: [],
               decryptMultisigKeyEncryptedMessages: [],
             }}
             onApprove={(results) => {

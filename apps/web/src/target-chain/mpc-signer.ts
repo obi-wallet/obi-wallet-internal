@@ -1,9 +1,11 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { EasyShareDecryption } from "@/lib/encryption";
 import { rootStore } from "@/stores";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import {
+  handleEncryptedEasyShare,
+  IntentionsResults,
+} from "@/user-interactions/approve-intentions/utils";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
-import { MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
+import { EasyShare, MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -19,17 +21,25 @@ export class MpcSigner {
     HexEncodedString,
     HexEncodedString[]
   >();
+  protected easyShare: EasyShare | undefined;
   protected lastHash: Uint8Array | undefined;
 
   public constructor(protected wallet: MpcWallet) {}
 
-  public addIntentionsResults({
+  public async addIntentionsResults({
     payload,
     results,
   }: {
     payload: IntentionsPayload;
     results: IntentionsResults;
   }) {
+    if (payload.decryptEasyShare) {
+      this.easyShare = await handleEncryptedEasyShare({
+        multisigKey: this.wallet.owner,
+        encryptedEasyShare: payload.decryptEasyShare,
+        results,
+      });
+    }
     payload.signHashes.forEach((hash, index) => {
       this.bytesSignedBySignersPerHash.set(
         Encoding.fromBytes(hash).toHex(),
@@ -49,11 +59,11 @@ export class MpcSigner {
 
   public async signHash(hash: Uint8Array) {
     this.lastHash = hash;
-    if (this.wallet.encryptedEasyShare) {
+    if (this.easyShare) {
       return await this.signHashWithEasyShare(hash);
     }
 
-    throw new Error("No encrypted easy share found");
+    throw new Error("No easy share found");
   }
 
   public async calculateHashToSign(f: () => Promise<void>) {
@@ -74,6 +84,7 @@ export class MpcSigner {
 
   protected async signHashWithEasyShare(hash: Uint8Array) {
     invariant(rootStore.current, "Root store is not initialized");
+    invariant(this.easyShare, "No easy share found");
 
     const bytes = Encoding.fromBytes(hash).toHex();
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
@@ -87,12 +98,8 @@ export class MpcSigner {
     const primaryKey = this.wallet.owner.primaryKey;
     invariant(primaryKey, "No primary key found");
 
-    const easyShare = await new EasyShareDecryption(this.wallet.owner).decrypt(
-      this.wallet.encryptedEasyShare,
-    );
-
     const signers = mpcPackage.createSigners([
-      easyShare.preSignForNetworkShare,
+      this.easyShare.preSignForNetworkShare,
     ]);
 
     const partialSignatures = signers.map((signer) => {
@@ -108,7 +115,9 @@ export class MpcSigner {
         });
         const response =
           await secretNetworkClient.query.compute.codeHashByCodeId({
-            code_id: info.contract_info?.code_id,
+            ...(info.contract_info?.code_id
+              ? { code_id: info.contract_info.code_id }
+              : {}),
           });
         return response.code_hash;
       },

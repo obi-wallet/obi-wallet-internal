@@ -1,102 +1,70 @@
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
-import Dexie, { Table } from "dexie";
+import { createInstance } from "localforage";
 import * as R from "ramda";
 
-import { KVStore as LegacyKvStore } from "./async-storage";
 import { AbstractKVStore } from "../abstract";
 
-interface LegacyEntry {
-  key: string;
-  value: string;
-}
-
-interface EncryptedEntry {
-  key: string;
-  encrypted: Uint8Array;
-}
-
-type Entry = LegacyEntry | EncryptedEntry;
-
-class KVDexie extends Dexie {
-  public entries!: Table<Entry>;
-
-  public constructor(prefix: string) {
-    super(`kv-store/${prefix}`);
-    this.version(1).stores({
-      entries: "key",
-    });
-  }
-}
-
 export class KVStore implements AbstractKVStore {
-  protected readonly db: KVDexie;
-  protected legacy: LegacyKvStore;
+  protected readonly legacyDb: LocalForage;
+  protected readonly db: LocalForage;
 
   public constructor(protected readonly _prefix: string) {
-    this.db = new KVDexie(_prefix);
-    this.legacy = new LegacyKvStore(_prefix);
+    this.legacyDb = createInstance({
+      name: `kv-store/${_prefix}`,
+      storeName: "entries",
+    });
+    this.db = createInstance({
+      name: "ObiWallet",
+      storeName: _prefix,
+    });
   }
 
   public async get<T = unknown>(key: string): Promise<T | undefined> {
-    const entry = await this.db.entries.get(key);
+    const entry = await this.db.getItem<Uint8Array>(key);
 
-    if (!entry) {
-      try {
-        const legacyData = await this.legacy.get<T>(key);
-        if (legacyData) {
-          await this.set(key, legacyData);
-          await this.legacy.set(key, null);
-          return legacyData;
+    if (entry) {
+      return await this.decryptValue<T>(entry);
+    }
+
+    const legacyEntry = await this.legacyDb.getItem<
+      | {
+          key: string;
+          value: string;
         }
-      } catch {
-        // Ignore errors
-      }
+      | {
+          key: string;
+          encrypted: Uint8Array;
+        }
+    >(key);
+
+    if (!legacyEntry) {
       return undefined;
     }
 
-    if (R.has("encrypted", entry)) {
-      try {
-        const decrypted = await decrypt(entry.encrypted);
-        return deserialize(decrypted);
-      } catch (e) {
-        console.error(e);
-        return undefined;
-      }
+    if (R.has("encrypted", legacyEntry)) {
+      return await this.decryptValue<T>(legacyEntry.encrypted);
+    } else {
+      return deserialize(legacyEntry?.value);
     }
+  }
 
-    return deserialize(entry.value);
+  protected async decryptValue<T>(value: Uint8Array): Promise<T> {
+    return deserialize(await decrypt(value));
   }
 
   public async set<T = unknown>(key: string, data: T | null) {
     // Passing `null` or `undefined` means we want to delete the existing data item.
     if (data === null || data === undefined) {
-      await this.db.entries.delete(key);
+      await this.db.removeItem(key);
       return;
     } else {
       const encrypted = await encrypt(serialize(data));
-      await this.db.entries.put({
-        key,
-        encrypted,
-      });
+      await this.db.setItem(key, encrypted);
     }
   }
 
   public prefix() {
     return this._prefix;
-  }
-}
-
-class EncryptionKeyDexie extends Dexie {
-  public entries!: Table<{
-    key: "key";
-    value: CryptoKey;
-  }>;
-
-  public constructor() {
-    super(`kv-store/encryption-key`);
-    this.version(1).stores({
-      entries: "key",
-    });
   }
 }
 
@@ -111,9 +79,24 @@ class EncryptionKey {
   }
 
   protected static async getOrCreateEncryptionKey() {
-    const db = new EncryptionKeyDexie();
-    const entry = await db.entries.get("key");
-    if (entry) return entry.value;
+    const db = createInstance({
+      name: "ObiWallet",
+      storeName: "encryption-key",
+    });
+
+    const entry = await db.getItem<CryptoKey>("key");
+    if (entry) return entry;
+
+    const legacyDb = createInstance({
+      name: `kv-store/encryption-key`,
+      storeName: "entries",
+    });
+
+    const legacyEntry = await legacyDb.getItem<{ value: CryptoKey }>("key");
+    if (legacyEntry) {
+      await db.setItem("key", legacyEntry.value);
+      return legacyEntry.value;
+    }
 
     const key = await window.crypto.subtle.generateKey(
       {
@@ -123,10 +106,7 @@ class EncryptionKey {
       false,
       ["encrypt", "decrypt"],
     );
-    await db.entries.put({
-      key: "key",
-      value: key,
-    });
+    await db.setItem("key", key);
     return key;
   }
 }

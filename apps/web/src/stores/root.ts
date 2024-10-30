@@ -1,8 +1,10 @@
+import { walletsStorage as defaultWalletsStorage } from "@/stores/storage/wallets";
 import { Config } from "@obi-wallet/config";
 import {
   AbstractKVStore,
   KVStore as DefaultKVStore,
   RootStore as SdkRootStore,
+  WalletsStorage,
 } from "@obi-wallet/headless-ui-store";
 
 import { AlertStore } from "./alert";
@@ -48,16 +50,20 @@ export class RootStore {
   constructor({
     initialConfig,
     KVStore = DefaultKVStore,
+    walletsStorage = defaultWalletsStorage,
   }: {
     deviceLanguage: string;
     initialConfig: Config;
     KVStore?: new (prefix: string) => AbstractKVStore;
+    walletsStorage?: WalletsStorage;
   }) {
     this.alertStore = new AlertStore();
     this.configStore = new ConfigStore({ initialConfig });
     this.draftsStore = new DraftsStore();
     this.keyMetaDataStore = new KeyMetaDataStore(new KVStore("key-meta-data"));
-    this.sdkRootStore = new SdkRootStore(KVStore);
+    this.sdkRootStore = new SdkRootStore({
+      walletsStorage,
+    });
     this.targetChainsStore = new TargetChainsStore(
       new KVStore("target-chains-store"),
     );

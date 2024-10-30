@@ -12,7 +12,7 @@ import {
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface DropdownItem {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export interface CustomDropdownProps<T extends DropdownItem> {
@@ -111,7 +111,10 @@ export function CustomDropdown<T extends DropdownItem>({
   );
 }
 
-function useOutsideClick(ref: RefObject<HTMLElement>, callback: () => void) {
+function useOutsideClick(
+  ref: RefObject<HTMLElement | null>,
+  callback: () => void,
+) {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

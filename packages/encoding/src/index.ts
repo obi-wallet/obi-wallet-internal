@@ -1,3 +1,4 @@
+import bs58 from "bs58";
 import { z } from "zod";
 
 export interface AbstractEncoding<T> {
@@ -26,10 +27,10 @@ function createBufferSchema<T extends BufferEncoding>({
     })
     .brand(bufferEncoding);
   const encoding: AbstractEncoding<z.infer<typeof schema>> = {
-    fromBytes(bytes: Uint8Array) {
+    fromBytes(bytes) {
       return schema.parse(Buffer.from(bytes).toString(bufferEncoding));
     },
-    toBytes(value: z.infer<typeof schema>) {
+    toBytes(value) {
       return Uint8Array.from(Buffer.from(value, bufferEncoding));
     },
   };
@@ -41,6 +42,28 @@ function createBufferSchema<T extends BufferEncoding>({
 
 export const Utf8EncodedString = z.string();
 export type Utf8EncodedString = string;
+
+const base58Schema = z
+  .string()
+  .refine((str) => {
+    // Only validate during runtime in development
+    if (process.env.NODE_ENV === "production") {
+      return true;
+    }
+    return str === bs58.encode(bs58.decode(str));
+  })
+  .brand("base58");
+export const Base58EncodedString = base58Schema;
+export type Base58EncodedString = z.infer<typeof Base58EncodedString>;
+
+const base58Encoding: AbstractEncoding<Base58EncodedString> = {
+  fromBytes(bytes) {
+    return base58Schema.parse(bs58.encode(bytes));
+  },
+  toBytes(value) {
+    return bs58.decode(value);
+  },
+};
 
 const base64 = createBufferSchema({
   bufferEncoding: "base64",
@@ -94,6 +117,10 @@ export class Encoding {
     return Buffer.from(this.bytes).toString("utf8");
   }
 
+  public toBase58() {
+    return base58Encoding.fromBytes(this.bytes);
+  }
+
   public toBase64() {
     return base64.encoding.fromBytes(this.bytes);
   }
@@ -112,6 +139,10 @@ export class Encoding {
 
   public static fromUtf8(str: Utf8EncodedString) {
     return new Encoding(Uint8Array.from(Buffer.from(str, "utf8")));
+  }
+
+  public static fromBase58(str: Base58EncodedString) {
+    return new Encoding(base58Encoding.toBytes(str));
   }
 
   public static fromBase64(str: Base64EncodedString) {
