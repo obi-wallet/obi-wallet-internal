@@ -2,8 +2,8 @@
 
 import { Text } from "@/components";
 import { BitButton } from "@/components/buttons/8bit-button";
-import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
+import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { createPasskey, KeyType } from "@obi-wallet/sdk";
 import { generateSecp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
@@ -63,8 +63,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         leading="tight"
         color="zinc"
       >
-        Create the first & primary key to secure your account. You can add more keys later
-        to increase security and recoverability.
+        Create the first & primary key to secure your account. You can add more
+        keys later to increase security and recoverability.
       </Text>
       <Image
         width="262"

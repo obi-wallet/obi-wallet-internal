@@ -25,6 +25,7 @@ export const LandingPageButton = forwardRef<
   return (
     <div className="flex justify-center">
       {href ? (
+        // @ts-expect-error This is only an `exactOptionalPropertyTypes` error in third-party types
         <Link href={href} className={style} {...rest}>
           {children}
         </Link>
