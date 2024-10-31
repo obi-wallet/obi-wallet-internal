@@ -12,7 +12,6 @@ const meta = {
     layout: "centered",
   },
   decorators: [dashboardLayoutDecorator],
-  tags: ["autodocs"],
 } satisfies Meta<typeof Button>;
 
 export default meta;

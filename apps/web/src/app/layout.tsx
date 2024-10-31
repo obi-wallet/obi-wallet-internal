@@ -5,8 +5,8 @@ import { ReactNode, Suspense } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Obi - Anything In Two Clicks",
-  description: "Anything In Two Clicks",
+  title: "Obi - Simple and Secure Accounts",
+  description: "Simple and Secure Accounts",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`h-full ${pressStart2P.variable}`}>
       <body
-        className="flex h-full flex-col bg-gradient-to-br from-black to-slate-900"
+        className="bg-background-main flex h-full flex-col"
         style={{ overflowX: "auto", overflowY: "auto" }}
       >
         <Suspense>

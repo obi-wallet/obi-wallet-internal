@@ -11,7 +11,6 @@ import { ApproveMessagesSignDoc } from "./approve-messages-sign-doc";
 const meta = {
   title: "User Interactions/Approve Messages Sign Doc",
   component: ApproveMessagesSignDoc,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessagesSignDoc>;
 

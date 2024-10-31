@@ -10,7 +10,6 @@ const meta = {
     layout: "centered",
   },
   decorators: [dashboardLayoutDecorator],
-  tags: ["autodocs"],
   argTypes: {
     label: { type: "string" },
     labelClassname: {

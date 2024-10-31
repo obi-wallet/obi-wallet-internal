@@ -10,7 +10,6 @@ import { flatten, keys, times } from "ramda";
 const flows: Record<string, OnboardingStep[]> = {
   internal: [
     { type: OnboardingStepType.UserData },
-    { type: OnboardingStepType.Explanation },
     { type: OnboardingStepType.PrimaryKey, from: OnboardingFromType.Internal },
     {
       type: OnboardingStepType.CreateWallet,

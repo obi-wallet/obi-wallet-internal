@@ -10,27 +10,61 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export const Header = observer(function Header() {
+export const DashboardHeader = observer(function DashboardHeader() {
   const { mpcWalletsStore } = useStore();
 
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
 
   return (
-    <>
-      <header className={cn("h-16 w-full", "md:h-20")}>
-        <div
-          className={cn(
-            "flex h-full w-full items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
-          )}
-        >
-          <PrimaryLink href={primaryLinkHref}>
-            <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
-          </PrimaryLink>
-          {authChildren}
-        </div>
-      </header>
-    </>
+    <header className={cn("h-16 w-full", "md:h-20")}>
+      <div
+        className={cn(
+          "flex h-full w-full items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
+        )}
+      >
+        <PrimaryLink href={primaryLinkHref}>
+          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
+        </PrimaryLink>
+        {authChildren}
+      </div>
+    </header>
+  );
+});
+
+export const Header = observer(function Header() {
+  const { mpcWalletsStore } = useStore();
+
+  const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
+  const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  return (
+    <header className="flex items-center justify-between px-6 py-3">
+      <PrimaryLink href={primaryLinkHref}>
+        <Image
+          alt="landing-logo"
+          width="68"
+          height="50"
+          src="/assets/icons/landing-logo.svg"
+        />
+      </PrimaryLink>
+      <button className="text-2xl text-white lg:hidden" onClick={toggleMenu}>
+        &#9776;
+      </button>
+      <nav
+        className={`${
+          menuOpen ? "flex" : "hidden"
+        } lg:bg-background-main absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:p-0`}
+      >
+        {authChildren}
+      </nav>
+    </header>
   );
 });
 
