@@ -101,13 +101,13 @@ export const Account = observer(function Account() {
         <div className="mb-4 mt-0.5 flex gap-1 text-white">
           <Button
             href="/dashboard/transaction/send"
-            className="flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-blue-500 to-indigo-500 p-2 text-center hover:from-blue-700 hover:to-blue-900"
+            className="flex-1 justify-center rounded-bl rounded-br-none rounded-tl-none rounded-tr-none border-0"
           >
             Send
           </Button>
           <Button
             href="/dashboard/transaction/receive"
-            className="flex-1 justify-center rounded-bl rounded-br rounded-tl-none rounded-tr-none border-0 bg-gradient-to-r from-indigo-500 to-blue-700 p-2 hover:from-blue-900 hover:to-blue-900"
+            className="flex-1 justify-center rounded-bl-none rounded-br rounded-tl-none rounded-tr-none border-0"
           >
             Receive
           </Button>

@@ -187,6 +187,12 @@ export default observer(function Introduction() {
                 src="/assets/icons/landing-asset-22.svg"
               />
               <Image
+                alt="landing-wagmi"
+                width="80"
+                height="80"
+                src="/assets/icons/landing-wagmi.svg"
+              />
+              <Image
                 alt="landing-shade"
                 width="140"
                 height="36"

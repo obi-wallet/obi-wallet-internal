@@ -2,7 +2,6 @@
 
 import { Button, Modal, TextButton, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
-import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
@@ -20,11 +19,16 @@ export const DashboardHeader = observer(function DashboardHeader() {
     <header className={cn("h-16 w-full", "md:h-20")}>
       <div
         className={cn(
-          "flex h-full w-full items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
+          "flex h-full w-full items-center justify-between bg-background-primary px-3 shadow md:px-8",
         )}
       >
         <PrimaryLink href={primaryLinkHref}>
-          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
+          <Image
+            alt="landing-logo"
+            width="68"
+            height="50"
+            src="/assets/icons/landing-logo.svg"
+          />
         </PrimaryLink>
         {authChildren}
       </div>
@@ -60,7 +64,7 @@ export const Header = observer(function Header() {
       <nav
         className={`${
           menuOpen ? "flex" : "hidden"
-        } lg:bg-background-main absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:p-0`}
+        } lg:bg-[#05070C] absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:p-0`}
       >
         {authChildren}
       </nav>
