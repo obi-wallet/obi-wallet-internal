@@ -12,7 +12,6 @@ import { ApproveEvmTransaction } from "./approve-evm-transaction";
 const meta = {
   title: "User Interactions/Approve EVM Transaction",
   component: ApproveEvmTransaction,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveEvmTransaction>;
 

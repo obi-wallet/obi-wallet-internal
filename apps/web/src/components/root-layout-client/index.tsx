@@ -1,7 +1,6 @@
 "use client";
 import { Alert } from "@/alert";
-import { Header } from "@/components";
-import { MainContainer, RootContainer } from "@/layouts/root";
+import { RootContainer } from "@/layouts/root";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { ReactNode, useRef } from "react";
@@ -38,8 +37,7 @@ export function RootLayoutClient({
   return (
     <RootContainer>
       <Provider>
-        <Header />
-        <MainContainer>{children}</MainContainer>
+        {children}
         <div id="modal-root" />
         <Alert />
       </Provider>

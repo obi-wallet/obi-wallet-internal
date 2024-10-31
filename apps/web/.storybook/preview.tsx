@@ -1,5 +1,5 @@
 import Provider from "@/components/provider";
-import { MainContainer, RootContainer } from "@/layouts/root";
+import { RootContainer } from "@/layouts/root";
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 
@@ -24,11 +24,9 @@ const preview: Preview = {
   decorators: [
     (Story) => {
       return (
-        <RootContainer className="bg-gradient-to-br from-black to-slate-900">
+        <RootContainer className="bg-background-main flex h-full flex-col">
           <Provider>
-            <MainContainer>
-              <Story />
-            </MainContainer>
+            <Story />
             <div id="modal-root" />
           </Provider>
         </RootContainer>

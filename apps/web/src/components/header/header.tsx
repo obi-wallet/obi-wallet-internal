@@ -2,11 +2,35 @@
 
 import { Button, Modal, TextButton, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
+import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
+import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+export const DashboardHeader = observer(function DashboardHeader() {
+  const { mpcWalletsStore } = useStore();
+
+  const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
+  const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
+
+  return (
+    <header className={cn("h-16 w-full", "md:h-20")}>
+      <div
+        className={cn(
+          "flex h-full w-full items-center justify-between bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-800 px-3 shadow md:px-8",
+        )}
+      >
+        <PrimaryLink href={primaryLinkHref}>
+          <Image src={CURRENT_THEME.logo} width={44} height={44} alt="logo" />
+        </PrimaryLink>
+        {authChildren}
+      </div>
+    </header>
+  );
+});
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();

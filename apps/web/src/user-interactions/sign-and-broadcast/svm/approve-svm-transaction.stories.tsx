@@ -10,7 +10,6 @@ import { ApproveSvmTransaction } from "./approve-svm-transaction";
 const meta = {
   title: "User Interactions/Approve SVM Transaction",
   component: ApproveSvmTransaction,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveSvmTransaction>;
 

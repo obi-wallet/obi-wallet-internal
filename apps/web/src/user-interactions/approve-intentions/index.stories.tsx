@@ -9,7 +9,6 @@ import { ApproveIntentions } from ".";
 const meta = {
   title: "User Interactions/Approve Intentions",
   component: ApproveIntentions,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveIntentions>;
 
