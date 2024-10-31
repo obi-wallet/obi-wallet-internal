@@ -14,7 +14,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html className={`h-full ${pressStart2P.variable}`}>
-      <body className="bg-background-main flex h-full flex-col">
+      <body
+        className="bg-background-main flex h-full flex-col"
+        style={{ overflowX: "auto", overflowY: "auto" }}
+      >
         <Suspense>
           <RootLayoutClient isMaintenance={isMaintenance}>
             {children}
