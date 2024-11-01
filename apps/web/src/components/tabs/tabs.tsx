@@ -19,8 +19,8 @@ function TabUiLink({
   return (
     <UnstyledLink
       className={`${
-        active ? "rounded-xl bg-background-primary" : ""
-      } flex py-2 px-8 text-center text-base font-normal text-white min-w-max`}
+        active ? "bg-background-primary rounded-xl" : ""
+      } flex min-w-max px-8 py-2 text-center text-base font-normal text-white`}
       href={href}
     >
       {children}

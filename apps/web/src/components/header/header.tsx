@@ -20,7 +20,7 @@ export const DashboardHeader = observer(function DashboardHeader() {
     <header className={cn("h-16 w-full", "md:h-20")}>
       <div
         className={cn(
-          "flex h-full w-full items-center justify-between bg-background-primary px-3 shadow md:px-8",
+          "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
         )}
       >
         <PrimaryLink href={primaryLinkHref}>
@@ -60,7 +60,7 @@ export const Header = observer(function Header() {
       <nav
         className={`${
           menuOpen ? "flex" : "hidden"
-        } lg:bg-[#05070C] absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:p-0`}
+        } absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:bg-[#05070C] lg:p-0`}
       >
         {authChildren}
       </nav>

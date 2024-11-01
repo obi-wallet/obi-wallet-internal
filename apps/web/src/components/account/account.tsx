@@ -31,7 +31,7 @@ export const Account = observer(function Account() {
     <>
       <div className="bg-panel-gradient relative flex w-full flex-col rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
         <div className="relative flex justify-between px-4 py-1.5">
-          <div className="flex flex-row gap-3 w-3/4">
+          <div className="flex w-3/4 flex-row gap-3">
             <div className="flex h-full max-h-[43px] w-full max-w-[43px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
               {userData.avatar ? (
                 <Image
