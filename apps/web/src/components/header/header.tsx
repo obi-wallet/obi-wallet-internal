@@ -2,6 +2,7 @@
 
 import { Button, Modal, TextButton, renderModal } from "@/components";
 import { PrimaryLink } from "@/components/links";
+import { CURRENT_THEME } from "@/configs";
 import { useStore } from "@/contexts";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
@@ -23,12 +24,7 @@ export const DashboardHeader = observer(function DashboardHeader() {
         )}
       >
         <PrimaryLink href={primaryLinkHref}>
-          <Image
-            alt="landing-logo"
-            width="68"
-            height="50"
-            src="/assets/icons/landing-logo.svg"
-          />
+          <Image src={CURRENT_THEME.logo} width={68} height={50} alt="logo" />
         </PrimaryLink>
         {authChildren}
       </div>

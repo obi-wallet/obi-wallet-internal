@@ -3,7 +3,7 @@ export type THEMES = "obi" | "noble";
 export const THEME_CONFIGS = {
   obi: {
     value: "obi",
-    logo: "/assets/images/logo-obi.png",
+    logo: "/assets/icons/landing-logo.svg",
     explaination: {
       title: "What is an Obi Account?",
       description:

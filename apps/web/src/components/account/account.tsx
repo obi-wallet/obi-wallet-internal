@@ -29,17 +29,14 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="bg-panel-gradient relative flex w-full flex-col gap-4 rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
-        <div className="relative px-4 pb-3.5 pt-1.5">
-          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
-            <img src="/points.svg" alt="points" className="h-5" />
-          </div>
-          <div className="flex flex-row gap-3">
-            <div className="flex h-full max-h-[70px] w-full max-w-[70px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
+      <div className="bg-panel-gradient relative flex w-full flex-col rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
+        <div className="relative flex justify-between px-4 py-1.5">
+          <div className="flex flex-row gap-3 w-3/4">
+            <div className="flex h-full max-h-[43px] w-full max-w-[43px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
               {userData.avatar ? (
                 <Image
-                  width={70}
-                  height={70}
+                  width={43}
+                  height={43}
                   className="h-revertLayer rounded-full object-cover max-sm:h-[37px]"
                   src={userData.avatar}
                   alt={name}
@@ -48,29 +45,29 @@ export const Account = observer(function Account() {
                 <FaCircleUser className="h-full w-full text-white" />
               )}
             </div>
-            <div className="relative flex w-full flex-col justify-center gap-1">
+            <div className="relative flex w-full flex-col gap-1">
               <Text
-                size="sm"
+                size="xs"
                 color="white"
                 fontWeight="bold"
-                className="sm:text-xl"
+                className="sm:text-xs"
               >
                 {name}
               </Text>
 
               <PrimaryLink
                 href="/dashboard/settings/account"
-                className="text-sm text-indigo-300 sm:text-xl"
+                className="text-xs text-sky-500 sm:text-xs"
               >
                 Edit Profile
               </PrimaryLink>
             </div>
           </div>
+          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
+            <img src="/points.svg" alt="points" className="h-5" />
+          </div>
         </div>
-      </div>
-
-      <div className="">
-        <div className="gap-1 bg-slate-900 px-4 pb-3.5 pt-2.5">
+        <div className="gap-1 px-4 pb-3.5 pt-1.5">
           <div className="flex justify-between">
             <Text fontWeight="normal" className="mb-2 text-sm">
               Balance
@@ -98,20 +95,20 @@ export const Account = observer(function Account() {
             </Text>
           </div>
         </div>
-        <div className="mb-4 mt-0.5 flex gap-1 text-white">
-          <Button
-            href="/dashboard/transaction/send"
-            className="flex-1 justify-center rounded-bl rounded-br-none rounded-tl-none rounded-tr-none border-0"
-          >
-            Send
-          </Button>
-          <Button
-            href="/dashboard/transaction/receive"
-            className="flex-1 justify-center rounded-bl-none rounded-br rounded-tl-none rounded-tr-none border-0"
-          >
-            Receive
-          </Button>
-        </div>
+      </div>
+      <div className="mb-4 mt-0.5 flex gap-1 text-white">
+        <Button
+          href="/dashboard/transaction/send"
+          className="flex-1 justify-center rounded-bl rounded-br-none rounded-tl-none rounded-tr-none border-0"
+        >
+          Send
+        </Button>
+        <Button
+          href="/dashboard/transaction/receive"
+          className="flex-1 justify-center rounded-bl-none rounded-br rounded-tl-none rounded-tr-none border-0"
+        >
+          Receive
+        </Button>
       </div>
     </>
   );

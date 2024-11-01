@@ -4,7 +4,7 @@ import { UnstyledLink } from "@/components";
 import { ReactNode } from "react";
 
 function TabUiLinks({ children }: { children: ReactNode }) {
-  return <div className="flex border-gray-300">{children}</div>;
+  return <div className="flex gap-4 border-gray-300">{children}</div>;
 }
 
 function TabUiLink({
@@ -20,7 +20,7 @@ function TabUiLink({
     <UnstyledLink
       className={`${
         active ? "rounded-xl bg-background-primary" : ""
-      } flex-1 py-2 text-center text-base font-normal text-white`}
+      } flex py-2 px-8 text-center text-base font-normal text-white min-w-max`}
       href={href}
     >
       {children}
