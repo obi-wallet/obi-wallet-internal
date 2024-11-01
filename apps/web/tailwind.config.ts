@@ -10,9 +10,9 @@ const config: Config = {
       colors: {
         "background-main": "#05070C",
         "background-primary": "#3C87CA",
-        "background-primary-hover": "#0ea5e9",
-        "background-primary-active": "var(--background-primary-active)",
-        "background-primary-disabled": "var(--background-primary-disabled)",
+        "background-primary-hover": "#0284c7",
+        "background-primary-active": "#0ea5e9",
+        "background-primary-disabled": "#3C87CA",
         "background-secondary": "#070A12",
         "background-select": "var(--background-select)",
         "background-select-hover": "var(--background-select-hover)",
