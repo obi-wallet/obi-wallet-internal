@@ -11,7 +11,7 @@ const config: Config = {
         "background-main": "#05070C",
         "background-primary": "#3C87CA",
         "background-primary-hover": "#0284c7",
-        "background-primary-active": "#0ea5e9",
+        "background-primary-active": "#0EA5E9",
         "background-primary-disabled": "#3C87CA",
         "background-secondary": "#070A12",
         "background-select": "var(--background-select)",

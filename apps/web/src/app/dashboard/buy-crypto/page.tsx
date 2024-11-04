@@ -71,6 +71,10 @@ async function computeKadoUrl({
   url.searchParams.append("onToAddressMulti", onToAddressMulti);
   url.searchParams.append("network", "SEI");
   url.searchParams.append("onRevCurrency", "SEI");
+  url.searchParams.append("primaryColor", "3C87CA");
+  url.searchParams.append("secondaryColor", "070A12");
+  url.searchParams.append("successColor", "10B981");
+  url.searchParams.append("warningColor", "FFA70B");
 
   return url.toString();
 }
