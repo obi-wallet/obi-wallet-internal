@@ -2,11 +2,15 @@ import { action, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
 
 import { Key, PendingRecoveryKey, UsableKey } from "./implementation";
-import { KeySchema, PendingRecoveryKeySchema, UsableKeySchema } from "./schema";
+import {
+  LegacyKeySchema,
+  PendingRecoveryKeySchema,
+  UsableKeySchema,
+} from "./schema";
 import { AbstractMigratable } from "../migratable";
 
-export function createKey(
-  serialized: AbstractMigratable<typeof KeySchema>,
+export function createLegacyKey(
+  serialized: AbstractMigratable<typeof LegacyKeySchema>,
   serialize = R.identity,
 ) {
   const result =
@@ -18,10 +22,10 @@ export function createKey(
   );
 }
 
-export function createObservableKey(
-  serialized: AbstractMigratable<typeof KeySchema>,
+export function createLegacyObservableKey(
+  serialized: AbstractMigratable<typeof LegacyKeySchema>,
 ) {
-  const key = createKey(serialized, toJS);
+  const key = createLegacyKey(serialized, toJS);
   makeObservable<Key, "serialized">(
     key,
     {

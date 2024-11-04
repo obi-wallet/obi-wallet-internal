@@ -1,17 +1,40 @@
 import { queryClient } from "@obi-wallet/query-client";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { deserialize, serialize } from "@obi-wallet/sdk-json";
 import { QueryClientProviderProps as OriginalQueryClientProviderProps } from "@tanstack/react-query";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import {
+  PersistedClient,
+  Persister,
+  PersistQueryClientProvider,
+} from "@tanstack/react-query-persist-client";
+import { createInstance } from "localforage";
 import { observer } from "mobx-react-lite";
 import { ComponentType, ReactNode } from "react";
 
-const persister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+const tanstackPersistDb = createInstance({
+  name: "ObiWallet",
+  storeName: "tanstack-query-offline-cache",
 });
+const persister: Persister = {
+  persistClient: async (client: PersistedClient) => {
+    await tanstackPersistDb.setItem("persisted-client", serialize(client));
+  },
+  restoreClient: async () => {
+    const persistedClient =
+      await tanstackPersistDb.getItem<string>("persisted-client");
+
+    if (!persistedClient) {
+      return undefined;
+    }
+
+    return deserialize(persistedClient);
+  },
+  removeClient: async () => {
+    await tanstackPersistDb.removeItem("persisted-client");
+  },
+};
 
 export type QueryClientProviderProps = OriginalQueryClientProviderProps & {
-  buster?: string;
+  buster?: string | undefined;
 };
 
 const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
@@ -19,7 +42,7 @@ const QueryClientProviderWithPersister = observer<QueryClientProviderProps>(
     return (
       <PersistQueryClientProvider
         client={client}
-        persistOptions={{ persister, buster }}
+        persistOptions={{ persister, ...(buster ? { buster } : {}) }}
       >
         {children}
       </PersistQueryClientProvider>
@@ -33,8 +56,8 @@ export const Provider = observer(function Provider({
   buster,
 }: {
   children: ReactNode;
-  QueryClientProvider?: ComponentType<QueryClientProviderProps>;
-  buster?: string;
+  QueryClientProvider?: ComponentType<QueryClientProviderProps> | undefined;
+  buster?: string | undefined;
 }) {
   return (
     <QueryClientProvider client={queryClient} buster={buster}>

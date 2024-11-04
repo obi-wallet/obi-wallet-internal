@@ -38,16 +38,6 @@ const navMenu: NavMenu[] = [
     mobileOrder: 3,
   },
   {
-    href: "/dashboard/fast-travel",
-    text: "Fast Travel",
-    mobileText: "FT",
-    module: "fast-travel",
-    icon: "/assets/icons/nav-fast-travel.svg",
-    showOnDesktop: true,
-    showOnMobile: true,
-    mobileOrder: 1,
-  },
-  {
     href: "/dashboard/buy-crypto",
     mobileText: "Buy",
     text: "Buy Crypto",
@@ -92,8 +82,8 @@ export function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-gradient-to-b from-gray-950 via-gray-900 to-sky-950">
-      <div className="flex h-full w-[330px] flex-col px-3 pt-6 max-md:hidden md:overflow-y-auto">
+    <nav className="bg-[#070A12]">
+      <div className="flex h-full w-[330px] flex-col px-3 pt-3 max-md:hidden md:overflow-y-auto">
         <div className="hidden w-full flex-col md:flex">
           <Account />
         </div>

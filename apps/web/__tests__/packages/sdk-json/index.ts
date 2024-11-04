@@ -1,4 +1,5 @@
 import * as JSON from "@obi-wallet/sdk-json";
+import { expect, test } from "vitest";
 
 test("should serialize and deserialize BigInt", () => {
   const value = {

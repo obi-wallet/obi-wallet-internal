@@ -69,6 +69,9 @@ export class AssetRegistry {
       }) => {
         const url = `https://asset-registry.obiwallet.workers.dev/denom/${encodeURIComponent(chainId)}/${encodeURIComponent(denom)}`;
         const response = await fetch(url);
+        if (response.status === 404) {
+          return null;
+        }
         return TokenInfoResponse.parse(await response.json());
       },
       staleTime: {
@@ -87,6 +90,9 @@ export class AssetRegistry {
       fn: async (id: Caip19AssetId) => {
         const url = `https://asset-registry.obiwallet.workers.dev/id/${encodeURIComponent(id)}`;
         const response = await fetch(url);
+        if (response.status === 404) {
+          return null;
+        }
         return TokenInfoResponse.parse(await response.json());
       },
       staleTime: {

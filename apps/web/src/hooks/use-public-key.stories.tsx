@@ -1,4 +1,4 @@
-import { usePublicKeyQuery } from "@/hooks/use-public-key";
+import { useSecp256k1PublicKeyQuery } from "@/hooks/use-public-key";
 import {
   AutomatedTest,
   automatedTestPlay,
@@ -18,7 +18,7 @@ export const UsePublicKeyQuery: Story = {
   name: "usePublicKeyQuery",
   decorators: [providerWithWalletDecorator],
   render: function UsePublicKeyQueryTest() {
-    const publicKey = usePublicKeyQuery();
+    const publicKey = useSecp256k1PublicKeyQuery();
     return (
       <AutomatedTest
         done={!publicKey.isLoading}

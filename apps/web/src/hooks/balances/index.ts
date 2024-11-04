@@ -1,18 +1,23 @@
 import { useStore } from "@/contexts";
 import { SimulationEntry } from "@/dashboard/schema";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { TokenConfig, TokensConfig } from "@/stores/tokens";
 import { TargetChain, TargetChainId } from "@/target-chain";
+import { Base64EncodedString, Encoding } from "@obi-wallet/encoding";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { AssetInfo, Caip19Asset } from "@obi-wallet/sdk-abstract-target-chain";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
-import { useQueries, useQueryClient } from "@tanstack/react-query";
+import {
+  getSecp256k1CompressedPublicKey,
+  Secp256k1PublicKey,
+} from "@obi-wallet/sdk-secp256k1";
+import { skipToken, useQueries, useQueryClient } from "@tanstack/react-query";
 import BigNumber from "bignumber.js";
 import { flatten, toPairs } from "ramda";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { usePublicKey } from "../use-public-key";
+import { useCurrentWallet } from "../use-current-wallet";
+import { usePublicKeys } from "../use-public-keys";
 
 export interface PrettyCaip19Asset extends Caip19Asset {
   price: string;
@@ -47,7 +52,7 @@ async function fetchBalances({
     rawAmount,
   }: {
     id: Caip19AssetId;
-    tokenConfig?: TokenConfig;
+    tokenConfig?: TokenConfig | undefined;
     rawAmount: string;
   }) => {
     if (!tokenConfig?.enabled) return [];
@@ -123,14 +128,14 @@ export function useInvalidateBalancesQueries() {
 export function useBalances() {
   const wallet = useCurrentWallet({});
   const { targetChainsStore, tokensStore } = useStore();
-  const publicKey = usePublicKey();
+  const publicKeys = usePublicKeys();
 
   return useQueries({
     queries: getQueries(),
   });
 
   function getQueries() {
-    if (!wallet || !publicKey) return [];
+    if (!wallet || !publicKeys) return [];
 
     const targetChains = targetChainsStore.getTargetChains(
       wallet.userEntryAddress,
@@ -139,14 +144,14 @@ export function useBalances() {
 
     return targetChains.map((chain) => {
       return {
-        queryKey: ["balances", chain.id, publicKey],
+        queryKey: ["balances", chain.id, publicKeys],
         queryFn: async (): Promise<PrettyCaip19Asset[]> => {
-          invariant(publicKey, "Expected publicKey to be set.");
+          invariant(publicKeys, "Expected publicKeys to be set.");
           if (!chain.enabled) {
             return [];
           }
           return await fetchBalances({
-            address: await chain.targetChain.obiAccountAddress(publicKey),
+            address: await chain.targetChain.obiAccountAddress(publicKeys),
             targetChainId: chain.id,
             tokensConfig,
           });
@@ -195,13 +200,11 @@ export function useUsdTotalValue(): {
 }
 
 const fetchPendingTX = async (
-  pubKey: string,
+  pubKey: Base64EncodedString,
 ): Promise<z.infer<typeof SimulationEntry>> => {
-  if (!pubKey) return [];
-
   const url = `${
     process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL
-  }/api/status/check.rs?test=false&pubkey=${encodeURIComponent(pubKey)}`;
+  }/api/checkStatus?test=false&pubkey=${encodeURIComponent(pubKey)}`;
 
   const res = await fetch(url);
   const data = await res.json();
@@ -209,11 +212,17 @@ const fetchPendingTX = async (
   return SimulationEntry.parse(data);
 };
 
-export const usePendingTXs = (pubKey: string) => {
+export const usePendingTXs = (pubKey: Secp256k1PublicKey | undefined) => {
   return useQuery({
     queryKey: ["pending-txs", pubKey],
-    queryFn: async () => {
-      return await fetchPendingTX(pubKey);
-    },
+    queryFn: pubKey
+      ? async () => {
+          return await fetchPendingTX(
+            Encoding.fromBytes(
+              getSecp256k1CompressedPublicKey(pubKey),
+            ).toBase64(),
+          );
+        }
+      : skipToken,
   });
 };

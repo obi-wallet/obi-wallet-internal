@@ -11,18 +11,12 @@ import {
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
 import { serialize } from "@obi-wallet/sdk-json";
-import {
-  BroadcastMode,
-  Msg,
-  SecretNetworkClient,
-  TxOptions,
-  TxResponse,
-} from "secretjs";
+import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
-import { SecretJsChainId, SecretJsChains } from "../../chains";
+import { SecretJsHomeChainId, SecretJsHomeChains } from "../../home-chains";
 import { BroadcastTransactionResult } from "../../sdk";
 import {
   AminoSignerWithAddress,
@@ -32,10 +26,10 @@ import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 
 export async function withSecretNetworkClient<T>(
-  chainId: SecretJsChainId,
+  chainId: SecretJsHomeChainId,
   f: (client: SecretNetworkClient) => Promise<T>,
 ) {
-  const chain = SecretJsChains[chainId];
+  const chain = SecretJsHomeChains[chainId];
 
   let lastError = null;
   for (const url of chain.urls) {
@@ -58,12 +52,12 @@ export async function withSigningSecretNetworkClient<T>(
     chainId,
     signer,
   }: {
-    chainId: SecretJsChainId;
+    chainId: SecretJsHomeChainId;
     signer: AminoSignerWithAddress;
   },
   f: (client: SecretNetworkClient) => Promise<T>,
 ) {
-  const chain = SecretJsChains[chainId];
+  const chain = SecretJsHomeChains[chainId];
 
   let lastError = null;
   for (const url of chain.urls) {
@@ -84,7 +78,7 @@ export async function withSigningSecretNetworkClient<T>(
 }
 
 export class SecretJsClient {
-  public constructor(protected chainId: SecretJsChainId) {}
+  public constructor(protected chainId: SecretJsHomeChainId) {}
 
   public withSecretNetworkClient<T>(
     f: (client: SecretNetworkClient) => Promise<T>,
@@ -259,7 +253,7 @@ export class SecretJsClient {
   }
 
   protected get chain() {
-    return SecretJsChains[this.chainId];
+    return SecretJsHomeChains[this.chainId];
   }
 
   public get defaultFee(): StdFee {
@@ -274,7 +268,7 @@ export class SecretJsClient {
     };
   }
 
-  public get defaultTxOptions(): TxOptions {
+  public get defaultTxOptions() {
     return {
       gasLimit: 800_000,
       gasPriceInFeeDenom: 0.05,

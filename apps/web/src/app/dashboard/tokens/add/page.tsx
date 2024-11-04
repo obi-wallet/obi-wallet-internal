@@ -69,10 +69,12 @@ export default observer(function TokenAdd() {
               invariant(chainIdToUse, "Chain ID is required");
               const targetChain = TargetChain.chainId(chainIdToUse);
 
-              const { assetId } = await AssetRegistry.getInstance().byDenom({
-                chainId: chainIdToUse,
-                denom: address,
-              });
+              const assetRegistryInfo =
+                await AssetRegistry.getInstance().byDenom({
+                  chainId: chainIdToUse,
+                  denom: address,
+                });
+              const assetId = assetRegistryInfo?.assetId;
 
               const assetInfo =
                 assetId && (await targetChain.assetInfo(assetId));

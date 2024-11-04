@@ -1,26 +1,27 @@
 import { action, makeObservable, observable, toJS } from "mobx";
 import * as R from "ramda";
+import { z } from "zod";
 
 import { MpcWallets } from "./implementation";
 import { MpcWalletsSchema } from "./schema";
-import { AbstractMigratable } from "../migratable";
 import { MpcWallet, ObservableMpcWallet } from "../mpc-wallet";
 
 export function createMpcWallets(
-  migratable: AbstractMigratable<typeof MpcWalletsSchema> = {
+  serialized: z.infer<typeof MpcWalletsSchema> = {
+    v: 1,
     wallets: [],
     currentWalletIndex: null,
   },
   factory = MpcWallet,
   serialize = R.identity,
 ) {
-  const serialized = MpcWalletsSchema.migratableSchema.parse({
-    ...migratable,
-    // Filter out wallets without easy shares
-    wallets: migratable.wallets.filter((wallet) => {
-      return !!wallet.encryptedShares.easy;
-    }),
-  });
+  // TODO: Filter out wallets without easy shares
+  // const serialized = LegacyMpcWalletsSchema.migratableSchema.parse({
+  //   ...migratable,
+  //   wallets: migratable.wallets.filter((wallet) => {
+  //     return !!wallet.encryptedShares.easy;
+  //   }),
+  // });
   return new MpcWallets(
     serialized.wallets.map((wallet) => {
       return factory.create(wallet);
@@ -32,9 +33,9 @@ export function createMpcWallets(
 }
 
 export function createObservableMpcWallets(
-  migratable?: AbstractMigratable<typeof MpcWalletsSchema>,
+  serialized?: z.infer<typeof MpcWalletsSchema>,
 ) {
-  const wallets = createMpcWallets(migratable, ObservableMpcWallet, toJS);
+  const wallets = createMpcWallets(serialized, ObservableMpcWallet, toJS);
   makeObservable<MpcWallets, "_wallets" | "_currentWalletIndex">(
     wallets,
     {

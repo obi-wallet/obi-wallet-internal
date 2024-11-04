@@ -12,7 +12,6 @@ import { SignAndBroadcastTransactionUserInteractionHandlerInner } from "./sign-a
 const meta = {
   title: "User Interactions/SignAndBroadcastTransactionHandlerInner",
   component: SignAndBroadcastTransactionUserInteractionHandlerInner,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof SignAndBroadcastTransactionUserInteractionHandlerInner>;
 

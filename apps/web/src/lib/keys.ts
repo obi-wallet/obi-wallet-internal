@@ -1,6 +1,4 @@
 import { KeyItems } from "@/components";
-import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { KeyType, MultisigKey } from "@obi-wallet/sdk";
 import { DateTime } from "luxon";
@@ -9,40 +7,31 @@ import { prop, sortBy } from "ramda";
 export interface KeyTypeMeta {
   type: KeyType;
   label: string;
-  mandatory: boolean;
+  possiblePrimaryKey: boolean;
 }
 
 export const keyTypeMeta: Record<KeyType, KeyTypeMeta> = {
   [KeyType.Passkey]: {
     type: KeyType.Passkey,
     label: "Passkey",
-    mandatory: true,
+    possiblePrimaryKey: true,
   },
   [KeyType.Phone]: {
     type: KeyType.Phone,
     label: "Phone Key",
-    mandatory: false,
+    possiblePrimaryKey: false,
   },
   [KeyType.Telegram]: {
     type: KeyType.Telegram,
     label: "Telegram Key",
-    mandatory: false,
+    possiblePrimaryKey: false,
+  },
+  [KeyType.Cloud]: {
+    type: KeyType.Cloud,
+    label: "Cloud Key",
+    possiblePrimaryKey: true,
   },
 };
-
-export function useKeyList() {
-  const currentWallet = useCurrentWallet({});
-  const { keyMetaDataStore } = useStore();
-
-  const keyMetaData = currentWallet
-    ? keyMetaDataStore.getKeyMetaData(currentWallet.userEntryAddress)
-    : {};
-
-  return useKeyListForMultisigKey({
-    multisigKey: currentWallet?.owner,
-    keyMetaData,
-  });
-}
 
 export function useKeyListForMultisigKey({
   multisigKey,
@@ -79,6 +68,10 @@ export function useKeyListForMultisigKey({
     {
       ...keyTypeMeta[KeyType.Telegram],
       keys: getKeysOfType(KeyType.Telegram),
+    },
+    {
+      ...keyTypeMeta[KeyType.Cloud],
+      keys: getKeysOfType(KeyType.Cloud),
     },
   ];
 }

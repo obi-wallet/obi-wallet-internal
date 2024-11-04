@@ -8,7 +8,7 @@ import {
   CosmosChains,
 } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { CosmosSignAminoUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-amino";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { filterMap } from "@/util/filter-map";
@@ -55,8 +55,9 @@ import {
   parseCaip19AssetId,
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1CompressedPublicKey,
+  getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -120,13 +121,13 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
     return pubkeyToAddress(
-      getSec256k1CompressedPublicKey(publicKey),
+      getSecp256k1CompressedPublicKey(publicKey),
       this.chainData.prefix,
     );
   }
 
-  protected async obiAccountAddressQueryFn(publicKey: Secp256k1PublicKey) {
-    return this.computeAddress(publicKey);
+  protected async obiAccountAddressQueryFn(publicKeys: ObiAccountPublicKeys) {
+    return this.computeAddress(publicKeys.secp256k1);
   }
 
   public isNativeAsset(assetId: Caip19AssetId) {
@@ -164,7 +165,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   }: {
     address: string;
     assetId: Caip19AssetId;
-  }) {
+  }): Promise<string> {
     const { namespace, reference } = parseCaip19AssetId(assetId);
     switch (namespace) {
       case "cw20": {
@@ -178,6 +179,8 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
         });
       }
     }
+
+    return "0";
   }
 
   protected denomMetadata(denom: string) {
@@ -300,7 +303,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     for (const rpc of rpcs) {
       try {
         return await SigningStargateClient.connectWithSigner(rpc, signer, {
-          gasPrice: this.gasPrice,
+          ...(this.gasPrice ? { gasPrice: this.gasPrice } : {}),
         });
       } catch (e) {
         console.error(e);
@@ -395,7 +398,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -422,7 +425,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     invariant(this.validateMessages(messages), "Invalid messages");
 
     const signer = await this.getSigner(wallet);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -525,7 +528,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -539,7 +542,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     const usableCosmosChains = await filterMap(
       async (chain) => {
-        const address = await chain.obiAccountAddressQueryFn(publicKey);
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
         return {
           chainId: chain.chainId,
           account: `${chain.chainId}:${address}`,
@@ -570,7 +573,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getWalletConnectKeys(): Promise<Key[]> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -584,7 +587,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     return await filterMap(
       async (chain) => {
-        const bech32Address = await chain.obiAccountAddress(publicKey);
+        const bech32Address = await chain.obiAccountAddress(publicKeys);
         const address = fromBech32(bech32Address).data;
         const ethereumHexAddress = toHex(address);
 
@@ -592,7 +595,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           name: chain.label,
           algo: "secp256k1",
           pubKey: Encoding.fromBytes(
-            getSec256k1CompressedPublicKey(publicKey),
+            getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
           ).toBytes(),
           address,
           ethereumHexAddress,
@@ -618,9 +621,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
 
     switch (request.method) {
       case "cosmos_getAccounts": {
-        const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
-          wallet.userEntryAddress,
-        );
+        const publicKeys = await HomeChain.chainId(
+          wallet.homeChainId,
+        ).publicKeys(wallet.userEntryAddress);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
@@ -636,9 +639,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
           async (targetChain) => {
             return {
               algo: "secp256k1",
-              address: await targetChain.obiAccountAddress(publicKey),
+              address: await targetChain.obiAccountAddress(publicKeys),
               pubkey: Encoding.fromBytes(
-                getSec256k1CompressedPublicKey(publicKey),
+                getSecp256k1CompressedPublicKey(publicKeys.secp256k1),
               ).toBase64(),
             };
           },

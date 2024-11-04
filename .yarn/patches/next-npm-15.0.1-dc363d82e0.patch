@@ -1,0 +1,21 @@
+diff --git a/dist/build/swc/options.js b/dist/build/swc/options.js
+index 37aceb137a58867da508fe15f8f00bcbf45967b1..b0b1ae85adf17cbe6458338a473bd62f3d5106aa 100644
+--- a/dist/build/swc/options.js
++++ b/dist/build/swc/options.js
+@@ -49,7 +49,7 @@ function getParserOptions({ filename, jsConfig, ...rest }) {
+         ...rest,
+         syntax: hasTsSyntax ? 'typescript' : 'ecmascript',
+         dynamicImport: true,
+-        decorators: enableDecorators,
++        decorators: true,
+         // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
+         [hasTsSyntax ? 'tsx' : 'jsx']: !isTSFile,
+         importAssertions: true
+@@ -94,6 +94,7 @@ function getBaseSWCOptions({ filename, jest, development, hasReactRefresh, globa
+                 } : {},
+                 legacyDecorator: enableDecorators,
+                 decoratorMetadata: emitDecoratorMetadata,
++                decoratorVersion: "2022-03",
+                 useDefineForClassFields: useDefineForClassFields,
+                 react: {
+                     importSource: (jsConfig == null ? void 0 : (_jsConfig_compilerOptions4 = jsConfig.compilerOptions) == null ? void 0 : _jsConfig_compilerOptions4.jsxImportSource) ?? ((compilerOptions == null ? void 0 : compilerOptions.emotion) && !isReactServerLayer ? '@emotion/react' : 'react'),

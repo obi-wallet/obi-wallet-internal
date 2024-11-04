@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Link, { LinkProps } from "next/link";
+import Link from "next/link";
 import { ComponentPropsWithRef, forwardRef, ReactNode } from "react";
 
 export type UnstyledLinkProps = {
@@ -7,19 +7,11 @@ export type UnstyledLinkProps = {
   children: ReactNode;
   openNewTab?: boolean;
   className?: string;
-  nextLinkProps?: Omit<LinkProps, "href">;
 } & ComponentPropsWithRef<"a">;
 
 export const UnstyledLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
   function UnstyledLink(
-    {
-      children,
-      href,
-      openNewTab,
-      className,
-      nextLinkProps,
-      ...rest
-    }: UnstyledLinkProps,
+    { children, href, openNewTab, className, ...rest }: UnstyledLinkProps,
     ref,
   ) {
     const isNewTab =
@@ -29,13 +21,8 @@ export const UnstyledLink = forwardRef<HTMLAnchorElement, UnstyledLinkProps>(
 
     if (!isNewTab) {
       return (
-        <Link
-          href={href}
-          ref={ref}
-          className={className}
-          {...rest}
-          {...nextLinkProps}
-        >
+        // @ts-expect-error This is only an `exactOptionalPropertyTypes` error in third-party types
+        <Link href={href} ref={ref} className={className} {...rest}>
           {children}
         </Link>
       );

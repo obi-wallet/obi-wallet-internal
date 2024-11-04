@@ -12,7 +12,6 @@ import { ApproveMessages } from ".";
 const meta = {
   title: "User Interactions/Approve Messages",
   component: ApproveMessages,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessages>;
 

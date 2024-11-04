@@ -1,8 +1,8 @@
 import { BitButton } from "@/components/buttons/8bit-button";
 
 export interface OnboardingButtonsProps {
-  back?: () => void;
-  next?: () => void;
+  back?: (() => void) | undefined;
+  next?: (() => void) | undefined;
   nextLabel?: string;
   nextDisabled?: boolean;
 }

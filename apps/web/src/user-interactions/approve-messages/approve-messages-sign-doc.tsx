@@ -88,7 +88,7 @@ export function cosmosSignDirectUserInteractionToApproveMessagesProps(
       intentionsResults,
     }) => {
       const signer = await targetChain.getSigner(wallet);
-      signer.mpcSigner.addIntentionsResults({
+      await signer.mpcSigner.addIntentionsResults({
         payload: intentionsPayload,
         results: intentionsResults,
       });

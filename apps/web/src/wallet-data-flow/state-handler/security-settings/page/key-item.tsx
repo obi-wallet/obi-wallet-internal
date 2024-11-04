@@ -1,7 +1,5 @@
 import { Box, Button, Divider, Text } from "@/components";
-import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { getPasskey, KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -9,7 +7,7 @@ import { KeyItemPage, useSecuritySettingsContext } from "../context";
 
 export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
   function SecuritySettingsKeyItemPage({ page }) {
-    const { draft, keyMetaDataDraft, setKeyMetaData, popPage } =
+    const { keyMetaDataDraft, setKeyMetaData, popPage } =
       useSecuritySettingsContext();
     const [name, setName] = useState(
       keyMetaDataDraft.value.value[page.payload.id]?.name ?? "",
@@ -33,28 +31,6 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
             }}
           />
         </div>
-        {page.payload.key.type === KeyType.Passkey &&
-        !page.payload.key.isUsable ? (
-          <AsyncButton
-            variant="primary"
-            block
-            onClick={async () => {
-              const keyPair = await getPasskey();
-              if (
-                page.payload.key.publicKey.value === keyPair.publicKey.value
-              ) {
-                draft.value.removeKeyByPublicKey(keyPair.publicKey);
-                const passkey = draft.value.addPasskeyKey(keyPair);
-                if (!draft.value.primaryKey) {
-                  draft.value.setPrimaryKey(passkey);
-                }
-                popPage();
-              }
-            }}
-          >
-            Mark as usable
-          </AsyncButton>
-        ) : null}
         <div className="mt-40 grid grid-cols-2 gap-8">
           <Button
             variant="secondary"

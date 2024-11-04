@@ -1,8 +1,0 @@
-{
-  "extends": "@repo/typescript-config/react-library.json",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["__tests__", "__tests-integration__", "src", "turbo"],
-  "exclude": ["node_modules", "dist"]
-}

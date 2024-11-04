@@ -1,34 +1,33 @@
+import { deserialize } from "@obi-wallet/sdk-json";
 import { z } from "zod";
 
-const StatusChain = z.object({
-  transactionId: z.string(),
-  transactionUrl: z.string(),
-  chainData: z
-    .object({
-      chainId: z.union([z.string(), z.number()]),
-      chainName: z.string(),
-      chainType: z.string(),
-    })
-    .optional(),
-});
+// const StatusChain = z.object({
+//   transactionId: z.string(),
+//   transactionUrl: z.string(),
+//   chainData: z
+//     .object({
+//       chainId: z.union([z.string(), z.number()]),
+//       chainName: z.string(),
+//       chainType: z.string(),
+//     })
+//     .optional(),
+// });
 
-const RouteStatus = z
-  .object({
-    action: z.string(),
-    status: z.string(),
-    chainId: z.union([z.string(), z.number()]),
-    txHash: z.string(),
-  })
-  .strict();
+const RouteStatus = z.object({
+  // action: z.string(),
+  status: z.string(),
+  // chainId: z.union([z.string(), z.number()]),
+  // txHash: z.string(),
+});
 
 export const SquidStatus = z.object({
   status: z.string(),
   id: z.string(),
-  fromChain: StatusChain,
-  toChain: StatusChain,
+  // fromChain: StatusChain,
+  // toChain: StatusChain,
   axelarTransactionUrl: z.string(),
-  error: z.union([z.unknown(), z.null()]),
-  gasStatus: z.string(),
+  // error: z.union([z.unknown(), z.null()]),
+  // gasStatus: z.string(),
   routeStatus: z.array(RouteStatus),
   squidTransactionStatus: z.string(),
 });
@@ -49,24 +48,38 @@ export const EthDepositStepStatus = z.object({
   action: z.literal("EthDeposit"),
   chainId: z.string(),
   status: OnlyStatus,
-  substeps: z.null(),
-  txHash: z.union([z.string(), z.null()]),
+  // substeps: z.null(),
+  // txHash: z.union([z.string(), z.null()]),
+  txHash: z.string().optional(),
+});
+
+export const JupiterSwapStepStatus = z.object({
+  action: z.literal("JupiterSwap"),
+  chainId: z.string(),
+  // status: z.union([JupiterSwapStatus, OnlyStatus]),
+  // substeps: z.null(),
+  // txHash: z.union([z.string(), z.null()]),
+  status: z.unknown(),
+  txHash: z.string().optional(),
 });
 
 export const SquidStepStatus = z.object({
   action: z.literal("Squid"),
   chainId: z.string(),
-  status: z.union([SquidStatus, OnlyStatus]),
-  substeps: z.null(),
-  txHash: z.union([z.string(), z.null()]),
+  // TODO:
+  status: z.union([SquidStatus, EmptyObject, OnlyStatus]),
+  // substeps: z.null(),
+  // txHash: z.union([z.string(), z.null()]),
+  txHash: z.string().optional(),
 });
 
 export const SkipStepStatus = z.object({
   action: z.literal("Skip"),
   chainId: z.string(),
-  status: z.union([SkipStatus, OnlyStatus]),
-  substeps: z.null(),
-  txHash: z.union([z.string(), z.null()]),
+  // status: z.union([SkipStatus, OnlyStatus]),
+  // substeps: z.null(),
+  // txHash: z.union([z.string(), z.null()]),
+  txHash: z.string().optional(),
 });
 
 export const StepStatus = z.discriminatedUnion("action", [
@@ -77,15 +90,22 @@ export const StepStatus = z.discriminatedUnion("action", [
 
 export type StepStatus = z.infer<typeof StepStatus>;
 
+export const TransactionIntent = z.object({
+  destinationAsset: z.string(),
+  destinationChainId: z.string(),
+});
+
+export type TransactionIntent = z.infer<typeof TransactionIntent>;
+
 export const Transaction = z.object({
   deposit_address: z.string(),
-  fast_travel_time: z.number(),
-  pubkey: z.string(),
-  intent: z.object({
-    destination_address: z.string(),
-    destination_asset: z.string(),
-    destination_chain_id: z.string(),
-    max_slippage: z.string(),
+  // fast_travel_time: z.number(),
+  // pubkey: z.string(),
+  intent: z.union([z.string(), TransactionIntent]).transform((val) => {
+    if (typeof val === "string") {
+      return TransactionIntent.parse(deserialize(val));
+    }
+    return val;
   }),
   status: z.union([
     z.literal("AwaitingDeposit"),
@@ -199,14 +219,15 @@ export const SquidEstimate = z.object({
 });
 
 export const SquidParams = z.object({
-  fromToken: SquidEstimateToken,
-  enableExpress: z.boolean(),
-  enableForecall: z.string(),
-  fromAddress: z.string(),
-  fromChain: z.string(),
-  integratorId: z.string(),
-  toChain: z.string(),
-  toToken: SquidEstimateToken,
+  // fromToken: SquidEstimateToken,
+  // enableExpress: z.boolean(),
+  // enableForecall: z.string(),
+  // fromAddress: z.string(),
+  // fromChain: z.string(),
+  // integratorId: z.string(),
+  // toChain: z.string(),
+  // toToken: SquidEstimateToken,
+  // toToken: z.string(),
 });
 
 export const SquidTransactionRequest = z.object({
@@ -221,7 +242,7 @@ export const SquidTransactionRequest = z.object({
 
 export const SquidStepSimulation = z.object({
   estimate: SquidEstimate,
-  params: SquidParams,
+  // params: SquidParams,
   transactionRequest: SquidTransactionRequest,
 });
 
@@ -258,10 +279,65 @@ export const StepSimulations = z.union([
 
 export type StepSimulations = z.infer<typeof StepSimulations>;
 
+// TODO:
+// export const SimulationEntryObject = z.object({
+//   step_simulations: StepSimulations,
+//   step_statuses: z.array(StepStatus),
+//   transaction: Transaction,
+// });
+export const EthDepositStepInfo = z.object({
+  type: z.literal("EthDeposit"),
+  status: EthDepositStepStatus,
+});
+
+export const JupiterSwapStepInfo = z.object({
+  type: z.literal("JupiterSwap"),
+  status: JupiterSwapStepStatus,
+});
+
+export const SkipStepInfo = z.object({
+  type: z.literal("Skip"),
+  status: SkipStepStatus,
+});
+
+export const SquidStepInfoSimulationAction = z.union([
+  SquidRouteFromChain,
+  SquidRouteToChain,
+]);
+
+export type SquidStepInfoSimulationAction = z.infer<
+  typeof SquidStepInfoSimulationAction
+>;
+
+export const SquidStepInfoSimulation = z.object({
+  route: z.object({
+    estimate: z.object({
+      actions: z.array(SquidStepInfoSimulationAction),
+      toToken: SquidEstimateToken,
+      toAmountUSD: z.string(),
+    }),
+    params: SquidParams,
+  }),
+});
+
+export const SquidStepInfo = z.object({
+  type: z.literal("Squid"),
+  status: SquidStepStatus,
+  simulation: SquidStepInfoSimulation.nullable(),
+});
+
+export const StepInfo = z.union([
+  EthDepositStepInfo,
+  JupiterSwapStepInfo,
+  SkipStepInfo,
+  SquidStepInfo,
+]);
+
+export type StepInfo = z.infer<typeof StepInfo>;
+
 export const SimulationEntryObject = z.object({
-  step_simulations: StepSimulations,
-  step_statuses: z.array(StepStatus),
   transaction: Transaction,
+  stepInfo: z.array(StepInfo),
 });
 
 export type SimulationEntryObject = z.infer<typeof SimulationEntryObject>;

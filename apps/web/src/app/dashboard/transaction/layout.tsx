@@ -14,7 +14,7 @@ export default function TransactionLayout({
 
   return (
     <div className="w-full">
-      <Box className="w-full lg:w-1/2">
+      <Box className="w-full xl:w-1/2">
         <TabUi.Links>
           <TabUi.Link
             href={`/dashboard/transaction/send/${rest.join("/")}`}

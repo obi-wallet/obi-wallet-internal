@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* eslint-disable */
+ 
 export const memory: WebAssembly.Memory;
 export function __wbg_signer_free(a: number): void;
 export function signer_new(a: number, b: number, c: number, d: number): void;

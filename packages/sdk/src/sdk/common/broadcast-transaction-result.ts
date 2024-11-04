@@ -13,7 +13,7 @@ export interface BroadcastTransactionResult {
   /**
    * The raw log of the transaction
    */
-  rawLog?: string;
+  rawLog?: string | undefined;
   /**
    * The raw result of the transaction. Contains a chain-specific data structure.
    */

@@ -1,10 +1,5 @@
+import { AlertType } from "@/alert/type";
 import { action, observable } from "mobx";
-
-export enum AlertType {
-  SUCCESS = "success",
-  ERROR = "error",
-  WARNING = "warning",
-}
 
 export interface Alert {
   message: string;
@@ -16,17 +11,17 @@ export class AlertStore {
 
   @action.bound
   public showSuccess(message: string) {
-    this.showAlert({ message, type: AlertType.SUCCESS });
+    this.showAlert({ message, type: AlertType.Success });
   }
 
   @action.bound
   public showError(message: string) {
-    this.showAlert({ message, type: AlertType.ERROR });
+    this.showAlert({ message, type: AlertType.Error });
   }
 
   @action.bound
   public showWarning(message: string) {
-    this.showAlert({ message, type: AlertType.WARNING });
+    this.showAlert({ message, type: AlertType.Warning });
   }
 
   @action.bound

@@ -9,7 +9,6 @@ import { ApproveIntentions } from ".";
 const meta = {
   title: "User Interactions/Approve Intentions",
   component: ApproveIntentions,
-  tags: ["autodocs"],
   decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveIntentions>;
 
@@ -25,7 +24,9 @@ export const SignOnly: Story = {
     keyMetaData: {},
     intentions: {
       signHashes: [new Uint8Array(32)],
+      decryptEasyShare: null,
       decryptMessages: [],
+      decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     },
     onApprove: async () => {},
@@ -41,7 +42,9 @@ export const DecryptOnly: Story = {
     keyMetaData: {},
     intentions: {
       signHashes: [],
+      decryptEasyShare: null,
       decryptMessages: [],
+      decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
     },
     onApprove: async () => {},

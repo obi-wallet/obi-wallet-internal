@@ -8,7 +8,7 @@ import {
   Eip155Chains,
 } from "@/target-chain/eip-155/chains";
 import { Eip155MpcSigner } from "@/target-chain/eip-155/mpc-signer";
-import { IntentionsResults } from "@/user-interactions/approve-intentions";
+import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
 import { SignAndBroadcastEvm } from "@/user-interactions/sign-and-broadcast/evm";
 import { filterMap } from "@/util/filter-map";
 import { HexEncodedStringWithPrefix } from "@obi-wallet/encoding";
@@ -17,8 +17,9 @@ import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { deserialize, serialize } from "@obi-wallet/sdk-json";
+import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
 import {
-  getSec256k1UncompressedPublicKey,
+  getSecp256k1UncompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
 import {
@@ -27,8 +28,7 @@ import {
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
-import { ENTRYPOINT_ADDRESS_V07, UserOperation } from "permissionless";
-import { signerToEcdsaKernelSmartAccount } from "permissionless/accounts";
+import { toEcdsaKernelSmartAccount } from "permissionless/accounts";
 import invariant from "tiny-invariant";
 import {
   Address,
@@ -41,10 +41,15 @@ import {
   keccak256,
   LocalAccount,
 } from "viem";
+import {
+  UserOperation,
+  UserOperationCalls,
+  entryPoint07Address,
+} from "viem/account-abstraction";
 import { toAccount } from "viem/accounts";
 import { z } from "zod";
 
-export type EvmUserOperation = UserOperation<"v0.7">;
+export type EvmUserOperation = UserOperation<"0.7">;
 
 export const SerializedEvmUserOperation = z
   .string()
@@ -63,6 +68,27 @@ export function deserializeUserOperation(
   userOperation: SerializedEvmUserOperation,
 ): EvmUserOperation {
   return deserialize(userOperation);
+}
+
+export type EvmUserOperationCalls = UserOperationCalls<unknown[]>;
+
+export const SerializedEvmUserOperationCalls = z
+  .string()
+  .brand("SerializedEvmUserOperationCalls");
+export type SerializedEvmUserOperationCalls = z.infer<
+  typeof SerializedEvmUserOperationCalls
+>;
+
+export function serializeUserOperationCalls(
+  calls: EvmUserOperationCalls,
+): SerializedEvmUserOperationCalls {
+  return SerializedEvmUserOperationCalls.parse(serialize(calls));
+}
+
+export function deserializeUserOperationCalls(
+  calls: SerializedEvmUserOperationCalls,
+): EvmUserOperationCalls {
+  return deserialize(calls);
 }
 
 export class Eip155TargetChain extends AbstractTargetChain<
@@ -93,23 +119,23 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public computeAddress(publicKey: Secp256k1PublicKey) {
-    const u8 = getSec256k1UncompressedPublicKey(publicKey);
+    const u8 = getSecp256k1UncompressedPublicKey(publicKey);
     const hex = `0x${Buffer.from(u8).toString("hex")}`;
     const address = keccak256(`0x${hex.substring(4)}`).substring(26);
     return getAddress(`0x${address}`);
   }
 
   protected async obiAccountAddressQueryFn(
-    publicKey: Secp256k1PublicKey,
+    publicKeys: ObiAccountPublicKeys,
   ): Promise<HexEncodedStringWithPrefix> {
     if (this.chainId === Eip155ChainId.BscTestnet) {
       return await new Eip155TargetChain(
         Eip155ChainId.Bsc,
-      ).obiAccountAddressQueryFn(publicKey);
+      ).obiAccountAddressQueryFn(publicKeys);
     }
 
     const account = toAccount({
-      address: this.computeAddress(publicKey),
+      address: this.computeAddress(publicKeys.secp256k1),
       async signMessage() {
         throw new Error("signMessage not implemented");
       },
@@ -242,7 +268,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public get entryPoint() {
-    return ENTRYPOINT_ADDRESS_V07;
+    return {
+      address: entryPoint07Address,
+      version: "0.7",
+    } as const;
   }
 
   public validateAddress(address: string): address is Address {
@@ -261,9 +290,10 @@ export class Eip155TargetChain extends AbstractTargetChain<
   }
 
   public async kernelAccount(account: LocalAccount) {
-    return await signerToEcdsaKernelSmartAccount(this.publicClient, {
+    return await toEcdsaKernelSmartAccount({
+      client: this.publicClient,
       entryPoint: this.entryPoint,
-      signer: account,
+      owners: [account],
     });
   }
 
@@ -305,7 +335,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
     intentionsResults: IntentionsResults;
   }) {
     const signer = await Eip155MpcSigner.fromWallet(wallet, this.chainData.id);
-    signer.mpcSigner.addIntentionsResults({
+    await signer.mpcSigner.addIntentionsResults({
       payload: intentionsPayload,
       results: intentionsResults,
     });
@@ -337,7 +367,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
     const response = await fetch("/api/evm/send-user-operation", {
       method: "POST",
       body: serialize({
+        homeChainId: wallet.homeChainId,
         targetChainId: this.chainData.id,
+        userEntryAddress: wallet.userEntryAddress,
         userOperation: serializeUserOperation(userOperation),
       }),
     });
@@ -367,7 +399,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKey = await HomeChain.chainId(wallet.homeChainId).publicKey(
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
       wallet.userEntryAddress,
     );
 
@@ -381,7 +413,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
 
     const usableEip155Chains = await filterMap(
       async (chain) => {
-        const address = await chain.obiAccountAddressQueryFn(publicKey);
+        const address = await chain.obiAccountAddressQueryFn(publicKeys);
         return {
           chainId: chain.chainId,
           account: `${chain.chainId}:${address}`,
@@ -425,17 +457,14 @@ export class Eip155TargetChain extends AbstractTargetChain<
       case "eth_sendTransaction": {
         const payload = request.params[0];
 
-        const account = await this.localAccountFromWallet(wallet);
-        const kernelAccount = await this.kernelAccount(account);
-        const callData = HexEncodedStringWithPrefix.parse(
-          await kernelAccount.encodeCallData({
-            to: payload.to,
-            data: payload.data,
-            value: hexToBigInt(payload.value),
-          }),
-        );
         const response = await SignAndBroadcastEvm.start({
-          callData,
+          calls: serializeUserOperationCalls([
+            {
+              to: payload.to,
+              data: payload.data,
+              value: hexToBigInt(payload.value),
+            },
+          ]),
           cancelable: true,
           targetChainId: this.chainId,
           walletMeta: {

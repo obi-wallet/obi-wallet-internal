@@ -8,6 +8,7 @@ import {
   WalletDataStateType,
 } from "@/wallet-data-backup/sync-wallet-data";
 import { WalletDataFlow } from "@/wallet-data-flow";
+import { SecuritySettingsState } from "@/wallet-data-flow/state";
 import { useWalletBackupMutation } from "@/wallet-health/checks";
 import { ObservableMpcWallet } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
@@ -36,18 +37,13 @@ export const SecuritySettings = observer(function SecuritySettings() {
     case WalletDataStateType.UpToDate:
       return (
         <WalletDataFlow
-          homeChainId={wallet.homeChainId}
-          initialValues={{
-            owner: wallet.owner,
+          initialState={SecuritySettingsState.from({
             walletData: walletDataState.data.payload,
             keyMetaData: keyMetaDataStore.getKeyMetaData(
               wallet.userEntryAddress,
             ),
-            locallyEncryptedSharesByPreviousOwner: {
-              easy: wallet.encryptedEasyShare,
-              backup: wallet.encryptedBackupShare,
-            },
-          }}
+            owner: wallet.owner,
+          })}
           onDone={({ wallet: walletData, keyMetaData }) => {
             const wallet = ObservableMpcWallet.create(walletData);
 
@@ -56,9 +52,6 @@ export const SecuritySettings = observer(function SecuritySettings() {
               keyMetaData,
             );
             mpcWalletsStore.upsertWallet(wallet);
-            router.replace("/dashboard/settings");
-          }}
-          onBack={() => {
             router.replace("/dashboard/settings");
           }}
         />

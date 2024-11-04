@@ -1,13 +1,11 @@
 "use client";
 
-import { Text } from "@/components";
+import { Text, Box, Button } from "@/components";
 import { cn } from "@/lib/utils";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { serialize } from "@obi-wallet/sdk-json";
 import Image from "next/image";
 import { ComponentPropsWithoutRef, useState } from "react";
-
-import { Box, Button } from "..";
 
 type TransactionProps = {
   amountInfo: {

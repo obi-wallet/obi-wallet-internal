@@ -365,7 +365,7 @@ export const AssetRow = observer(function AssetRow({
   editMode,
 }: {
   asset: PrettyCaip19Asset;
-  editMode?: boolean;
+  editMode?: boolean | undefined;
 }) {
   const router = useRouter();
   const wallet = useCurrentWallet({});
@@ -525,6 +525,7 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
   const balances = useBalances();
 
   if (
+    balances.length > 0 &&
     balances.every((b) => {
       return b.isLoading;
     })
