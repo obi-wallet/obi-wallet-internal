@@ -14,7 +14,6 @@ import { Meta, StoryObj } from "@storybook/react";
 const meta = {
   title: "WalletDataFlow",
   component: WalletDataFlow,
-  decorators: [],
 } satisfies Meta<typeof WalletDataFlow>;
 
 export default meta;

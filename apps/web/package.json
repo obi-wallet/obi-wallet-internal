@@ -74,7 +74,6 @@
     "nanoid": "^5.0.8",
     "next": "patch:next@npm%3A15.0.1#~/.yarn/patches/next-npm-15.0.1-dc363d82e0.patch",
     "next-qrcode": "^2.5.1",
-    "next-themes": "^0.3.0",
     "permissionless": "^0.2.13",
     "ramda": "^0.30.1",
     "react": "19.0.0-rc-fb9a90fa48-20240614",

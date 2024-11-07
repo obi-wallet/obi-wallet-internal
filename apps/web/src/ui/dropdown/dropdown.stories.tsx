@@ -1,4 +1,3 @@
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -23,7 +22,6 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  decorators: [dashboardLayoutDecorator],
 } satisfies Meta<typeof Dropdown>;
 
 export default meta;
