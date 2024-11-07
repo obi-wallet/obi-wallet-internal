@@ -19,7 +19,7 @@ export const WalletDataNotification = observer(
       case WalletDataStateType.NotAvailable:
         return (
           <Notification
-            description="Caution: Your wallet has not been backed up yet. Please back up your wallet to enable recovery by clicking this banner."
+            description="Caution: Your account has not been backed up yet. Please back up your account to enable recovery by clicking this banner."
             type="warning"
             onClick={() => {
               backupWallet.mutate();
@@ -29,7 +29,7 @@ export const WalletDataNotification = observer(
       case WalletDataStateType.Outdated:
         return (
           <Notification
-            description="Caution: Your local wallet data is out of sync. Resync your data by clicking this banner."
+            description="Caution: Your local account data is out of sync. Resync your data by clicking this banner."
             type="warning"
             onClick={() => {
               router.push("/dashboard/sync-wallet-data");
