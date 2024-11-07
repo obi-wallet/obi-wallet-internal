@@ -24,7 +24,7 @@ const preview: Preview = {
   decorators: [
     (Story) => {
       return (
-        <RootContainer className="bg-background-main flex h-full flex-col">
+        <RootContainer>
           <Provider>
             <Story />
             <div id="modal-root" />

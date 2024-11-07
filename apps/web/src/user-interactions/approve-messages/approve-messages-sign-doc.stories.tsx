@@ -1,6 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { CosmosSignDirectUserInteraction } from "@/user-interactions/sign-and-broadcast/evm/cosmos-sign-direct";
 import { fromHex } from "@cosmjs/encoding";
 import { makeSignDoc } from "@cosmjs/proto-signing";
@@ -11,7 +10,7 @@ import { ApproveMessagesSignDoc } from "./approve-messages-sign-doc";
 const meta = {
   title: "User Interactions/Approve Messages Sign Doc",
   component: ApproveMessagesSignDoc,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessagesSignDoc>;
 
 export default meta;

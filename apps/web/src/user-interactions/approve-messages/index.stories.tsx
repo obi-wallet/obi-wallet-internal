@@ -1,6 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { TargetChain } from "@/target-chain";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
@@ -12,7 +11,7 @@ import { ApproveMessages } from ".";
 const meta = {
   title: "User Interactions/Approve Messages",
   component: ApproveMessages,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveMessages>;
 
 export default meta;

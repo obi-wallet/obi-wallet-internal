@@ -7,9 +7,13 @@ import { MainContainer } from "@/layouts/root";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default observer(function Introduction() {
+export const LandingPage = observer(function LandingPage() {
   useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
 
+  return <LandingPageInner />;
+});
+
+export function LandingPageInner() {
   return (
     <>
       <Header />
@@ -210,4 +214,4 @@ export default observer(function Introduction() {
       </MainContainer>
     </>
   );
-});
+}

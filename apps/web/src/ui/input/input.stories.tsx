@@ -1,5 +1,4 @@
 import { Button } from "@/components/buttons";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import type { Meta, StoryObj } from "@storybook/react";
 import { FaSearch } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa6";
@@ -12,7 +11,6 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  decorators: [dashboardLayoutDecorator],
   argTypes: {
     label: { type: "string" },
     labelClassname: {
