@@ -174,7 +174,7 @@ const SendInner = observer<{
     resolver: zodResolver(schema),
   });
 
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const alert = useAlert();
   const invalidateBalancesQueries = useInvalidateBalancesQueries();
 

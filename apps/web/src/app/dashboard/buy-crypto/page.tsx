@@ -123,7 +123,7 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
 }
 
 export default observer(function BuyCrypto() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const publicKeys = usePublicKeys();
 
   const kadoUrl = useQuery({

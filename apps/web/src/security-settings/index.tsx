@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useEffectOnceWhen } from "rooks";
 
 export const SecuritySettings = observer(function SecuritySettings() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const router = useRouter();
   const { keyMetaDataStore, mpcWalletsStore } = useStore();
   const backupWallet = useWalletBackupMutation();

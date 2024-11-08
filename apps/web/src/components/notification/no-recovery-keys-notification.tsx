@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export const NoRecoveryKeysNotification = observer(
   function PasskeyNotification() {
-    const currentWallet = useCurrentWallet({});
+    const currentWallet = useCurrentWallet();
     const hasOnlyPrimaryKey =
       currentWallet && currentWallet.owner.keys.length === 1;
     const router = useRouter();

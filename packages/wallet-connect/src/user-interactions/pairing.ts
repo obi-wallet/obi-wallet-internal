@@ -2,10 +2,8 @@ import {
   createUserInteractionType,
   UserInteraction,
 } from "@obi-wallet/sdk-abstract-user-interaction";
-import type { Web3WalletTypes } from "@walletconnect/web3wallet";
 
-export type WalletConnectPairingUserInteractionPayload =
-  Web3WalletTypes.SessionProposal;
+export type WalletConnectPairingUserInteractionPayload = unknown;
 
 export type WalletConnectPairingUserInteraction = UserInteraction<
   WalletConnectPairingUserInteractionPayload,

@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from "@storybook/react";
 
-import { LandingPageInner } from ".";
+import { LandingPage } from ".";
 
 const meta = {
   title: "Pages/Landing Page",
-  component: LandingPageInner,
-} satisfies Meta<typeof LandingPageInner>;
+  component: LandingPage,
+} satisfies Meta<typeof LandingPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

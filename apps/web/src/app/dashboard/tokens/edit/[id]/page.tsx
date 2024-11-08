@@ -21,7 +21,7 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
     const assetId = decodeURIComponent(params.id) as Caip19AssetId;
     const { chainId, reference } = parseCaip19AssetId(assetId);
 
-    const wallet = useCurrentWallet({});
+    const wallet = useCurrentWallet();
     const router = useRouter();
     const { tokensStore, viewingKeysStore } = useStore();
     const createViewingKey = useCreateViewingKey();

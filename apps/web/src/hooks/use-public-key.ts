@@ -31,7 +31,7 @@ export function useEd25519PublicKeyQuery() {
 }
 
 function useWalletAndHomeChain() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   return {
     wallet,
     homeChain: HomeChain.chainId(

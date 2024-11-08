@@ -120,6 +120,7 @@ const LogIn = observer(function LogIn() {
                     key={i}
                     onClick={() => {
                       mpcWalletsStore.setCurrentWallet(wallet);
+                      router.push("/dashboard");
                       setModalOpen(false);
                     }}
                     className="w-full"

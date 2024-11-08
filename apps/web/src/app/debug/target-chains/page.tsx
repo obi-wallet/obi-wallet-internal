@@ -6,7 +6,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
 
 export default observer(function TargetChains() {
-  const currentWallet = useCurrentWallet({});
+  const currentWallet = useCurrentWallet();
   const { targetChainsStore } = useStore();
 
   if (!currentWallet) {

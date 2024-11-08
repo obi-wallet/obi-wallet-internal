@@ -17,6 +17,7 @@ export default [
   },
   {
     files: [
+      "**/middleware.ts",
       "**/*.stories.{ts,tsx,js,jsx}",
       ".storybook/main.ts",
       ".storybook/preview.tsx",
