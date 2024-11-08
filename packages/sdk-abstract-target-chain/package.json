@@ -17,12 +17,12 @@
     "@obi-wallet/sdk-obi-account": "workspace:*",
     "@obi-wallet/sdk-secp256k1": "workspace:*",
     "@obi-wallet/wallet-connect": "workspace:*",
-    "@tanstack/query-core": "^5.59.16"
+    "@tanstack/query-core": "^5.59.20"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
     "typescript": "^5.6.3"
   }
 }
