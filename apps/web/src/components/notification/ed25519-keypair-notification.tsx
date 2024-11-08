@@ -14,7 +14,7 @@ import invariant from "tiny-invariant";
 
 export const Ed25519KeyPairNotification = observer(
   function Ed25519KeyPairNotification() {
-    const currentWallet = useCurrentWallet({});
+    const currentWallet = useCurrentWallet();
     const backupWallet = useWalletBackupMutation();
     const { mpcWalletsStore } = useStore();
 

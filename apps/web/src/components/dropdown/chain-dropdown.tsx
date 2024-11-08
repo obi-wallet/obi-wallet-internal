@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 import { DropDown } from "./dropdown";
 
 export function useChainOptions() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { targetChainsStore } = useStore();
 
   if (!wallet) {

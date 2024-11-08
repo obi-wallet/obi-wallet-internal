@@ -50,7 +50,7 @@ export function useEd25519PublicKeyKnownCheck(): WalletHealthCheck {
 }
 
 export function useOwnerUpToDateCheck(): WalletHealthCheck {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const query = useQuery({
     queryKey: ["owner-up-to-date", wallet?.userEntryAddress],
     queryFn: wallet
@@ -68,7 +68,7 @@ export function useOwnerUpToDateCheck(): WalletHealthCheck {
 }
 
 function useWalletBackupQuery() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   return useQuery({
     queryKey: ["wallet-backup", wallet?.userEntryAddress],
     queryFn: wallet
@@ -91,7 +91,7 @@ function useWalletBackupQuery() {
 }
 
 export function useWalletBackupMutation() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { keyMetaDataStore } = useStore();
   const queryClient = useQueryClient();
 
@@ -136,7 +136,7 @@ export function useWalletBackupMutation() {
 }
 
 export function useWalletBackupCheck(): WalletHealthCheck {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
 
   const walletBackup = useWalletBackupQuery();
   const resolve = useWalletBackupMutation();
@@ -218,7 +218,7 @@ export function useWalletBackupCheck(): WalletHealthCheck {
 }
 
 export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
 
   const walletBackup = useWalletBackupQuery();
   const resolve = useWalletBackupMutation();
@@ -260,7 +260,7 @@ export function useWalletBackupIncludesEasyShareCheck(): WalletHealthCheck {
 }
 
 export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const walletDataState = useWalletDataStateQuery();
   const router = useRouter();
 
@@ -289,7 +289,7 @@ export function useLocalDataIsUpToDateCheck(): WalletHealthCheck {
 }
 
 export function useWalletHasEasyShareCheck(): WalletHealthCheck {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
 
   const query = useQuery({
     queryKey: ["wallet-has-easy-share", wallet?.userEntryAddress],

@@ -126,7 +126,7 @@ export function useInvalidateBalancesQueries() {
 }
 
 export function useBalances() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { targetChainsStore, tokensStore } = useStore();
   const publicKeys = usePublicKeys();
 

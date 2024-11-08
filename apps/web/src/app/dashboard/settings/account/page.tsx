@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default observer(function AccountSettings() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { userDataStore } = useStore();
   const navigator = useRouter();
 

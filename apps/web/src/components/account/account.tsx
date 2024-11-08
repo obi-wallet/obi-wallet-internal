@@ -12,7 +12,7 @@ import { PrimaryLink } from "../links";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
-  const currentWallet = useCurrentWallet({});
+  const currentWallet = useCurrentWallet();
   const totalData = useUsdTotalValue();
 
   if (!currentWallet) return null;

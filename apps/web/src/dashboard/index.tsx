@@ -21,8 +21,6 @@ import invariant from "tiny-invariant";
 import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
-  useCurrentWallet({ redirectTo: "/" });
-
   return (
     <div className="flex w-full flex-col text-white">
       <Assets />
@@ -110,7 +108,7 @@ const EditMode = observer(function EditMode({
 }: {
   searchAsset: string;
 }) {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { targetChainsStore } = useStore();
   const prettyBalances = usePrettyBalances(searchAsset);
 
@@ -266,7 +264,7 @@ const Network = observer(function NetworkAssets({
   assets: PrettyBalancesData;
   editMode?: boolean;
 }) {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { targetChainsStore } = useStore();
 
   if (!wallet) return null;
@@ -368,7 +366,7 @@ export const AssetRow = observer(function AssetRow({
   editMode?: boolean | undefined;
 }) {
   const router = useRouter();
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { viewingKeysStore } = useStore();
 
   const viewingKey = viewingKeysStore.getViewingKey({

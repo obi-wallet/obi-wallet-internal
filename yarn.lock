@@ -3735,6 +3735,7 @@ __metadata:
     "@types/crypto-js": "npm:^4.2.2"
     "@types/elliptic": "npm:^6.4.18"
     "@types/eslint": "npm:^9.6.1"
+    "@types/js-cookie": "npm:^3"
     "@types/json-diff": "npm:^1.0.3"
     "@types/luxon": "npm:^3.4.2"
     "@types/node": "npm:^20.17.2"
@@ -3761,6 +3762,7 @@ __metadata:
     eslint-plugin-storybook: "npm:^0.10.1"
     ethers: "npm:^6.13.4"
     happy-dom: "npm:^15.7.4"
+    js-cookie: "npm:^3.0.5"
     jscrypto: "npm:^1.0.3"
     json-diff: "npm:^1.0.6"
     lottie-react: "npm:^2.4.0"
@@ -6775,6 +6777,13 @@ __metadata:
   dependencies:
     "@types/istanbul-lib-report": "npm:*"
   checksum: 10c0/1647fd402aced5b6edac87274af14ebd6b3a85447ef9ad11853a70fd92a98d35f81a5d3ea9fcb5dbb5834e800c6e35b64475e33fcae6bfa9acc70d61497c54ee
+  languageName: node
+  linkType: hard
+
+"@types/js-cookie@npm:^3":
+  version: 3.0.6
+  resolution: "@types/js-cookie@npm:3.0.6"
+  checksum: 10c0/173afaf5ea9d86c22395b9d2a00b6adb0006dcfef165d6dcb0395cdc32f5a5dcf9c3c60f97194119963a15849b8f85121e1ae730b03e40bc0c29b84396ba22f9
   languageName: node
   linkType: hard
 

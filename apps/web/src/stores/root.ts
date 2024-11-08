@@ -1,3 +1,4 @@
+import { CURRENT_WALLET_COOKIE_NAME } from "@/lib/current-wallet";
 import { walletsStorage as defaultWalletsStorage } from "@/stores/storage/wallets";
 import { Config } from "@obi-wallet/config";
 import {
@@ -6,6 +7,8 @@ import {
   RootStore as SdkRootStore,
   WalletsStorage,
 } from "@obi-wallet/headless-ui-store";
+import Cookies from "js-cookie";
+import { autorun } from "mobx";
 
 import { AlertStore } from "./alert";
 import { ChainStore } from "./chain";
@@ -86,6 +89,15 @@ export class RootStore {
     });
     this.walletConnectStore = new WalletConnectStore({
       walletsStore: this.mpcWalletsStore,
+    });
+
+    autorun(() => {
+      const currentWallet = this.mpcWalletsStore.currentWallet;
+      if (currentWallet) {
+        Cookies.set(CURRENT_WALLET_COOKIE_NAME, currentWallet.userEntryAddress);
+      } else {
+        Cookies.remove(CURRENT_WALLET_COOKIE_NAME);
+      }
     });
   }
 
