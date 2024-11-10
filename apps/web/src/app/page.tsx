@@ -36,7 +36,7 @@ export default observer(function Introduction() {
             </div>
 
             {/* Scroll Down Arrows */}
-            <div className="absolute inset-x-0 bottom-60 flex justify-center">
+            <div className="absolute inset-x-0 bottom-[10%] flex justify-center">
               <button
                 onClick={() => {
                   document
@@ -48,7 +48,7 @@ export default observer(function Introduction() {
               >
                 <div className="flex flex-col items-center space-y-1">
                   <svg
-                    className="h-12 w-12 animate-bounce text-white"
+                    className="h-9 w-9 animate-bounce text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -62,7 +62,7 @@ export default observer(function Introduction() {
                     />
                   </svg>
                   <svg
-                    className="h-12 w-12 animate-bounce text-white"
+                    className="h-9 w-9 animate-bounce text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
