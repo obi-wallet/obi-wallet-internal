@@ -1,6 +1,6 @@
 # obi-wallet-internal
 
-See docs.obi.money
+See docs.obi.money for more info.
 
 ## Testing Strategy
 
