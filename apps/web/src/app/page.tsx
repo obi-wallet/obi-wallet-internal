@@ -14,34 +14,79 @@ export default observer(function Introduction() {
     <>
       <Header />
       <MainContainer>
-        <section className="flex min-h-screen w-full flex-col gap-12 text-white lg:gap-24">
-          <section className="flex min-h-full flex-col justify-center px-6 pb-48 text-center lg:px-28 lg:text-left">
+        <section className="flex min-h-screen w-full w-screen flex-col gap-12 bg-gray-900 text-white lg:gap-24">
+          <section className="flex h-full min-h-screen w-full w-screen min-w-full flex-col justify-center px-6 pb-48 text-center lg:px-28 lg:text-left">
             <h1 className="text-xl font-light lg:text-5xl lg:leading-tight">
-              RECOVERABLE ACCOUNTS THAT <br /> MAKE NAVIGATING CRYPTO <br />{" "}
-              <span className="font-bold">SIMPLE AND SECURE</span>
+              SIMPLE, SECURE, AND <br /> RECOVERABLE ACCOUNTS FOR <br />{" "}
+              <span className="font-bold">EFFORTLESS CRYPTO MANAGEMENT</span>
             </h1>
             <p className="mt-6 text-xs font-extralight lg:text-3xl">
-              Press start to build your smart account now
+              Get started with your secure smart account
             </p>
             <div className="mt-6 flex flex-col space-y-5 lg:mt-8 lg:w-auto lg:flex-row lg:space-x-4 lg:space-y-0">
               <LandingPageButton href="/onboarding/internal" colorScheme="dark">
-                PRESS START
+                START NOW
               </LandingPageButton>
               <LandingPageButton
                 href="https://docs.obi.money"
                 colorScheme="light"
               >
-                {" "}
-                DOCUMENTS{" "}
+                BUILD WITH OBI
               </LandingPageButton>
             </div>
+
+            {/* Scroll Down Arrows */}
+            <div className="absolute inset-x-0 bottom-60 flex justify-center">
+              <button
+                onClick={() => {
+                  document
+                    .getElementById("next-section")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                aria-label="Scroll down"
+                className="focus:outline-none"
+              >
+                <div className="flex flex-col items-center space-y-1">
+                  <svg
+                    className="h-12 w-12 animate-bounce text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                  <svg
+                    className="h-12 w-12 animate-bounce text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </button>
+            </div>
+            {/* End of Scroll Down Arrows */}
           </section>
-          <section className="px-6 text-center">
+          <section id="next-section" className="px-6 pt-12 text-center">
             <h2 className="mb-6 text-lg font-semibold lg:mb-8 lg:text-4xl">
-              Are you frustrated with the current state of crypto wallets?
+              Frustrated with crypto wallets that complicate security and
+              usability?
             </h2>
-            <div className="gap-52 space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-center lg:space-y-0">
-              <div>
+            <div className="space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-between lg:space-y-0 lg:text-2xl">
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-close"
                   className="mx-auto mb-4"
@@ -50,10 +95,10 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-close.svg"
                 />
                 <p className="text-sm lg:text-2xl">
-                  Risky key set up <br /> and lost funds
+                  Risky key setups <br /> and lost funds
                 </p>
               </div>
-              <div>
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-close"
                   className="mx-auto mb-4"
@@ -62,10 +107,10 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-close.svg"
                 />
                 <p className="text-sm lg:text-2xl">
-                  Multiple interfaces <br /> to manage assets
+                  Constant switching between interfaces <br /> to track assets
                 </p>
               </div>
-              <div>
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-close"
                   className="mx-auto mb-4"
@@ -74,15 +119,15 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-close.svg"
                 />
                 <p className="text-sm lg:text-2xl">
-                  Sketchy bridging <br /> across ecosystems
+                  Unreliable bridging <br /> across chains and ecosystems
                 </p>
               </div>
             </div>
           </section>
           <section className="lg:py-25 bg-sky-600 py-16 text-center">
             <h2 className="text-base lg:text-4xl">
-              With Obi, you manage all of your assets in one place <br />
-              secured by the keys of your choice
+              With Obi, manage all of your assets securely with a simple, <br />
+              custom multi-factor setup that puts you in control
             </h2>
             <LandingPageButton
               href="/onboarding/internal"
@@ -94,10 +139,10 @@ export default observer(function Introduction() {
           </section>
           <section className="px-6 text-center">
             <h2 className="mb-6 text-2xl font-semibold lg:mb-8 lg:text-4xl">
-              Obi is built different.
+              Obi is Built Different
             </h2>
-            <div className="space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-center lg:gap-48 lg:space-y-0 lg:text-2xl">
-              <div>
+            <div className="space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-between lg:space-y-0 lg:text-2xl">
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-access"
                   className="mx-auto mb-4"
@@ -106,11 +151,11 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-access.svg"
                 />
                 <p>
-                  Custom key setup <br />
-                  for convenient transactions <br /> and recoverability
+                  <em>Customizable key setup</em> <br />
+                  for smooth transactions <br /> and easy recovery
                 </p>
               </div>
-              <div>
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-home"
                   className="mx-auto mb-4"
@@ -119,12 +164,12 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-home.svg"
                 />
                 <p>
-                  Multi-chain accounts for
+                  <em>Multi-chain compatibility</em>
                   <br />
-                  EVM, L2s, Cosmos + <br /> Solana & Bitcoin (soon)
+                  EVM, L2s, Cosmos, Solana <br /> + Bitcoin coming soon
                 </p>
               </div>
-              <div>
+              <div className="w-full px-4 lg:w-1/3">
                 <Image
                   alt="landing-champagne"
                   className="mx-auto mb-4"
@@ -133,15 +178,15 @@ export default observer(function Introduction() {
                   src="/assets/icons/landing-champagne.svg"
                 />
                 <p>
-                  Party-up with other users <br />
-                  to manage treasuries and <br /> DAO assets
+                  <em>Collaborative asset management</em> <br />
+                  Team up for treasuries <br /> and DAOs
                 </p>
               </div>
             </div>
           </section>
           <section className="lg:py-25 bg-sky-600 py-16 text-center">
             <h2 className="text-base font-semibold lg:text-4xl">
-              Manage assets on all chains in one convenient dashboard
+              One dashboard to manage assets across all chains and networks
             </h2>
             <LandingPageButton
               href="/onboarding/internal"
@@ -153,17 +198,16 @@ export default observer(function Introduction() {
           </section>
           <section className="px-20 py-8 lg:py-12">
             <h2 className="mb-6 text-2xl lg:mb-16 lg:text-5xl">
-              Tired of crying about bad crypto UX? We were too...
+              Frustrated with clunky crypto UX? So are we.
             </h2>
             <p className="mb-8 text-sm lg:text-3xl">
-              ...which is why we've built a new approach to managing assets for
-              hundreds of users that delivers convenience without sacrificing
-              security.
+              Obi was built to give you a seamless, secure way to manage assets
+              conveniently and without compromise.
             </p>
             <p className="mb-8 text-sm lg:text-3xl">
-              At Obi we believe self-custody is a human right. You shouldn't be
-              plagued with the pitfalls of stolen assets or the headaches of
-              navigating decentralized ecosystems with current crypto wallets.
+              Self-custody is a human right. With Obi, avoid the common pitfalls
+              of lost assets and navigate decentralized ecosystems effortlessly
+              – while staying fully in control.
             </p>
 
             <div className="my-16 items-center justify-items-center space-y-10 lg:flex lg:flex-row lg:justify-between lg:space-y-0">
