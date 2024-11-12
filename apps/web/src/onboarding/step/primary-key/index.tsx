@@ -63,8 +63,10 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         leading="tight"
         color="zinc"
       >
-        Create the first & primary key to secure your account. You can add more
-        keys later to increase security and recoverability.
+        Create a primary key to secure your account. You can add more keys
+        later to increase security and recoverability. Passkey is recommended,
+        but if your device does not support Passkey, you can use a Cloud Key.
+        <br/><br/>To ensure your device saves your keys, don't use incognito mode for this step.
       </Text>
       <Image
         width="262"
