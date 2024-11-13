@@ -1,5 +1,4 @@
 import { Button } from "@/components";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { Meta, StoryObj } from "@storybook/react";
 import { xprod } from "ramda";
 
@@ -11,7 +10,6 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  decorators: [dashboardLayoutDecorator],
 } satisfies Meta<typeof Button>;
 
 export default meta;

@@ -6,16 +6,19 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { WalletState } from "@obi-wallet/headless-ui-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useEffectOnceWhen } from "rooks";
 
 export default observer(function AppConnect() {
-  useCurrentWallet({ redirectTo: "/" });
+  const { walletsStoreState } = useStore();
+  const currentWallet = useCurrentWallet();
+  const router = useRouter();
 
   const { walletConnectStore } = useStore();
   const searchParams = useSearchParams();
@@ -29,6 +32,16 @@ export default observer(function AppConnect() {
       walletConnectStore.queueUri(uri);
     }
   });
+
+  useEffect(() => {
+    if (walletsStoreState !== WalletState.READY) {
+      return;
+    }
+
+    if (!currentWallet) {
+      void router.push("/");
+    }
+  }, [currentWallet, router, walletsStoreState]);
 
   const queryClient = useQueryClient();
   const sessions = useQuery({

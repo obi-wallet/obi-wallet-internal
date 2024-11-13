@@ -1,15 +1,11 @@
-"use client";
-
 import { Header } from "@/components";
 import { LandingPageButton } from "@/components/buttons";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { MainContainer } from "@/layouts/root";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 
-export default observer(function Introduction() {
-  useCurrentWallet({ redirectTo: "/dashboard", redirectIfFound: true });
+import { ScrollDownArrows } from "./scroll-down-arrows";
 
+export function LandingPage() {
   return (
     <>
       <Header />
@@ -35,50 +31,7 @@ export default observer(function Introduction() {
               </LandingPageButton>
             </div>
 
-            {/* Scroll Down Arrows */}
-            <div className="absolute inset-x-0 bottom-[10%] flex justify-center">
-              <button
-                onClick={() => {
-                  document
-                    .getElementById("next-section")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
-                aria-label="Scroll down"
-                className="focus:outline-none"
-              >
-                <div className="flex flex-col items-center space-y-1">
-                  <svg
-                    className="h-9 w-9 animate-bounce text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                  <svg
-                    className="h-9 w-9 animate-bounce text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </button>
-            </div>
-            {/* End of Scroll Down Arrows */}
+            <ScrollDownArrows />
           </section>
           <section id="next-section" className="px-6 pt-12 text-center">
             <h2 className="mb-6 text-lg font-semibold lg:mb-8 lg:text-4xl">
@@ -254,4 +207,4 @@ export default observer(function Introduction() {
       </MainContainer>
     </>
   );
-});
+}

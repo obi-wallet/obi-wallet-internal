@@ -1,6 +1,5 @@
 "use client";
 
-import { MultiThemeProvider } from "@/components/provider/multi-theme-provider";
 import { StoreContext } from "@/contexts";
 import { useCreateRootStore } from "@/hooks/use-create-root-store";
 import { obiModalConfig } from "@obi-wallet/config";
@@ -28,11 +27,9 @@ const Provider = observer<ProviderProps>(function Provider({
   return (
     <SdkProvider QueryClientProvider={QueryClientProvider} buster={buster}>
       <StoreContext.Provider value={rootStore}>
-        <MultiThemeProvider>
-          <GoogleOAuthProvider clientId={clientId}>
-            {children}
-          </GoogleOAuthProvider>
-        </MultiThemeProvider>
+        <GoogleOAuthProvider clientId={clientId}>
+          {children}
+        </GoogleOAuthProvider>
       </StoreContext.Provider>
       <ReactQueryDevtools />
     </SdkProvider>

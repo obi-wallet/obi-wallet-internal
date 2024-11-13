@@ -1,6 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
@@ -12,7 +11,7 @@ import { SignAndBroadcastTransactionUserInteractionHandlerInner } from "./sign-a
 const meta = {
   title: "User Interactions/SignAndBroadcastTransactionHandlerInner",
   component: SignAndBroadcastTransactionUserInteractionHandlerInner,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof SignAndBroadcastTransactionUserInteractionHandlerInner>;
 
 export default meta;

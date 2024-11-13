@@ -1,12 +1,11 @@
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { HealthChecks } from "@/wallet-health/index";
 import { Meta, StoryObj } from "@storybook/react";
 
 const meta = {
   title: "Wallet Health",
   component: HealthChecks,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof HealthChecks>;
 
 export default meta;

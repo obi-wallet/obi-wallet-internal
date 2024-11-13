@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite";
 import { mapObjIndexed } from "ramda";
 
 export default observer(function Tokens() {
-  const currentWallet = useCurrentWallet({});
+  const currentWallet = useCurrentWallet();
   const { tokensStore } = useStore();
 
   if (!currentWallet) {

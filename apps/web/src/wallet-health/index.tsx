@@ -24,10 +24,10 @@ export const HealthChecks = observer(function HealthChecks() {
   return (
     <div className="grid h-full w-full text-white">
       <Box className="rounded-md text-xl">
-        <Text size="xl">Wallet Health</Text>
+        <Text size="xl">Account Health</Text>
         <Text className="mt-2">
           <span className="justify-center align-middle leading-normal">
-            These checks help ensure that your wallet has no issues that could
+            These checks help ensure that your account has no issues that could
             cause problems.
           </span>
         </Text>

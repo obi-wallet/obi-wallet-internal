@@ -10,7 +10,7 @@ import { MsgExecuteContract } from "secretjs";
 import invariant from "tiny-invariant";
 
 export function useCreateViewingKey() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
   const { viewingKeysStore } = useStore();
   const alert = useAlert();
 

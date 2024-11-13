@@ -1,6 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { TargetChain } from "@/target-chain";
 import { SolanaChainId } from "@/target-chain/solana/chains";
 import { Meta, StoryObj } from "@storybook/react";
@@ -10,7 +9,7 @@ import { ApproveSvmTransaction } from "./approve-svm-transaction";
 const meta = {
   title: "User Interactions/Approve SVM Transaction",
   component: ApproveSvmTransaction,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveSvmTransaction>;
 
 export default meta;

@@ -37,7 +37,7 @@ export type WalletDataState =
     };
 
 export function useWalletDataStateQuery() {
-  const wallet = useCurrentWallet({});
+  const wallet = useCurrentWallet();
 
   return useQuery({
     queryKey: [

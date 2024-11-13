@@ -1,6 +1,5 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { providerWithWalletDecorator } from "@/storybook-helpers";
-import { dashboardLayoutDecorator } from "@/storybook-helpers/layouts";
 import { serializeUserOperationCalls } from "@/target-chain/eip-155";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { Meta, StoryObj } from "@storybook/react";
@@ -12,7 +11,7 @@ import { ApproveEvmTransaction } from "./approve-evm-transaction";
 const meta = {
   title: "User Interactions/Approve EVM Transaction",
   component: ApproveEvmTransaction,
-  decorators: [dashboardLayoutDecorator, providerWithWalletDecorator],
+  decorators: [providerWithWalletDecorator],
 } satisfies Meta<typeof ApproveEvmTransaction>;
 
 export default meta;
