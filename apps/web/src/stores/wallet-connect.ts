@@ -52,6 +52,10 @@ export class WalletConnectStore {
   }
 
   public async pair(uri: string) {
+    if (!uri) {
+      return;
+    }
+
     // TODO: it seems we can only scan the QR code once.
     // If there isn't a follow-up session_proposal event,
     // the user has to refresh the QR code and scan again.
