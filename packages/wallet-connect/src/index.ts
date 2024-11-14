@@ -1,6 +1,7 @@
 import { Secp256k1PublicKey } from "@obi-wallet/sdk-secp256k1";
 import { Core } from "@walletconnect/core";
 import { ErrorResponse } from "@walletconnect/jsonrpc-types";
+import { SessionTypes } from "@walletconnect/types";
 import {
   buildApprovedNamespaces,
   BuildApprovedNamespacesParams,
@@ -34,12 +35,16 @@ export type SessionRequestResponse =
   | { result: unknown }
   | { error: ErrorResponse };
 
+export type Session = SessionTypes.Struct;
+
 export async function setupWalletConnect({
   projectId,
   metadata,
   getSupportedNamespaces,
   getKeys,
   handleSessionRequest,
+  onSessionApproval,
+  onSessionDelete,
 }: {
   projectId: string;
   metadata: {
@@ -55,6 +60,8 @@ export async function setupWalletConnect({
   handleSessionRequest: (
     payload: SessionRequestPayload,
   ) => Promise<SessionRequestResponse>;
+  onSessionApproval: (session: Session) => void;
+  onSessionDelete: () => void;
 }) {
   const core = new Core({
     projectId,
@@ -68,6 +75,7 @@ export async function setupWalletConnect({
 
   web3wallet.on("session_delete", async (...params) => {
     console.log("incoming session_delete", params);
+    onSessionDelete();
   });
 
   web3wallet.on("session_request", async (event) => {
@@ -112,7 +120,7 @@ export async function setupWalletConnect({
         const keysForChainIds = keys.filter((key) => {
           return chainIds.includes(key.chainId);
         });
-        const _session = await web3wallet.approveSession({
+        const session = await web3wallet.approveSession({
           id: params.id,
           namespaces: approvedNamespaces,
           sessionProperties: {
@@ -120,6 +128,7 @@ export async function setupWalletConnect({
             keys: JSON.stringify(keysForChainIds),
           },
         });
+        onSessionApproval(session);
       } else {
         await web3wallet.rejectSession({
           id: params.id,
