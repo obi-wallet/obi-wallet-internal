@@ -6,11 +6,10 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
 import { WalletState } from "@obi-wallet/headless-ui-store";
-import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useEffectOnceWhen } from "rooks";
 
@@ -24,25 +23,19 @@ export default observer(function AppConnect() {
   const [uri, setUri] = useState("");
   const [showExplanationModal, setShowExplanationModal] = useState(false);
 
-  useEffectOnceWhen(() => {
+  useEffectOnceWhen(async () => {
     const uri = searchParams.get("uri");
 
-    if (uri) {
+    if (!uri) return;
+
+    if (currentWallet) {
+      await walletConnectStore.pair(uri);
+    } else {
       walletConnectStore.queueUri(uri);
+      router.push("/onboarding/internal");
     }
-  });
+  }, walletsStoreState === WalletState.READY);
 
-  useEffect(() => {
-    if (walletsStoreState !== WalletState.READY) {
-      return;
-    }
-
-    if (!currentWallet) {
-      void router.push("/");
-    }
-  }, [currentWallet, router, walletsStoreState]);
-
-  const queryClient = useQueryClient();
   const activeSessions = Object.values(walletConnectStore.activeSessions).map(
     (session) => {
       return session;
@@ -164,9 +157,6 @@ export default observer(function AppConnect() {
                 key={session.topic}
                 onClick={async () => {
                   await walletConnectStore.disconnect(session.topic);
-                  await queryClient.invalidateQueries({
-                    queryKey: ["wallet-connect", "sessions"],
-                  });
                 }}
               >
                 <Text size="xl">{session.peer.metadata.name}</Text>

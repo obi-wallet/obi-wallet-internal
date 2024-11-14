@@ -35,8 +35,13 @@ export class WalletConnectStore {
 
     autorun(async () => {
       if (this.queuedUri && this.walletsStore.currentWallet) {
-        await this.pair(this.queuedUri);
-        this.queuedUri = null;
+        await Promise.all([
+          this.pair(this.queuedUri),
+          this.analyticsStore.trackOnboardingViaPairingUri(this.queuedUri),
+        ]);
+        runInAction(() => {
+          this.queuedUri = null;
+        });
       }
     });
   }
