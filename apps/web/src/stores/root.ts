@@ -1,4 +1,5 @@
 import { CURRENT_WALLET_COOKIE_NAME } from "@/lib/current-wallet";
+import { AnalyticsStore } from "@/stores/analytics";
 import { walletsStorage as defaultWalletsStorage } from "@/stores/storage/wallets";
 import { Config } from "@obi-wallet/config";
 import {
@@ -37,6 +38,7 @@ export function createRootStore({ config }: { config: Config }): RootStore {
 
 export class RootStore {
   public readonly alertStore: AlertStore;
+  public readonly analyticsStore: AnalyticsStore;
   public readonly chainStore: ChainStore;
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
@@ -77,6 +79,9 @@ export class RootStore {
     );
     this.wasmStore = new WasmStore();
 
+    this.analyticsStore = new AnalyticsStore({
+      walletsStore: this.mpcWalletsStore,
+    });
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?
     this.chainStore = new ChainStore({
       configStore: this.configStore,
@@ -87,7 +92,9 @@ export class RootStore {
       sdkRootStore: this.sdkRootStore,
       wasmStore: this.wasmStore,
     });
+
     this.walletConnectStore = new WalletConnectStore({
+      analyticsStore: this.analyticsStore,
       walletsStore: this.mpcWalletsStore,
     });
 

@@ -1,6 +1,8 @@
+import { AnalyticsStore } from "@/stores/analytics";
 import { TargetChain } from "@/target-chain";
 import { MpcWallets } from "@obi-wallet/sdk";
 import {
+  Session,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
@@ -14,10 +16,18 @@ export class WalletConnectStore {
     Web3Wallet["getActiveSessions"]
   > = {};
 
+  protected readonly analyticsStore: AnalyticsStore;
   protected readonly walletsStore: MpcWallets;
   protected web3Wallet: Web3Wallet | null = null;
 
-  public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
+  public constructor({
+    analyticsStore,
+    walletsStore,
+  }: {
+    analyticsStore: AnalyticsStore;
+    walletsStore: MpcWallets;
+  }) {
+    this.analyticsStore = analyticsStore;
     this.walletsStore = walletsStore;
 
     // Make sure we set up WalletConnect on all pages
@@ -75,10 +85,18 @@ export class WalletConnectStore {
           TargetChain.getSupportedWalletConnectNamespaces.bind(TargetChain),
         getKeys: TargetChain.getWalletConnectKeys.bind(TargetChain),
         handleSessionRequest: this.handleSessionRequest.bind(this),
-        refetchActiveSessions: this.refetchActiveSessions.bind(this),
+        onSessionDelete: this.refetchActiveSessions.bind(this),
+        onSessionApproval: this.handleSessionApproval.bind(this),
       });
     }
     return this.web3Wallet;
+  }
+
+  protected async handleSessionApproval(session: Session) {
+    await Promise.all([
+      this.analyticsStore.trackSessionApproval(session),
+      this.refetchActiveSessions(),
+    ]);
   }
 
   protected async handleSessionRequest(
