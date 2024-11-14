@@ -5,7 +5,6 @@ import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
-import { useQuery } from "@obi-wallet/headless-ui";
 import { WalletState } from "@obi-wallet/headless-ui-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
@@ -44,18 +43,11 @@ export default observer(function AppConnect() {
   }, [currentWallet, router, walletsStoreState]);
 
   const queryClient = useQueryClient();
-  const sessions = useQuery({
-    queryKey: ["wallet-connect", "sessions"],
-    queryFn: async () => {
-      return await walletConnectStore.getActiveSessions();
+  const activeSessions = Object.values(walletConnectStore.activeSessions).map(
+    (session) => {
+      return session;
     },
-    staleTime: 0,
-    refetchInterval: 1000,
-  });
-
-  const activeSessions = Object.values(sessions.data ?? {}).map((session) => {
-    return session;
-  });
+  );
 
   function renderExplanationModal() {
     if (!showExplanationModal) return null;

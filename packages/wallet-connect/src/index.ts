@@ -40,6 +40,7 @@ export async function setupWalletConnect({
   getSupportedNamespaces,
   getKeys,
   handleSessionRequest,
+  refetchActiveSessions,
 }: {
   projectId: string;
   metadata: {
@@ -55,6 +56,7 @@ export async function setupWalletConnect({
   handleSessionRequest: (
     payload: SessionRequestPayload,
   ) => Promise<SessionRequestResponse>;
+  refetchActiveSessions: () => void;
 }) {
   const core = new Core({
     projectId,
@@ -68,6 +70,7 @@ export async function setupWalletConnect({
 
   web3wallet.on("session_delete", async (...params) => {
     console.log("incoming session_delete", params);
+    refetchActiveSessions();
   });
 
   web3wallet.on("session_request", async (event) => {
@@ -120,6 +123,7 @@ export async function setupWalletConnect({
             keys: JSON.stringify(keysForChainIds),
           },
         });
+        refetchActiveSessions();
       } else {
         await web3wallet.rejectSession({
           id: params.id,
