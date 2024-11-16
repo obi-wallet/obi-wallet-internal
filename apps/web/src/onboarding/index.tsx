@@ -45,7 +45,7 @@ export const Onboarding = observer(function Onboarding({
 
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={step + 1} totalSteps={steps.length} />
+      {/* <Stepper currentStep={step + 1} totalSteps={steps.length} /> */}
       <Step draft={draft} step={currentStep} back={back} next={next} />
     </section>
   );
