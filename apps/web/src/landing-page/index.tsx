@@ -66,7 +66,7 @@ export function LandingPage() {
             <h2 className="text-center text-3xl font-bold text-white">
               Crypto wallets are insecure and difficult to use
             </h2>
-            <div className="xxl:space-x-48 flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-32 lg:space-y-0">
+            <div className="flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-48 lg:space-y-0">
               <div className="flex flex-col items-center gap-5">
                 <Image
                   src="/assets/images/shield-cross.svg"
@@ -108,7 +108,7 @@ export function LandingPage() {
             <h2 className="text-center text-3xl font-bold text-white">
               Obi gives you an effortless crypto experience
             </h2>
-            <div className="xxl:space-x-48 flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-32 lg:space-y-0">
+            <div className="flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-48 lg:space-y-0">
               <div className="flex flex-col items-center gap-5">
                 <Image
                   src="/assets/images/key.svg"
@@ -145,10 +145,47 @@ export function LandingPage() {
             </div>
           </section>
 
+          {/* Relief Section */}
+          <section className="flex flex-col items-center gap-6 self-stretch p-6 lg:flex-row lg:justify-center lg:gap-12 lg:p-12 lg:px-28">
+            <div className="flex flex-col items-center gap-6 lg:items-start lg:gap-12">
+              <h2 className="text-center text-3xl font-bold text-white lg:text-left">
+                Protect and manage all your assets in one place with customized
+                security controls.
+              </h2>
+              {/* Image visible only on mobile */}
+              <div className="w-full lg:hidden">
+                <Image
+                  src="/assets/images/2a9f3b1efac9a6187c57fb64e3ecb4b3.jpeg"
+                  alt="Mobile View"
+                  width={331}
+                  height={547}
+                  className="mx-auto"
+                />
+              </div>
+              <div className="flex items-center">
+                <Link
+                  href="/onboarding/internal"
+                  className="flex items-center justify-center rounded-md bg-white px-10 py-5 text-xl font-normal text-[#070707]"
+                >
+                  START NOW
+                </Link>
+              </div>
+            </div>
+            {/* Image visible only on desktop */}
+            <div className="hidden lg:block">
+              <Image
+                src="/assets/images/2a9f3b1efac9a6187c57fb64e3ecb4b3.jpeg"
+                alt="Mobile View"
+                width={331}
+                height={547}
+              />
+            </div>
+          </section>
+
           {/* CTA Section */}
-          <section className="flex flex-col items-center gap-8 px-6 py-12">
-            <h2 className="text-center text-3xl font-bold text-white">
-              Get your first Smart Account in seconds
+          <section className="bg-primary flex flex-col items-center gap-8 px-6 py-12">
+            <h2 className="text-center text-3xl font-bold text-[#070707]">
+              One dashboard to manage assets across all chains and networks
             </h2>
             <Link
               href="/onboarding/internal"
@@ -159,7 +196,7 @@ export function LandingPage() {
           </section>
 
           {/* Empathy Guide */}
-          <section className="flex flex-col gap-8 px-6 py-12">
+          <section className="flex flex-col gap-8 px-6 py-12 lg:px-28">
             <h2 className="text-3xl font-bold text-white">
               We were tired of clunky crypto UX...
             </h2>
