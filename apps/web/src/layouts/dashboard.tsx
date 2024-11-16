@@ -23,8 +23,8 @@ export function DashboardCustomLayout({
           {nav}
           <div
             className={cn(
-              "md:px-7 md:py-6",
-              "flex-grow space-y-2 overflow-auto p-6 max-sm:p-0",
+              "md:px-7 md:py-3",
+              "flex-grow space-y-2 overflow-auto p-3 max-sm:p-0",
             )}
           >
             {children}

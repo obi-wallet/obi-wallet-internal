@@ -1,14 +1,10 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Text } from "@/components";
 import { useStore } from "@/contexts";
 import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FaCircleUser, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-
-import { PrimaryLink } from "../links";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
@@ -29,86 +25,41 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="bg-panel-gradient relative flex w-full flex-col rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
-        <div className="relative flex justify-between px-4 py-1.5">
-          <div className="flex w-3/4 flex-row gap-3">
-            <div className="flex h-full max-h-[43px] w-full max-w-[43px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
-              {userData.avatar ? (
-                <Image
-                  width={43}
-                  height={43}
-                  className="h-revertLayer rounded-full object-cover max-sm:h-[37px]"
-                  src={userData.avatar}
-                  alt={name}
-                />
-              ) : (
-                <FaCircleUser className="h-full w-full text-white" />
-              )}
-            </div>
-            <div className="relative flex w-full flex-col gap-1">
-              <Text
-                size="xs"
-                color="white"
-                fontWeight="bold"
-                className="sm:text-xs"
-              >
-                {name}
-              </Text>
-
-              <PrimaryLink
-                href="/dashboard/settings/account"
-                className="text-xs text-sky-500 sm:text-xs"
-              >
-                Edit Profile
-              </PrimaryLink>
-            </div>
-          </div>
-          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
-            <img src="/points.svg" alt="points" className="h-5" />
-          </div>
-        </div>
-        <div className="gap-1 px-4 pb-3.5 pt-1.5">
-          <div className="flex justify-between">
-            <Text fontWeight="normal" className="mb-2 text-sm">
+      <div className="flex flex-col gap-2.5">
+        <div className="bg-primary flex flex-col items-start justify-start self-stretch rounded-[5px] p-2.5">
+          <Text className="font-roboto-mono w-full text-xl font-normal text-black">
+            {name}
+          </Text>
+          <div className="mt-2.5 flex flex-col items-start justify-start self-stretch">
+            <Text className="font-roboto-mono text-sm font-normal text-[#070707]">
               Balance
             </Text>
-            {userData.balanceHidden ? (
-              <FaRegEye
-                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {
-                  return handleHideBalance(false);
-                }}
-              />
-            ) : (
-              <FaRegEyeSlash
-                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {
-                  return handleHideBalance(true);
-                }}
-              />
-            )}
-          </div>
-          <div className="flex items-start gap-1">
-            <Text>$</Text>
-            <Text size="3xl" color="white" fontWeight="bold">
-              {userData.balanceHidden ? "******" : totalData.total}
-            </Text>
+            <div className="flex items-center">
+              <Text className="font-roboto-mono self-stretch text-xl font-normal text-[#070707]">
+                {userData.balanceHidden ? "******" : `$${totalData.total}`}
+              </Text>
+              {userData.balanceHidden ? (
+                <button
+                  onClick={() => {
+                    return handleHideBalance(false);
+                  }}
+                  className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
+                >
+                  👁️
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    return handleHideBalance(true);
+                  }}
+                  className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
+                >
+                  🙈
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mb-4 mt-0.5 flex gap-1 text-white">
-        <Button
-          href="/dashboard/transaction/send"
-          className="flex-1 justify-center rounded-bl rounded-br-none rounded-tl-none rounded-tr-none border-0"
-        >
-          Send
-        </Button>
-        <Button
-          href="/dashboard/transaction/receive"
-          className="flex-1 justify-center rounded-bl-none rounded-br rounded-tl-none rounded-tr-none border-0"
-        >
-          Receive
-        </Button>
       </div>
     </>
   );

@@ -19,7 +19,7 @@ export const DashboardHeader = observer(function DashboardHeader() {
     <header className={cn("h-16 w-full", "md:h-20")}>
       <div
         className={cn(
-          "bg-background-primary flex h-full w-full items-center justify-between px-3 shadow md:px-8",
+          "flex h-full w-full items-center justify-between bg-transparent px-3 shadow md:px-8",
         )}
       >
         <PrimaryLink href={primaryLinkHref}>

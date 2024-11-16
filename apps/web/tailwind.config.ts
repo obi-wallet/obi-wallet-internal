@@ -13,6 +13,7 @@ const config: Config = {
         text: "#ffffff",
         accent: "#0e0e25",
         secondary: "#0e0e25",
+        "banner-bg": "#ee9d38",
         "background-main": "#05070C",
         "background-primary": "#3C87CA",
         "background-primary-hover": "#0284c7",
