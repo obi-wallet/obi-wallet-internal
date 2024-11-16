@@ -86,7 +86,7 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Switching between <br /> interfaces
+                  Constant switching between <br /> interfaces to track assets
                 </p>
               </div>
               <div className="flex flex-col items-center gap-5">
@@ -97,7 +97,7 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Accidental errors <br /> and misclicks
+                  Sketchy bridging <br /> across ecosystems
                 </p>
               </div>
             </div>
@@ -117,7 +117,8 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  No seed phrases <br /> or key backups
+                  Customizable key setup <br /> for smooth transactions <br />{" "}
+                  and easy recovery
                 </p>
               </div>
               <div className="flex flex-col items-center gap-5">
@@ -128,7 +129,8 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Browser-based <br /> & no extensions
+                  Multi-chain accounts for <br /> EVM, L2s, Cosmos, Solana{" "}
+                  <br /> + Bitcoin coming soon
                 </p>
               </div>
               <div className="flex flex-col items-center gap-5">
@@ -139,14 +141,15 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Safer interactions <br /> with contracts
+                  Collaborative asset management <br /> for multiple users,
+                  treasuries, <br /> subscriptions, and DAOs
                 </p>
               </div>
             </div>
           </section>
 
           {/* Relief Section */}
-          <section className="flex flex-col items-center gap-6 self-stretch p-6 lg:flex-row lg:justify-center lg:gap-12 lg:p-12 lg:px-28">
+          <section className="flex flex-col items-center gap-6 self-stretch p-6 lg:flex-row lg:justify-center lg:gap-12 lg:p-12 lg:px-48">
             <div className="flex flex-col items-center gap-6 lg:items-start lg:gap-12">
               <h2 className="text-center text-3xl font-bold text-white lg:text-left">
                 Protect and manage all your assets in one place with customized
