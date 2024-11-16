@@ -108,7 +108,7 @@ export function LandingPage() {
             <h2 className="text-center text-3xl font-bold text-white">
               Obi gives you an effortless crypto experience
             </h2>
-            <div className="flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-48 lg:space-y-0">
+            <div className="flex w-full flex-col items-center space-y-10 lg:flex-row lg:justify-between lg:space-y-0">
               <div className="flex flex-col items-center gap-5">
                 <Image
                   src="/assets/images/key.svg"
