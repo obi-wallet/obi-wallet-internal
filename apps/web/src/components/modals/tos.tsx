@@ -65,7 +65,9 @@ export function TOSModal() {
             type="checkbox"
             id="tosCheckbox"
             checked={firstCheckbox}
-            onChange={() => {return setFirstCheckbox(!firstCheckbox)}}
+            onChange={() => {
+              return setFirstCheckbox(!firstCheckbox);
+            }}
             className="hidden"
           />
           <label

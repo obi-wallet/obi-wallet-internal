@@ -1,6 +1,5 @@
 "use client";
 
-import { Stepper } from "@/components";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 
