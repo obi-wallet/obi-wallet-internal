@@ -8,6 +8,11 @@ const config: Config = {
         revertLayer: "revert-layer",
       },
       colors: {
+        primary: "#32c9af",
+        background: "#070707",
+        text: "#ffffff",
+        accent: "#0e0e25",
+        secondary: "#0e0e25",
         "background-main": "#05070C",
         "background-primary": "#3C87CA",
         "background-primary-hover": "#0284c7",
@@ -21,6 +26,9 @@ const config: Config = {
 
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
+      },
+      fontFamily: {
+        "roboto-mono": ['"Roboto Mono"', "monospace"],
       },
       flex: {
         2: "2 2 0%",
@@ -38,9 +46,6 @@ const config: Config = {
           "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
         "panel-gradient":
           "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
-      },
-      fontFamily: {
-        "press-start-2p": ["var(--font-press-start-2p)"],
       },
     },
   },

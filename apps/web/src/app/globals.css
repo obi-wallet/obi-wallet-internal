@@ -5,6 +5,7 @@
 @layer base {
   html {
     @apply bg-background-main h-full;
+    scroll-behavior: smooth;
   }
 
   body {

@@ -1,208 +1,214 @@
 import { Header } from "@/components";
-import { LandingPageButton } from "@/components/buttons";
 import { MainContainer } from "@/layouts/root";
 import Image from "next/image";
-
-import { ScrollDownArrows } from "./scroll-down-arrows";
+import Link from "next/link";
 
 export function LandingPage() {
   return (
     <>
       <Header />
       <MainContainer>
-        <section className="flex min-h-screen w-full w-screen flex-col gap-12 bg-gray-900 text-white lg:gap-24">
-          <section className="flex h-full min-h-screen w-full w-screen min-w-full flex-col justify-center px-6 pb-48 text-center lg:px-28 lg:text-left">
-            <h1 className="text-xl font-light lg:text-5xl lg:leading-tight">
-              SIMPLE, SECURE, AND <br /> RECOVERABLE ACCOUNTS FOR <br />{" "}
-              <span className="font-bold">EFFORTLESS CRYPTO MANAGEMENT</span>
+        <section className="flex flex-col gap-24 bg-primary text-white w-full">
+          {/* Headline Section */}
+          <section className="relative flex flex-col justify-center px-6 py-20 gap-8 text-center lg:flex-row lg:items-center lg:px-28 lg:text-left min-h-screen bg-background text-white">
+          {/* Hero Section Content */}
+          <div className="lg:w-2/3">
+            <h1 className="text-4xl font-normal uppercase lg:text-5xl">
+              SIMPLE AND SECURE ACCOUNTS FOR <br />
+              <span className="font-bold">Effortless Crypto Management</span>
             </h1>
-            <p className="mt-6 text-xs font-extralight lg:text-3xl">
-              Get started with your secure smart account
+            <p className="mt-6 text-xl font-light">
+              Get started with your secure smart account now
             </p>
-            <div className="mt-6 flex flex-col space-y-5 lg:mt-8 lg:w-auto lg:flex-row lg:space-x-4 lg:space-y-0">
-              <LandingPageButton href="/onboarding/internal" colorScheme="dark">
+            <div className="mt-6 flex flex-col gap-5 lg:flex-row">
+              <Link
+                href="/onboarding/internal"
+                className="flex justify-center items-center px-10 py-5 bg-primary text-[#070707] text-xl font-normal rounded shadow"
+              >
                 START NOW
-              </LandingPageButton>
-              <LandingPageButton
+              </Link>
+              <Link
                 href="https://docs.obi.money"
-                colorScheme="light"
+                className="flex justify-center items-center px-10 py-5 bg-white text-accent text-xl font-normal rounded"
               >
                 BUILD WITH OBI
-              </LandingPageButton>
+              </Link>
             </div>
-
-            <ScrollDownArrows />
+          </div>
+          {/* Image */}
+          <div className="lg:w-1/3 bg-primary" />
+          {/* Bouncing Arrow */}
+          <div className="absolute bg-primary left-1/2 transform -translate-x-1/2 bottom-[10%]">
+            <Link href="#next-section" aria-label="Scroll down">
+              <svg
+                className="w-8 h-8 text-white animate-bounce"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M12 5v14M5 12l7 7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </Link>
+            </div>
           </section>
-          <section id="next-section" className="px-6 pt-12 text-center">
-            <h2 className="mb-6 text-lg font-semibold lg:mb-8 lg:text-4xl">
-              Frustrated with crypto wallets that complicate security and
-              usability?
+
+          {/* Stakes Section */}
+          <section id="next-section" className="flex flex-col items-center gap-10 px-6 py-12 mx-auto max-w-screen-xl">
+            <h2 className="text-center text-white text-3xl font-bold">
+              Crypto wallets are insecure and difficult to use
             </h2>
-            <div className="space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-between lg:space-y-0 lg:text-2xl">
-              <div className="w-full px-4 lg:w-1/3">
+            <div className="flex flex-col space-y-10 space-x-0 lg:flex-row lg:space-y-0 lg:space-x-32 xxl:space-x-48" >
+              <div className="flex flex-col items-center gap-5">
                 <Image
-                  alt="landing-close"
-                  className="mx-auto mb-4"
-                  width="101"
-                  height="100"
-                  src="/assets/icons/landing-close.svg"
+                  src="/assets/images/shield-cross.svg"
+                  alt="Risky Key Setups Icon"
+                  width={100}
+                  height={100}
                 />
-                <p className="text-sm lg:text-2xl">
+                <p className="text-center text-white text-xl">
                   Risky key setups <br /> and lost funds
                 </p>
               </div>
-              <div className="w-full px-4 lg:w-1/3">
+              <div className="flex flex-col items-center gap-5">
                 <Image
-                  alt="landing-close"
-                  className="mx-auto mb-4"
-                  width="101"
-                  height="100"
-                  src="/assets/icons/landing-close.svg"
+                  src="/assets/images/widget.svg"
+                  alt="Switching Interfaces Icon"
+                  width={100}
+                  height={100}
                 />
-                <p className="text-sm lg:text-2xl">
-                  Constant switching between interfaces <br /> to track assets
+                <p className="text-center text-white text-xl">
+                  Switching between <br /> interfaces
                 </p>
               </div>
-              <div className="w-full px-4 lg:w-1/3">
+              <div className="flex flex-col items-center gap-5">
                 <Image
-                  alt="landing-close"
-                  className="mx-auto mb-4"
-                  width="101"
-                  height="100"
-                  src="/assets/icons/landing-close.svg"
+                  src="/assets/images/danger.svg"
+                  alt="Accidental Errors Icon"
+                  width={100}
+                  height={100}
                 />
-                <p className="text-sm lg:text-2xl">
-                  Unreliable bridging <br /> across chains and ecosystems
-                </p>
-              </div>
-            </div>
-          </section>
-          <section className="lg:py-25 bg-sky-600 py-16 text-center">
-            <h2 className="text-base lg:text-4xl">
-              With Obi, manage all of your assets securely with a simple, <br />
-              custom multi-factor setup that puts you in control
-            </h2>
-            <LandingPageButton
-              href="/onboarding/internal"
-              className="mt-12 bg-white"
-              colorScheme="light"
-            >
-              START NOW
-            </LandingPageButton>
-          </section>
-          <section className="px-6 text-center">
-            <h2 className="mb-6 text-2xl font-semibold lg:mb-8 lg:text-4xl">
-              Obi is Built Different
-            </h2>
-            <div className="space-y-6 text-center text-white lg:flex lg:flex-row lg:justify-between lg:space-y-0 lg:text-2xl">
-              <div className="w-full px-4 lg:w-1/3">
-                <Image
-                  alt="landing-access"
-                  className="mx-auto mb-4"
-                  width="65"
-                  height="64"
-                  src="/assets/icons/landing-access.svg"
-                />
-                <p>
-                  <em>Customizable key setup</em> <br />
-                  for smooth transactions <br /> and easy recovery
-                </p>
-              </div>
-              <div className="w-full px-4 lg:w-1/3">
-                <Image
-                  alt="landing-home"
-                  className="mx-auto mb-4"
-                  width="65"
-                  height="64"
-                  src="/assets/icons/landing-home.svg"
-                />
-                <p>
-                  <em>Multi-chain compatibility</em>
-                  <br />
-                  EVM, L2s, Cosmos, Solana <br /> + Bitcoin coming soon
-                </p>
-              </div>
-              <div className="w-full px-4 lg:w-1/3">
-                <Image
-                  alt="landing-champagne"
-                  className="mx-auto mb-4"
-                  width="65"
-                  height="64"
-                  src="/assets/icons/landing-champagne.svg"
-                />
-                <p>
-                  <em>Collaborative asset management</em> <br />
-                  Team up for treasuries <br /> and DAOs
+                <p className="text-center text-white text-xl">
+                  Accidental errors <br /> and misclicks
                 </p>
               </div>
             </div>
           </section>
-          <section className="lg:py-25 bg-sky-600 py-16 text-center">
-            <h2 className="text-base font-semibold lg:text-4xl">
-              One dashboard to manage assets across all chains and networks
+
+          {/* Solution Section */}
+          <section className="flex flex-col items-center gap-8 px-6 py-12">
+            <h2 className="text-center text-white text-3xl font-bold">
+              Obi gives you an effortless crypto experience
             </h2>
-            <LandingPageButton
+            <div className="flex flex-col space-y-10 space-x-0 lg:flex-row lg:space-y-0 lg:space-x-32 xxl:space-x-48">
+              <div className="flex flex-col items-center gap-5">
+                <Image
+                  src="/assets/images/key.svg"
+                  alt="No Seed Phrases Icon"
+                  width={100}
+                  height={100}
+                />
+                <p className="text-center text-white text-xl">
+                  No seed phrases <br /> or key backups
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-5">
+                <Image
+                  src="/assets/images/earth.svg"
+                  alt="Browser-based Icon"
+                  width={100}
+                  height={100}
+                />
+                <p className="text-center text-white text-xl">
+                  Browser-based <br /> & no extensions
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-5">
+                <Image
+                  src="/assets/images/confetti.svg"
+                  alt="Safe Interactions Icon"
+                  width={100}
+                  height={100}
+                />
+                <p className="text-center text-white text-xl">
+                  Safer interactions <br /> with contracts
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="flex flex-col items-center gap-8 px-6 py-12">
+            <h2 className="text-center text-white text-3xl font-bold">
+              Get your first Smart Account in seconds
+            </h2>
+            <Link
               href="/onboarding/internal"
-              className="mt-12 bg-white"
-              colorScheme="light"
+              className="flex justify-center items-center px-10 py-5 bg-white text-[#070707] text-xl font-normal rounded"
             >
               START NOW
-            </LandingPageButton>
+            </Link>
           </section>
-          <section className="px-20 py-8 lg:py-12">
-            <h2 className="mb-6 text-2xl lg:mb-16 lg:text-5xl">
-              Frustrated with clunky crypto UX? So are we.
+
+          {/* Empathy Guide */}
+          <section className="flex flex-col gap-8 px-6 py-12">
+            <h2 className="text-white text-3xl font-bold">
+              We were tired of clunky crypto UX...
             </h2>
-            <p className="mb-8 text-sm lg:text-3xl">
+            <p className="text-white text-xl">
               Obi was built to give you a seamless, secure way to manage assets
               conveniently and without compromise.
             </p>
-            <p className="mb-8 text-sm lg:text-3xl">
-              Self-custody is a human right. With Obi, avoid the common pitfalls
-              of lost assets and navigate decentralized ecosystems effortlessly
-              – while staying fully in control.
+            <p className="text-white text-xl">
+              Self-custody is a human right. With Obi, avoid the common pitfalls of
+              lost assets and navigate decentralized ecosystems effortlessly – while
+              staying fully in control.
             </p>
-
-            <div className="my-16 items-center justify-items-center space-y-10 lg:flex lg:flex-row lg:justify-between lg:space-y-0">
-              <p className="text-sm">Supported By</p>
-              <Image
-                alt="landing-artboard-12"
-                width="124"
-                height="44"
-                src="/assets/icons/landing-artboard-12.svg"
-              />
-              <Image
-                alt="landing-asset-21"
-                width="112"
-                height="44"
-                src="/assets/icons/landing-asset-21.svg"
-              />
-              <Image
-                alt="landing-asset-22"
-                width="142"
-                height="40"
-                src="/assets/icons/landing-asset-22.svg"
-              />
-              <Image
-                alt="landing-wagmi"
-                width="80"
-                height="80"
-                src="/assets/icons/landing-wagmi.svg"
-              />
-              <Image
-                alt="landing-shade"
-                width="140"
-                height="36"
-                src="/assets/icons/landing-shade.svg"
-              />
-              <Image
-                alt="landing-asset-13"
-                width="144"
-                height="48"
-                src="/assets/icons/landing-asset-13.svg"
-              />
-            </div>
           </section>
+
+          {/* Sponsors */}
+          <section className="flex flex-col items-center gap-10 px-6 py-12">
+            <h2 className="text-center text-primary text-xl">
+              With support from the best in crypto:
+            </h2>
+            <p className="text-center text-primary text-xl">
+              Secret Network / LonghashX / Kado / WAGMI Ventures / RnR Capital / Shade
+              Protocol / Blink Capital / Honest Pirate
+            </p>
+          </section>
+
+          {/* Footer */}
+          <footer className="flex flex-col lg:flex-row items-center justify-between px-6 py-5 bg-background">
+            <p className="text-white text-xl">
+              © 2024 Obi Technologies. All rights reserved.
+            </p>
+            <div className="flex space-x-10">
+              <Link
+                href="https://twitter.com/obi_wallet"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  src="/assets/icons/twitter.svg"
+                  alt="Twitter"
+                  width={30}
+                  height={30}
+                />
+              </Link>
+              <Link
+                href="https://t.me/obi_wallet"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  src="/assets/icons/telegram.svg"
+                  alt="Telegram"
+                  width={30}
+                  height={30}
+                />
+              </Link>
+            </div>
+          </footer>
         </section>
       </MainContainer>
     </>

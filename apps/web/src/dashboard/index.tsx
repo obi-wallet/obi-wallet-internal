@@ -357,7 +357,6 @@ const Network = observer(function NetworkAssets({
     </div>
   );
 });
-
 export const AssetRow = observer(function AssetRow({
   asset,
   editMode,
@@ -581,3 +580,4 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     data,
   };
 }
+
