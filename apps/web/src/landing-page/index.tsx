@@ -61,13 +61,13 @@ export function LandingPage() {
           {/* Stakes Section */}
           <section
             id="next-section"
-            className="mx-auto flex max-w-screen-xl flex-col items-center gap-10 px-6 py-12"
+            className="flex flex-col items-center gap-8 px-6 py-12"
           >
             <h2 className="text-center text-3xl font-bold text-white">
               Crypto wallets are insecure and difficult to use
             </h2>
-            <div className="flex flex-col space-x-0 space-y-10 lg:flex-row lg:space-x-48 lg:space-y-0">
-              <div className="flex flex-col items-center gap-5">
+            <div className="flex w-full flex-col items-center lg:flex-row lg:justify-center">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/shield-cross.svg"
                   alt="Risky Key Setups Icon"
@@ -78,7 +78,7 @@ export function LandingPage() {
                   Risky key setups <br /> and lost funds
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/widget.svg"
                   alt="Switching Interfaces Icon"
@@ -89,10 +89,10 @@ export function LandingPage() {
                   Constant switching between <br /> interfaces to track assets
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/danger.svg"
-                  alt="Accidental Errors Icon"
+                  alt="Sketchy Bridging Icon"
                   width={100}
                   height={100}
                 />
@@ -108,8 +108,8 @@ export function LandingPage() {
             <h2 className="text-center text-3xl font-bold text-white">
               Obi gives you an effortless crypto experience
             </h2>
-            <div className="flex w-full flex-col items-center space-y-10 lg:flex-row lg:justify-between lg:space-y-0">
-              <div className="flex flex-col items-center gap-5">
+            <div className="flex w-full flex-col items-center lg:flex-row lg:justify-center">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/key.svg"
                   alt="No Seed Phrases Icon"
@@ -121,7 +121,7 @@ export function LandingPage() {
                   and easy recovery
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/earth.svg"
                   alt="Browser-based Icon"
@@ -133,16 +133,19 @@ export function LandingPage() {
                   <br /> + Bitcoin coming soon
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
                 <Image
                   src="/assets/images/confetti.svg"
-                  alt="Safe Interactions Icon"
+                  alt="Collaborative Asset Management Icon"
                   width={100}
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Collaborative asset management <br /> for multiple users,
-                  treasuries, <br /> subscriptions, and DAOs
+                  Collaborative asset management
+                  <br />
+                  for multiple users, treasuries,
+                  <br />
+                  and DAOs
                 </p>
               </div>
             </div>
@@ -150,7 +153,7 @@ export function LandingPage() {
 
           {/* Relief Section */}
           <section className="flex flex-col items-center gap-6 self-stretch p-6 lg:flex-row lg:justify-center lg:gap-12 lg:p-12 lg:px-48">
-            <div className="flex flex-col items-center gap-6 lg:items-start lg:gap-12">
+            <div className="flex max-w-xl flex-col items-center gap-6 lg:items-start lg:gap-12">
               <h2 className="text-center text-3xl font-bold text-white lg:text-left">
                 Protect and manage all your assets in one place with customized
                 security controls.
@@ -232,7 +235,7 @@ export function LandingPage() {
             </p>
             <div className="flex space-x-10">
               <Link
-                href="https://twitter.com/obi_wallet"
+                href="https://twitter.com/ObiDotMoney"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -244,7 +247,7 @@ export function LandingPage() {
                 />
               </Link>
               <Link
-                href="https://t.me/obi_wallet"
+                href="https://t.me/obi_money"
                 target="_blank"
                 rel="noopener noreferrer"
               >
