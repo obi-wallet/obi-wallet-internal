@@ -580,4 +580,3 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     data,
   };
 }
-

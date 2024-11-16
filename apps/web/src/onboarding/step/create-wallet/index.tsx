@@ -57,9 +57,9 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
   if (createWalletMutation.isPending) {
     return (
-      <div className="flex flex-col items-center gap-[105px] bg-[#070707] w-full min-h-screen py-6">
+      <div className="flex min-h-screen w-full flex-col items-center gap-[105px] bg-[#070707] py-6">
         {/* Loading Animation */}
-        <div className="flex flex-col items-center gap-[22px] w-full max-w-md px-8">
+        <div className="flex w-full max-w-md flex-col items-center gap-[22px] px-8">
           <LoadingText />
           <LoadingDots />
         </div>
@@ -83,15 +83,19 @@ function LoadingText() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMessageIndex((prevIndex) => {return (prevIndex + 1) % messages.length});
+      setMessageIndex((prevIndex) => {
+        return (prevIndex + 1) % messages.length;
+      });
     }, 2000); // Change message every 2 seconds
 
-    return () => {return clearInterval(interval)};
+    return () => {
+      return clearInterval(interval);
+    };
   }, []);
 
   return (
     <div className="h-[26px] w-full">
-      <div className="text-white text-xl font-normal font-roboto-mono text-left w-full">
+      <div className="font-roboto-mono w-full text-left text-xl font-normal text-white">
         {messages[messageIndex]}
       </div>
     </div>
@@ -103,19 +107,23 @@ function LoadingDots() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDotCount((prevCount) => {return (prevCount + 1) % 4});
+      setDotCount((prevCount) => {
+        return (prevCount + 1) % 4;
+      });
     }, 500); // Change every 0.5 seconds
 
-    return () => {return clearInterval(interval)};
+    return () => {
+      return clearInterval(interval);
+    };
   }, []);
 
-  const dots = '.'.repeat(dotCount);
+  const dots = ".".repeat(dotCount);
   const baseMessage = "This should only take a few seconds";
   const displayedMessage = `${baseMessage}${dots}`;
 
   return (
     <div className="h-[26px] w-full">
-      <div className="text-white text-xl font-normal font-roboto-mono text-left w-full">
+      <div className="font-roboto-mono w-full text-left text-xl font-normal text-white">
         {displayedMessage}
       </div>
     </div>

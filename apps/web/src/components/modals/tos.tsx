@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
 import { Modal } from ".";
-import { Button } from "..";
 
 export function TOSModal() {
   const [showTOSModal, setShowTOSModal] = useState(false);
@@ -26,7 +25,7 @@ export function TOSModal() {
 
   return (
     <Modal title="">
-      <div className="flex flex-col gap-6 p-6 bg-background text-white font-roboto-mono">
+      <div className="bg-background font-roboto-mono flex flex-col gap-6 p-6 text-white">
         {/* Disclaimer Heading */}
         <h2 className="text-xl font-normal">Disclaimer</h2>
 
@@ -43,17 +42,20 @@ export function TOSModal() {
         </p>
 
         {/* Description */}
-        <div className="text-sm font-normal space-y-4">
+        <div className="space-y-4 text-sm font-normal">
           <p>
-            While Obi’s smart contracts have been audited by third parties, the use of Obi Fast
-            Travel and Obi Dashboard is noncustodial and there are no representations or warranties
-            that its usage will be uninterrupted or error-free. Services are provided on an “as is”
-            and “as available” basis. Any risk of usage of Obi services is solely borne by User.
+            While Obi’s smart contracts have been audited by third parties, the
+            use of Obi Fast Travel and Obi Dashboard is noncustodial and there
+            are no representations or warranties that its usage will be
+            uninterrupted or error-free. Services are provided on an “as is” and
+            “as available” basis. Any risk of usage of Obi services is solely
+            borne by User.
           </p>
           <p>
-            Obi reserves the right to make changes to Obi Fast Travel and Obi Dashboard in its sole
-            discretion as it deems necessary or desirable. User’s continued use of Obi Fast Travel
-            and Obi Dashboard constitutes acceptance of any changes made.
+            Obi reserves the right to make changes to Obi Fast Travel and Obi
+            Dashboard in its sole discretion as it deems necessary or desirable.
+            User’s continued use of Obi Fast Travel and Obi Dashboard
+            constitutes acceptance of any changes made.
           </p>
         </div>
 
@@ -63,19 +65,19 @@ export function TOSModal() {
             type="checkbox"
             id="tosCheckbox"
             checked={firstCheckbox}
-            onChange={() => setFirstCheckbox(!firstCheckbox)}
+            onChange={() => {return setFirstCheckbox(!firstCheckbox)}}
             className="hidden"
           />
           <label
             htmlFor="tosCheckbox"
-            className="flex items-center gap-4 cursor-pointer"
+            className="flex cursor-pointer items-center gap-4"
           >
             <div
               className={cn(
-                "flex items-center justify-center w-[22px] h-[22px] rounded border flex-shrink-0",
+                "flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded border",
                 firstCheckbox
                   ? "bg-primary border-primary"
-                  : "bg-[#d9d9d9] border-gray-400"
+                  : "border-gray-400 bg-[#d9d9d9]",
               )}
             >
               {firstCheckbox ? (
@@ -105,8 +107,8 @@ export function TOSModal() {
             onClick={acceptTOS}
             disabled={!firstCheckbox}
             className={cn(
-              "w-full py-2.5 rounded-[5px] text-xl font-normal text-center bg-primary text-[#070707]",
-              !firstCheckbox && "opacity-50 cursor-not-allowed"
+              "bg-primary w-full rounded-[5px] py-2.5 text-center text-xl font-normal text-[#070707]",
+              !firstCheckbox && "cursor-not-allowed opacity-50",
             )}
           >
             Confirm

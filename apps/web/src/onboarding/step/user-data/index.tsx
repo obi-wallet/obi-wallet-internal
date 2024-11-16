@@ -11,22 +11,22 @@ export const UserDataStep = observer(function UserDataStep({
   next,
 }: StepProps<UserDataOnboardingStep>) {
   return (
-    <div className="flex flex-col items-center gap-[115px] bg-[#070707] w-full min-h-screen py-6">
+    <div className="flex min-h-screen w-full flex-col items-center gap-[115px] bg-[#070707] py-6">
       {/* Main Content */}
-      <div className="flex flex-col gap-[22px] w-full max-w-md px-8">
+      <div className="flex w-full max-w-md flex-col gap-[22px] px-8">
         {/* Heading */}
-        <h1 className="text-white text-xl font-normal font-roboto-mono">
+        <h1 className="font-roboto-mono text-xl font-normal text-white">
           Create an Account
         </h1>
         {/* Subheading */}
-        <p className="text-white text-xl font-normal font-roboto-mono">
+        <p className="font-roboto-mono text-xl font-normal text-white">
           Enter a name for your account below.
         </p>
         {/* Input Field */}
-        <div className="w-full rounded-[5px] border border-[#32c9af] flex items-center">
+        <div className="flex w-full items-center rounded-[5px] border border-[#32c9af]">
           <Input
             labelClassname="text-white text-lg font-normal font-roboto-mono"
-            className="w-full bg-transparent text-white text-lg font-normal font-roboto-mono placeholder:text-gray-400 focus:outline-none border-0"
+            className="font-roboto-mono w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
             value={draft.value.name}
             onChange={(value) => {
               draft.value.setName(value);
@@ -35,13 +35,13 @@ export const UserDataStep = observer(function UserDataStep({
           />
         </div>
         {/* Buttons */}
-        <div className="flex gap-[22px] w-full">
+        <div className="flex w-full gap-[22px]">
           {back && (
             <button
               onClick={back}
-              className="flex-1 h-[46px] py-2.5 rounded-[5px] border border-white flex justify-center items-center"
+              className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
             >
-              <span className="text-center text-white text-xl font-normal font-roboto-mono">
+              <span className="font-roboto-mono text-center text-xl font-normal text-white">
                 Back
               </span>
             </button>
@@ -50,13 +50,13 @@ export const UserDataStep = observer(function UserDataStep({
             <button
               onClick={next}
               disabled={!draft.value.name}
-              className={`flex-1 h-[46px] py-2.5 rounded-[5px] ${
+              className={`h-[46px] flex-1 rounded-[5px] py-2.5 ${
                 draft.value.name
-                  ? "bg-[#32c9af] cursor-pointer"
-                  : "bg-[#32c9af] opacity-50 cursor-not-allowed"
-              } flex justify-center items-center`}
+                  ? "cursor-pointer bg-[#32c9af]"
+                  : "cursor-not-allowed bg-[#32c9af] opacity-50"
+              } flex items-center justify-center`}
             >
-              <span className="text-center text-[#070707] text-xl font-normal font-roboto-mono">
+              <span className="font-roboto-mono text-center text-xl font-normal text-[#070707]">
                 Confirm
               </span>
             </button>

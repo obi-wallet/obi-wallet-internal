@@ -53,7 +53,9 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   });
 
   const handleClickHere = () => {
-    setUseCloudKey((prev) => {return !prev});
+    setUseCloudKey((prev) => {
+      return !prev;
+    });
   };
 
   const handlePrimaryAction = () => {
@@ -65,38 +67,40 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
   };
 
   return (
-    <div className="flex flex-col items-center gap-[70px] bg-[#070707] w-full min-h-screen py-6">
+    <div className="flex min-h-screen w-full flex-col items-center gap-[70px] bg-[#070707] py-6">
       {/* Main Content */}
-      <div className="flex flex-col gap-[22px] w-full max-w-md px-8">
+      <div className="flex w-full max-w-md flex-col gap-[22px] px-8">
         {/* Heading */}
-        <h1 className="text-white text-xl font-normal font-roboto-mono">
+        <h1 className="font-roboto-mono text-xl font-normal text-white">
           Secure Your Account
         </h1>
 
         {/* Subheading */}
         {useCloudKey ? (
-          <p className="text-white text-xl font-normal font-roboto-mono">
-            Create a cloud key to secure your account. This key is associated with a third party cloud storage service.
+          <p className="font-roboto-mono text-xl font-normal text-white">
+            Create a cloud key to secure your account. This key is associated
+            with a third party cloud storage service.
             <br />
             <br />
             You can add more keys later for increased security, or{" "}
             <span
               onClick={handleClickHere}
-              className="text-[#32c9af] cursor-pointer"
+              className="cursor-pointer text-[#32c9af]"
             >
               click here
             </span>{" "}
             if you’d prefer to create a passkey.
           </p>
         ) : (
-          <p className="text-white text-xl font-normal font-roboto-mono">
-            Create a passkey to secure your account. This key is associated with the device you’re currently using.
+          <p className="font-roboto-mono text-xl font-normal text-white">
+            Create a passkey to secure your account. This key is associated with
+            the device you’re currently using.
             <br />
             <br />
             You can add more keys later for increased security, or{" "}
             <span
               onClick={handleClickHere}
-              className="text-[#32c9af] cursor-pointer"
+              className="cursor-pointer text-[#32c9af]"
             >
               click here
             </span>{" "}
@@ -105,22 +109,22 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         )}
 
         {/* Buttons */}
-        <div className="flex gap-[22px] w-full">
+        <div className="flex w-full gap-[22px]">
           {back && (
             <button
               onClick={back}
-              className="flex-1 h-[46px] py-2.5 rounded-[5px] border border-white flex justify-center items-center"
+              className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
             >
-              <span className="text-center text-white text-xl font-normal font-roboto-mono">
+              <span className="font-roboto-mono text-center text-xl font-normal text-white">
                 Back
               </span>
             </button>
           )}
           <button
             onClick={handlePrimaryAction}
-            className="flex-1 h-[46px] py-2.5 bg-[#32c9af] rounded-[5px] flex justify-center items-center"
+            className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] bg-[#32c9af] py-2.5"
           >
-            <span className="text-center text-[#070707] text-xl font-normal font-roboto-mono">
+            <span className="font-roboto-mono text-center text-xl font-normal text-[#070707]">
               {useCloudKey ? "New Cloud Key" : "New Passkey"}
             </span>
           </button>
