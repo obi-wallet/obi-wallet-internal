@@ -64,7 +64,7 @@ export function LandingPage() {
             className="flex flex-col items-center gap-8 px-6 py-12"
           >
             <h2 className="text-center text-3xl font-bold text-white">
-              Crypto wallets are insecure and difficult to use
+              Frustrated with crypto wallets that complicate security and usability?
             </h2>
             <div className="flex w-full flex-col items-center lg:flex-row lg:justify-center">
               <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
@@ -97,7 +97,7 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Sketchy bridging <br /> across ecosystems
+                  Unreliable bridging <br /> across chains and ecosystems
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export function LandingPage() {
                   height={100}
                 />
                 <p className="text-center text-xl text-white">
-                  Customizable key setup <br /> for smooth transactions <br />{" "}
+                  Customizable multi-factor setup <br /> for smooth transactions <br />{" "}
                   and easy recovery
                 </p>
               </div>
@@ -155,8 +155,7 @@ export function LandingPage() {
           <section className="flex flex-col items-center gap-6 self-stretch p-6 lg:flex-row lg:justify-center lg:gap-12 lg:p-12 lg:px-48">
             <div className="flex max-w-xl flex-col items-center gap-6 lg:items-start lg:gap-12">
               <h2 className="text-center text-3xl font-bold text-white lg:text-left">
-                Protect and manage all your assets in one place with customized
-                security controls.
+                One dashboard to manage assets and policies across all chains and networks.
               </h2>
               {/* Image visible only on mobile */}
               <div className="w-full lg:hidden">
@@ -188,7 +187,7 @@ export function LandingPage() {
             </div>
           </section>
 
-          {/* CTA Section */}
+          {/* CTA Section
           <section className="bg-primary flex flex-col items-center gap-8 px-6 py-12">
             <h2 className="text-center text-3xl font-bold text-[#070707]">
               One dashboard to manage assets across all chains and networks
@@ -199,7 +198,7 @@ export function LandingPage() {
             >
               START NOW
             </Link>
-          </section>
+          </section> */}
 
           {/* Empathy Guide */}
           <section className="flex flex-col gap-8 px-6 py-12 lg:px-28">

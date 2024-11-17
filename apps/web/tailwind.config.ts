@@ -30,6 +30,7 @@ const config: Config = {
       },
       fontFamily: {
         "roboto-mono": ['"Roboto Mono"', "monospace"],
+        normal: ['"Roboto Mono"', "monospace"],
       },
       flex: {
         2: "2 2 0%",
