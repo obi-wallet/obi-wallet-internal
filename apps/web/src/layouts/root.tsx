@@ -1,7 +1,7 @@
 import { pressStart2P } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { UserInteractionsHandlers } from "@/user-interactions";
-import { Inter , Roboto_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import { ReactNode } from "react";
 
 export const robotoMono = Roboto_Mono({

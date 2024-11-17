@@ -45,7 +45,11 @@ export const Account = observer(function Account() {
                   }}
                   className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
                 >
-                  👁️
+                  <img
+                    src="/assets/icons/eye-closed.svg"
+                    alt="Reveal Balance"
+                    className="h-4 w-4"
+                  />
                 </button>
               ) : (
                 <button
@@ -54,7 +58,11 @@ export const Account = observer(function Account() {
                   }}
                   className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
                 >
-                  🙈
+                  <img
+                    src="/assets/icons/eye-open.svg"
+                    alt="Hide Balance"
+                    className="h-4 w-4"
+                  />
                 </button>
               )}
             </div>
