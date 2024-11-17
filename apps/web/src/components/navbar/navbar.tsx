@@ -179,7 +179,7 @@ export function AccountAndCTA() {
       <div className="flex items-start justify-start gap-2.5 self-stretch">
         <Link
           href="/dashboard/transaction/send"
-          className="flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
+          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
         >
           <div className="font-roboto-mono text-center text-base font-normal text-white">
             Send
@@ -187,7 +187,7 @@ export function AccountAndCTA() {
         </Link>
         <Link
           href="/dashboard/transaction/receive"
-          className="flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
+          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
         >
           <div className="font-roboto-mono text-center text-base font-normal text-white">
             Receive

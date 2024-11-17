@@ -1,3 +1,4 @@
+import { Roboto_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
 export const pressStart2P = localFont({
@@ -19,4 +20,11 @@ export const pressStart2P = localFont({
     },
   ],
   variable: "--font-press-start-2p",
+});
+
+export const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  weight: ["100", "400", "500", "700"],
+  variable: "--font-roboto-mono",
+  display: "swap",
 });

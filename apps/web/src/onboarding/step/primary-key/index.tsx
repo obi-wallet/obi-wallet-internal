@@ -77,7 +77,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
 
         {/* Subheading */}
         {useCloudKey ? (
-          <p className="font-roboto-mono text-xl font-normal text-white">
+          <p className="font-roboto-mono font-light text-white">
             Create a cloud key to secure your account. This key is associated
             with a third party cloud storage service.
             <br />
@@ -92,7 +92,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             if you’d prefer to create a passkey.
           </p>
         ) : (
-          <p className="font-roboto-mono text-xl font-normal text-white">
+          <p className="font-roboto-mono font-light text-white">
             Create a passkey to secure your account. This key is associated with
             the device you’re currently using.
             <br />

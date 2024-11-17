@@ -24,13 +24,11 @@ const config: Config = {
         "background-select-hover": "var(--background-select-hover)",
         "background-select-active": "var(--background-select-active)",
         "background-select-disabled": "var(--background-select-disabled)",
-
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
       fontFamily: {
-        "roboto-mono": ['"Roboto Mono"', "monospace"],
-        normal: ['"Roboto Mono"', "monospace"],
+        "roboto-mono": ["var(--font-roboto-mono)", "monospace"],
       },
       flex: {
         2: "2 2 0%",

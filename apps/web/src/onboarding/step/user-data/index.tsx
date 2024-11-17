@@ -19,7 +19,7 @@ export const UserDataStep = observer(function UserDataStep({
           Create an Account
         </h1>
         {/* Subheading */}
-        <p className="font-roboto-mono text-xl font-normal text-white">
+        <p className="font-roboto-mono font-thin text-white">
           Enter a name for your account below.
         </p>
         {/* Input Field */}
