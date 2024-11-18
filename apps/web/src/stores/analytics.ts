@@ -1,4 +1,5 @@
 import { MpcWallets } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { Session } from "@obi-wallet/wallet-connect";
 import { observable, runInAction, when } from "mobx";
 
@@ -19,16 +20,21 @@ export class AnalyticsStore {
     runInAction(() => {
       this.pairingTopicToSession[session.pairingTopic] = session;
     });
-    // TODO: mocked for now
-    console.log("ANALYTICS: session_approval", {
-      userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-      dAppUrl: session.peer.metadata.url,
+    await fetch("/api/analytics/app-connect", {
+      method: "POST",
+      body: serialize({
+        userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
+        dAppUrl: session?.peer.metadata.url,
+      }),
     });
   }
 
   public async trackOnboarding() {
-    console.log("ANALYTICS: finished onboarding", {
-      userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
+    await fetch("/api/analytics/onboarding", {
+      method: "POST",
+      body: serialize({
+        userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
+      }),
     });
   }
 
@@ -51,20 +57,22 @@ export class AnalyticsStore {
 
       const session = this.pairingTopicToSession[pairingTopic];
 
-      // TODO: mocked for now
-      console.log("ANALYTICS: onboarding via dApp", {
-        userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-        dAppUrl: session?.peer.metadata.url,
+      await fetch("/api/analytics/onboarding", {
+        method: "POST",
+        body: serialize({
+          userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
+          dAppUrl: session?.peer.metadata.url,
+        }),
       });
     } catch (error) {
       console.log(error);
-      // TODO: mocked for now
-      console.log(
-        "ANALYTICS: onboarding via dApp but connection failed/timed out",
-        {
+      await fetch("/api/analytics/onboarding", {
+        method: "POST",
+        body: serialize({
           userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-        },
-      );
+          dAppUrl: "UNKNOWN",
+        }),
+      });
     }
   }
 }
