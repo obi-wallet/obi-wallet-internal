@@ -453,7 +453,7 @@ const SendInner = observer<{
     issue.path.length === 0 &&
     issue.code === "custom";
   return (
-    <div className="space-y-7 py-4">
+    <div className="flex flex-col gap-4 p-2.5">
       <Controller
         name="recipient"
         control={form.control}
@@ -463,7 +463,8 @@ const SendInner = observer<{
             <Input
               label="Recipient Address"
               labelClassname="bg-background-secondary"
-              placeholder="Enter recipient address"
+              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
+              placeholder="Enter Recipient Address"
               value={field.value}
               onChange={(recipient) => {
                 field.onChange(recipient);
@@ -484,7 +485,8 @@ const SendInner = observer<{
             <Input
               label="Amount"
               labelClassname="bg-background-secondary"
-              placeholder="0.1"
+              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
+              placeholder="Enter Amount"
               value={coin.amount}
               inputClassName="flex-1"
               rightContainerClassName="flex-1"
@@ -585,9 +587,8 @@ const SendInner = observer<{
                 />
               }
             >
-              <div className="flex gap-3 text-slate-500">
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+              <div className="mt-2 flex gap-2.5">
+                <Button
                   onClick={() => {
                     setCoin({
                       amount:
@@ -595,11 +596,13 @@ const SendInner = observer<{
                       asset: coin.asset,
                     });
                   }}
+                  className="rounded-[5px] bg-[#353535] p-2.5"
                 >
-                  25%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  <Text className="font-['Roboto Mono'] text-lg text-white">
+                    25%
+                  </Text>
+                </Button>
+                <Button
                   onClick={() => {
                     setCoin({
                       amount:
@@ -607,11 +610,13 @@ const SendInner = observer<{
                       asset: coin.asset,
                     });
                   }}
+                  className="rounded-[5px] bg-[#353535] p-2.5"
                 >
-                  50%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  <Text className="font-['Roboto Mono'] text-lg text-white">
+                    50%
+                  </Text>
+                </Button>
+                <Button
                   onClick={() => {
                     setCoin({
                       amount:
@@ -619,26 +624,30 @@ const SendInner = observer<{
                       asset: coin.asset,
                     });
                   }}
+                  className="rounded-[5px] bg-[#353535] p-2.5"
                 >
-                  75%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
+                  <Text className="font-['Roboto Mono'] text-lg text-white">
+                    75%
+                  </Text>
+                </Button>
+                <Button
                   onClick={() => {
                     setCoin({
                       amount: coin.asset?.balance.toString() ?? "",
                       asset: coin.asset,
                     });
                   }}
+                  className="rounded-[5px] bg-[#353535] p-2.5"
                 >
-                  100%
-                </span>
+                  <Text className="font-['Roboto Mono'] text-lg text-white">
+                    100%
+                  </Text>
+                </Button>
               </div>
             </Input>
           );
         }}
       />
-
       <Controller
         name="memo"
         control={form.control}
@@ -648,16 +657,17 @@ const SendInner = observer<{
             <Input
               label="Memo (optional)"
               labelClassname="bg-background-secondary"
-              placeholder="Enter Memo"
+              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
+              placeholder="Memo (optional)"
               value={field.value}
-              onChange={(recipient) => {
-                field.onChange(recipient);
+              onChange={(memo) => {
+                field.onChange(memo);
               }}
             />
           );
         }}
       />
-      <div className="flex justify-between">
+      <div className="mt-4 flex justify-between">
         {invalidAddress ? (
           <Text className="ml-2 text-red-600">
             Assets can only be sent to the same chain
@@ -666,13 +676,15 @@ const SendInner = observer<{
           <div />
         )}
         <Button
-          className="block w-44"
+          className="w-full rounded-[5px] bg-[#32c9af] p-2.5"
           disabled={!form.formState.isValid || send.isPending}
           onClick={form.handleSubmit((data) => {
             send.mutate(data);
           })}
         >
-          Next
+          <Text className="font-['Roboto Mono'] text-lg font-normal text-[#070707]">
+            Next
+          </Text>
         </Button>
       </div>
     </div>
