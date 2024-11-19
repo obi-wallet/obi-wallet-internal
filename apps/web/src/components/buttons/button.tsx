@@ -26,8 +26,7 @@ export type ButtonProps = {
   };
   block?: boolean;
   href?: string;
-} & ComponentPropsWithRef<"button"> &
-  ComponentPropsWithRef<"a">;
+} & ComponentPropsWithRef<"button">;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
@@ -150,9 +149,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         </>
       );
     }
-
     return href ? (
-      <Link href={href} className={style} {...rest}>
+      <Link href={href} className={style}>
         <ChildrenContent />
       </Link>
     ) : (
