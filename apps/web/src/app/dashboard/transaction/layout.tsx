@@ -15,7 +15,7 @@ export default function TransactionLayout({
   return (
     <div className="w-full">
       <Box className="w-full xl:w-1/2">
-        <div className="flex gap-2.5 mb-4">
+        <div className="mb-4 flex gap-2.5">
           <TabLink
             href={`/dashboard/transaction/send/${rest.join("/")}`}
             active={activeTab === "send"}
@@ -47,15 +47,15 @@ function TabLink({ href, active, children }: TabLinkProps) {
       href={href}
       className={
         active
-          ? "w-full h-11 p-2.5 bg-[#32c9af] rounded-[5px] flex items-center justify-center"
-          : "w-full h-11 p-2.5 bg-[#353535] rounded-[5px] flex items-center justify-center"
+          ? "flex h-11 w-full items-center justify-center rounded-[5px] bg-[#32c9af] p-2.5"
+          : "flex h-11 w-full items-center justify-center rounded-[5px] bg-[#353535] p-2.5"
       }
     >
       <span
         className={
           active
-            ? "text-[#070707] text-lg font-normal font-['Roboto Mono']"
-            : "text-white text-lg font-normal font-['Roboto Mono']"
+            ? "font-['Roboto Mono'] text-lg font-normal text-[#070707]"
+            : "font-['Roboto Mono'] text-lg font-normal text-white"
         }
       >
         {children}

@@ -31,6 +31,10 @@ export function KeyListItem({
   alert?: boolean | undefined;
 }) {
   const keyCount = keyData.keys.length;
+  const label =
+    keyCount > 1
+      ? `${keyData.label}${keyData.label.endsWith("s") ? "es" : "s"}`
+      : keyData.label;
   return (
     <Button
       key={keyData.type}
@@ -41,7 +45,7 @@ export function KeyListItem({
       className="relative border-none"
       onClick={onClick}
     >
-      {keyData.label}
+      {label}
       <div
         className={cn(
           "absolute right-0 flex h-full w-14 items-center justify-center rounded-r",

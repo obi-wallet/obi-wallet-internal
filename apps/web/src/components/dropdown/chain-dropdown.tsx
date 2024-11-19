@@ -75,29 +75,32 @@ export const ChainDropdown = observer(function ChainDropdown({
   const { options, setLastUsedTargetChainId } = useChainOptions();
 
   return (
-    <div className="flex w-full flex-row">
+    <div className="flex w-full">
       <DropDown
         options={options}
         value={chainId ?? undefined}
         description="Select chain"
-        className="w-full"
+        className="w-full bg-transparent"
         onSelectOption={(option) => {
           setLastUsedTargetChainId(option.value);
           onChange(option.value);
         }}
         customSelectedItemComponent={(option) => {
           return (
-            <div className="flex flex-row items-center space-x-3">
+            <div className="flex w-full items-center">
               {!option ? (
                 <span>Select</span>
               ) : (
                 <>
-                  <img
-                    className="h-6 w-6"
-                    src={option.image}
-                    alt={option?.label}
-                  />
-                  <span>{option?.label}</span>
+                  <div className="flex items-center space-x-3">
+                    <img
+                      className="h-6 w-6"
+                      src={option.image}
+                      alt={option.label}
+                    />
+                    <span>{option.label}</span>
+                  </div>
+                  <span className="ml-auto">{chainId}</span>
                 </>
               )}
             </div>
@@ -107,7 +110,7 @@ export const ChainDropdown = observer(function ChainDropdown({
           return (
             <li
               className={cn(
-                "hover:bg-background-primary-hover flex cursor-pointer flex-row space-x-3 p-3",
+                "hover:bg-background-primary-hover flex cursor-pointer items-center space-x-3 p-3",
                 option.value === selectedOption?.value && "bg-gray-600",
                 option.disabled &&
                   "cursor-not-allowed opacity-50 hover:bg-gray-600",

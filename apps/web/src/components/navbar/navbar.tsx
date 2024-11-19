@@ -85,12 +85,12 @@ export const Navbar = observer(function Navbar() {
 
   return (
     <nav className="bg-background-secondary flex h-full w-60 flex-col p-2.5 max-md:hidden md:overflow-y-auto">
-      <div className="flex w-full flex-col gap-2.5">
+      <div className="flex h-full w-full flex-col gap-2.5">
         {/* Account and CTA */}
         <AccountAndCTA />
 
         {/* Navigation Menu */}
-        <div className="flex flex-col items-start justify-start gap-5 py-[5px]">
+        <div className="flex flex-1 flex-col items-start justify-start gap-5 py-[5px]">
           <ul role="list" className="flex flex-col space-y-5">
             {navMenu
               .filter((item) => {
@@ -125,6 +125,8 @@ export const Navbar = observer(function Navbar() {
               })}
           </ul>
         </div>
+
+        {/* Footer */}
         <Footer className="!px-0" />
       </div>
 

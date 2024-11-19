@@ -76,7 +76,7 @@ export function CustomDropdown<T extends DropdownItem>({
                 id="dropdownDefaultButton"
                 data-dropdown-toggle="dropdown"
                 className={cn(
-                  "bg-background-primary hover:bg-background-primary-hover relative z-10 flex w-full items-center justify-between rounded px-5 py-2.5 text-center font-medium text-white focus:outline-none",
+                  "hover:bg-background-primary-hover relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white focus:outline-none",
                   selectedItemClassname,
                 )}
                 onClick={() => {

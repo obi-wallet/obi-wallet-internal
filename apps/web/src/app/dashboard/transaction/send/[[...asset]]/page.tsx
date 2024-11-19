@@ -588,61 +588,30 @@ const SendInner = observer<{
               }
             >
               <div className="mt-2 flex gap-2.5">
-                <Button
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.25).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                  className="rounded-[5px] bg-[#353535] p-2.5"
-                >
-                  <Text className="font-['Roboto Mono'] text-lg text-white">
-                    25%
-                  </Text>
-                </Button>
-                <Button
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.5).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                  className="rounded-[5px] bg-[#353535] p-2.5"
-                >
-                  <Text className="font-['Roboto Mono'] text-lg text-white">
-                    50%
-                  </Text>
-                </Button>
-                <Button
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.75).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                  className="rounded-[5px] bg-[#353535] p-2.5"
-                >
-                  <Text className="font-['Roboto Mono'] text-lg text-white">
-                    75%
-                  </Text>
-                </Button>
-                <Button
-                  onClick={() => {
-                    setCoin({
-                      amount: coin.asset?.balance.toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                  className="rounded-[5px] bg-[#353535] p-2.5"
-                >
-                  <Text className="font-['Roboto Mono'] text-lg text-white">
-                    100%
-                  </Text>
-                </Button>
+                {[25, 50, 75, 100].map((percent) => {
+                  return (
+                    <Button
+                      key={percent}
+                      onClick={() => {
+                        const amount =
+                          percent === 100
+                            ? (coin.asset?.balance.toString() ?? "")
+                            : (coin.asset?.balance
+                                .multipliedBy(percent / 100)
+                                .toString() ?? "");
+                        setCoin({
+                          amount,
+                          asset: coin.asset,
+                        });
+                      }}
+                      className="rounded-[5px] bg-transparent p-2.5"
+                    >
+                      <Text className="font-['Roboto Mono'] text-lg text-white">
+                        {percent}%
+                      </Text>
+                    </Button>
+                  );
+                })}
               </div>
             </Input>
           );
