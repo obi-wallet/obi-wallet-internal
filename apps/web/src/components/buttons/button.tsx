@@ -9,7 +9,8 @@ export type ButtonVariant =
   | "outline"
   | "confirmed"
   | "secondary"
-  | "detail";
+  | "detail"
+  | "primary-outline";
 
 export type ButtonSize = "sm" | "base";
 
@@ -76,6 +77,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "hover:bg-background-secondary-hover",
         "active:bg-background-secondary-active",
         "disabled:bg-background-secondary disabled:opacity-50",
+      ],
+      variant === "primary-outline" && [
+        "border border-primary bg-transparent text-primary",
+        "hover:bg-primary-hover hover:text-white",
+        "active:border-primary-active active:bg-primary-active",
+        "disabled:border-primary-disabled disabled:opacity-30",
       ],
       variant === "outline" && [
         "border border-gray-600 bg-transparent text-zinc-400",

@@ -12,6 +12,21 @@
     @apply flex h-full flex-col;
   }
 
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
   :root {
     --background-main: theme("colors.slate.900");
     --background-primary: theme("colors.blue.600");

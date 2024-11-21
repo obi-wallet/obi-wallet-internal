@@ -24,6 +24,7 @@ export function Box({
         "bg-background-secondary rounded-md pb-4 sm:shadow",
         className,
       )}
+      style={{ width: "100%", minWidth: 0 }}
       {...rest}
     >
       {title && <Text className={titleClassName}>{title}</Text>}

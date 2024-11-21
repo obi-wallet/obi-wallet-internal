@@ -1,6 +1,6 @@
 "use client";
 
-import { Account, Button, Divider, Text } from "@/components";
+import { Button, Divider, Text } from "@/components";
 import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
@@ -22,7 +22,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="bg-background font-roboto-mono flex w-full flex-col text-white">
+    <div className="bg-background font-roboto-mono flex w-[50%] flex-col text-white">
       <Assets />
     </div>
   );
@@ -34,55 +34,45 @@ const Assets = observer(function Assets() {
 
   return (
     <>
-      <div className="hidden w-full flex-1 flex-col max-md:flex">
-        <Account />
-        <Button
-          href="/dashboard/tokens/add"
-          className="border-primary font-roboto-mono mb-2 flex-1 justify-center rounded border-dashed bg-transparent p-2 text-sm font-normal text-white"
-        >
-          Import New Asset
-        </Button>
-        <Button
-          onClick={() => {
-            setEditMode((value) => {
-              return !value;
-            });
-          }}
-          className="border-primary bg-banner-bg text-background font-roboto-mono mb-2 flex-1 justify-center rounded border-dashed p-2 text-sm font-normal"
-        >
-          Edit
-        </Button>
-      </div>
-      <div className="hidden flex-row items-center gap-3 md:flex">
-        <Input
-          className="bg-background-secondary font-roboto-mono border-primary mt-0 h-9 rounded px-3 py-1.5 text-sm text-white"
-          leftComponent={<CiSearch className="h-6 w-6 text-sm text-white" />}
-          labelClassname="bg-background-secondary"
-          placeholder="Search Assets"
-          value={searchAsset}
-          onChange={(asset) => {
-            setSearchAsset(asset);
-          }}
-          inputClassName="ml-2 bg-transparent placeholder-white"
-        />
-        <Button
-          onClick={() => {
-            setEditMode((value) => {
-              return !value;
-            });
-          }}
-          className="border-primary font-roboto-mono font-roboto-mono h-9 justify-center rounded bg-transparent px-3 py-1.5"
-        >
-          Show/Hide Assets
-        </Button>
-        {editMode ? (
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-[1_1_0]">
+          <Input
+            className="bg-background-secondary font-roboto-mono border-primary h-9 w-full rounded px-3 py-1.5 text-sm text-white"
+            leftComponent={<CiSearch className="h-6 w-6 text-sm text-white" />}
+            labelClassname="bg-background-secondary"
+            placeholder="Search"
+            value={searchAsset}
+            onChange={(asset) => {
+              return setSearchAsset(asset);
+            }}
+            inputClassName="ml-2 bg-transparent placeholder-white"
+          />
+        </div>
+
+        <div className="min-w-0 flex-[1_1_0]">
+          <Button
+            onClick={() => {
+              return setEditMode((value) => {
+                return !value;
+              });
+            }}
+            className="font-roboto-mono bg-primary h-9 w-full justify-center rounded px-3 py-1.5 text-white"
+          >
+            {editMode ? "Hide Assets" : "Show Assets"}
+          </Button>
+        </div>
+
+        <div className="min-w-0 flex-[1_1_0]">
           <Button
             href="/dashboard/tokens/add"
-            className="border-primary font-roboto-mono h-9 w-64 justify-center rounded border-dashed bg-transparent text-sm font-normal text-white"
+            variant="primary-outline"
+            className={`h-9 w-full justify-center rounded border-dashed text-sm font-normal text-white ${
+              !editMode ? "invisible" : ""
+            }`}
           >
             + Import New Asset
           </Button>
-        ) : null}
+        </div>
       </div>
 
       <Divider className="border-primary mt-1 hidden md:block" />
@@ -216,7 +206,7 @@ const AssetBalance = observer(function AssetBalance({
   }
 
   return (
-    <nav className="h-full overflow-y-auto">
+    <nav className="scrollbar-hide h-full overflow-y-auto">
       {prettyBalances.data.map((chainBalance) => {
         return (
           <Network key={chainBalance.chain.chainId} assets={chainBalance} />
@@ -232,7 +222,7 @@ export const AssetsContainer = observer(function AssetsContainer({
   children: ReactNode;
 }) {
   return (
-    <ul role="list">
+    <ul className="scrollbar-hide" role="list">
       {/* <li className="relative flex py-1.5">
         <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
           <Text
@@ -288,10 +278,10 @@ const Network = observer(function NetworkAssets({
   });
 
   return (
-    <div className="relative py-1.5">
+    <div className="scrollbar-hide relative py-1.5">
       <div className="sticky top-0 z-10">
         <h3 className="bg-primary flex h-9 items-center gap-2.5 rounded px-2.5 py-[5px]">
-          <div className="flex flex-1 flex-row gap-2">
+          <div className="flex flex-1 flex-row">
             {/* <img
               src={assets.chain.image}
               alt={assets.chain.label}
@@ -300,61 +290,68 @@ const Network = observer(function NetworkAssets({
             <Text className="text-background font-roboto-mono text-base">
               {assets.chain.label}
             </Text>
-            {editMode ? (
-              <div className="flex flex-grow justify-end gap-2.5 text-right">
-                <Button
-                  style={
-                    targetChainConfig.enabled === true
-                      ? {}
-                      : { backgroundColor: "#32c9af" }
-                  }
-                  className="bg-accent font-roboto-mono h-5 rounded text-white"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: { enabled: true },
-                    });
-                  }}
-                >
-                  Enable
-                </Button>
-                <Button
-                  style={
-                    targetChainConfig.enabled === false
-                      ? {}
-                      : { backgroundColor: "#32c9af" }
-                  }
-                  className="bg-accent font-roboto-mono h-5 rounded text-white"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: { enabled: false },
-                    });
-                  }}
-                >
-                  Disable
-                </Button>
-                <Button
-                  style={
-                    targetChainConfig.enabled === undefined
-                      ? {}
-                      : { backgroundColor: "#32c9af" }
-                  }
-                  className="bg-accent font-roboto-mono h-5 rounded text-white"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: {},
-                    });
-                  }}
-                >
-                  Auto
-                </Button>
-              </div>
-            ) : null}
+            <div className="flex flex-grow justify-end text-right">
+              <Button
+                style={
+                  targetChainConfig.enabled === true
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: { enabled: true },
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Enable
+              </Button>
+              <Button
+                style={
+                  targetChainConfig.enabled === false
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: { enabled: false },
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Disable
+              </Button>
+              <Button
+                style={
+                  targetChainConfig.enabled === undefined
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: {},
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Auto
+              </Button>
+            </div>
           </div>
         </h3>
       </div>
@@ -393,7 +390,7 @@ export const AssetRow = observer(function AssetRow({
 
   return (
     <li
-      className="hover:bg-accent relative flex cursor-pointer justify-between py-1.5 hover:rounded-lg hover:opacity-70"
+      className="hover:bg-accent relative flex cursor-pointer justify-center py-1.5 hover:rounded-lg hover:opacity-70"
       onClick={() => {
         router.push(
           editMode
@@ -402,7 +399,7 @@ export const AssetRow = observer(function AssetRow({
         );
       }}
     >
-      <div className="flex justify-between gap-x-4 pl-4 pr-6 sm:w-3/4 sm:flex-none">
+      <div className="flex w-[55%] justify-between gap-x-4 pl-4 pr-6 max-sm:w-[60%]">
         <div className="flex flex-row items-center gap-x-4">
           {asset.assetInfo?.image ? (
             <img
@@ -425,7 +422,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:hidden max-sm:text-sm"
+                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -439,7 +436,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="font-roboto-mono -ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+              <Text className="font-roboto-mono text-right tabular-nums max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -447,7 +444,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:hidden max-sm:text-sm"
+                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -458,18 +455,18 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="font-roboto-mono -ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+          <Text className="font-roboto-mono text-center tabular-nums max-sm:text-sm">
             {asset.prettyAmount.toString()}
           </Text>
         )}
       </div>
-      <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
+      <div className="flex w-[45%] items-center justify-end gap-x-4 max-sm:w-[40%] sm:flex sm:flex-none">
         {isPrivateToken ? (
           viewingKey ? (
             editMode ? (
               <Button
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm sm:hidden"
+                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -483,7 +480,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="font-roboto-mono -ml-6 h-5 max-sm:text-sm sm:hidden">
+              <Text className="font-roboto-mono -ml-6 h-5 max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -491,7 +488,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm sm:hidden"
+                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -502,16 +499,15 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="font-roboto-mono -ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
-            {asset.prettyAmount.toString()}
-          </Text>
+          <div>
+            <Text
+              fontWeight="bold"
+              className="font-roboto-mono tabular-nums max-sm:pr-4 max-sm:text-sm"
+            >
+              ${new BigNumber(asset.usdBalance).toFixed(2)}
+            </Text>
+          </div>
         )}
-        <Text
-          fontWeight="bold"
-          className="font-roboto-mono tabular-nums max-sm:hidden max-sm:text-sm"
-        >
-          ${new BigNumber(asset.usdBalance).toFixed(2)}
-        </Text>
       </div>
     </li>
   );
