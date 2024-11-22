@@ -10,9 +10,10 @@ export type ButtonVariant =
   | "confirmed"
   | "secondary"
   | "detail"
+  | "accent"
   | "primary-outline";
 
-export type ButtonSize = "sm" | "base";
+export type ButtonSize = "sm" | "base" | "md" | "lg";
 
 export type ButtonProps = {
   isLoading?: boolean;
@@ -59,32 +60,48 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       // Size
       size === "base" && "px-3 py-3.5 text-sm md:text-base",
       size === "sm" && "px-1 py-1 text-xs md:text-sm",
+      size === "md" && "h-9 px-4 text-sm py-1.5",
+      size === "lg" && "h-12 px-6 text-base",
       // Variants
       variant === "primary" && [
+        "font-roboto-mono",
         "bg-primary text-[#070707]",
         "hover:bg-primary-hover",
         "active:bg-primary-active",
         "disabled:bg-primary-disabled disabled:opacity-30",
       ],
       variant === "secondary" && [
-        "bg-[#353535] text-white",
-        "hover:bg-[#4a4a4a]",
-        "active:bg-[#2e2e2e]",
-        "disabled:bg-[#353535] disabled:opacity-50",
+        "bg-secondary text-white",
+        "hover:bg-secondary-hover",
+        "active:bg-secondary-active",
+        "disabled:bg-secondary-disabled disabled:opacity-50",
+      ],
+      variant === "accent" && [
+        "font-roboto-mono",
+        "font-normal",
+        "bg-primary text-black",
+        "hover:bg-accent-hover",
+        "active:bg-accent-active",
+        "disabled:bg-accent-disabled disabled:opacity-50",
       ],
       variant === "detail" && [
+        "font-roboto-mono",
         "bg-background-secondary text-white",
         "hover:bg-background-secondary-hover",
         "active:bg-background-secondary-active",
         "disabled:bg-background-secondary disabled:opacity-50",
       ],
       variant === "primary-outline" && [
-        "border border-primary bg-transparent text-primary",
+        "font-roboto-mono",
+        "font-normal",
+        "text-white",
+        "border border-primary bg-transparent",
         "hover:bg-primary-hover hover:text-white",
         "active:border-primary-active active:bg-primary-active",
         "disabled:border-primary-disabled disabled:opacity-30",
       ],
       variant === "outline" && [
+        "font-roboto-mono",
         "border border-gray-600 bg-transparent text-zinc-400",
         "hover:bg-gray-700 hover:text-white",
         "active:border-gray-800 active:bg-gray-800",

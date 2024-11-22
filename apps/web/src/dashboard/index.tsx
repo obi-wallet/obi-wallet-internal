@@ -22,7 +22,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="bg-background font-roboto-mono flex w-[50%] flex-col text-white">
+    <div className="bg-background font-roboto-mono flex w-full flex-col text-white">
       <Assets />
     </div>
   );
@@ -56,7 +56,10 @@ const Assets = observer(function Assets() {
                 return !value;
               });
             }}
-            className="font-roboto-mono bg-primary h-9 w-full justify-center rounded px-3 py-1.5 text-white"
+            block
+            variant="accent"
+            size="md"
+            className="w-full"
           >
             {editMode ? "Hide Assets" : "Show Assets"}
           </Button>
@@ -66,9 +69,8 @@ const Assets = observer(function Assets() {
           <Button
             href="/dashboard/tokens/add"
             variant="primary-outline"
-            className={`h-9 w-full justify-center rounded border-dashed text-sm font-normal text-white ${
-              !editMode ? "invisible" : ""
-            }`}
+            size="md"
+            className={`w-full border-dashed ${!editMode ? "invisible" : ""}`}
           >
             + Import New Asset
           </Button>
@@ -83,10 +85,10 @@ const Assets = observer(function Assets() {
         <>
           <PendingAssets />
           <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-          <div className="mt-10 flex w-full flex-row items-center justify-center max-md:px-2">
+          <div className="mt-10 flex w-full min-w-0 flex-row items-center justify-center max-md:px-2">
             <Text
               size="sm"
-              className="font-roboto-mono text-center font-light leading-normal text-white"
+              className="font-roboto-mono break-words text-center font-light leading-normal text-white"
             >
               Fast Travel or Tunnel transactions may take a few minutes to be
               processed and will appear here once visible on the network.
@@ -206,7 +208,7 @@ const AssetBalance = observer(function AssetBalance({
   }
 
   return (
-    <nav className="scrollbar-hide h-full overflow-y-auto">
+    <nav className="scrollbar-hide h-full w-full max-w-full overflow-y-auto">
       {prettyBalances.data.map((chainBalance) => {
         return (
           <Network key={chainBalance.chain.chainId} assets={chainBalance} />
