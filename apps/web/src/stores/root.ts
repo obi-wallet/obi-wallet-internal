@@ -80,6 +80,7 @@ export class RootStore {
     this.wasmStore = new WasmStore();
 
     this.analyticsStore = new AnalyticsStore({
+      kvStore: new KVStore("analytics-store"),
       walletsStore: this.mpcWalletsStore,
     });
     // TODO: do we still need the chain store, and if so, the reference to walletsStore?

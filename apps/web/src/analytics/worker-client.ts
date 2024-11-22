@@ -1,3 +1,4 @@
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
 
 export async function trackAppConnect({
@@ -7,14 +8,53 @@ export async function trackAppConnect({
   userEntryAddress: string;
   dAppUrl: string;
 }) {
-  await fetch("https://analytics.obiwallet.workers.dev/app-connect", {
-    method: "POST",
-    body: serialize({
+  const response = await fetch(
+    "https://analytics.obiwallet.workers.dev/app-connect",
+    {
+      method: "POST",
+      body: serialize({
+        userEntryAddress,
+        dAppUrl,
+      }),
+      headers: getAuthenticatedHeaders(),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to track app connect");
+  }
+}
+
+export async function trackBalances({
+  userEntryAddress,
+  balances,
+}: {
+  userEntryAddress: string;
+  balances: {
+    assetId: Caip19AssetId;
+    rawAmount: string;
+    usdBalance: string;
+  }[];
+}) {
+  console.log(
+    serialize({
       userEntryAddress,
-      dAppUrl,
+      balances,
     }),
-    headers: getAuthenticatedHeaders(),
-  });
+  );
+  const response = await fetch(
+    "https://analytics.obiwallet.workers.dev/balances",
+    {
+      method: "POST",
+      body: serialize({
+        userEntryAddress,
+        balances,
+      }),
+      headers: getAuthenticatedHeaders(),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to track balances");
+  }
 }
 
 export async function trackOnboarding({
@@ -24,14 +64,20 @@ export async function trackOnboarding({
   userEntryAddress: string;
   dAppUrl?: string;
 }) {
-  await fetch("https://analytics.obiwallet.workers.dev/onboarding", {
-    method: "POST",
-    body: serialize({
-      userEntryAddress,
-      dAppUrl,
-    }),
-    headers: getAuthenticatedHeaders(),
-  });
+  const response = await fetch(
+    "https://analytics.obiwallet.workers.dev/onboarding",
+    {
+      method: "POST",
+      body: serialize({
+        userEntryAddress,
+        dAppUrl,
+      }),
+      headers: getAuthenticatedHeaders(),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to track onboarding");
+  }
 }
 
 function getAuthenticatedHeaders() {

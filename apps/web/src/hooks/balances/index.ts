@@ -127,7 +127,7 @@ export function useInvalidateBalancesQueries() {
 
 export function useBalances() {
   const wallet = useCurrentWallet();
-  const { targetChainsStore, tokensStore } = useStore();
+  const { analyticsStore, targetChainsStore, tokensStore } = useStore();
   const publicKeys = usePublicKeys();
 
   return useQueries({
@@ -150,11 +150,17 @@ export function useBalances() {
           if (!chain.enabled) {
             return [];
           }
-          return await fetchBalances({
+          const chainBalances = await fetchBalances({
             address: await chain.targetChain.obiAccountAddress(publicKeys),
             targetChainId: chain.id,
             tokensConfig,
           });
+          await analyticsStore.trackBalancesPerChain({
+            userEntryAddress: wallet.userEntryAddress,
+            chainId: chain.id,
+            balances: chainBalances,
+          });
+          return chainBalances;
         },
       };
     });
