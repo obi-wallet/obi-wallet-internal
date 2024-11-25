@@ -205,14 +205,14 @@ export function LandingPage() {
           {/* Empathy Guide */}
           <section className="flex flex-col gap-8 px-6 py-12 lg:px-28">
             <h2 className="text-3xl font-bold text-white">
-              We were tired of clunky crypto UX...
+              We were tired of clunky, dangerous crypto interfaces...
             </h2>
             <p className="text-xl text-white">
               Obi was built to give you a seamless, secure way to manage assets
               conveniently and without compromise.
             </p>
             <p className="text-xl text-white">
-              Self-custody is a human right. With Obi, avoid the common pitfalls
+              Self-custody is your right. With Obi, avoid the common pitfalls
               of lost assets and navigate decentralized ecosystems effortlessly
               – while staying fully in control.
             </p>
