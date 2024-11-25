@@ -17,9 +17,9 @@ export function LandingPage() {
                 SIMPLE AND SECURE ACCOUNTS FOR <br />
                 <span className="font-bold">Effortless Crypto Management</span>
               </h1>
-              <p className="mt-6 text-xl font-light">
+              {/* <p className="mt-6 text-xl font-light">
                 Get started with your secure smart account now
-              </p>
+              </p> */}
               <div className="mt-6 flex flex-col gap-5 lg:flex-row">
                 <Link
                   href="/onboarding/internal"
