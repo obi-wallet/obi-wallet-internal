@@ -1,15 +1,15 @@
 import { MOCK_WALLET_DATA } from "@/mocks/wallet";
 import { TargetChain } from "@/target-chain";
 import { BitcoinChainId } from "@/target-chain/bitcoin/chains";
-import { createTestSuite, expect } from "@/tests";
+import { createTestSuite } from "@/tests";
 import { MpcWallet, Secp256k1PrivateKeySigner } from "@obi-wallet/sdk";
-import { BitcoinMpcSigner } from "@/target-chain/bitcoin/mpc-signer";
 import invariant from "tiny-invariant";
 import { createHash } from "crypto";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { IntentionsResults } from "@/user-interactions/approve-intentions";
 import * as bitcoinjs from "bitcoinjs-lib";
 import * as bip39 from "bip39";
+import { expect } from '@jest/globals';
 
 export const testSuite = createTestSuite(({ test }) => {
   test("computeAddress produces valid Bitcoin address", async () => {
@@ -23,7 +23,7 @@ export const testSuite = createTestSuite(({ test }) => {
     const address = targetChain.computeAddress(publicKey);
     const isValid = targetChain.validateAddress(address);
 
-    expect(isValid).to.be.true;
+    expect(isValid).toBe(true);
   });
 
   test("signMessage signs message correctly", async () => {
@@ -62,7 +62,7 @@ export const testSuite = createTestSuite(({ test }) => {
 
     // Verify the signature
     const isValid = signer.verifyMessage(signature, message);
-    expect(isValid).to.be.true;
+    expect(isValid).toBe(true);
   });
 
   test("signTransaction constructs and signs transaction", async () => {

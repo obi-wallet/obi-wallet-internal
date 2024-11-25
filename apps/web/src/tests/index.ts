@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-export { expect } from "chai";
-
 export type TestResult =
   | {
       success: true;
