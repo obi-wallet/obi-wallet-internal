@@ -35,10 +35,10 @@ const Assets = observer(function Assets() {
   return (
     <>
       <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-[1_1_0]">
+        <div className="font-roboto-mono min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
-            className="bg-background-secondary font-roboto-mono border-primary h-9 w-full rounded px-3 py-1.5 text-sm text-white"
-            leftComponent={<CiSearch className="h-6 w-6 text-sm text-white" />}
+            className="bg-background-secondary border-primary h-9 w-full rounded px-3 py-1.5"
+            leftComponent={<CiSearch className="h-6 w-6" />}
             labelClassname="bg-background-secondary"
             placeholder="Search"
             value={searchAsset}
@@ -56,7 +56,6 @@ const Assets = observer(function Assets() {
                 return !value;
               });
             }}
-            block
             variant="accent"
             size="md"
             className="w-full"
@@ -70,6 +69,7 @@ const Assets = observer(function Assets() {
             href="/dashboard/tokens/add"
             variant="primary-outline"
             size="md"
+            leading="none"
             className={`w-full border-dashed ${!editMode ? "invisible" : ""}`}
           >
             + Import New Asset

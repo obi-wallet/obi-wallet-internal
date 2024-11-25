@@ -68,7 +68,7 @@ export function LandingPage() {
               usability?
             </h2>
             <div className="flex w-full flex-col items-center lg:flex-row lg:justify-center">
-              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5 max-md:mb-6">
                 <Image
                   src="/assets/images/shield-cross.svg"
                   alt="Risky Key Setups Icon"
@@ -79,7 +79,7 @@ export function LandingPage() {
                   Risky key setups <br /> and lost funds
                 </p>
               </div>
-              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5 max-md:mb-6">
                 <Image
                   src="/assets/images/widget.svg"
                   alt="Switching Interfaces Icon"
@@ -110,7 +110,7 @@ export function LandingPage() {
               Obi gives you an effortless crypto experience
             </h2>
             <div className="flex w-full flex-col items-center lg:flex-row lg:justify-center">
-              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5 max-md:mb-6">
                 <Image
                   src="/assets/images/key.svg"
                   alt="No Seed Phrases Icon"
@@ -122,7 +122,7 @@ export function LandingPage() {
                   <br /> and easy recovery
                 </p>
               </div>
-              <div className="flex max-w-sm flex-1 flex-col items-center gap-5">
+              <div className="flex max-w-sm flex-1 flex-col items-center gap-5 max-md:mb-6">
                 <Image
                   src="/assets/images/earth.svg"
                   alt="Browser-based Icon"

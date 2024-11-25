@@ -14,7 +14,7 @@ export default function TransactionLayout({
 
   return (
     <div className="w-full">
-      <Box className="w-full xl:w-1/2">
+      <Box className="w-full">
         <div className="mb-4 flex gap-2.5">
           <TabLink
             href={`/dashboard/transaction/send/${rest.join("/")}`}

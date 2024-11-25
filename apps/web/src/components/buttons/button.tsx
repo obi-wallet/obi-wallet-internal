@@ -15,6 +15,8 @@ export type ButtonVariant =
 
 export type ButtonSize = "sm" | "base" | "md" | "lg";
 
+export type ButtonLeading = "none" | "tight" | "normal";
+
 export type ButtonProps = {
   isLoading?: boolean;
   isDarkBg?: boolean;
@@ -26,6 +28,7 @@ export type ButtonProps = {
     leftIcon?: string;
     rightIcon?: string;
   };
+  leading?: ButtonLeading;
   block?: boolean;
   href?: string;
 } & ComponentPropsWithRef<"button">;
@@ -39,6 +42,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       isLoading,
       variant = "primary",
       size = "base",
+      leading = "tight",
       leftIcon: LeftIcon,
       rightIcon: RightIcon,
       classNames,
@@ -60,8 +64,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       // Size
       size === "base" && "px-3 py-3.5 text-sm md:text-base",
       size === "sm" && "px-1 py-1 text-xs md:text-sm",
-      size === "md" && "h-9 px-4 text-sm py-1.5",
+      size === "md" && "h-9 px-3 text-sm lg:py-1.5 max-md:py-1",
       size === "lg" && "h-12 px-6 text-base",
+      // Line Height (Leading)
+      leading === "tight" && "leading-tight",
+      leading === "normal" && "leading-normal",
+      leading === "none" && "leading-none",
       // Variants
       variant === "primary" && [
         "font-roboto-mono",

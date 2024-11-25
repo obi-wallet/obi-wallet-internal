@@ -58,7 +58,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       ) : (
         <>
           {/* Description */}
-          <div className="flex items-center justify-center self-stretch px-2.5">
+          <div className="flex items-center justify-center self-stretch px-2.5 py-10">
             <Text size="lg" fontWeight="normal" className="text-white">
               Select the new key type below.
             </Text>
