@@ -29,10 +29,10 @@
 
   :root {
     --background-main: theme("colors.slate.900");
-    --background-primary: theme("colors.blue.600");
-    --background-primary-hover: theme("colors.blue.700");
-    --background-primary-active: theme("colors.blue.500");
-    --background-primary-disabled: theme("colors.blue.600");
+    --background-primary: #32c9af;
+    --background-primary-hover: #2ab69c;
+    --background-primary-active: #32c9af;
+    --background-primary-disabled: #2ab69c;
     --background-secondary: theme("colors.slate.900");
     --background-select: theme("colors.gray.700");
     --background-select-hover: theme("colors.gray.800");
