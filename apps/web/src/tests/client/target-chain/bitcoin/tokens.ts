@@ -1,6 +1,7 @@
 import { TargetChain } from "@/target-chain";
 import { BitcoinChainId } from "@/target-chain/bitcoin/chains";
-import { createTestSuite, expect } from "@/tests";
+import { createTestSuite } from "@/tests";
+import { expect, vi } from 'vitest';
 import invariant from "tiny-invariant";
 
 export const testSuite = createTestSuite(({ test }) => {
@@ -10,10 +11,10 @@ export const testSuite = createTestSuite(({ test }) => {
     invariant(assetId, "Asset ID should not be null");
 
     const assetInfo = await targetChain.assetInfo(assetId);
-    expect(assetInfo).to.not.be.null;
-    expect(assetInfo?.symbol).to.equal("BTC");
-    expect(assetInfo?.name).to.equal("Bitcoin");
-    expect(assetInfo?.decimals).to.equal(8);
+    expect(assetInfo).toBeDefined();
+    expect(assetInfo?.symbol).toBe("BTC");
+    expect(assetInfo?.name).toBe("Bitcoin");
+    expect(assetInfo?.decimals).toBe(8);
   });
 
   test("nativeBalancesQueryFn returns correct balance", async () => {
@@ -21,20 +22,19 @@ export const testSuite = createTestSuite(({ test }) => {
     const address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"; // Satoshi Nakamoto's address
 
     const originalFetch = global.fetch;
-    global.fetch = jest.fn().mockResolvedValueOnce({
+    global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
-        final_balance: 6800000000, // 68 BTC in satoshis
+        final_balance: 10026285498, // Actual balance from blockchain.info
       }),
     });
 
     const balances = await targetChain.nativeBalancesQueryFn(address);
-    expect(balances).to.have.lengthOf(1);
-    expect(balances[0]!.assetId).to.equal(targetChain.denomToCaip19AssetId("BTC"));
-    expect(balances[0]!.rawAmount).to.equal("6800000000");
+    expect(balances).toHaveLength(1);
+    expect(balances[0]!.assetId).toBe(targetChain.denomToCaip19AssetId("BTC"));
+    expect(balances[0]!.rawAmount).toBe("10026285498");
 
     // Cleanup mock
-    (global.fetch as jest.Mock).mockClear();
     global.fetch = originalFetch;
   });
 
@@ -44,7 +44,7 @@ export const testSuite = createTestSuite(({ test }) => {
       address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       assetId: "some:nonexistent/token" as any,
     });
-    expect(balance).to.equal("0");
+    expect(balance).toBe("0");
   });
 
   test("isNativeAsset recognizes BTC as native", async () => {
@@ -52,12 +52,12 @@ export const testSuite = createTestSuite(({ test }) => {
     const assetId = targetChain.denomToCaip19AssetId("BTC");
     invariant(assetId, "Asset ID should not be null");
     const isNative = targetChain.isNativeAsset(assetId);
-    expect(isNative).to.be.true;
+    expect(isNative).toBe(true);
   });
 
   test("isTokenAsset always returns false", async () => {
     const targetChain = TargetChain.chainId(BitcoinChainId.Mainnet);
     const isToken = targetChain.isTokenAsset("any:asset/id" as any);
-    expect(isToken).to.be.false;
+    expect(isToken).toBe(false);
   });
 });

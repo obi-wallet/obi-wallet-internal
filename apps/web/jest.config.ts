@@ -6,43 +6,43 @@ const createJestConfig = nextJest({
 });
 
 const config: Config = {
-  preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'node',
   coverageProvider: "v8",
   clearMocks: true,
   setupFilesAfterEnv: [require.resolve("./jest.setup.ts")],
   testPathIgnorePatterns: ["/__tests-e2e__/"],
   watchman: false,
   transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: {
-          importHelpers: true,
-          allowJs: true,
-        },
+    "^.+\\.(ts|tsx)$": ["ts-jest", {
+      useESM: true,
+      tsconfig: {
+        importHelpers: true,
+        allowJs: true,
+        esModuleInterop: true,
       },
-    ],
-    '^.+/node_modules/sss-wasm/.+\\.(js|jsx|mjs)$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: {
-          allowJs: true,
-        },
-      },
-    ],
+    }],
   },
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
   transformIgnorePatterns: [
-    '/node_modules/(?!(sss-wasm)/)',
+    "/node_modules/(?!(sss-wasm|bitcoinjs-lib)/)",
   ],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(css|less|sass|scss)$": "identity-obj-proxy",
   },
-  moduleDirectories: ['node_modules', '<rootDir>/node_modules'],
+  moduleDirectories: ["node_modules", "<rootDir>/node_modules", "src"],
+  testEnvironmentOptions: {
+    customExportConditions: ["node", "node-addons"],
+    url: "http://localhost",
+  },
+  moduleFileExtensions: ["js", "jsx", "ts", "tsx", "json", "node"],
+  testRunner: "jest-jasmine2",
+  resolver: "<rootDir>/jest.resolver.js",
+  globals: {
+    "ts-jest": {
+      useESM: true,
+    },
+  },
+  testEnvironment: "jest-environment-node",
 };
 
-// eslint-disable-next-line import/no-default-export
 export default createJestConfig(config);

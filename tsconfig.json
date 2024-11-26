@@ -11,6 +11,5 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-{
-  "extends": "@repo/typescript-config/base.json"
+  },
 }

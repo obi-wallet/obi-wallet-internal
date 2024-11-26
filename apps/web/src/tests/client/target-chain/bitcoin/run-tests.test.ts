@@ -1,7 +1,7 @@
+import { describe, test, expect } from 'vitest';
 import { runTests } from "@/tests";
 import { testSuite as bitcoinMpcSignerTestSuite } from "./mpc-signer";
 import { testSuite as bitcoinTokensTestSuite } from "./tokens";
-import { expect } from '@jest/globals';
 
 describe("Bitcoin Tests", () => {
   test("Bitcoin MPC Signer Tests", async () => {
@@ -9,7 +9,6 @@ describe("Bitcoin Tests", () => {
       bitcoinMpcSignerTestSuite(context);
     });
     expect(testResults).toBeDefined();
-    // You can add more specific assertions if needed
   });
 
   test("Bitcoin Tokens Tests", async () => {
@@ -17,6 +16,5 @@ describe("Bitcoin Tests", () => {
       bitcoinTokensTestSuite(context);
     });
     expect(testResults).toBeDefined();
-    // Additional assertions
   });
 });

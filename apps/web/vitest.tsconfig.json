@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"],
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "jsx": "preserve"
+  },
+  "include": ["src/tests/client/target-chain/bitcoin/**/*.ts"]
+} 

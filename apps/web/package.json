@@ -2,6 +2,7 @@
   "name": "@obi-wallet/web",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "next build",
     "build-storybook": "storybook build",
@@ -12,6 +13,7 @@
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "test": "jest",
+    "test:bitcoin": "vitest run src/tests/client/target-chain/bitcoin/",
     "test-next": "playwright test",
     "test-storybook": "test-storybook --browsers chromium firefox webkit --maxWorkers 1",
     "tsc": "tsc --noEmit"
@@ -117,6 +119,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-storybook": "^0.8.0",
     "jest": "^29.7.0",
+    "jest-jasmine2": "^29.7.0",
     "msw": "^2.3.5",
     "msw-storybook-addon": "^2.0.3",
     "next-test-api-route-handler": "^4.0.8",
@@ -127,6 +130,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "vercel": "^35.2.4",
+    "vitest": "^2.1.6",
     "webpack-hook-plugin": "^1.0.7"
   },
   "msw": {
