@@ -25,9 +25,9 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   });
 
   return (
-    <Box className="h-fit w-2/5 !min-w-[320px] px-4 pb-6 max-sm:w-full">
+    <Box className="h-fit !min-w-[320px] px-4 pb-6 max-sm:w-full">
       {/* Header */}
-      <div className="flex items-center justify-center self-stretch rounded-[5px] bg-[#32c9af] p-2.5">
+      <div className="flex items-start justify-start self-stretch rounded-[5px] bg-[#32c9af] p-2.5">
         <Text size="xl" fontWeight="normal" className="text-[#070707]">
           {showAddKeyOptions ? "Add New Key" : "Security Settings"}
         </Text>
@@ -35,7 +35,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       {!showAddKeyOptions ? (
         <>
           {/* Description */}
-          <div className="flex items-center justify-center self-stretch px-2.5">
+          <div className="flex items-center justify-start self-stretch px-2.5">
             <Text
               fontWeight="normal"
               className="text-roboto-mono mb-1 mt-1 text-sm text-white"

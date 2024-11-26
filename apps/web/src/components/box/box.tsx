@@ -21,10 +21,9 @@ export function Box({
   return (
     <div
       className={cn(
-        "bg-background-secondary rounded-md pb-4 sm:shadow",
+        "bg-background-secondary rounded-md px-4 py-4 sm:shadow",
         className,
       )}
-      style={{ width: "100%", minWidth: 0 }}
       {...rest}
     >
       {title && <Text className={titleClassName}>{title}</Text>}

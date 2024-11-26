@@ -116,7 +116,7 @@ export const Navbar = observer(function Navbar() {
                           className="h-8 w-8"
                         />
                       </div>
-                      <div className="font-roboto-mono shrink grow basis-0 text-xl font-normal text-white">
+                      <div className="text-roboto-mono shrink grow basis-0 text-xl font-normal text-white">
                         {navItem.text}
                       </div>
                     </PrimaryLink>
@@ -180,7 +180,7 @@ export function AccountAndCTA() {
           href="/dashboard/transaction/send"
           className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
         >
-          <div className="font-roboto-mono text-center text-base font-normal text-white">
+          <div className="text-roboto-mono text-center text-base font-normal text-white">
             Send
           </div>
         </Link>
@@ -188,7 +188,7 @@ export function AccountAndCTA() {
           href="/dashboard/transaction/receive"
           className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
         >
-          <div className="font-roboto-mono text-center text-base font-normal text-white">
+          <div className="text-roboto-mono text-center text-base font-normal text-white">
             Receive
           </div>
         </Link>

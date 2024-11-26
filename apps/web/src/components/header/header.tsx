@@ -125,7 +125,7 @@ const LogIn = observer(function LogIn() {
                     }}
                     className="bg-primary border-primary w-full"
                   >
-                    <div className="font-roboto-mono w-full overflow-hidden text-ellipsis text-left">
+                    <div className="text-roboto-mono w-full overflow-hidden text-ellipsis text-left">
                       {userDataStore.getUserData(wallet.userEntryAddress)
                         .name || "My Account"}
                     </div>
@@ -138,7 +138,7 @@ const LogIn = observer(function LogIn() {
                   router.push("/recovery");
                 }}
                 variant="outline"
-                className="font-roboto-mono w-full"
+                className="text-roboto-mono w-full"
               >
                 Recover other wallet
               </Button>

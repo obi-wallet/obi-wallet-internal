@@ -22,7 +22,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="bg-background font-roboto-mono flex w-full flex-col text-white">
+    <div className="bg-background text-roboto-mono flex w-full flex-col text-white">
       <Assets />
     </div>
   );
@@ -35,7 +35,7 @@ const Assets = observer(function Assets() {
   return (
     <>
       <div className="flex items-center gap-3">
-        <div className="font-roboto-mono min-w-0 flex-[1_1_0] text-sm text-white">
+        <div className="text-roboto-mono min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
             className="bg-background-secondary border-primary h-9 w-full rounded px-3 py-1.5"
             leftComponent={<CiSearch className="h-6 w-6" />}
@@ -88,7 +88,7 @@ const Assets = observer(function Assets() {
           <div className="mt-10 flex w-full min-w-0 flex-row items-center justify-center max-md:px-2">
             <Text
               size="sm"
-              className="font-roboto-mono break-words text-center font-light leading-normal text-white"
+              className="text-roboto-mono break-words text-center font-light leading-normal text-white"
             >
               Fast Travel or Tunnel transactions may take a few minutes to be
               processed and will appear here once visible on the network.
@@ -193,7 +193,7 @@ const AssetBalance = observer(function AssetBalance({
 
   if (prettyBalances.status === PrettyBalancesStatus.Loading) {
     return (
-      <span className="font-roboto-mono font-extrabold text-white">
+      <span className="text-roboto-mono font-extrabold text-white">
         Loading
       </span>
     );
@@ -201,7 +201,7 @@ const AssetBalance = observer(function AssetBalance({
 
   if (prettyBalances.status === PrettyBalancesStatus.NoAssets) {
     return (
-      <span className="font-roboto-mono font-extrabold text-white">
+      <span className="text-roboto-mono font-extrabold text-white">
         No Assets
       </span>
     );
@@ -229,14 +229,14 @@ export const AssetsContainer = observer(function AssetsContainer({
         <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 font-roboto-mono"
+            className="text-[10px] uppercase text-slate-400 text-roboto-mono"
           >
             Asset
           </Text>
 
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 font-roboto-mono max-sm:hidden"
+            className="text-[10px] uppercase text-slate-400 text-roboto-mono max-sm:hidden"
           >
             Balance
           </Text>
@@ -245,13 +245,13 @@ export const AssetsContainer = observer(function AssetsContainer({
         <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
           <Text
             fontWeight="light"
-            className="pr-4 text-[10px] uppercase text-slate-400 font-roboto-mono sm:hidden"
+            className="pr-4 text-[10px] uppercase text-slate-400 text-roboto-mono sm:hidden"
           >
             Balance
           </Text>
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 font-roboto-mono max-sm:hidden"
+            className="text-[10px] uppercase text-slate-400 text-roboto-mono max-sm:hidden"
           >
             Value
           </Text>
@@ -289,7 +289,7 @@ const Network = observer(function NetworkAssets({
               alt={assets.chain.label}
               className="h-5 w-5 sm:h-8 sm:w-8"
             /> */}
-            <Text className="text-background font-roboto-mono text-base">
+            <Text className="text-background text-roboto-mono text-base">
               {assets.chain.label}
             </Text>
             <div className="flex flex-grow justify-end text-right">
@@ -299,7 +299,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                className={`bg-accent text-roboto-mono h-5 rounded text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -319,7 +319,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                className={`bg-accent text-roboto-mono h-5 rounded text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -339,7 +339,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`bg-accent font-roboto-mono h-5 rounded text-white ${
+                className={`bg-accent text-roboto-mono h-5 rounded text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -414,7 +414,7 @@ export const AssetRow = observer(function AssetRow({
           )}
           <Text
             fontWeight="bold"
-            className="font-roboto-mono text-white max-sm:text-sm"
+            className="text-roboto-mono text-white max-sm:text-sm"
           >
             {asset.assetInfo?.symbol}
           </Text>
@@ -424,7 +424,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -438,7 +438,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="font-roboto-mono text-right tabular-nums max-sm:text-sm">
+              <Text className="text-roboto-mono text-right tabular-nums max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -446,7 +446,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -457,7 +457,7 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="font-roboto-mono text-center tabular-nums max-sm:text-sm">
+          <Text className="text-roboto-mono text-center tabular-nums max-sm:text-sm">
             {asset.prettyAmount.toString()}
           </Text>
         )}
@@ -468,7 +468,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -482,7 +482,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="font-roboto-mono -ml-6 h-5 max-sm:text-sm">
+              <Text className="text-roboto-mono -ml-6 h-5 max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -490,7 +490,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="bg-accent font-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -504,7 +504,7 @@ export const AssetRow = observer(function AssetRow({
           <div>
             <Text
               fontWeight="bold"
-              className="font-roboto-mono tabular-nums max-sm:pr-4 max-sm:text-sm"
+              className="text-roboto-mono tabular-nums max-sm:pr-4 max-sm:text-sm"
             >
               ${new BigNumber(asset.usdBalance).toFixed(2)}
             </Text>

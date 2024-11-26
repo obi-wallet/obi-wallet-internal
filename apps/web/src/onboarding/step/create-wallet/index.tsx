@@ -95,7 +95,7 @@ function LoadingText() {
 
   return (
     <div className="h-[96px] w-full">
-      <div className="font-roboto-mono w-full text-left text-xl font-normal text-white">
+      <div className="text-roboto-mono w-full text-left text-xl font-normal text-white">
         {messages[messageIndex]}
       </div>
     </div>
@@ -123,7 +123,7 @@ function LoadingDots() {
 
   return (
     <div className="h-[26px] w-full">
-      <div className="font-roboto-mono w-full text-left text-xl font-normal text-white">
+      <div className="text-roboto-mono w-full text-left text-xl font-normal text-white">
         {displayedMessage}
       </div>
     </div>

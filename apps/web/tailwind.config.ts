@@ -28,7 +28,7 @@ const config: Config = {
         "--foreground-primary-border": "var(--foreground-primary-border)",
       },
       fontFamily: {
-        "roboto-mono": ["var(--font-roboto-mono)", "monospace"],
+        "roboto-mono": ["var(--text-roboto-mono)", "monospace"],
       },
       flex: {
         2: "2 2 0%",

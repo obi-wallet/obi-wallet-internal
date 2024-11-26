@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithRef, ReactNode } from "react";
+import { robotoMono } from "@/layouts/root";
 
 export type TypographyProps = {
   mono?: boolean;
@@ -73,6 +74,7 @@ export function Text({
         leading === "loose" && "leading-loose",
         tracking && "tracking-widest",
         uppercase && "uppercase",
+        robotoMono.className,
         className,
       )}
       {...rest}
