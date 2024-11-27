@@ -14,7 +14,7 @@ import { AlertStore } from "./alert";
 import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
-import { EducationStore } from "./education-store";
+import { EducationStore } from "./education";
 import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
 import { TargetChainsStore } from "./target-chains";

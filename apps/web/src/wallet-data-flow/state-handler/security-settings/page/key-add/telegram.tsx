@@ -11,7 +11,7 @@ export const AddTelegramKeyPage = observer(function AddTelegramKeyPage() {
   const alert = useAlert();
 
   return (
-    <Box className="h-fit !min-w-[320px] px-4 py-6 w-full">
+    <Box className="h-fit w-full !min-w-[320px] px-4 py-6">
       <Text size="xl" fontWeight="semibold">
         Add a New Telegram Key
       </Text>

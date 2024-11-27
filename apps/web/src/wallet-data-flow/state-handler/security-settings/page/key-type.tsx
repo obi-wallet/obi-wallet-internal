@@ -3,7 +3,7 @@ import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
 import { KeyType } from "@obi-wallet/sdk";
-import { generateSecp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
+import { generateSec256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
@@ -71,7 +71,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
           className="mt-6 border-dashed"
           onClick={async () => {
             if (page.payload === KeyType.Cloud) {
-              const keyPair = generateSecp256k1KeyPair();
+              const keyPair = generateSec256k1KeyPair();
               const cloudkey = draft.value.addCloudKey(keyPair.publicKey);
               if (!draft.value.primaryKey) {
                 draft.value.setPrimaryKey(cloudkey);

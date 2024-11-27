@@ -15,7 +15,10 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
   const passkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = await createPasskey();
-      const passkey = draft.value.addPasskeyKey(keyPair.publicKey);
+      const passkey = draft.value.addPasskeyKey({
+        type: keyPair.publicKey.type,
+        value: keyPair.publicKey.value,
+      });
       if (!draft.value.primaryKey) {
         draft.value.setPrimaryKey(passkey);
       }
