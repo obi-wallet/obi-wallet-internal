@@ -34,33 +34,33 @@ export default observer(function TokenAdd() {
   const chainIdToUse = getChainId();
 
   return (
-    <div className="w-full">
-      <Box className="w-full lg:w-1/2">
-        <div className="my-4 flex-1 text-center text-white">
+    <div className="token-add-page w-full">
+      <Box className="token-add-form w-full lg:w-1/2">
+        <div className="token-add-title my-4 flex-1 text-center text-white">
           Import New Asset
         </div>
         <InputContainer
-          className="relative z-10 w-80"
+          className="token-add-chain-select relative z-10 w-80"
           label="Chain"
           labelClassname="bg-background-secondary"
         >
           <ChainDropdown onChange={setChainId} chainId={chainIdToUse} />
         </InputContainer>
-        <div className="my-4">
-          <label className="text-sm text-white">Token Contract Address</label>
+        <div className="token-add-address-container my-4">
+          <label className="token-add-address-label text-sm text-white">Token Contract Address</label>
           <Input
-            className="mt-2 px-3 py-3 text-sm"
+            className="token-add-address-input mt-2 px-3 py-3 text-sm"
             value={address}
             onChange={setAddress}
           />
         </div>
 
-        <div className="mb-4 mt-0.5 flex gap-8 text-white">
+        <div className="token-add-actions mb-4 mt-0.5 flex gap-8 text-white">
           <Button
             onClick={() => {
               router.back();
             }}
-            className="flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
+            className="token-add-cancel-btn flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
           >
             Cancel
           </Button>

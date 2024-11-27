@@ -56,12 +56,12 @@ export function CustomDropdown<T extends DropdownItem>({
   });
 
   return (
-    <div ref={ref} className="flex flex-1">
+    <div ref={ref} className="obi-dropdown flex flex-1">
       <Downshift
         onChange={(selection) => {
           if (!selection) return;
           onItemSelect(selection);
-          setIsOpen(false); // Close dropdown after selection
+          setIsOpen(false);
         }}
         onOuterClick={() => {
           return setIsOpen(false);
@@ -71,36 +71,41 @@ export function CustomDropdown<T extends DropdownItem>({
       >
         {({ getItemProps, selectedItem }) => {
           return (
-            <div className={cn("relative z-10", className)}>
+            <div className={cn("obi-dropdown-container relative z-10", className)}>
               <button
                 id="dropdownDefaultButton"
                 data-dropdown-toggle="dropdown"
                 className={cn(
-                  "hover:bg-background-primary-hover relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white focus:outline-none",
+                  "obi-dropdown-button hover:bg-background-primary-hover relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white focus:outline-none",
                   selectedItemClassname,
                 )}
                 onClick={() => {
                   return setIsOpen(!isOpen);
                 }}
               >
-                <SelectedItemComponent item={selectedItem} />
+                <div className="obi-dropdown-selected">
+                  <SelectedItemComponent item={selectedItem} />
+                </div>
 
-                <div className="ml-3">
+                <div className="obi-dropdown-icon ml-3">
                   {isOpen ? <FaAngleUp /> : <FaAngleDown />}
                 </div>
               </button>
               {isOpen && (
-                <div className="z-1000 absolute right-0 w-full overflow-hidden rounded-b-lg bg-gray-700 shadow">
-                  {items.map((item, index) => {
-                    return (
-                      <ItemComponent
-                        key={getKey ? getKey(item) : index.toString()}
-                        item={item}
-                        getItemProps={getItemProps}
-                        isSelected={selectedItem === item}
-                      />
-                    );
-                  })}
+                <div className="obi-dropdown-menu z-1000 absolute right-0 w-full overflow-hidden rounded-b-lg bg-gray-700 shadow">
+                  <div className="obi-dropdown-items">
+                    {items.map((item, index) => {
+                      return (
+                        <div key={getKey ? getKey(item) : index.toString()} className="obi-dropdown-item">
+                          <ItemComponent
+                            item={item}
+                            getItemProps={getItemProps}
+                            isSelected={selectedItem === item}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>

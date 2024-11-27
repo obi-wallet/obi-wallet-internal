@@ -19,7 +19,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
         robotoMono.variable,
         inter.className,
         robotoMono.variable,
-        "flex h-full flex-grow flex-col",
+        "obi-root-container flex h-full flex-grow flex-col",
       )}
     >
       {children}
@@ -29,8 +29,10 @@ export function RootContainer({ children }: { children: ReactNode }) {
 
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
-    <main className="flex h-full w-full flex-1 grow">
-      <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+    <main className="obi-main-container flex min-h-[calc(100vh_-_80px)] w-full flex-1 grow max-md:min-h-[calc(100dvh_-_64px)]">
+      <div className="obi-main-content flex w-full">
+        <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+      </div>
     </main>
   );
 }

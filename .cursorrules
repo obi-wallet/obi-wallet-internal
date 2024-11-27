@@ -332,4 +332,6 @@ This is a monorepo project using Turborepo with the following structure:
 # If Using Terminal
 - Use `nvm use 20` to ensure correct Node.js version before running `yarn` and other commands
 
+Be aware that you will sometimes receive the results of an automatic "Iterate on Lints" feature after you have suggested updated code. You shouldn't complain that I didn't ask a question; this just allows you to fix any lint errors in your suggestions and update them accordingly.
+
 Remember: Prioritize security and correctness in cryptographic operations while maintaining clean abstractions for chain-specific implementations.

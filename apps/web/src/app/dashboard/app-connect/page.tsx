@@ -79,6 +79,8 @@ export default observer(function AppConnect() {
               <Image
                 className="my-2 w-full object-contain"
                 src="/assets/images/app-connect-pairing.png"
+                width={800}
+                height={600}
                 alt="WalletConnect pairing screen"
               />
             </li>
@@ -167,8 +169,9 @@ export default observer(function AppConnect() {
           {activeSessions.map((session) => {
             return (
               <AsyncButton
-                className="my-1 w-full justify-between"
+                className="my-1 w-full"
                 variant="secondary"
+                textAlign="justify"
                 key={session.topic}
                 onClick={async () => {
                   await walletConnectStore.disconnect(session.topic);
@@ -177,8 +180,12 @@ export default observer(function AppConnect() {
                   });
                 }}
               >
-                <Text size="xl">{session.peer.metadata.name}</Text>
-                <Text size="sm">Disconnect</Text>
+                <Text size="xl" className="text-left">
+                  {session.peer.metadata.name}
+                </Text>
+                <Text size="sm" className="text-right">
+                  Disconnect
+                </Text>
               </AsyncButton>
             );
           })}

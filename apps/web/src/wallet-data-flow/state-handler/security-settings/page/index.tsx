@@ -11,12 +11,11 @@ import { useSecuritySettingsContext } from "../context";
 const keyOptions = [
   { label: "Passkey", type: KeyType.Passkey },
   { label: "Telegram Key", type: KeyType.Telegram },
-  { label: "Cloud Key", type: KeyType.Cloud },
   { label: "Phone Key", type: KeyType.Phone },
 ];
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const { state, dispatch, draft, keyMetaDataDraft, keyList, pushPage } =
+  const { draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const [showAddKeyOptions, setShowAddKeyOptions] = useState(false);
   const missingPrimaryKey = !draft.value.primaryKey;
@@ -44,7 +43,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             </Text>
           </div>
           {/* Keys Required */}
-          <Divider className="my-2" />
+          <Divider className="my-2 opacity-0" />
           <div className="flex items-center justify-center self-stretch px-2.5">
             <Text
               size="lg"
@@ -89,7 +88,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           </div>
         </>
       )}
-      <Divider className="my-2" />
+      <Divider className="my-2 opacity-0" />
       <div className="space-y-2">
         {missingPrimaryKey ? (
           <Box className="mt-4 bg-red-500 text-white">
@@ -117,12 +116,13 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         {!showAddKeyOptions && (
           <AsyncButton
             variant="outline"
-            className="mt-4 flex w-full items-center justify-between self-stretch rounded-[5px] border border-[#32c9af] p-2.5"
+            textAlign="justify"
+            className="add-new-key-btn mt-4 flex w-full items-center self-stretch rounded-[5px] border border-[#32c9af] p-2.5"
             onClick={async () => {
               setShowAddKeyOptions(true);
             }}
           >
-            <Text size="lg" fontWeight="normal" className="text-white">
+            <Text size="md" fontWeight="normal" className="text-white">
               Add New Key
             </Text>
             <Text size="lg" fontWeight="normal" className="text-white">

@@ -116,7 +116,7 @@ export const Navbar = observer(function Navbar() {
                           className="h-8 w-8"
                         />
                       </div>
-                      <div className="text-roboto-mono shrink grow basis-0 text-xl font-normal text-white">
+                      <div className="text-roboto-mono shrink grow basis-0 text-lg font-normal text-white">
                         {navItem.text}
                       </div>
                     </PrimaryLink>

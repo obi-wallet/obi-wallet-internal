@@ -21,14 +21,16 @@ export function Box({
   return (
     <div
       className={cn(
-        "bg-background-secondary rounded-md px-4 py-4 sm:shadow",
+        "obi-box bg-background-secondary rounded-md px-4 sm:shadow",
         className,
       )}
       {...rest}
     >
-      {title && <Text className={titleClassName}>{title}</Text>}
-      {RightIcon && <RightIcon />}
-      {children}
+      {title && <Text className={cn("obi-box-title", titleClassName)}>{title}</Text>}
+      {RightIcon && <RightIcon className="obi-box-icon" />}
+      <div className="obi-box-content">
+        {children}
+      </div>
     </div>
   );
 }

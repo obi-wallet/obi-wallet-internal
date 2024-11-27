@@ -29,6 +29,7 @@ export type ButtonProps = {
     rightIcon?: string;
   };
   leading?: ButtonLeading;
+  textAlign?: "left" | "center" | "justify";
   block?: boolean;
   href?: string;
 } & ComponentPropsWithRef<"button">;
@@ -43,6 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = "primary",
       size = "base",
       leading = "tight",
+      textAlign = "center",
       leftIcon: LeftIcon,
       rightIcon: RightIcon,
       classNames,
@@ -55,12 +57,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const disabled = isLoading || buttonDisabled;
 
     const style = cn(
-      "inline-flex items-center rounded-[5px] font-medium text-center",
+      "inline-flex rounded-[5px] font-medium items-center",
       "focus-visible:ring focus:outline-none focus-visible:ring-primary",
       "shadow-sm",
       "transition-colors duration-75",
       "disabled:shadow-inner",
-      block && "w-full justify-center",
+      block && "w-full",
       // Size
       size === "base" && "px-3 py-3.5 text-sm md:text-base",
       size === "sm" && "px-1 py-1 text-xs md:text-sm",
@@ -124,7 +126,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     function ChildrenContent() {
       return (
-        <>
+        <div className={cn(
+          "flex w-full items-center min-h-full",
+          textAlign === "left" && "justify-start text-left",
+          textAlign === "center" && "justify-center text-center",
+          textAlign === "justify" && "justify-between"
+        )}>
           {isLoading && (
             <div
               className={cn(
@@ -159,7 +166,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               />
             </div>
           )}
-          {children}
+            {children}
           {RightIcon && (
             <div
               className={cn(
@@ -178,7 +185,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               />
             </div>
           )}
-        </>
+        </div>
       );
     }
     return href ? (
