@@ -80,6 +80,35 @@ export async function trackOnboarding({
   }
 }
 
+export async function fetchReport({
+  path,
+  from,
+  to,
+}: {
+  path: string[];
+  from: string | null;
+  to: string | null;
+}) {
+  const url = new URL("https://analytics.obiwallet.workers.dev/reports");
+  url.pathname = `${url.pathname}/${path.map(encodeURIComponent).join("/")}`;
+  if (from) {
+    url.searchParams.set("from", from);
+  }
+  if (to) {
+    url.searchParams.set("to", to);
+  }
+
+  console.log(url.toString());
+
+  const response = await fetch(url.toString(), {
+    headers: getAuthenticatedHeaders(),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch report");
+  }
+  return await response.json();
+}
+
 function getAuthenticatedHeaders() {
   const anonymousHeaders = getAnonymousHeaders();
   const token =
