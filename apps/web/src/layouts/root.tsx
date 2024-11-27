@@ -18,7 +18,6 @@ export function RootContainer({ children }: { children: ReactNode }) {
       className={cn(
         robotoMono.variable,
         inter.className,
-        robotoMono.variable,
         "obi-root-container flex h-full flex-grow flex-col",
       )}
     >
