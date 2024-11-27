@@ -15,7 +15,7 @@ const keyOptions = [
 ];
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
-  const { draft, keyMetaDataDraft, keyList, pushPage } =
+  const { state, dispatch, draft, keyMetaDataDraft, keyList, pushPage } =
     useSecuritySettingsContext();
   const [showAddKeyOptions, setShowAddKeyOptions] = useState(false);
   const missingPrimaryKey = !draft.value.primaryKey;
@@ -157,8 +157,13 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingPrimaryKey
           }
           onClick={async () => {
-            draft.commit({ original: draft.value });
-            keyMetaDataDraft.commit({ original: keyMetaDataDraft.value });
+            await dispatch(
+              state.commitDraft({
+                walletData: state.walletData,
+                ownerDraft: draft,
+                keyMetaDataDraft: keyMetaDataDraft,
+              }),
+            );
           }}
         >
           <Text size="xl" fontWeight="normal" className="text-white">
