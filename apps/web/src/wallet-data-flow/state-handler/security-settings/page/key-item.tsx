@@ -14,7 +14,7 @@ export const SecuritySettingsKeyItemPage = observer<{ page: KeyItemPage }>(
     );
 
     return (
-      <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
+      <Box className="h-fit w-full !min-w-[320px] px-4 py-6">
         <Text size="xl" fontWeight="semibold">
           {`${page.payload.label} Settings`}
         </Text>

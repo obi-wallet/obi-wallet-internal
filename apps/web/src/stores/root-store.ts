@@ -6,4 +6,4 @@ export class RootStore {
   constructor() {
     this.educationStore = new EducationStore();
   }
-} 
+}

@@ -24,4 +24,4 @@ export class EducationStore {
   clearTopic() {
     this.currentTopic = null;
   }
-} 
+}

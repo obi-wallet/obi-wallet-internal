@@ -126,12 +126,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     function ChildrenContent() {
       return (
-        <div className={cn(
-          "flex w-full items-center min-h-full",
-          textAlign === "left" && "justify-start text-left",
-          textAlign === "center" && "justify-center text-center",
-          textAlign === "justify" && "justify-between"
-        )}>
+        <div
+          className={cn(
+            "flex min-h-full w-full items-center",
+            textAlign === "left" && "justify-start text-left",
+            textAlign === "center" && "justify-center text-center",
+            textAlign === "justify" && "justify-between",
+          )}
+        >
           {isLoading && (
             <div
               className={cn(
@@ -166,7 +168,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               />
             </div>
           )}
-            {children}
+          {children}
           {RightIcon && (
             <div
               className={cn(

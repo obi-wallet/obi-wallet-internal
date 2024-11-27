@@ -47,7 +47,9 @@ export default observer(function TokenAdd() {
           <ChainDropdown onChange={setChainId} chainId={chainIdToUse} />
         </InputContainer>
         <div className="token-add-address-container my-4">
-          <label className="token-add-address-label text-sm text-white">Token Contract Address</label>
+          <label className="token-add-address-label text-sm text-white">
+            Token Contract Address
+          </label>
           <Input
             className="token-add-address-input mt-2 px-3 py-3 text-sm"
             value={address}

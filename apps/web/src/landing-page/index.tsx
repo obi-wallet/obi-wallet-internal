@@ -212,9 +212,9 @@ export function LandingPage() {
               conveniently and without compromise.
             </p>
             <p className="text-xl text-white">
-              Self-custody is your right. With Obi, avoid the common pitfalls
-              of lost assets and navigate decentralized ecosystems effortlessly
-              – while staying fully in control.
+              Self-custody is your right. With Obi, avoid the common pitfalls of
+              lost assets and navigate decentralized ecosystems effortlessly –
+              while staying fully in control.
             </p>
           </section>
 

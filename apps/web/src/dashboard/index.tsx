@@ -38,7 +38,9 @@ const Assets = observer(function Assets() {
         <div className="dashboard-search text-roboto-mono min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
             className="dashboard-search-input bg-background-secondary border-primary h-9 w-full rounded px-3 py-1.5"
-            leftComponent={<CiSearch className="dashboard-search-icon h-6 w-6" />}
+            leftComponent={
+              <CiSearch className="dashboard-search-icon h-6 w-6" />
+            }
             labelClassname="bg-background-secondary"
             placeholder="Search"
             value={searchAsset}
@@ -287,14 +289,14 @@ const Network = observer(function NetworkAssets({
             <Text className="network-chain-name text-background text-roboto-mono text-base leading-none">
               {assets.chain.label}
             </Text>
-            <div className="network-controls flex flex-grow justify-end items-center text-right">
+            <div className="network-controls flex flex-grow items-center justify-end text-right">
               <Button
                 style={
                   targetChainConfig.enabled === true
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-enable-button bg-accent text-roboto-mono h-5 leading-5 rounded text-white ${
+                className={`network-enable-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -314,7 +316,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-disable-button bg-accent text-roboto-mono h-5 leading-5 rounded text-white ${
+                className={`network-disable-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -334,7 +336,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-auto-button bg-accent text-roboto-mono h-5 leading-5 rounded text-white ${
+                className={`network-auto-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {

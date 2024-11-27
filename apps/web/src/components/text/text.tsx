@@ -1,6 +1,6 @@
+import { robotoMono } from "@/layouts/root";
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithRef, ReactNode } from "react";
-import { robotoMono } from "@/layouts/root";
 
 export type TypographyProps = {
   mono?: boolean;

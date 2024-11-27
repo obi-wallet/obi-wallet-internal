@@ -39,7 +39,7 @@ export function KeyListItem({
     <Button
       key={keyData.type}
       variant="secondary"
-      textAlign = "left"
+      textAlign="left"
       disabled={keyData.comingSoon}
       block
       {...rest}
@@ -50,17 +50,16 @@ export function KeyListItem({
       <div
         className={cn(
           "key-list-item-count absolute right-0 flex h-full w-14 items-center justify-center rounded-r",
-          keyCount > 0
-            ? "bg-primary"
-            : alert
-              ? "bg-red-500"
-              : "bg-slate-500",
+          keyCount > 0 ? "bg-primary" : alert ? "bg-red-500" : "bg-slate-500",
         )}
       >
         {keyCount > 0 ? (
           <span className="key-list-item-number">{keyCount}</span>
         ) : alert ? (
-          <FaTriangleExclamation className="key-list-item-alert h-4 w-4" color="white" />
+          <FaTriangleExclamation
+            className="key-list-item-alert h-4 w-4"
+            color="white"
+          />
         ) : (
           <FaPlus className="key-list-item-plus h-4 w-4" color="white" />
         )}

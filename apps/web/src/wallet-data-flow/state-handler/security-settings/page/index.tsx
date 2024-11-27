@@ -58,7 +58,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         <>
           {/* Description */}
           <div className="flex items-center justify-center self-stretch px-2.5 py-10">
-            <Text size="lg" fontWeight="normal" className="text-white">
+            <Text size="sm" fontWeight="normal" className="text-white">
               Select the new key type below.
             </Text>
           </div>
@@ -68,7 +68,9 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               return (
                 <AsyncButton
                   key={option.type}
-                  className="flex w-full items-center justify-between rounded-[5px] bg-[#353535] p-2.5"
+                  variant="secondary"
+                  textAlign="justify"
+                  className="flex w-full"
                   onClick={async () => {
                     pushPage({
                       type: "key-type",
@@ -76,10 +78,10 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                     });
                   }}
                 >
-                  <Text size="lg" fontWeight="normal" className="text-white">
+                  <Text size="lg" fontWeight="normal" className="text-left">
                     {option.label}
                   </Text>
-                  <Text size="lg" fontWeight="normal" className="text-white">
+                  <Text size="lg" fontWeight="normal" className="text-right">
                     +
                   </Text>
                 </AsyncButton>

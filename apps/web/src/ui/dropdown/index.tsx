@@ -71,7 +71,9 @@ export function CustomDropdown<T extends DropdownItem>({
       >
         {({ getItemProps, selectedItem }) => {
           return (
-            <div className={cn("obi-dropdown-container relative z-10", className)}>
+            <div
+              className={cn("obi-dropdown-container relative z-10", className)}
+            >
               <button
                 id="dropdownDefaultButton"
                 data-dropdown-toggle="dropdown"
@@ -96,7 +98,10 @@ export function CustomDropdown<T extends DropdownItem>({
                   <div className="obi-dropdown-items">
                     {items.map((item, index) => {
                       return (
-                        <div key={getKey ? getKey(item) : index.toString()} className="obi-dropdown-item">
+                        <div
+                          key={getKey ? getKey(item) : index.toString()}
+                          className="obi-dropdown-item"
+                        >
                           <ItemComponent
                             item={item}
                             getItemProps={getItemProps}

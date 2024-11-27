@@ -52,7 +52,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
       return (
         <Modal
           title="Phone Key"
-          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full"
+          boxClassname="h-fit !min-w-[320px] px-4 py-6 w-full"
           onClose={onClose}
         >
           <AddPhoneKey
@@ -70,7 +70,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
       return (
         <Modal
           title="Telegram Key"
-          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full"
+          boxClassname="h-fit !min-w-[320px] px-4 py-6 w-full"
           onClose={onClose}
         >
           <AddTelegramKey
@@ -88,7 +88,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
       return (
         <Modal
           title="Cloud Key"
-          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full overflow-y-auto max-h-[400px]"
+          boxClassname="h-fit !w-[320px] !min-w-[320px] px-4 py-6 w-full overflow-y-auto max-h-[400px]"
           onClose={onClose}
         >
           <section className="flex flex-col items-center space-y-4">

@@ -26,11 +26,11 @@ export function Box({
       )}
       {...rest}
     >
-      {title && <Text className={cn("obi-box-title", titleClassName)}>{title}</Text>}
+      {title && (
+        <Text className={cn("obi-box-title", titleClassName)}>{title}</Text>
+      )}
       {RightIcon && <RightIcon className="obi-box-icon" />}
-      <div className="obi-box-content">
-        {children}
-      </div>
+      <div className="obi-box-content">{children}</div>
     </div>
   );
 }
