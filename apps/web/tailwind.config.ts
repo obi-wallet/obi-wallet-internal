@@ -19,7 +19,7 @@ const config: Config = {
         "background-primary-hover": "#32f9df",
         "background-primary-active": "#32f9df",
         "background-primary-disabled": "#3C87AA",
-        "background-secondary": "#070A12",
+        "background-secondary": "#05070C",
         "background-select": "var(--background-select)",
         "background-select-hover": "var(--background-select-hover)",
         "background-select-active": "var(--background-select-active)",

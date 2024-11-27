@@ -46,7 +46,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
           <Divider className="my-2 opacity-0" />
           <div className="flex items-center justify-center self-stretch px-2.5">
             <Text
-              size="lg"
+              size="sm"
               fontWeight="normal"
               className="text-center text-[#32c9af]"
             >
