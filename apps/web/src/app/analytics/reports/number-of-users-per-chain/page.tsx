@@ -1,11 +1,14 @@
 "use client";
 
+import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useSearchParams } from "next/navigation";
+import { use } from "react";
 
 export default function NumberOfUsersPerChain() {
   const searchParams = useSearchParams();
+  const secret = use(ReportsSecretsContext);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const query = useQuery({
@@ -21,12 +24,25 @@ export default function NumberOfUsersPerChain() {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${secret}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
       return await response.json();
     },
   });
 
   const data: { chain: string; users: number }[] = query.data ?? [];
+
+  if (!Array.isArray(data)) {
+    return null;
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

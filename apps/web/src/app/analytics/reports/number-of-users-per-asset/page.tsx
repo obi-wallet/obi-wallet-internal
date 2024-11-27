@@ -1,13 +1,16 @@
 "use client";
 
+import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { Text } from "@/components";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { useRouter, useSearchParams } from "next/navigation";
+import { use } from "react";
 
 export default function NumberOfUsersPerAsset() {
   const searchParams = useSearchParams();
+  const secret = use(ReportsSecretsContext);
   const router = useRouter();
   const from = searchParams.get("from");
   const to = searchParams.get("to");
@@ -24,7 +27,16 @@ export default function NumberOfUsersPerAsset() {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${secret}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
       const data: { asset: Caip19AssetId; users: number }[] =
         await response.json();
       return await Promise.all(
@@ -43,6 +55,10 @@ export default function NumberOfUsersPerAsset() {
   });
 
   const data = query.data ?? [];
+
+  if (!Array.isArray(data)) {
+    return null;
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">

@@ -1,5 +1,6 @@
 "use client";
 
+import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { Text } from "@/components";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -14,10 +15,11 @@ export default function UsersPerAsset(props: {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const asset = decodeURIComponent(use(props.params).asset) as Caip19AssetId;
   const searchParams = useSearchParams();
+  const secret = use(ReportsSecretsContext);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const query = useQuery({
-    queryKey: ["users-per-asset", 2, asset, from, to],
+    queryKey: ["users-per-asset", asset, from, to],
     queryFn: async () => {
       const url = new URL(
         `/api/analytics/reports/users-per-asset/${encodeURIComponent(asset)}`,
@@ -29,7 +31,16 @@ export default function UsersPerAsset(props: {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${secret}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
       const data: {
         asset: Caip19AssetId;
         userEntryAddress: string;
@@ -47,6 +58,10 @@ export default function UsersPerAsset(props: {
   });
 
   const data = query.data ?? { data: [], assetInfo: null };
+
+  if (!Array.isArray(data.data)) {
+    return null;
+  }
 
   return (
     <div className="px-4 sm:px-6 lg:px-8">
