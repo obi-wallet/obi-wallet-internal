@@ -1,23 +1,29 @@
 import { cn } from "@/lib/utils";
 import { UserInteractionsHandlers } from "@/user-interactions";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Roboto_Mono as RobotoMono } from "next/font/google";
 import { ReactNode } from "react";
 
-export const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  weight: ["100", "400"],
-  variable: "--text-roboto-mono",
-  display: "swap",
-});
+// Mock font for test environment
+const mockFont = {
+  className: "",
+  variable: "",
+  style: { fontFamily: "Roboto Mono" },
+};
 
-const inter = Inter({ subsets: ["latin"] });
+export const robotoMono =
+  typeof RobotoMono === "function"
+    ? RobotoMono({
+        subsets: ["latin"],
+        weight: ["400"],
+        variable: "--font-roboto-mono",
+      })
+    : mockFont;
 
 export function RootContainer({ children }: { children: ReactNode }) {
   return (
     <div
       className={cn(
         robotoMono.variable,
-        inter.className,
         "obi-root-container flex h-full flex-grow flex-col",
       )}
     >
