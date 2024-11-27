@@ -31,7 +31,7 @@ export const UserDataStep = observer(function UserDataStep({
             onChange={(value) => {
               draft.value.setName(value);
             }}
-            placeholder="new_wallet_name"
+            placeholder="My Obi Wallet"
           />
         </div>
         {/* Buttons */}
