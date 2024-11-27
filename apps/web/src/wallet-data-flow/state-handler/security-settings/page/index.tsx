@@ -157,13 +157,8 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             (!draft.isDirty && !keyMetaDataDraft.isDirty) || missingPrimaryKey
           }
           onClick={async () => {
-            await dispatch(
-              state.commitDraft({
-                walletData: state.walletData,
-                ownerDraft: draft,
-                keyMetaDataDraft: keyMetaDataDraft,
-              }),
-            );
+            draft.commit({ original: draft.value });
+            keyMetaDataDraft.commit({ original: keyMetaDataDraft.value });
           }}
         >
           <Text size="xl" fontWeight="normal" className="text-white">
