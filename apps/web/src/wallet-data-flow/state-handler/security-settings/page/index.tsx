@@ -12,6 +12,7 @@ const keyOptions = [
   { label: "Passkey", type: KeyType.Passkey },
   { label: "Telegram Key", type: KeyType.Telegram },
   { label: "Phone Key", type: KeyType.Phone },
+  { label: "Cloud Key", type: KeyType.Cloud },
 ];
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
