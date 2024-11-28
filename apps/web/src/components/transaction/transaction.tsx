@@ -38,9 +38,7 @@ export function Transaction({
   const targetChainLabel = targetChainId
     ? TargetChain.chainId(targetChainId).label
     : "";
-  const image = targetChainId
-    ? TargetChain.chainId(targetChainId).image
-    : null;
+  const image = targetChainId ? TargetChain.chainId(targetChainId).image : null;
 
   return (
     <Box

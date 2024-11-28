@@ -92,7 +92,8 @@ const Assets = observer(function Assets() {
               size="sm"
               className="dashboard-footer-text break-words text-center font-light leading-normal text-white"
             >
-              You don't have any assets yet. Receive assets on a network like Ethereum, Base, Neutron, or Solana to get started!
+              You don't have any assets yet. Receive assets on a network like
+              Ethereum, Base, Neutron, or Solana to get started!
             </Text>
           </div>
         </>
