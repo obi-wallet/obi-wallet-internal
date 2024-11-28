@@ -7,6 +7,7 @@ const config: Config = {
       height: {
         revertLayer: "revert-layer",
         standardField: "46px",
+        standardButton: "36px",
       },
       colors: {
         primary: "#32c9af",

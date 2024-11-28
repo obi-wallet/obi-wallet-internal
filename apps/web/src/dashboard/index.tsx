@@ -92,8 +92,7 @@ const Assets = observer(function Assets() {
               size="sm"
               className="dashboard-footer-text break-words text-center font-light leading-normal text-white"
             >
-              Fast Travel or Tunnel transactions may take a few minutes to be
-              processed and will appear here once visible on the network.
+              You don't have any assets yet. Receive assets on a network like Ethereum, Base, Neutron, or Solana to get started!
             </Text>
           </div>
         </>

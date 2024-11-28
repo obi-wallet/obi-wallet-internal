@@ -3,10 +3,18 @@ import { Box, Button, Divider, Text } from "@/components";
 import { useStore } from "@/contexts";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Settings() {
   const { mpcWalletsStore } = useStore();
   const router = useRouter();
+  useEffect(() => {
+    void Promise.resolve();
+    router.push("/dashboard/settings/security");
+  }, [router]);
+
+  void Promise.resolve();
+  return null;
   return (
     <>
       <Head>

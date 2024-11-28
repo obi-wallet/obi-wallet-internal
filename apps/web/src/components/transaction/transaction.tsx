@@ -40,7 +40,7 @@ export function Transaction({
     : "";
   const image = targetChainId
     ? TargetChain.chainId(targetChainId).image
-    : "/assets/icons/transaction-lock.svg";
+    : null;
 
   return (
     <Box

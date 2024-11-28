@@ -154,7 +154,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                           }),
                         );
                       }}
-                      variant={getResult(key.key) ? "confirmed" : "primary"}
+                      variant={getResult(key.key) ? "primary" : "primary"}
                       disabled={
                         !!getResult(key.key) || threshold <= confirmedKeyCount
                       }

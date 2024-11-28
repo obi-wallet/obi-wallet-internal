@@ -58,7 +58,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const style = cn(
       "inline-flex rounded-[5px] items-center font-medium",
-      "h-standardField max-h-standardField",
+      "h-standardButton max-h-standardButton",
       "focus-visible:ring focus:outline-none focus-visible:ring-primary",
       "shadow-sm",
       "transition-colors duration-75",

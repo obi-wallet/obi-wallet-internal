@@ -90,7 +90,7 @@ export const Navbar = observer(function Navbar() {
         <AccountAndCTA />
 
         {/* Navigation Menu */}
-        <div className="flex flex-1 flex-col items-start justify-start gap-5 py-[5px]">
+        <div className="flex flex-1 flex-col items-start justify-start gap-5">
           <ul role="list" className="flex w-full flex-col space-y-5">
             {navMenu
               .filter((item) => {
@@ -102,7 +102,7 @@ export const Navbar = observer(function Navbar() {
                     <PrimaryLink
                       href={navItem.href}
                       className={cn(
-                        "flex w-full items-center gap-2.5 rounded-[5px] px-[5px]",
+                        "h-standardButton flex w-full items-center gap-2.5 rounded-[5px] px-[5px]",
                         mainURISegment === navItem.module ? "bg-primary" : "",
                       )}
                       target={navItem.target || "_self"}
