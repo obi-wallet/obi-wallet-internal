@@ -90,7 +90,7 @@ export function DropDown<
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="text-roboto-mono hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
+        className="hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
         type="button"
         disabled={disabled}
         onClick={() => {

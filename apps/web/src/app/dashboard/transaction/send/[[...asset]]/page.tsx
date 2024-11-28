@@ -461,7 +461,6 @@ const SendInner = observer<{
         render={({ field }) => {
           return (
             <Input
-              label="Recipient Address"
               labelClassname="bg-background-secondary"
               className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
               placeholder="Enter Recipient Address"
@@ -483,7 +482,6 @@ const SendInner = observer<{
 
           return (
             <Input
-              label="Amount"
               labelClassname="bg-background-secondary"
               className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
               placeholder="Enter Amount"
@@ -624,7 +622,6 @@ const SendInner = observer<{
         render={({ field }) => {
           return (
             <Input
-              label="Memo (optional)"
               labelClassname="bg-background-secondary"
               className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
               placeholder="Memo (optional)"

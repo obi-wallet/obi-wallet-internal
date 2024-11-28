@@ -52,7 +52,7 @@ export function Transaction({
       {...rest}
     >
       {image ? (
-        <div className="absolute -top-8 h-[70px] w-[70px] rounded-full bg-black p-4">
+        <div className="bg-background absolute -top-8 h-[70px] w-[70px] rounded-full p-4">
           <Image
             width="70"
             height="70"

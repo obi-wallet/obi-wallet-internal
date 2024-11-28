@@ -36,10 +36,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
         <>
           {/* Description */}
           <div className="flex items-center justify-start self-stretch px-2.5">
-            <Text
-              fontWeight="normal"
-              className="text-roboto-mono mb-1 mt-1 text-sm text-white"
-            >
+            <Text fontWeight="normal" className="mb-1 mt-1 text-sm text-white">
               Update, remove or add keys to your account.
             </Text>
           </div>

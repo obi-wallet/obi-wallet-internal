@@ -22,7 +22,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="dashboard-page bg-background text-roboto-mono flex w-full flex-col text-white">
+    <div className="dashboard-page bg-background flex w-full flex-col text-white">
       <Assets />
     </div>
   );
@@ -35,7 +35,7 @@ const Assets = observer(function Assets() {
   return (
     <>
       <div className="dashboard-controls flex items-center gap-3">
-        <div className="dashboard-search text-roboto-mono min-w-0 flex-[1_1_0] text-sm text-white">
+        <div className="dashboard-search min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
             className="dashboard-search-input bg-background-secondary border-primary h-9 w-full rounded px-3 py-1.5"
             leftComponent={
@@ -90,7 +90,7 @@ const Assets = observer(function Assets() {
           <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-center justify-center max-md:px-2">
             <Text
               size="sm"
-              className="dashboard-footer-text text-roboto-mono break-words text-center font-light leading-normal text-white"
+              className="dashboard-footer-text break-words text-center font-light leading-normal text-white"
             >
               Fast Travel or Tunnel transactions may take a few minutes to be
               processed and will appear here once visible on the network.
@@ -194,19 +194,11 @@ const AssetBalance = observer(function AssetBalance({
   const prettyBalances = usePrettyBalances(searchAsset);
 
   if (prettyBalances.status === PrettyBalancesStatus.Loading) {
-    return (
-      <span className="text-roboto-mono font-extrabold text-white">
-        Loading
-      </span>
-    );
+    return <span className="font-extrabold text-white">Loading</span>;
   }
 
   if (prettyBalances.status === PrettyBalancesStatus.NoAssets) {
-    return (
-      <span className="text-roboto-mono font-extrabold text-white">
-        No Assets
-      </span>
-    );
+    return <span className="font-extrabold text-white">No Assets</span>;
   }
 
   return (
@@ -231,14 +223,14 @@ export const AssetsContainer = observer(function AssetsContainer({
         <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 text-roboto-mono"
+            className="text-[10px] uppercase text-slate-400 "
           >
             Asset
           </Text>
 
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 text-roboto-mono max-sm:hidden"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
           >
             Balance
           </Text>
@@ -247,13 +239,13 @@ export const AssetsContainer = observer(function AssetsContainer({
         <div className="flex w-1/4 items-center justify-end gap-x-4 sm:flex-none">
           <Text
             fontWeight="light"
-            className="pr-4 text-[10px] uppercase text-slate-400 text-roboto-mono sm:hidden"
+            className="pr-4 text-[10px] uppercase text-slate-400 sm:hidden"
           >
             Balance
           </Text>
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400 text-roboto-mono max-sm:hidden"
+            className="text-[10px] uppercase text-slate-400 max-sm:hidden"
           >
             Value
           </Text>
@@ -286,7 +278,7 @@ const Network = observer(function NetworkAssets({
       <div className="network-header sticky top-0 z-10">
         <h3 className="network-title bg-primary flex h-9 items-center gap-2.5 rounded px-2.5 py-[5px]">
           <div className="network-title-content flex flex-1 flex-row">
-            <Text className="network-chain-name text-background text-roboto-mono text-base leading-none">
+            <Text className="network-chain-name text-background text-base leading-none">
               {assets.chain.label}
             </Text>
             <div className="network-controls flex flex-grow items-center justify-end text-right">
@@ -296,7 +288,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-enable-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
+                className={`network-enable-button bg-accent h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -316,7 +308,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-disable-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
+                className={`network-disable-button bg-accent h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -336,7 +328,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-auto-button bg-accent text-roboto-mono h-5 rounded leading-5 text-white ${
+                className={`network-auto-button bg-accent h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -411,7 +403,7 @@ export const AssetRow = observer(function AssetRow({
           )}
           <Text
             fontWeight="bold"
-            className="asset-row-symbol text-roboto-mono text-white max-sm:text-sm"
+            className="asset-row-symbol text-white max-sm:text-sm"
           >
             {asset.assetInfo?.symbol}
           </Text>
@@ -421,7 +413,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="asset-row-remove-viewing-key bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="asset-row-remove-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -435,7 +427,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="asset-row-viewing-key text-roboto-mono text-right tabular-nums max-sm:text-sm">
+              <Text className="asset-row-viewing-key text-right tabular-nums max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -443,7 +435,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="asset-row-create-viewing-key bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="asset-row-create-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -454,7 +446,7 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="asset-row-amount text-roboto-mono text-center tabular-nums max-sm:text-sm">
+          <Text className="asset-row-amount text-center tabular-nums max-sm:text-sm">
             {asset.prettyAmount.toString()}
           </Text>
         )}
@@ -465,7 +457,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="asset-row-remove-viewing-key bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="asset-row-remove-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -479,7 +471,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="asset-row-viewing-key text-roboto-mono -ml-6 h-5 max-sm:text-sm">
+              <Text className="asset-row-viewing-key -ml-6 h-5 max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -487,7 +479,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="asset-row-create-viewing-key bg-accent text-roboto-mono -ml-6 h-5 rounded text-white max-sm:text-sm"
+                className="asset-row-create-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -501,7 +493,7 @@ export const AssetRow = observer(function AssetRow({
           <div>
             <Text
               fontWeight="bold"
-              className="asset-row-value text-roboto-mono tabular-nums max-sm:pr-4 max-sm:text-sm"
+              className="asset-row-value tabular-nums max-sm:pr-4 max-sm:text-sm"
             >
               ${new BigNumber(asset.usdBalance).toFixed(2)}
             </Text>

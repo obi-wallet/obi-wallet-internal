@@ -28,7 +28,7 @@
   }
 
   :root {
-    --background-main: theme("colors.slate.900");
+    --background-main: #070707;
     --background-primary: #32c9af;
     --background-primary-hover: #2ab69c;
     --background-primary-active: #32c9af;

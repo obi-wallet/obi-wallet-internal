@@ -12,7 +12,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaQuestionCircle } from "react-icons/fa";
+import { FaQuestionCircle, FaTrash } from "react-icons/fa";
 import { useEffectOnceWhen } from "rooks";
 
 export default observer(function AppConnect() {
@@ -174,18 +174,22 @@ export default observer(function AppConnect() {
                 textAlign="justify"
                 key={session.topic}
                 onClick={async () => {
-                  await walletConnectStore.disconnect(session.topic);
-                  await queryClient.invalidateQueries({
-                    queryKey: ["wallet-connect", "sessions"],
-                  });
+                  window.open(session.peer.metadata.url, "_blank");
                 }}
               >
                 <Text size="xl" className="text-left">
                   {session.peer.metadata.name}
                 </Text>
-                <Text size="sm" className="text-right">
-                  Disconnect
-                </Text>
+                <FaTrash
+                  className="h-4 w-4"
+                  color="white"
+                  onClick={async () => {
+                    await walletConnectStore.disconnect(session.topic);
+                    await queryClient.invalidateQueries({
+                      queryKey: ["wallet-connect", "sessions"],
+                    });
+                  }}
+                />
               </AsyncButton>
             );
           })}

@@ -57,37 +57,39 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const disabled = isLoading || buttonDisabled;
 
     const style = cn(
-      "inline-flex rounded-[5px] font-medium items-center",
+      "inline-flex rounded-[5px] items-center font-medium",
+      "h-standardField max-h-standardField",
       "focus-visible:ring focus:outline-none focus-visible:ring-primary",
       "shadow-sm",
       "transition-colors duration-75",
       "disabled:shadow-inner",
       block && "w-full",
       // Size
-      size === "base" && "px-3 py-3.5 text-sm md:text-base",
+      size === "base" && "px-3 py-1.5 text-sm md:text-base",
       size === "sm" && "px-1 py-1 text-xs md:text-sm",
-      size === "md" && "h-9 px-3 text-sm lg:text-md lg:py-1.5 max-md:py-1",
-      size === "lg" && "h-12 px-6 text-base",
+      size === "md" && "px-3 text-sm lg:text-md lg:py-1.5 max-md:py-1",
+      // size === "lg" && "h-12 px-6 text-base",
       // Line Height (Leading)
       leading === "tight" && "leading-tight",
       leading === "normal" && "leading-normal",
       leading === "none" && "leading-none",
       // Variants
       variant === "primary" && [
-        "text-roboto-mono",
+        "",
         "bg-primary text-[#070707]",
         "hover:bg-primary-hover",
         "active:bg-primary-active",
         "disabled:bg-primary-disabled disabled:opacity-30",
       ],
       variant === "secondary" && [
+        "",
         "bg-secondary text-white",
         "hover:bg-secondary-hover",
         "active:bg-secondary-active",
         "disabled:bg-secondary-disabled disabled:opacity-50",
       ],
       variant === "accent" && [
-        "text-roboto-mono",
+        "",
         "font-normal",
         "bg-primary text-black",
         "hover:bg-accent-hover",
@@ -95,14 +97,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "disabled:bg-accent-disabled disabled:opacity-50",
       ],
       variant === "detail" && [
-        "text-roboto-mono",
+        "",
         "bg-background-secondary text-white",
         "hover:bg-background-secondary-hover",
         "active:bg-background-secondary-active",
         "disabled:bg-background-secondary disabled:opacity-50",
       ],
       variant === "primary-outline" && [
-        "text-roboto-mono",
+        "",
         "font-normal",
         "text-white",
         "border border-primary bg-transparent",
@@ -111,7 +113,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "disabled:border-primary-disabled disabled:opacity-30",
       ],
       variant === "outline" && [
-        "text-roboto-mono",
+        "",
         "border border-gray-600 bg-transparent text-zinc-400",
         "hover:bg-gray-700 hover:text-white",
         "active:border-gray-800 active:bg-gray-800",

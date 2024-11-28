@@ -13,8 +13,8 @@ const meta = {
     labelClassname: {
       type: "string",
       description:
-        "Additional classes for the label. To display the label correctly, it is required to pass the background, such as `bg-black`",
-      options: ["bg-violet-600", "bg-black"],
+        "Additional classes for the label. To display the label correctly, it is required to pass the background, such as `bg-background`",
+      options: ["bg-violet-600", "bg-background"],
       control: { type: "select" },
     },
   },

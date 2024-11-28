@@ -27,15 +27,11 @@ export const Account = observer(function Account() {
     <>
       <div className="flex flex-col gap-2.5">
         <div className="bg-primary flex flex-col items-start justify-start self-stretch rounded-[5px] p-2.5">
-          <Text className="text-roboto-mono w-full text-xl font-normal text-black">
-            {name}
-          </Text>
+          <Text className="w-full text-xl font-normal text-black">{name}</Text>
           <div className="mt-2.5 flex flex-col items-start justify-start self-stretch">
-            <Text className="text-roboto-mono text-sm font-normal text-[#070707]">
-              Balance
-            </Text>
+            <Text className="text-sm font-normal text-[#070707]">Balance</Text>
             <div className="flex items-center">
-              <Text className="text-roboto-mono self-stretch text-xl font-normal text-[#070707]">
+              <Text className="self-stretch text-xl font-normal text-[#070707]">
                 {userData.balanceHidden ? "******" : `$${totalData.total}`}
               </Text>
               {userData.balanceHidden ? (

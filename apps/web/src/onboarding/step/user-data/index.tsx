@@ -15,18 +15,16 @@ export const UserDataStep = observer(function UserDataStep({
       {/* Main Content */}
       <div className="flex w-full max-w-md flex-col gap-[22px] px-8">
         {/* Heading */}
-        <h1 className="text-roboto-mono text-xl font-normal text-white">
-          Create an Account
-        </h1>
+        <h1 className="text-xl font-normal text-white">Create an Account</h1>
         {/* Subheading */}
-        <p className="text-roboto-mono font-thin text-white">
+        <p className="font-thin text-white">
           Enter a name for your account below.
         </p>
         {/* Input Field */}
         <div className="flex w-full items-center rounded-[5px] border border-[#32c9af]">
           <Input
-            labelClassname="text-white text-lg font-normal text-roboto-mono"
-            className="text-roboto-mono w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
+            labelClassname="text-white text-lg font-normal "
+            className="h-[46px] w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
             value={draft.value.name}
             onChange={(value) => {
               draft.value.setName(value);
@@ -41,7 +39,7 @@ export const UserDataStep = observer(function UserDataStep({
               onClick={back}
               className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
             >
-              <span className="text-roboto-mono text-center text-xl font-normal text-white">
+              <span className="text-center text-xl font-normal text-white">
                 Back
               </span>
             </button>
@@ -56,7 +54,7 @@ export const UserDataStep = observer(function UserDataStep({
                   : "cursor-not-allowed bg-[#32c9af] opacity-50"
               } flex items-center justify-center`}
             >
-              <span className="text-roboto-mono text-center text-xl font-normal text-[#070707]">
+              <span className="text-center text-xl font-normal text-[#070707]">
                 Confirm
               </span>
             </button>

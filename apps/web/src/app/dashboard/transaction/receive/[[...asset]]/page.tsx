@@ -79,7 +79,7 @@ const ReceiveInner = observer<{
     <TabUi.Main>
       <div className="flex w-full flex-col items-start gap-4 py-2.5">
         {/* Chain Dropdown */}
-        <div className="flex w-full items-center rounded-[5px] border border-[#32c9af] p-2.5">
+        <div className="h-standardField flex w-full items-center rounded-[5px] border border-[#32c9af] p-2.5">
           <ChainDropdown onChange={setChainId} chainId={chainId} />
         </div>
 
@@ -104,7 +104,7 @@ const ReceiveInner = observer<{
         {address ? (
           <div
             onClick={handleClickQRCode}
-            className="mt-4 flex w-full cursor-pointer justify-center"
+            className="mt-4 flex w-full cursor-pointer items-start"
           >
             <Canvas
               text={address}

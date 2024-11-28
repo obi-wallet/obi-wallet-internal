@@ -91,7 +91,7 @@ export const Navbar = observer(function Navbar() {
 
         {/* Navigation Menu */}
         <div className="flex flex-1 flex-col items-start justify-start gap-5 py-[5px]">
-          <ul role="list" className="flex flex-col space-y-5">
+          <ul role="list" className="flex w-full flex-col space-y-5">
             {navMenu
               .filter((item) => {
                 return item.showOnDesktop;
@@ -102,8 +102,8 @@ export const Navbar = observer(function Navbar() {
                     <PrimaryLink
                       href={navItem.href}
                       className={cn(
-                        "flex items-center gap-2.5 rounded-[5px] px-[5px]",
-                        mainURISegment === navItem.module ? "bg-accent" : "",
+                        "flex w-full items-center gap-2.5 rounded-[5px] px-[5px]",
+                        mainURISegment === navItem.module ? "bg-primary" : "",
                       )}
                       target={navItem.target || "_self"}
                     >
@@ -113,10 +113,22 @@ export const Navbar = observer(function Navbar() {
                           width={32}
                           height={32}
                           alt={navItem.text}
-                          className="h-8 w-8"
+                          className={cn(
+                            "h-8 w-8",
+                            mainURISegment === navItem.module
+                              ? "brightness-0"
+                              : "",
+                          )}
                         />
                       </div>
-                      <div className="text-roboto-mono text-md shrink grow basis-0 font-normal text-white">
+                      <div
+                        className={cn(
+                          "text-md shrink grow basis-0 font-normal",
+                          mainURISegment === navItem.module
+                            ? "text-black"
+                            : "text-white",
+                        )}
+                      >
                         {navItem.text}
                       </div>
                     </PrimaryLink>
@@ -178,19 +190,15 @@ export function AccountAndCTA() {
       <div className="flex items-start justify-start gap-2.5 self-stretch">
         <Link
           href="/dashboard/transaction/send"
-          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
+          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px] text-white hover:text-black"
         >
-          <div className="text-roboto-mono text-center text-base font-normal text-white">
-            Send
-          </div>
+          <div className="text-center text-base font-normal">Send</div>
         </Link>
         <Link
           href="/dashboard/transaction/receive"
-          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px]"
+          className="hover:bg-primary flex h-[31px] shrink grow basis-0 items-center justify-center rounded-[5px] bg-[#353535] p-[5px] text-white hover:text-black"
         >
-          <div className="text-roboto-mono text-center text-base font-normal text-white">
-            Receive
-          </div>
+          <div className="text-center text-base font-normal">Receive</div>
         </Link>
       </div>
     </div>

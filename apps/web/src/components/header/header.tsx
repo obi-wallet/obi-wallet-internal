@@ -64,7 +64,7 @@ export const Header = observer(function Header() {
       <nav
         className={`${
           menuOpen ? "flex" : "hidden"
-        } absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:bg-[#05070C] lg:p-0`}
+        } absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:bg-[#070707] lg:p-0`}
       >
         {authChildren}
       </nav>
@@ -109,39 +109,42 @@ const LogIn = observer(function LogIn() {
       {modalOpen
         ? renderModal(
             <Modal
-              title="Log in"
+              title="Select local account"
               onClose={() => {
                 return setModalOpen(false);
               }}
             >
-              {mpcWalletsStore.wallets.map((wallet, i) => {
-                return (
-                  <Button
-                    key={i}
-                    onClick={() => {
-                      mpcWalletsStore.setCurrentWallet(wallet);
-                      router.push("/dashboard");
-                      setModalOpen(false);
-                    }}
-                    className="bg-primary border-primary w-full"
-                  >
-                    <div className="text-roboto-mono w-full overflow-hidden text-ellipsis text-left">
-                      {userDataStore.getUserData(wallet.userEntryAddress)
-                        .name || "My Account"}
-                    </div>
-                  </Button>
-                );
-              })}
-              <Button
-                onClick={() => {
-                  setModalOpen(false);
-                  router.push("/recovery");
-                }}
-                variant="outline"
-                className="text-roboto-mono w-full"
-              >
-                Recover other wallet
-              </Button>
+              <div className="mt-3 flex flex-col gap-3">
+                {mpcWalletsStore.wallets.map((wallet, i) => {
+                  return (
+                    <Button
+                      key={i}
+                      variant="primary"
+                      onClick={() => {
+                        mpcWalletsStore.setCurrentWallet(wallet);
+                        router.push("/dashboard");
+                        setModalOpen(false);
+                      }}
+                      className="bg-primary border-primary w-full"
+                    >
+                      <div className="w-full overflow-hidden text-ellipsis text-left">
+                        {userDataStore.getUserData(wallet.userEntryAddress)
+                          .name || "My Account"}
+                      </div>
+                    </Button>
+                  );
+                })}
+                <Button
+                  onClick={() => {
+                    setModalOpen(false);
+                    router.push("/recovery");
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Recover other wallet
+                </Button>
+              </div>
             </Modal>,
           )
         : null}

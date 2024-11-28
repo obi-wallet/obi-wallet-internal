@@ -71,13 +71,11 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
       {/* Main Content */}
       <div className="flex w-full max-w-md flex-col gap-[22px] px-8">
         {/* Heading */}
-        <h1 className="text-roboto-mono text-xl font-normal text-white">
-          Secure Your Account
-        </h1>
+        <h1 className="text-xl font-normal text-white">Secure Your Account</h1>
 
         {/* Subheading */}
         {useCloudKey ? (
-          <p className="text-roboto-mono font-light text-white">
+          <p className="font-light text-white">
             Create a cloud key to secure your account. This key is associated
             with a third party cloud storage service.
             <br />
@@ -92,7 +90,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             if you’d prefer to create a passkey.
           </p>
         ) : (
-          <p className="text-roboto-mono font-light text-white">
+          <p className="font-light text-white">
             Create a passkey to secure your account. This key is associated with
             the device you’re currently using.
             <br />
@@ -115,7 +113,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
               onClick={back}
               className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
             >
-              <span className="text-roboto-mono text-center text-xl font-normal text-white">
+              <span className="text-center text-xl font-normal text-white">
                 Back
               </span>
             </button>
@@ -124,7 +122,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             onClick={handlePrimaryAction}
             className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] bg-[#32c9af] py-2.5"
           >
-            <span className="text-roboto-mono text-center text-xl font-normal text-[#070707]">
+            <span className="text-center text-xl font-normal text-[#070707]">
               {useCloudKey ? "New Cloud Key" : "New Passkey"}
             </span>
           </button>

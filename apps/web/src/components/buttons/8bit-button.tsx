@@ -7,7 +7,7 @@ type ButtonProps = ComponentPropsWithRef<"button"> & ComponentPropsWithRef<"a">;
 export const BitButton = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button({ children, className, href, ...rest }: ButtonProps, ref) {
     const style = cn(
-      "text-roboto-mono cursor-pointer text-2xl text-white opacity-60",
+      "cursor-pointer text-2xl text-white opacity-60",
       "hover:opacity-100",
       "before:content-['>'] before:absolute before:-left-8 before:hidden hover:before:flex",
       className,

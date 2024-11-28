@@ -18,7 +18,7 @@ export function Modal({
   boxClassname?: string;
 }) {
   return (
-    <div className="text-roboto-mono absolute top-0 z-50 flex h-full w-full bg-black/30 backdrop-blur-sm md:items-center md:justify-center">
+    <div className="bg-background/30 absolute top-0 z-50 flex h-full w-full backdrop-blur-sm md:items-center md:justify-center">
       <Box
         className={cn(
           "relative w-[560px] space-y-4 pt-6 shadow-lg shadow-neutral-600 max-md:w-[90%] max-sm:w-[400px] lg:w-[400px]",

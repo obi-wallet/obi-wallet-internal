@@ -6,6 +6,7 @@ const config: Config = {
     extend: {
       height: {
         revertLayer: "revert-layer",
+        standardField: "46px",
       },
       colors: {
         primary: "#32c9af",
@@ -14,21 +15,18 @@ const config: Config = {
         accent: "#0e0e25",
         secondary: "#363636",
         "banner-bg": "#ee9d38",
-        "background-main": "#05070C",
+        "background-main": "#070707",
         "background-primary": "#32c9af",
         "background-primary-hover": "#32f9df",
         "background-primary-active": "#32f9df",
-        "background-primary-disabled": "#3C87AA",
-        "background-secondary": "#05070C",
+        "background-primary-disabled": "#287564",
+        "background-secondary": "#070707",
         "background-select": "var(--background-select)",
         "background-select-hover": "var(--background-select-hover)",
         "background-select-active": "var(--background-select-active)",
         "background-select-disabled": "var(--background-select-disabled)",
         "--foreground-primary": "var(--foreground-primary)",
         "--foreground-primary-border": "var(--foreground-primary-border)",
-      },
-      fontFamily: {
-        "roboto-mono": ["var(--text-roboto-mono)", "monospace"],
       },
       flex: {
         2: "2 2 0%",

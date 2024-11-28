@@ -16,6 +16,13 @@ export default [
     },
   },
   {
+    files: ["**/vitest.config.{ts,mts}", "**/vitest.setup.mts"],
+    rules: {
+      "import/no-extraneous-dependencies": "off",
+      "import/no-default-export": "off",
+    },
+  },
+  {
     files: [
       "**/middleware.ts",
       "**/*.stories.{ts,tsx,js,jsx}",

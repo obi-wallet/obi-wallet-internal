@@ -25,7 +25,7 @@ export function TOSModal() {
 
   return (
     <Modal title="">
-      <div className="bg-background text-roboto-mono flex flex-col gap-6 p-6 text-white">
+      <div className="bg-background flex flex-col gap-6 p-6 text-white">
         {/* Disclaimer Heading */}
         <h2 className="text-xl font-normal">Disclaimer</h2>
 
