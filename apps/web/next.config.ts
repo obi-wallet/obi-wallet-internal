@@ -5,6 +5,19 @@ import WebpackHookPlugin from "webpack-hook-plugin";
 // eslint-disable-next-line import/no-default-export
 export default withSentryConfig<NextConfig>(
   {
+    async headers() {
+      return [
+        {
+          source: "/(.*)",
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: "frame-ancestors *",
+            },
+          ],
+        },
+      ];
+    },
     // Should be kept in sync with .storybook/main.ts
     env: {
       NEXT_PUBLIC_FAST_TRAVEL_API_URL: process.env.FAST_TRAVEL_API_URL,
