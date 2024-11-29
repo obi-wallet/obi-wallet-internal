@@ -556,6 +556,11 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
       const chain = TargetChain.chainId(chainId as TargetChainId);
       const prettyData = balance
         .filter((asset) => {
+          // Filter out zero balances
+          const amount = new BigNumber(asset.rawAmount);
+          if (amount.isZero()) {
+            return false;
+          }
           return (asset.assetInfo?.symbol.toLowerCase() ?? "").includes(
             searchAsset,
           );
@@ -572,6 +577,10 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
         }, new BigNumber(0)),
         chain,
       };
+    })
+    .filter((chainBalance) => {
+      // Filter out chains that have no non-zero balances
+      return chainBalance.prettyData.length > 0;
     })
     .sort((balanceA, balanceB) => {
       if (balanceA.usdValue.lt(balanceB.usdValue)) return 1;
