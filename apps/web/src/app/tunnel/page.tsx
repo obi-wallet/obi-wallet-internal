@@ -26,11 +26,13 @@ export default observer(function ThreeStepDialog() {
   };
 
   const handleSubmit = async () => {
-    console.log(window.opener);
+    console.log("Submitting...", window.opener, window.parent);
     if (window.opener) {
       window.opener.postMessage({ type: "TUNNEL_COMPLETE" }, "*");
     }
-    console.log("Submitting...");
+    if (window.parent) {
+      window.parent.postMessage({ type: "TUNNEL_COMPLETE" }, "*");
+    }
   };
 
   return (
