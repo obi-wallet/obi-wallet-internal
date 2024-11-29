@@ -1,9 +1,12 @@
 "use client";
 
+import { useStore } from "@/contexts";
 import { getPasskey } from "@obi-wallet/sdk";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
-export default function ThreeStepDialog() {
+export default observer(function ThreeStepDialog() {
+  const { mpcWalletsStore, mpcStore } = useStore();
   const [step, setStep] = useState(1);
 
   const nextStep = () => {
@@ -23,6 +26,10 @@ export default function ThreeStepDialog() {
   };
 
   const handleSubmit = async () => {
+    console.log(window.opener);
+    if (window.opener) {
+      window.opener.postMessage({ type: "TUNNEL_COMPLETE" }, "*");
+    }
     console.log("Submitting...");
   };
 
@@ -32,6 +39,29 @@ export default function ThreeStepDialog() {
         <h1 className="mb-8 text-center text-3xl font-bold">
           Three Step Dialog
         </h1>
+
+        <div className="mb-4 text-center">
+          <p>
+            Current Wallet:{" "}
+            {mpcWalletsStore.currentWallet?.userEntryAddress ||
+              "No wallet selected"}
+          </p>
+        </div>
+
+        <div className="mb-4 text-center">
+          {mpcStore.isGeneratingShares ? (
+            <p>Generating shares...</p>
+          ) : (
+            <button
+              onClick={() => {
+                return void mpcStore.getShares();
+              }}
+              className="bg-background-primary hover:bg-background-primary-hover rounded-md px-6 py-2 transition-colors"
+            >
+              Generate Shares
+            </button>
+          )}
+        </div>
 
         <div className="mb-8 text-center">
           {step === 1 && (
@@ -81,4 +111,4 @@ export default function ThreeStepDialog() {
       </div>
     </div>
   );
-}
+});
