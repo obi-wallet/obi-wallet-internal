@@ -27,6 +27,7 @@ export interface DropDownProps<
   className?: string;
   contentContainerClassname?: string;
   disabled?: boolean;
+  hideDefaultArrow?: boolean;
 }
 
 export function DropDown<
@@ -42,6 +43,7 @@ export function DropDown<
   className,
   contentContainerClassname,
   disabled,
+  hideDefaultArrow,
 }: DropDownProps<T, O>) {
   const ref = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -101,7 +103,7 @@ export function DropDown<
           customSelectedItemComponent(selectedOption)) ||
           selectedOption?.label ||
           description}
-        {isOpen ? <FaAngleUp /> : <FaAngleDown />}
+        {!hideDefaultArrow && (isOpen ? <FaAngleUp /> : <FaAngleDown />)}
       </button>
 
       {isOpen && (

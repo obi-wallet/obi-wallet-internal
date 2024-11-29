@@ -1,4 +1,5 @@
 import { Config } from "tailwindcss";
+import scrollbar from "tailwind-scrollbar";
 
 const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
@@ -48,7 +49,9 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    scrollbar({ nocompatible: true }),
+  ],
 };
 
 // eslint-disable-next-line import/no-default-export

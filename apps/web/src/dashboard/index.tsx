@@ -1,11 +1,13 @@
 "use client";
 
 import { Button, Divider, Text } from "@/components";
+import { InlineChainDropdown } from "@/components/dropdown/inline-chain-dropdown";
 import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -19,6 +21,7 @@ import { CiSearch } from "react-icons/ci";
 import invariant from "tiny-invariant";
 
 import { PendingAssets } from "./pending";
+
 
 export const DashboardPage = observer(function Dashboard() {
   return (
@@ -87,14 +90,11 @@ const Assets = observer(function Assets() {
         <>
           <PendingAssets />
           <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-          <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-center justify-center max-md:px-2">
-            <Text
-              size="sm"
-              className="dashboard-footer-text break-words text-center font-light leading-normal text-white"
-            >
-              You don't have any assets yet. Receive assets on a network like
-              Ethereum, Base, Neutron, or Solana to get started!
-            </Text>
+          <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-start max-md:px-2">
+            <p className="dashboard-footer-text text-sm break-words text-left font-light leading-normal text-white">
+              You don't have any assets yet. Receive assets on<br/>
+              <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get started!
+            </p>
           </div>
         </>
       )}

@@ -4,7 +4,7 @@ import { ChainDropdown, TabUi, useChainOptions } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
-import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
+import { Caip19AssetId, Caip2ChainId, parseCaip19AssetId, parseCaip2ChainId } from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
@@ -27,19 +27,37 @@ export default observer<{ params: Promise<{ asset?: string[] }> }>(
       try {
         const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
         if (assetParam) {
-          const { chainId } = parseCaip19AssetId(
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            assetParam as Caip19AssetId,
-          );
-          const chainOption = options.find((chain) => {
-            return chain.value === chainId;
-          });
-          if (chainOption) {
-            return chainOption.value;
+          try {
+            // Try parsing as CAIP-19 asset ID
+            const result = parseCaip19AssetId(assetParam);
+            if (!result) return initialValue;
+            
+            const chainOption = options.find((chain) => {
+              return chain.value === result.chainId;
+            });
+            if (chainOption) {
+              return chainOption.value;
+            }
+          } catch {
+            // If that fails, try parsing as CAIP-2 chain ID
+            try {
+              const result = parseCaip2ChainId(decodeURIComponent(assetParam));
+              if (!result) return initialValue;
+              
+              const chainId = `${result.namespace}:${result.reference}`;
+              const chainOption = options.find((chain) => {
+                return chain.value === chainId;
+              });
+              if (chainOption) {
+                return chainOption.value;
+              }
+            } catch (e) {
+              console.error("Failed to parse chain ID:", e);
+            }
           }
         }
       } catch (e) {
-        console.error(e);
+        console.error("Failed to decode asset param:", e);
       }
 
       // User has not selected a chain and the URL does not have a chain
