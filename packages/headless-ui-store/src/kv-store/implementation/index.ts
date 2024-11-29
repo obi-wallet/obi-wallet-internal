@@ -55,7 +55,10 @@ export class KVStore implements AbstractKVStore {
   public async set<T = unknown>(key: string, data: T | null) {
     // Passing `null` or `undefined` means we want to delete the existing data item.
     if (data === null || data === undefined) {
-      await this.db.removeItem(key);
+      await Promise.all([
+        this.db.removeItem(key),
+        this.legacyDb.removeItem(key),
+      ]);
       return;
     } else {
       const encrypted = await encrypt(serialize(data));
