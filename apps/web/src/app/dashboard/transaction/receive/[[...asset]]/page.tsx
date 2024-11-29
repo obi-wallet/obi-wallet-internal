@@ -4,7 +4,12 @@ import { ChainDropdown, TabUi, useChainOptions } from "@/components";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
-import { Caip19AssetId, Caip2ChainId, parseCaip19AssetId, parseCaip2ChainId } from "@obi-wallet/sdk-caip";
+import {
+  Caip19AssetId,
+  Caip2ChainId,
+  parseCaip19AssetId,
+  parseCaip2ChainId,
+} from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
@@ -29,9 +34,10 @@ export default observer<{ params: Promise<{ asset?: string[] }> }>(
         if (assetParam) {
           try {
             // Try parsing as CAIP-19 asset ID
-            const result = parseCaip19AssetId(assetParam);
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            const result = parseCaip19AssetId(assetParam as Caip19AssetId);
             if (!result) return initialValue;
-            
+
             const chainOption = options.find((chain) => {
               return chain.value === result.chainId;
             });
@@ -41,9 +47,10 @@ export default observer<{ params: Promise<{ asset?: string[] }> }>(
           } catch {
             // If that fails, try parsing as CAIP-2 chain ID
             try {
-              const result = parseCaip2ChainId(decodeURIComponent(assetParam));
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              const result = parseCaip2ChainId(assetParam as Caip2ChainId);
               if (!result) return initialValue;
-              
+
               const chainId = `${result.namespace}:${result.reference}`;
               const chainOption = options.find((chain) => {
                 return chain.value === chainId;

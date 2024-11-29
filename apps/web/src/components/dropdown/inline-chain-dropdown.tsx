@@ -26,15 +26,17 @@ export const InlineChainDropdown = observer(function InlineChainDropdown({
 
     let enumKey = "";
     if (protocol === "eip155") {
-      enumKey = Object.entries(Eip155ChainId).find(([_, value]) => {
-        return value === opt.value;
-      })?.[0] ?? "";
+      enumKey =
+        Object.entries(Eip155ChainId).find(([_, value]) => {
+          return value === opt.value;
+        })?.[0] ?? "";
     } else if (protocol === "solana") {
-      enumKey = Object.entries(SolanaChainId).find(([_, value]) => {
-        return value === opt.value;
-      })?.[0] ?? "";
+      enumKey =
+        Object.entries(SolanaChainId).find(([_, value]) => {
+          return value === opt.value;
+        })?.[0] ?? "";
     }
-    
+
     return !enumKey.includes("Testnet");
   });
   const selectedOption = filteredOptions.find((opt) => {
@@ -47,7 +49,7 @@ export const InlineChainDropdown = observer(function InlineChainDropdown({
         options={filteredOptions}
         value={chainId ?? undefined}
         description="Select chain"
-        className="!p-0 !m-0 !border-0 !bg-transparent hover:!bg-transparent focus:!ring-0 [&>button]:!p-0 [&>button]:!m-0 [&>button]:inline-flex [&>button]:items-baseline"
+        className="!m-0 !border-0 !bg-transparent !p-0 hover:!bg-transparent focus:!ring-0 [&>button]:!m-0 [&>button]:inline-flex [&>button]:items-baseline [&>button]:!p-0"
         contentContainerClassname="absolute left-0 top-full mt-1 min-w-max bg-transparent shadow-none max-h-48 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-primary/20 [&::-webkit-scrollbar-thumb:hover]:bg-primary/40"
         onSelectOption={(option) => {
           router.push(`/dashboard/transaction/receive/${option.value}`);
@@ -56,13 +58,15 @@ export const InlineChainDropdown = observer(function InlineChainDropdown({
         customSelectedItemComponent={(option) => {
           const displayOption = option || selectedOption;
           return (
-            <span className="inline-flex items-baseline !m-0 !p-0">
+            <span className="!m-0 inline-flex items-baseline !p-0">
               {!displayOption ? (
                 <span className="text-primary underline">Select Chain</span>
               ) : (
                 <>
-                  <span className="text-primary underline">{displayOption.label}</span>
-                  <FaChevronDown className="h-3 w-3 text-primary ml-0.5" />
+                  <span className="text-primary underline">
+                    {displayOption.label}
+                  </span>
+                  <FaChevronDown className="text-primary ml-0.5 h-3 w-3" />
                 </>
               )}
             </span>
@@ -72,7 +76,7 @@ export const InlineChainDropdown = observer(function InlineChainDropdown({
           return (
             <li
               className={cn(
-                "cursor-pointer py-1 px-3 text-primary hover:opacity-80",
+                "text-primary cursor-pointer px-3 py-1 hover:opacity-80",
                 option.value === selectedOption?.value && "opacity-80",
                 option.disabled && "cursor-not-allowed opacity-50",
               )}
@@ -86,4 +90,4 @@ export const InlineChainDropdown = observer(function InlineChainDropdown({
       />
     </span>
   );
-}); 
+});
