@@ -71,11 +71,11 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 });
 
 const messages = [
-  "Creating Your All-Chains Account       ",
-  "Adding EVM Chains                     ",
-  "Adding Cosmos Chains                  ",
-  "Adding Solana                         ",
-  "Initializing Your Policy Engine       ",
+  "Creating Your All-Chains Account",
+  "Adding EVM Chains",
+  "Adding Cosmos Chains",
+  "Adding Solana",
+  "Initializing Your Policy Engine",
 ];
 
 function LoadingText() {
@@ -86,7 +86,7 @@ function LoadingText() {
       setMessageIndex((prevIndex) => {
         return (prevIndex + 1) % messages.length;
       });
-    }, 2000); // Change message every 2 seconds
+    }, 2000);
 
     return () => {
       return clearInterval(interval);
@@ -95,8 +95,10 @@ function LoadingText() {
 
   return (
     <div className="h-[96px] w-full">
-      <div className="w-full text-left text-xl font-normal text-white">
-        {messages[messageIndex]}
+      <div className="min-h-[32px] w-full text-left text-xl font-normal text-white">
+        <span className="inline-block min-w-[300px]">
+          {messages[messageIndex]}
+        </span>
       </div>
     </div>
   );
@@ -110,7 +112,7 @@ function LoadingDots() {
       setDotCount((prevCount) => {
         return (prevCount + 1) % 4;
       });
-    }, 500); // Change every 0.5 seconds
+    }, 500);
 
     return () => {
       return clearInterval(interval);
@@ -119,12 +121,12 @@ function LoadingDots() {
 
   const dots = ".".repeat(dotCount);
   const baseMessage = "This should only take a few seconds";
-  const displayedMessage = `${baseMessage}${dots}`;
 
   return (
     <div className="h-[26px] w-full">
-      <div className="w-full text-left text-xl font-normal text-white">
-        {displayedMessage}
+      <div className="flex w-full text-left text-xl font-normal text-white">
+        <span className="inline-block min-w-[280px]">{baseMessage}</span>
+        <span className="inline-block w-[24px]">{dots}</span>
       </div>
     </div>
   );
