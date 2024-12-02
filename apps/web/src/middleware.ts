@@ -46,7 +46,9 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  return response;
 }
 
 export const config = {
