@@ -289,7 +289,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-enable-button bg-accent h-5 rounded leading-5 text-white ${
+                className={`network-enable-button bg-accent !h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -309,7 +309,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-disable-button bg-accent h-5 rounded leading-5 text-white ${
+                className={`network-disable-button bg-accent !h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {
@@ -329,7 +329,7 @@ const Network = observer(function NetworkAssets({
                     ? {}
                     : { backgroundColor: "#32c9af" }
                 }
-                className={`network-auto-button bg-accent h-5 rounded leading-5 text-white ${
+                className={`network-auto-button bg-accent !h-5 rounded leading-5 text-white ${
                   !editMode ? "invisible" : ""
                 }`}
                 onClick={() => {

@@ -49,7 +49,7 @@ export const Header = observer(function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3">
+    <header className="mb-6 flex items-center justify-between px-6 py-3">
       <PrimaryLink href={primaryLinkHref}>
         <Image
           alt="landing-logo"

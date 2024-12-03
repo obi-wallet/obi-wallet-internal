@@ -11,20 +11,22 @@ export const UserDataStep = observer(function UserDataStep({
   next,
 }: StepProps<UserDataOnboardingStep>) {
   return (
-    <div className="flex min-h-screen w-full flex-col items-center gap-[115px] bg-[#070707] py-6">
+    <div className="onboarding-container flex min-h-screen w-full flex-col items-center gap-[115px] bg-[#070707] py-6">
       {/* Main Content */}
-      <div className="flex w-full max-w-md flex-col gap-[22px] px-8">
+      <div className="onboarding-content flex w-full max-w-xl flex-col gap-[22px] px-8">
         {/* Heading */}
-        <h1 className="text-xl font-normal text-white">Create an Account</h1>
+        <h1 className="onboarding-heading text-xl font-normal text-white">
+          Create an Account
+        </h1>
         {/* Subheading */}
-        <p className="font-thin text-white">
+        <p className="onboarding-subheading font-thin text-white">
           Enter a name for your account below.
         </p>
         {/* Input Field */}
-        <div className="flex w-full items-center rounded-[5px] border border-[#32c9af]">
+        <div className="onboarding-input-container flex w-full items-center rounded-[5px] border border-[#32c9af]">
           <Input
-            labelClassname="text-white text-lg font-normal "
-            className="h-[46px] w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
+            labelClassname="onboarding-input-label text-white text-lg font-normal"
+            className="onboarding-input h-[46px] w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
             value={draft.value.name}
             onChange={(value) => {
               draft.value.setName(value);
@@ -33,13 +35,13 @@ export const UserDataStep = observer(function UserDataStep({
           />
         </div>
         {/* Buttons */}
-        <div className="flex w-full gap-[22px]">
+        <div className="onboarding-buttons flex w-full gap-[22px]">
           {back && (
             <button
               onClick={back}
-              className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
+              className="onboarding-back-button flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
             >
-              <span className="text-center text-xl font-normal text-white">
+              <span className="onboarding-back-text text-center text-xl font-normal text-white">
                 Back
               </span>
             </button>
@@ -48,13 +50,13 @@ export const UserDataStep = observer(function UserDataStep({
             <button
               onClick={next}
               disabled={!draft.value.name}
-              className={`h-[46px] flex-1 rounded-[5px] py-2.5 ${
+              className={`onboarding-confirm-button h-[46px] flex-1 rounded-[5px] py-2.5 ${
                 draft.value.name
                   ? "cursor-pointer bg-[#32c9af]"
                   : "cursor-not-allowed bg-[#32c9af] opacity-50"
               } flex items-center justify-center`}
             >
-              <span className="text-center text-xl font-normal text-[#070707]">
+              <span className="onboarding-confirm-text text-center text-xl font-normal text-[#070707]">
                 Confirm
               </span>
             </button>
