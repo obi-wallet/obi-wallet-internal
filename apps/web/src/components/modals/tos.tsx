@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 
-import { Modal } from ".";
+import { Modal, renderModal } from ".";
 
 export function TOSModal() {
   const [showTOSModal, setShowTOSModal] = useState(false);
@@ -23,8 +23,11 @@ export function TOSModal() {
 
   if (!showTOSModal) return null;
 
-  return (
-    <Modal title="">
+  return renderModal(
+    <Modal
+      title=""
+      boxClassname="h-fit w-[560px] !min-w-[320px] px-4 py-6 max-md:w-[90%] max-sm:w-[400px]"
+    >
       <div className="bg-background flex flex-col gap-6 p-6 text-white">
         {/* Disclaimer Heading */}
         <h2 className="text-xl font-normal">Disclaimer</h2>
@@ -44,17 +47,17 @@ export function TOSModal() {
         {/* Description */}
         <div className="space-y-4 text-sm font-normal">
           <p>
-            While Obi’s smart contracts have been audited by third parties, the
+            While Obi's smart contracts have been audited by third parties, the
             use of Obi Fast Travel and Obi Dashboard is noncustodial and there
             are no representations or warranties that its usage will be
-            uninterrupted or error-free. Services are provided on an “as is” and
-            “as available” basis. Any risk of usage of Obi services is solely
+            uninterrupted or error-free. Services are provided on an "as is" and
+            "as available" basis. Any risk of usage of Obi services is solely
             borne by User.
           </p>
           <p>
             Obi reserves the right to make changes to Obi Fast Travel and Obi
             Dashboard in its sole discretion as it deems necessary or desirable.
-            User’s continued use of Obi Fast Travel and Obi Dashboard
+            User's continued use of Obi Fast Travel and Obi Dashboard
             constitutes acceptance of any changes made.
           </p>
         </div>
@@ -117,6 +120,6 @@ export function TOSModal() {
           </button>
         </div>
       </div>
-    </Modal>
+    </Modal>,
   );
 }

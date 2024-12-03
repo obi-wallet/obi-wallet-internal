@@ -169,7 +169,7 @@ export default observer(function AppConnect() {
           {activeSessions.map((session) => {
             return (
               <AsyncButton
-                className="my-1 w-full"
+                className="min-h-standardButton relative my-1 w-full"
                 variant="secondary"
                 textAlign="justify"
                 key={session.topic}
@@ -177,19 +177,28 @@ export default observer(function AppConnect() {
                   window.open(session.peer.metadata.url, "_blank");
                 }}
               >
-                <Text size="xl" className="text-left">
+                <Text size="md" className="text-left">
+                  <img
+                    className="mr-2 h-4 w-4"
+                    src={session.peer.metadata.icons[0]}
+                    alt={session.peer.metadata.name}
+                  />
                   {session.peer.metadata.name}
                 </Text>
-                <FaTrash
-                  className="h-4 w-4"
-                  color="white"
-                  onClick={async () => {
+                <button
+                  className={cn(
+                    "absolute right-0 flex h-full w-14 items-center justify-center rounded-r bg-red-500 hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-600 disabled:opacity-30",
+                  )}
+                  onClick={async (e) => {
+                    e.stopPropagation();
                     await walletConnectStore.disconnect(session.topic);
                     await queryClient.invalidateQueries({
                       queryKey: ["wallet-connect", "sessions"],
                     });
                   }}
-                />
+                >
+                  <FaTrash className="h-4 w-4" color="white" />
+                </button>
               </AsyncButton>
             );
           })}

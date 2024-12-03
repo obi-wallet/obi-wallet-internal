@@ -1,3 +1,4 @@
+import { TOSModal } from "@/components/modals/tos";
 import { Onboarding } from "@/onboarding";
 import {
   OnboardingFromType,
@@ -73,10 +74,13 @@ export default async function OnboardingStateHandler(props: {
   }
 
   return (
-    <Onboarding
-      draftId={`onboarding-${flowKey}`}
-      steps={flow}
-      step={stepNumber}
-    />
+    <>
+      <Onboarding
+        draftId={`onboarding-${flowKey}`}
+        steps={flow}
+        step={stepNumber}
+      />
+      <TOSModal />
+    </>
   );
 }
