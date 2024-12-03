@@ -41,6 +41,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
                   className="relative border-none"
                   variant="secondary"
                   block
+                  textAlign="left"
                   onClick={() => {
                     pushPage({
                       type: "key-item",
