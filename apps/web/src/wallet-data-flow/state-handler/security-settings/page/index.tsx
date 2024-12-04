@@ -25,7 +25,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
   });
 
   return (
-    <Box className="h-fit !min-w-[320px] px-4 pb-6 max-sm:w-full">
+    <Box className="h-fit !min-w-[320px] pb-6 max-sm:w-full">
       {/* Header */}
       <div className="flex items-start justify-start self-stretch rounded-[5px] bg-[#32c9af] p-2.5">
         <Text size="xl" fontWeight="normal" className="text-[#070707]">

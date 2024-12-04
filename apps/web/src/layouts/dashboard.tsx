@@ -7,9 +7,11 @@ import { MainContainer } from "./root";
 export function DashboardCustomLayout({
   children,
   nav,
+  notifications,
 }: {
   children: ReactNode;
   nav?: ReactNode;
+  notifications?: ReactNode;
 }) {
   return (
     <>
@@ -21,13 +23,16 @@ export function DashboardCustomLayout({
           )}
         >
           {nav}
-          <div
-            className={cn(
-              "dashboard-custom-layout-content scrollbar-hide h-full max-md:w-full md:px-7 md:py-3 lg:w-[50%] xl:min-w-[520px]",
-              "space-y-2 overflow-auto p-3 max-md:p-1 max-sm:p-0",
-            )}
-          >
-            {children}
+          <div className="dashboard-custom-layout-notifications-wrapper flex h-full flex-col max-md:w-full md:px-7 md:py-3">
+            {notifications}
+            <div
+              className={cn(
+                "dashboard-custom-layout-content scrollbar-hide flex-1",
+                "space-y-2 overflow-auto py-3 max-md:p-1 max-sm:p-0 lg:w-[50%] xl:min-w-[520px]",
+              )}
+            >
+              {children}
+            </div>
           </div>
         </section>
       </MainContainer>

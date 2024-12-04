@@ -31,7 +31,7 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
   });
 
   return (
-    <Box className="h-fit !min-w-[320px] px-4 py-6 max-sm:w-full">
+    <Box className="h-fit !min-w-[320px] py-6 max-sm:w-full">
       <Text size="xl" fontWeight="semibold">
         Add a New Passkey
       </Text>

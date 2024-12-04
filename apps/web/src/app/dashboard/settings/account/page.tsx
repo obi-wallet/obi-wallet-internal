@@ -40,7 +40,7 @@ function Form({
   const [avatar, setAvatar] = useState(userData.avatar ?? "");
 
   return (
-    <Box className="w-2/1 h-fit w-fit px-4 py-6 max-sm:w-full">
+    <Box className="w-2/1 h-fit w-fit py-6 max-sm:w-full">
       <Text size="xl">Account Settings</Text>
       <Divider className="my-4" />
       <div className="mt-3 space-y-3">

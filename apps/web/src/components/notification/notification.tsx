@@ -19,7 +19,7 @@ export function Notification({
   return (
     <div
       className={cn(
-        "min-h-[40px] w-full items-center space-x-2 rounded bg-blue-600 px-11 pb-3 pt-3 shadow-md max-md:p-2 md:flex",
+        "min-h-[40px] w-full items-center space-x-2 rounded bg-blue-600 px-5 pb-3 pt-3 shadow-md max-md:p-2 md:flex",
         // "max-sm:hidden",
         type === "warning" && "bg-[#ffa70b]",
         type === "success" && "bg-[#34D399]",
@@ -43,7 +43,7 @@ export function Notification({
       </div>
       <div
         dangerouslySetInnerHTML={{ __html: description }}
-        className="leading-relaxed text-black max-sm:text-xs md:text-sm md:font-medium"
+        className="pl-2 leading-relaxed text-black max-sm:text-xs md:text-sm md:font-medium"
       />
     </div>
   );

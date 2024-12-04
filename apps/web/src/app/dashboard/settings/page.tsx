@@ -21,7 +21,7 @@ export default function Settings() {
         <title>Obi - Settings</title>
         <meta property="og:title" content="Obi - Settings" key="title" />
       </Head>
-      <Box className="w-2/1 h-fit w-fit px-4 py-6">
+      <Box className="w-2/1 h-fit w-fit py-6">
         <Text size="xl">Obi Settings</Text>
         <Divider className="mt-4" />
         <div className="mt-2 space-y-2">

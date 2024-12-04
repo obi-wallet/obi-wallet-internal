@@ -21,7 +21,7 @@ export function Box({
   return (
     <div
       className={cn(
-        "obi-box bg-background-secondary rounded-md px-4 sm:shadow",
+        "obi-box bg-background-secondary rounded-md sm:shadow",
         className,
       )}
       {...rest}
