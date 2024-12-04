@@ -181,9 +181,9 @@ export const Navbar = observer(function Navbar() {
   );
 });
 
-export function AccountAndCTA() {
+export function AccountAndCTA({ className }: { className?: string }) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className={cn("flex flex-col gap-2.5", className)}>
       {/* Account Box */}
       <Account />
       {/* Send/Receive Buttons */}

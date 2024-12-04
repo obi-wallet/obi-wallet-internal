@@ -1,11 +1,12 @@
 "use client";
 
-import { Button, Divider, Text } from "@/components";
+import { AccountAndCTA, Button, Divider, Text } from "@/components";
 import { InlineChainDropdown } from "@/components/dropdown/inline-chain-dropdown";
 import { useStore } from "@/contexts";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { cn } from "@/lib/utils";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
@@ -36,6 +37,7 @@ const Assets = observer(function Assets() {
 
   return (
     <>
+      <AccountAndCTA className={cn("max-sm:mb-2.5 md:hidden")} />
       <div className="dashboard-controls flex items-center gap-3">
         <div className="dashboard-search min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
@@ -53,7 +55,7 @@ const Assets = observer(function Assets() {
           />
         </div>
 
-        <div className="dashboard-edit-button min-w-0 flex-[1_1_0]">
+        <div className="dashboard-edit-button min-w-0 flex-[1_1_0] leading-none">
           <Button
             onClick={() => {
               return setEditMode((value) => {
@@ -62,6 +64,7 @@ const Assets = observer(function Assets() {
             }}
             variant="accent"
             size="md"
+            leading="normal"
             className="w-full"
           >
             {editMode ? "Stop Editing" : "Edit Assets"}

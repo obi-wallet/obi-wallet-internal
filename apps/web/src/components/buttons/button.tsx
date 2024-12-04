@@ -67,7 +67,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       // Size
       size === "base" && "px-3 py-1.5 text-sm md:text-base",
       size === "sm" && "px-1 py-1 text-xs md:text-sm",
-      size === "md" && "px-3 text-sm lg:text-md lg:py-1.5 max-md:py-1",
+      size === "md" &&
+        "px-3 md:text-sm lg:text-md lg:py-1.5 max-md:py-1 max-sm:text-xs",
       // size === "lg" && "h-12 px-6 text-base",
       // Line Height (Leading)
       leading === "tight" && "leading-tight",
