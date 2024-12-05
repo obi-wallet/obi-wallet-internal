@@ -14,7 +14,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
   draft,
   step,
 }: StepProps<CreateWalletOnboardingStep>) {
-  const { mpcWalletsStore, userDataStore } = useStore();
+  const { analyticsStore, mpcWalletsStore, userDataStore } = useStore();
   const router = useRouter();
 
   const onDone = () => {
@@ -40,6 +40,7 @@ export const CreateWalletStep = observer(function CreateWalletStep({
         avatar: draft.value.image,
       });
       mpcWalletsStore.upsertWallet(ObservableMpcWallet.create(walletData));
+      await analyticsStore.trackOnboarding();
       return true;
     },
     onSuccess() {

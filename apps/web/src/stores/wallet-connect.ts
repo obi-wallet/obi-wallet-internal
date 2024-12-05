@@ -1,29 +1,47 @@
+import { AnalyticsStore } from "@/stores/analytics";
 import { TargetChain } from "@/target-chain";
 import { MpcWallets } from "@obi-wallet/sdk";
 import {
+  Session,
   SessionRequestPayload,
   SessionRequestResponse,
 } from "@obi-wallet/wallet-connect";
 import { getSdkError } from "@walletconnect/utils";
 import type Web3Wallet from "@walletconnect/web3wallet";
-import { action, autorun, observable } from "mobx";
+import { action, autorun, observable, runInAction } from "mobx";
 
 export class WalletConnectStore {
   @observable protected accessor queuedUri: string | null = null;
+  @observable public accessor activeSessions: ReturnType<
+    Web3Wallet["getActiveSessions"]
+  > = {};
 
+  protected readonly analyticsStore: AnalyticsStore;
   protected readonly walletsStore: MpcWallets;
   protected web3Wallet: Web3Wallet | null = null;
 
-  public constructor({ walletsStore }: { walletsStore: MpcWallets }) {
+  public constructor({
+    analyticsStore,
+    walletsStore,
+  }: {
+    analyticsStore: AnalyticsStore;
+    walletsStore: MpcWallets;
+  }) {
+    this.analyticsStore = analyticsStore;
     this.walletsStore = walletsStore;
 
     // Make sure we set up WalletConnect on all pages
-    void this.getActiveSessions();
+    void this.refetchActiveSessions();
 
     autorun(async () => {
       if (this.queuedUri && this.walletsStore.currentWallet) {
-        await this.pair(this.queuedUri);
-        this.queuedUri = null;
+        await Promise.all([
+          this.pair(this.queuedUri),
+          this.analyticsStore.trackOnboardingViaPairingUri(this.queuedUri),
+        ]);
+        runInAction(() => {
+          this.queuedUri = null;
+        });
       }
     });
   }
@@ -34,6 +52,10 @@ export class WalletConnectStore {
   }
 
   public async pair(uri: string) {
+    if (!uri) {
+      return;
+    }
+
     // TODO: it seems we can only scan the QR code once.
     // If there isn't a follow-up session_proposal event,
     // the user has to refresh the QR code and scan again.
@@ -47,11 +69,14 @@ export class WalletConnectStore {
       topic,
       reason: getSdkError("USER_DISCONNECTED"),
     });
+    await this.refetchActiveSessions();
   }
 
-  public async getActiveSessions() {
+  protected async refetchActiveSessions() {
     const web3Wallet = await this.getWeb3Wallet();
-    return web3Wallet.getActiveSessions();
+    runInAction(() => {
+      this.activeSessions = web3Wallet.getActiveSessions();
+    });
   }
 
   protected async getWeb3Wallet() {
@@ -69,9 +94,18 @@ export class WalletConnectStore {
           TargetChain.getSupportedWalletConnectNamespaces.bind(TargetChain),
         getKeys: TargetChain.getWalletConnectKeys.bind(TargetChain),
         handleSessionRequest: this.handleSessionRequest.bind(this),
+        onSessionDelete: this.refetchActiveSessions.bind(this),
+        onSessionApproval: this.handleSessionApproval.bind(this),
       });
     }
     return this.web3Wallet;
+  }
+
+  protected async handleSessionApproval(session: Session) {
+    await Promise.all([
+      this.analyticsStore.trackSessionApproval(session),
+      this.refetchActiveSessions(),
+    ]);
   }
 
   protected async handleSessionRequest(

@@ -152,7 +152,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
       const [easyShareRaw, backupShareRaw, ed25519PrivateKeyRaw] =
         await handleMultisigKeyDecryptedMessages({
           multisigKeyEncryptedMessages: getMultisigKeyEncryptedMessages(),
-          multisigKey: nextOwner,
+          multisigKey: previousOwner,
           results,
         });
 
