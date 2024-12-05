@@ -26,9 +26,11 @@
     "eslint-plugin-react-hooks": "^5.0.0"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^4.3.4"
+    "@vitejs/plugin-react": "^4.3.4",
+    "is-core-module": "^2.15.1"
   },
   "devDependencies": {
+    "@types/is-core-module": "^2",
     "prettier": "^3.3.3",
     "prettier-plugin-packagejson": "^2.5.3",
     "prettier-plugin-tailwindcss": "^0.6.8",

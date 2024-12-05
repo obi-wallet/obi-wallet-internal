@@ -6888,6 +6888,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/is-core-module@npm:^2":
+  version: 2.2.2
+  resolution: "@types/is-core-module@npm:2.2.2"
+  checksum: 10c0/94a547381f7c7ce1277bd4deecb79df2191e7fad22cdfacca4ffd15d14c8ed83de3c58b0de6346e340c14d09e9043b0834c403c76c8eca44136edfc92a1b76f1
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.6
   resolution: "@types/istanbul-lib-coverage@npm:2.0.6"
@@ -16621,7 +16628,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "obi-wallet-internal@workspace:."
   dependencies:
+    "@types/is-core-module": "npm:^2"
     "@vitejs/plugin-react": "npm:^4.3.4"
+    is-core-module: "npm:^2.15.1"
     prettier: "npm:^3.3.3"
     prettier-plugin-packagejson: "npm:^2.5.3"
     prettier-plugin-tailwindcss: "npm:^0.6.8"
