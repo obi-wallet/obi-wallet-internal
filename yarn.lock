@@ -3576,6 +3576,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nolyfill/is-core-module@npm:1.0.39":
+  version: 1.0.39
+  resolution: "@nolyfill/is-core-module@npm:1.0.39"
+  checksum: 10c0/34ab85fdc2e0250879518841f74a30c276bca4f6c3e13526d2d1fe515e1adf6d46c25fcd5989d22ea056d76f7c39210945180b4859fc83b050e2da411aa86289
+  languageName: node
+  linkType: hard
+
 "@npmcli/agent@npm:^2.0.0":
   version: 2.2.2
   resolution: "@npmcli/agent@npm:2.2.2"
@@ -6885,13 +6892,6 @@ __metadata:
   version: 2.0.4
   resolution: "@types/http-errors@npm:2.0.4"
   checksum: 10c0/494670a57ad4062fee6c575047ad5782506dd35a6b9ed3894cea65830a94367bd84ba302eb3dde331871f6d70ca287bfedb1b2cf658e6132cd2cbd427ab56836
-  languageName: node
-  linkType: hard
-
-"@types/is-core-module@npm:^2":
-  version: 2.2.2
-  resolution: "@types/is-core-module@npm:2.2.2"
-  checksum: 10c0/94a547381f7c7ce1277bd4deecb79df2191e7fad22cdfacca4ffd15d14c8ed83de3c58b0de6346e340c14d09e9043b0834c403c76c8eca44136edfc92a1b76f1
   languageName: node
   linkType: hard
 
@@ -11899,6 +11899,7 @@ __metadata:
   version: 3.6.3
   resolution: "eslint-import-resolver-typescript@npm:3.6.3"
   dependencies:
+    "@nolyfill/is-core-module": "npm:1.0.39"
     debug: "npm:^4.3.5"
     enhanced-resolve: "npm:^5.15.0"
     eslint-module-utils: "npm:^2.8.1"
@@ -16628,9 +16629,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "obi-wallet-internal@workspace:."
   dependencies:
-    "@types/is-core-module": "npm:^2"
     "@vitejs/plugin-react": "npm:^4.3.4"
-    is-core-module: "npm:^2.15.1"
     prettier: "npm:^3.3.3"
     prettier-plugin-packagejson: "npm:^2.5.3"
     prettier-plugin-tailwindcss: "npm:^0.6.8"

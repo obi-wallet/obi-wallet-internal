@@ -26,8 +26,7 @@
     "eslint-plugin-react-hooks": "^5.0.0"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
-    "is-core-module": "^2.15.1"
+    "@vitejs/plugin-react": "^4.3.4"
   },
   "devDependencies": {
     "@types/is-core-module": "^2",
