@@ -143,8 +143,12 @@ export const Navbar = observer(function Navbar() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="bg-background-secondary fixed bottom-0 left-0 h-20 w-full md:hidden">
-        <ul role="list" className="flex w-full justify-between px-4 py-2">
+      <div className="bg-background-secondary fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg md:hidden">
+        <div className="bg-background-secondary absolute inset-0"></div>
+        <ul
+          role="list"
+          className="relative flex w-full justify-between px-4 py-2"
+        >
           {navMenu
             .filter((item) => {
               return item.showOnMobile;

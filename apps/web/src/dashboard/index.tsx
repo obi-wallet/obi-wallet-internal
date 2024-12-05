@@ -25,7 +25,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="dashboard-page bg-background flex w-full flex-col text-white">
+    <div className="dashboard-page bg-background flex h-[calc(100vh-80px)] w-full flex-col text-white max-md:h-[calc(100vh-64px)] max-md:pb-20">
       <Assets />
     </div>
   );
@@ -36,7 +36,7 @@ const Assets = observer(function Assets() {
   const [editMode, setEditMode] = useState(false);
 
   return (
-    <>
+    <div className="relative z-0 flex h-full flex-col overflow-hidden">
       <AccountAndCTA className={cn("max-sm:mb-2.5 md:hidden")} />
       <div className="dashboard-controls flex items-center gap-3">
         <div className="dashboard-search min-w-0 flex-[1_1_0] text-sm text-white">
@@ -86,23 +86,25 @@ const Assets = observer(function Assets() {
 
       <Divider className="dashboard-divider border-primary mt-1 hidden md:block" />
 
-      {editMode ? (
-        <EditMode searchAsset={searchAsset.toLowerCase()} />
-      ) : (
-        <>
-          <PendingAssets />
-          <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-          <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-start max-md:px-2">
-            <p className="dashboard-footer-text break-words text-left text-sm font-light leading-normal text-white">
-              You don't have any assets yet. Receive assets on
-              <br />
-              <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get
-              started!
-            </p>
-          </div>
-        </>
-      )}
-    </>
+      <div className="scrollbar-hide flex-1 overflow-y-auto max-md:mb-20">
+        {editMode ? (
+          <EditMode searchAsset={searchAsset.toLowerCase()} />
+        ) : (
+          <>
+            <PendingAssets />
+            <AssetBalance searchAsset={searchAsset.toLowerCase()} />
+            <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-start max-md:px-2">
+              <p className="dashboard-footer-text break-words text-left text-sm font-light leading-normal text-white">
+                You don't have any assets yet. Receive assets on
+                <br />
+                <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get
+                started!
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 });
 
