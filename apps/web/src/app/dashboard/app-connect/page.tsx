@@ -177,7 +177,7 @@ export default observer(function AppConnect() {
                   window.open(session.peer.metadata.url, "_blank");
                 }}
               >
-                <Text size="md" className="text-left">
+                <Text size="xs" className="text-left">
                   <img
                     className="mr-2 h-4 w-4"
                     src={session.peer.metadata.icons[0]}
