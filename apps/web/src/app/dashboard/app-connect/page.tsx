@@ -61,7 +61,7 @@ export default observer(function AppConnect() {
     if (!showExplanationModal) return null;
 
     return renderModal(
-      <Modal title="How to App Connect with Obi">
+      <Modal title="How to App Connect with Obi" boxClassname="px-4">
         <div className="text-ml text-white">
           <ol className="list-inside list-decimal">
             <li className="mb-6">
