@@ -6,10 +6,11 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
 import { WalletState } from "@obi-wallet/headless-ui-store";
+import { queryClient } from "@obi-wallet/query-client";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaQuestionCircle, FaTrash } from "react-icons/fa";
 import { useEffectOnceWhen } from "rooks";
 
