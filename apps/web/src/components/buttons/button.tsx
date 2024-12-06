@@ -11,7 +11,8 @@ export type ButtonVariant =
   | "secondary"
   | "detail"
   | "accent"
-  | "primary-outline";
+  | "primary-outline"
+  | "warning";
 
 export type ButtonSize = "sm" | "base" | "md" | "lg";
 
@@ -71,9 +72,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "px-3 md:text-sm lg:text-md lg:py-1.5 max-md:py-1 max-sm:text-xs",
       // size === "lg" && "h-12 px-6 text-base",
       // Line Height (Leading)
-      leading === "tight" && "leading-tight",
-      leading === "normal" && "leading-normal",
-      leading === "none" && "leading-none",
+      leading === "tight" &&
+        "leading-tight md:leading-tight sm:leading-tight lg:leading-tight",
+      leading === "normal" &&
+        "leading-normal md:leading-normal sm:leading-normal lg:leading-normal",
+      leading === "none" &&
+        "leading-none md:leading-none sm:leading-none lg:leading-none",
       // Variants
       variant === "primary" && [
         "",
@@ -112,6 +116,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "hover:bg-primary-hover hover:text-white",
         "active:border-primary-active active:bg-primary-active",
         "disabled:border-primary-disabled disabled:opacity-30",
+      ],
+      variant === "warning" && [
+        "",
+        "font-normal",
+        "text-black",
+        "bg-[color:var(--background-warning)]",
+        "disabled:opacity-30",
       ],
       variant === "outline" && [
         "",

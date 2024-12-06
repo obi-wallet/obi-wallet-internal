@@ -68,9 +68,11 @@ export function useChainOptions() {
 export const ChainDropdown = observer(function ChainDropdown({
   onChange,
   chainId,
+  className,
 }: {
   chainId: TargetChainId | null;
   onChange: (chainId: TargetChainId) => void;
+  className?: string;
 }) {
   const { options, setLastUsedTargetChainId } = useChainOptions();
 
@@ -80,7 +82,7 @@ export const ChainDropdown = observer(function ChainDropdown({
         options={options}
         value={chainId ?? undefined}
         description="Select chain"
-        className="w-full bg-transparent"
+        className={cn("w-full bg-transparent", className)}
         onSelectOption={(option) => {
           setLastUsedTargetChainId(option.value);
           onChange(option.value);

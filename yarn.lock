@@ -12400,6 +12400,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fake-indexeddb@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "fake-indexeddb@npm:6.0.0"
+  checksum: 10c0/551ddada98f6d8b1c159698ff82570d06c8959f8e98616d872305dee3d857795dd62dd32094779e7b325397103364dcb0e24b6447992c0464ae13d19fbe57315
+  languageName: node
+  linkType: hard
+
 "fast-check@npm:^3.21.0":
   version: 3.22.0
   resolution: "fast-check@npm:3.22.0"
@@ -16638,6 +16645,7 @@ __metadata:
   dependencies:
     "@types/is-core-module": "npm:^2"
     "@vitejs/plugin-react": "npm:^4.3.4"
+    fake-indexeddb: "npm:^6.0.0"
     prettier: "npm:^3.3.3"
     prettier-plugin-packagejson: "npm:^2.5.3"
     prettier-plugin-tailwindcss: "npm:^0.6.8"

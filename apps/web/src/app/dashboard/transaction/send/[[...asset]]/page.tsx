@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { HomeChain } from "@/home-chain";
 import { useAlert } from "@/hooks/alert";
 import {
@@ -460,15 +461,18 @@ const SendInner = observer<{
         rules={{ required: true }}
         render={({ field }) => {
           return (
-            <Input
-              labelClassname="bg-background-secondary"
-              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
-              placeholder="Enter Recipient Address"
-              value={field.value}
-              onChange={(recipient) => {
-                field.onChange(recipient);
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                labelClassname="bg-background-secondary"
+                className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+                placeholder="Enter Recipient Address"
+                value={field.value}
+                onChange={(recipient) => {
+                  field.onChange(recipient);
+                }}
+              />
+              <InfoIcon topicId="recipient_address_info" />
+            </div>
           );
         }}
       />
@@ -481,42 +485,10 @@ const SendInner = observer<{
           const setCoin = field.onChange;
 
           return (
-            <Input
-              labelClassname="bg-background-secondary"
-              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
-              placeholder="Enter Amount"
-              value={coin.amount}
-              inputClassName="flex-1"
-              rightContainerClassName="flex-1"
-              onChange={(value) => {
-                setCoin({
-                  amount: value,
-                  asset: coin.asset,
-                });
-              }}
-              topComponent={
-                <div
-                  className={cn(
-                    "m-0 text-xs uppercase",
-                    "cursor-pointer text-slate-500 hover:text-blue-600",
-                  )}
-                  onClick={() => {
-                    if (!coin.asset) return;
-                    setCoin({
-                      amount: coin.asset.balance.toString(),
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  {coin.asset
-                    ? `${coin.asset.balance.toString()} ${
-                        coin.asset.assetInfo.symbol
-                      }`
-                    : ""}
-                </div>
-              }
-              rightComponent={
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
                 <Dropdown
+                  className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
                   items={balanceOptions}
                   selectedItem={coin.asset}
                   getKey={(item) => {
@@ -525,9 +497,12 @@ const SendInner = observer<{
                   itemToString={(item) => {
                     return item ? item.denom : "";
                   }}
-                  className="w-full"
+                  onItemSelect={function (item) {
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
+                  }}
                   itemComponent={({ getItemProps, item, isSelected }) => {
-                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}
@@ -555,14 +530,9 @@ const SendInner = observer<{
                       </div>
                     );
                   }}
-                  onItemSelect={function (item) {
-                    router.replace(
-                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
-                    );
-                  }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {
-                      return <div>Select</div>;
+                      return <div>Select Asset</div>;
                     }
 
                     return (
@@ -583,35 +553,75 @@ const SendInner = observer<{
                     );
                   }}
                 />
-              }
-            >
-              <div className="mt-2 flex gap-2.5">
-                {[25, 50, 75, 100].map((percent) => {
-                  return (
-                    <Button
-                      key={percent}
+                <InfoIcon topicId="send_chain_asset_info" />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Input
+                  labelClassname="bg-background-secondary"
+                  className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
+                  placeholder="Enter Amount"
+                  value={coin.amount}
+                  inputClassName="flex-1"
+                  rightContainerClassName="flex-1"
+                  onChange={(value) => {
+                    setCoin({
+                      amount: value,
+                      asset: coin.asset,
+                    });
+                  }}
+                  topComponent={
+                    <div
+                      className={cn(
+                        "m-0 text-xs uppercase",
+                        "cursor-pointer text-slate-500 hover:text-blue-600",
+                      )}
                       onClick={() => {
-                        const amount =
-                          percent === 100
-                            ? (coin.asset?.balance.toString() ?? "")
-                            : (coin.asset?.balance
-                                .multipliedBy(percent / 100)
-                                .toString() ?? "");
+                        if (!coin.asset) return;
                         setCoin({
-                          amount,
+                          amount: coin.asset.balance.toString(),
                           asset: coin.asset,
                         });
                       }}
-                      className="rounded-[5px] bg-transparent p-2.5"
                     >
-                      <Text className="font-['Roboto Mono'] text-lg text-white">
-                        {percent}%
-                      </Text>
-                    </Button>
-                  );
-                })}
+                      {coin.asset
+                        ? `${coin.asset.balance.toString()} ${
+                            coin.asset.assetInfo.symbol
+                          }`
+                        : ""}
+                    </div>
+                  }
+                >
+                  <div className="mt-2 flex gap-2.5">
+                    {[25, 50, 75, 100].map((percent) => {
+                      return (
+                        <Button
+                          key={percent}
+                          onClick={() => {
+                            const amount =
+                              percent === 100
+                                ? (coin.asset?.balance.toString() ?? "")
+                                : (coin.asset?.balance
+                                    .multipliedBy(percent / 100)
+                                    .toString() ?? "");
+                            setCoin({
+                              amount,
+                              asset: coin.asset,
+                            });
+                          }}
+                          className="rounded-[5px] bg-transparent p-2.5"
+                        >
+                          <Text className="font-['Roboto Mono'] text-lg text-white">
+                            {percent}%
+                          </Text>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </Input>
+                <InfoIcon topicId="send_amount_info" />
               </div>
-            </Input>
+            </div>
           );
         }}
       />
@@ -621,15 +631,18 @@ const SendInner = observer<{
         rules={{ required: true }}
         render={({ field }) => {
           return (
-            <Input
-              labelClassname="bg-background-secondary"
-              className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
-              placeholder="Memo (optional)"
-              value={field.value}
-              onChange={(memo) => {
-                field.onChange(memo);
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                labelClassname="bg-background-secondary"
+                className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+                placeholder="Memo (optional)"
+                value={field.value}
+                onChange={(memo) => {
+                  field.onChange(memo);
+                }}
+              />
+              <InfoIcon topicId="memo_field_info" />
+            </div>
           );
         }}
       />

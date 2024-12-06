@@ -1,6 +1,7 @@
 "use client";
 
 import { Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useStore } from "@/contexts";
 import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
@@ -27,7 +28,12 @@ export const Account = observer(function Account() {
     <>
       <div className="flex flex-col gap-2.5">
         <div className="bg-primary flex flex-col items-start justify-start self-stretch rounded-[5px] p-2.5">
-          <Text className="w-full text-xl font-normal text-black">{name}</Text>
+          <div className="flex w-full items-center gap-2">
+            <Text className="text-xl font-normal text-black">{name}</Text>
+            <div className="md:hidden">
+              <InfoIcon topicId="dashboard" variant="onPrimary" />
+            </div>
+          </div>
           <div className="mt-2.5 flex flex-col items-start justify-start self-stretch">
             <div className="flex items-center">
               <Text className="self-stretch text-xl font-normal text-[#070707]">
