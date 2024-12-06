@@ -574,7 +574,9 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     return { status: PrettyBalancesStatus.Loading, data: [] };
   }
 
-  const hasAnyData = balances.some((b) => {return b.data && b.data.length > 0});
+  const hasAnyData = balances.some((b) => {
+    return b.data && b.data.length > 0;
+  });
   if (!hasAnyData) {
     return { status: PrettyBalancesStatus.NoAssets, data: [] };
   }
