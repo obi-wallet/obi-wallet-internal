@@ -22,13 +22,13 @@ export function DashboardCustomLayout({
         <RouteTopics />
         <section
           className={cn(
-            "dashboard-custom-layout flex h-[calc(100vh_-_80px)] min-h-[calc(100vh_-_80px)] w-full flex-col max-md:h-[calc(100dvh_-_64px)] max-md:min-h-[calc(100dvh_-_64px)] max-md:px-3 md:flex-row",
+            "dashboard-custom-layout flex h-full w-full flex-col max-md:px-3 md:flex-row",
           )}
         >
           {nav}
-          <div className="dashboard-custom-layout-notifications-wrapper flex h-full flex-1 flex-col max-md:w-full md:px-7 md:py-3">
+          <div className="dashboard-custom-layout-notifications-wrapper flex flex-col max-md:w-full md:px-7 md:pt-3">
             {notifications}
-            <div className="flex flex-1">
+            <div className="flex">
               <div
                 className={cn(
                   "dashboard-custom-layout-content scrollbar-hide flex-1",

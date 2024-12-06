@@ -112,14 +112,6 @@ const Assets = observer(function Assets() {
           <>
             <PendingAssets />
             <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-            <div className="dashboard-footer mt-10 flex w-full min-w-0 flex-row items-start max-md:px-2">
-              <p className="dashboard-footer-text break-words text-left text-sm font-light leading-normal text-white">
-                You don't have any assets yet. Receive assets on
-                <br />
-                <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get
-                started!
-              </p>
-            </div>
           </>
         )}
       </div>
@@ -239,7 +231,16 @@ const AssetBalance = observer(function AssetBalance({
   }
 
   if (prettyBalances.status === PrettyBalancesStatus.NoAssets) {
-    return <span className="font-extrabold text-white">No Assets</span>;
+    return (
+      <div className="flex w-full min-w-0 flex-row items-start p-4">
+        <p className="break-words text-left text-sm font-light leading-normal text-white">
+          You don't have any assets yet. Receive assets on
+          <br />
+          <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get
+          started!
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -573,11 +574,8 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     return { status: PrettyBalancesStatus.Loading, data: [] };
   }
 
-  if (
-    balances.every((b) => {
-      return b.data && b.data.length === 0;
-    })
-  ) {
+  const hasAnyData = balances.some((b) => {return b.data && b.data.length > 0});
+  if (!hasAnyData) {
     return { status: PrettyBalancesStatus.NoAssets, data: [] };
   }
 
@@ -628,7 +626,10 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     });
 
   return {
-    status: PrettyBalancesStatus.SomeAssets,
+    status:
+      data.length > 0
+        ? PrettyBalancesStatus.SomeAssets
+        : PrettyBalancesStatus.NoAssets,
     data,
   };
 }

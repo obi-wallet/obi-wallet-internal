@@ -89,7 +89,7 @@ export const ChainDropdown = observer(function ChainDropdown({
         }}
         customSelectedItemComponent={(option) => {
           return (
-            <div className="flex w-full items-center">
+            <div className="flex w-full items-center justify-between">
               {!option ? (
                 <span>Select</span>
               ) : (
@@ -102,7 +102,7 @@ export const ChainDropdown = observer(function ChainDropdown({
                     />
                     <span>{option.label}</span>
                   </div>
-                  <span className="ml-auto">{chainId}</span>
+                  <span>{chainId}</span>
                 </>
               )}
             </div>

@@ -535,7 +535,7 @@ export const Education = observer(function Education() {
   // Only render the drawer if we have content
   if (!isInfoIconTopic || !content) {
     return (
-      <div className="education-panel h-full w-full space-y-2 overflow-auto p-3 text-gray-300 max-md:hidden">
+      <div className="education-panel ml-4 h-full w-full space-y-2 overflow-auto p-3 text-gray-300 max-md:hidden">
         {!content ? (
           <>
             <h2 className="text-lg font-medium text-gray-300">About Obi</h2>
@@ -625,7 +625,7 @@ export const Education = observer(function Education() {
       </div>
 
       {/* Desktop Panel */}
-      <div className="education-panel h-full w-full space-y-2 overflow-auto p-3 text-gray-300 max-md:hidden">
+      <div className="education-panel ml-4 h-full w-full space-y-2 overflow-auto p-3 text-gray-300 max-md:hidden">
         <h2 className="text-lg font-medium text-gray-300">{content.title}</h2>
         <div className="space-y-2 text-sm leading-relaxed text-gray-300">
           {content.description}

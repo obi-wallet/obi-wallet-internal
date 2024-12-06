@@ -105,9 +105,15 @@ const ReceiveInner = observer<{
     <TabUi.Main>
       <div className="flex w-full flex-col items-start gap-4 py-2.5">
         {/* Chain Dropdown */}
-        <div className="flex items-center gap-2">
-          <div className="h-standardField flex w-full items-center rounded-[5px] border border-[#32c9af] p-2.5">
-            <ChainDropdown onChange={setChainId} chainId={chainId} />
+        <div className="flex w-full items-center gap-2">
+          <div className="flex-1">
+            <div className="flex w-full items-center rounded-[5px] border border-[#32c9af] px-2.5">
+              <ChainDropdown
+                onChange={setChainId}
+                chainId={chainId}
+                className="w-full"
+              />
+            </div>
           </div>
           <InfoIcon topicId="receive_chain_info" />
         </div>
