@@ -1,18 +1,49 @@
 import { Box, Divider, KeyListItem, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { AsyncButton } from "@/ui/button";
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { FaTrash } from "react-icons/fa";
 
 import { useSecuritySettingsContext } from "../context";
 
 const keyOptions = [
-  { label: "Passkey", type: KeyType.Passkey },
-  { label: "Telegram Key", type: KeyType.Telegram },
-  { label: "Phone Key", type: KeyType.Phone },
-  { label: "Cloud Key", type: KeyType.Cloud },
+  {
+    label: "Passkey",
+    type: KeyType.Passkey,
+    infoTopic: "passkey_info",
+    infoContext: {
+      type: "passkey",
+      description: "A secure key stored on your device using WebAuthn",
+    },
+  },
+  {
+    label: "Telegram Key",
+    type: KeyType.Telegram,
+    infoTopic: "telegram_key_info",
+    infoContext: {
+      type: "telegram",
+      description: "A key linked to your Telegram account",
+    },
+  },
+  {
+    label: "Phone Key",
+    type: KeyType.Phone,
+    infoTopic: "phone_key_info",
+    infoContext: {
+      type: "phone",
+      description: "A key linked to your phone number",
+    },
+  },
+  {
+    label: "Cloud Key",
+    type: KeyType.Cloud,
+    infoTopic: "cloud_key_info",
+    infoContext: {
+      type: "cloud",
+      description: "A key stored in your cloud storage",
+    },
+  },
 ];
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
@@ -48,7 +79,16 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               fontWeight="normal"
               className="text-center text-[#32c9af]"
             >
-              {`Keys Required to Sign: ${draft.value.threshold} of ${draft.value.keys.length}`}
+              Keys Required to Sign: {draft.value.threshold} of{" "}
+              {draft.value.keys.length}
+              <InfoIcon
+                topicId="keys_required_info"
+                context={{
+                  threshold: draft.value.threshold,
+                  total: draft.value.keys.length,
+                  description: "The number of keys needed to sign transactions",
+                }}
+              />
             </Text>
           </div>
         </>
@@ -78,6 +118,10 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                 >
                   <Text size="lg" fontWeight="normal" className="text-left">
                     {option.label}
+                    <InfoIcon
+                      topicId={option.infoTopic}
+                      context={option.infoContext}
+                    />
                   </Text>
                   <Text size="lg" fontWeight="normal" className="text-right">
                     +

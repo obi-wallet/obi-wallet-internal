@@ -23,6 +23,13 @@ export default [
     },
   },
   {
+    files: ["**/tests/**/*.ts"],
+    rules: {
+      "import/no-extraneous-dependencies": "off",
+      "import/no-unresolved": "off",
+    },
+  },
+  {
     files: [
       "**/middleware.ts",
       "**/*.stories.{ts,tsx,js,jsx}",

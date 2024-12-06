@@ -84,8 +84,8 @@ export const Navbar = observer(function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary flex w-full flex-col p-2.5 md:h-full md:w-60 md:overflow-y-auto">
-      <div className="hidden h-full w-full flex-col gap-2.5 md:flex">
+    <nav className="bg-background-secondary lg:flex lg:h-full lg:w-60 lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5">
+      <div className="max-lg:hidden lg:flex lg:h-full lg:w-full lg:flex-col lg:gap-2.5">
         {/* Account and CTA */}
         <AccountAndCTA />
 
@@ -143,7 +143,7 @@ export const Navbar = observer(function Navbar() {
       </div>
 
       {/* Mobile Navigation */}
-      <div className="bg-background-secondary fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg md:hidden">
+      <div className="bg-background-secondary fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg lg:hidden">
         <div className="bg-background-secondary absolute inset-0"></div>
         <ul
           role="list"

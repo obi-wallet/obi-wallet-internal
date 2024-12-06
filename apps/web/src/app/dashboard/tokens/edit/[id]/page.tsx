@@ -4,6 +4,7 @@ import { Box, Button, Input } from "@/components";
 import { useStore } from "@/contexts";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
 import { isSecretChainId } from "@/target-chain/secret/chains";
 import { AsyncButton } from "@/ui/button";
@@ -23,8 +24,16 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
 
     const wallet = useCurrentWallet();
     const router = useRouter();
-    const { tokensStore, viewingKeysStore } = useStore();
+    const { tokensStore, viewingKeysStore, educationStore } = useStore();
     const createViewingKey = useCreateViewingKey();
+
+    // Check if we came from the import flow by checking if the token exists
+    const isImportFlow =
+      !wallet?.userEntryAddress ||
+      !tokensStore.getTokenConfig({
+        address: wallet.userEntryAddress,
+        assetId,
+      });
 
     const [state, setState] = useState<{
       enabled: boolean;
@@ -41,6 +50,7 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
 
     useEffectOnceWhen(async () => {
       if (wallet) {
+        educationStore.setTopicById("confirm_asset");
         const persistedAssetInfo = tokensStore.getTokenConfig({
           address: wallet.userEntryAddress,
           assetId,
@@ -68,12 +78,31 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
       }
     }, !!wallet);
 
+    const handleCancel = () => {
+      if (isImportFlow) {
+        // In import flow, Cancel should remove the token config
+        if (wallet) {
+          tokensStore.removeTokenConfig({
+            address: wallet.userEntryAddress,
+            assetId,
+          });
+          viewingKeysStore.removeViewingKey({
+            address: wallet.userEntryAddress,
+            assetId,
+          });
+        }
+      }
+      router.back();
+    };
+
     if (!wallet) return null;
 
     return (
       <div className="w-full">
-        <Box className="w-full lg:w-1/2">
-          <div className="my-4 flex-1 text-center text-white">Edit Asset</div>
+        <Box className="w-full">
+          <div className="my-4 flex-1 text-center text-white">
+            {isImportFlow ? "Confirm Asset" : "Edit Asset"}
+          </div>
           <div className="my-4">
             <label className="text-sm text-white">Token ID</label>
             <Input
@@ -146,28 +175,33 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
               }}
             />
           </div>
-          <div className="mb-4 mt-0.5 flex gap-8 text-white">
+          <div className="mb-4 mt-0.5 flex gap-4 text-white">
+            {!isImportFlow && (
+              <Button
+                onClick={() => {
+                  tokensStore.removeTokenConfig({
+                    address: wallet.userEntryAddress,
+                    assetId,
+                  });
+                  viewingKeysStore.removeViewingKey({
+                    address: wallet.userEntryAddress,
+                    assetId,
+                  });
+                  router.back();
+                }}
+                variant="warning"
+                className="w-1/3 justify-center rounded-lg p-2"
+              >
+                Remove
+              </Button>
+            )}
             <Button
-              onClick={() => {
-                tokensStore.removeTokenConfig({
-                  address: wallet.userEntryAddress,
-                  assetId,
-                });
-                viewingKeysStore.removeViewingKey({
-                  address: wallet.userEntryAddress,
-                  assetId,
-                });
-                router.back();
-              }}
-              className="flex-1 justify-center rounded-lg border-red-500 bg-transparent p-2 text-center hover:border-red-500 hover:bg-red-500"
-            >
-              Remove
-            </Button>
-            <Button
-              onClick={() => {
-                router.back();
-              }}
-              className="flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
+              onClick={handleCancel}
+              variant="secondary"
+              className={cn(
+                "justify-center rounded-lg p-2",
+                isImportFlow ? "w-1/2" : "w-1/3",
+              )}
             >
               Cancel
             </Button>
@@ -196,7 +230,10 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
 
                 router.push("/dashboard");
               }}
-              className="flex-1 justify-center rounded-lg p-2"
+              className={cn(
+                "justify-center rounded-lg p-2",
+                isImportFlow ? "w-1/2" : "w-1/3",
+              )}
             >
               Save
             </AsyncButton>

@@ -38,6 +38,7 @@
     --background-select-hover: theme("colors.gray.800");
     --background-select-active: theme("colors.gray.950");
     --background-select-disabled: theme("colors.gray.700");
+    --background-warning: #ffa70b;
 
     --foreground-primary: theme("colors.white");
     --foreground-primary-border: theme("colors.zinc.800");

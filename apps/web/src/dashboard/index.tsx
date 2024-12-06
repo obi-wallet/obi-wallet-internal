@@ -2,7 +2,8 @@
 
 import { AccountAndCTA, Button, Divider, Text } from "@/components";
 import { InlineChainDropdown } from "@/components/dropdown/inline-chain-dropdown";
-import { useStore } from "@/contexts";
+import { InfoIcon } from "@/components/info-icon";
+import { useStore } from "@/contexts/store";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
@@ -34,10 +35,11 @@ export const DashboardPage = observer(function Dashboard() {
 const Assets = observer(function Assets() {
   const [searchAsset, setSearchAsset] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const { educationStore } = useStore();
 
   return (
     <div className="relative z-0 flex h-full flex-col overflow-hidden">
-      <AccountAndCTA className={cn("max-sm:mb-2.5 md:hidden")} />
+      <AccountAndCTA className={cn("max-lg:mb-2.5 lg:hidden")} />
       <div className="dashboard-controls flex items-center gap-3">
         <div className="dashboard-search min-w-0 flex-[1_1_0] text-sm text-white">
           <Input
@@ -58,20 +60,27 @@ const Assets = observer(function Assets() {
         <div className="dashboard-edit-button min-w-0 flex-[1_1_0] leading-none">
           <Button
             onClick={() => {
-              return setEditMode((value) => {
-                return !value;
+              setEditMode((value) => {
+                const newValue = !value;
+                if (newValue) {
+                  educationStore.setTopicById("edit_assets", "router");
+                }
+                return newValue;
               });
             }}
             variant="accent"
             size="md"
-            leading="normal"
+            leading="none"
             className="w-full"
           >
-            {editMode ? "Stop Editing" : "Edit Assets"}
+            <div className="flex items-center gap-1">
+              {editMode ? "Edit Mode On" : "Edit Mode Off"}
+              <InfoIcon topicId="edit_assets" variant="onPrimary" />
+            </div>
           </Button>
         </div>
 
-        <div className="dashboard-import-button min-w-0 flex-[1_1_0]">
+        <div className="dashboard-import-button min-w-0 flex-[1_1_0] leading-none">
           <Button
             href="/dashboard/tokens/add"
             variant="primary-outline"
@@ -79,7 +88,17 @@ const Assets = observer(function Assets() {
             leading="none"
             className={`w-full border-dashed ${!editMode ? "invisible" : ""}`}
           >
-            + Import New Asset
+            <div className="flex items-center justify-center gap-2">
+              + Track an Asset
+              <InfoIcon
+                topicId="import_new_asset"
+                className="ml-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              />
+            </div>
           </Button>
         </div>
       </div>
@@ -166,21 +185,37 @@ const EditMode = observer(function EditMode({
     });
   };
 
-  const enabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === true;
-  });
+  const enabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === true;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const autoEnabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === undefined && !chain.chain.disabled;
-  });
+  const autoEnabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === undefined && !chain.chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const autoDisabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === undefined && chain.chain.disabled;
-  });
+  const autoDisabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === undefined && chain.chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const disabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === false;
-  });
+  const disabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === false;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
   return (
     <>

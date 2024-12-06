@@ -26,7 +26,7 @@ export const NoRecoveryKeysNotification = observer(
 
     return (
       <Notification
-        description={`Caution: Your account is currently only secured by your ${getLabel()}. Please add one or more <b>recovery keys</b>.`}
+        description={`Caution: Your account is only secured by your ${getLabel()}. Please add one or more <b>recovery keys</b>.`}
         type="warning"
         onClick={() => {
           router.push("/dashboard/settings/security");

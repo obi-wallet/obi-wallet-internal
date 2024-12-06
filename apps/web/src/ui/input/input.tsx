@@ -1,3 +1,5 @@
+"use client";
+
 import { Divider } from "@/components/divider";
 import { cn } from "@/lib/utils";
 import { InputContainer } from "@/ui/container";
