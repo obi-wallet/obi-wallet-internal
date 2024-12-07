@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 
 export interface EducationTopic {
   id: string;
-  source?: "info-icon" | "router";
+  source?: "info-icon" | "router" | undefined;
   context?: Record<string, unknown> | undefined;
 }
 
