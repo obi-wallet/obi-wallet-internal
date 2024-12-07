@@ -2,8 +2,8 @@ import { makeAutoObservable } from "mobx";
 
 export interface EducationTopic {
   id: string;
-  source?: "info-icon" | "router" | undefined;
-  context?: Record<string, unknown> | undefined;
+  source?: "info-icon" | "router";
+  context?: Record<string, unknown>;
 }
 
 export class EducationStore {
@@ -23,7 +23,7 @@ export class EducationStore {
 
   // Helper method to quickly set topic by ID
   setTopicById(id: string, source?: "info-icon" | "router") {
-    this.setCurrentTopic({ id, source });
+    this.setCurrentTopic({ id, ...(source ? { source } : {}) });
   }
 
   setDrawerOpen(open: boolean) {

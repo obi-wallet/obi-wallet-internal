@@ -81,14 +81,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
             >
               Keys Required to Sign: {draft.value.threshold} of{" "}
               {draft.value.keys.length}
-              <InfoIcon
-                topicId="keys_required_info"
-                context={{
-                  threshold: draft.value.threshold,
-                  total: draft.value.keys.length,
-                  description: "The number of keys needed to sign transactions",
-                }}
-              />
+              <InfoIcon topicId="keys_required_info" />
             </Text>
           </div>
         </>
@@ -118,10 +111,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                 >
                   <Text size="lg" fontWeight="normal" className="text-left">
                     {option.label}
-                    <InfoIcon
-                      topicId={option.infoTopic}
-                      context={option.infoContext}
-                    />
+                    <InfoIcon topicId={option.infoTopic} />
                   </Text>
                   <Text size="lg" fontWeight="normal" className="text-right">
                     +
