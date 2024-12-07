@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
-    "fake-indexeddb": "^6.0.0",
-    "info-icon": "^0.0.2"
+    "fake-indexeddb": "^6.0.0"
   },
   "devDependencies": {
     "@types/is-core-module": "^2",

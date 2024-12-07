@@ -10430,15 +10430,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cssify@npm:^0.7.0":
-  version: 0.7.0
-  resolution: "cssify@npm:0.7.0"
-  dependencies:
-    through: "npm:~2.3.4"
-  checksum: 10c0/6c4d7f217343c38c2c1a83c1640d3575843517a33871d40eaf119706658c6b433fbbc6c55e287bbd4365a179a23e8e06b6949fba6e38f0e0da5252fbc2236118
-  languageName: node
-  linkType: hard
-
 "csstype@npm:^3.0.2":
   version: 3.1.3
   resolution: "csstype@npm:3.1.3"
@@ -13552,15 +13543,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html2jsify@npm:0.0.2":
-  version: 0.0.2
-  resolution: "html2jsify@npm:0.0.2"
-  dependencies:
-    through: "npm:~2.3.4"
-  checksum: 10c0/a96c27d95a1606deefc1c7f34aa863aec89253d0daf76952b4b266a4fc0445154199ca6d4f5754d993824b5f6b3e94e5ba32d60632fab7e5318c360b2a07bf17
-  languageName: node
-  linkType: hard
-
 "htmlparser2@npm:^3.9.2":
   version: 3.10.1
   resolution: "htmlparser2@npm:3.10.1"
@@ -13819,16 +13801,6 @@ __metadata:
     once: "npm:^1.3.0"
     wrappy: "npm:1"
   checksum: 10c0/7faca22584600a9dc5b9fca2cd5feb7135ac8c935449837b315676b4c90aa4f391ec4f42240178244b5a34e8bede1948627fda392ca3191522fc46b34e985ab2
-  languageName: node
-  linkType: hard
-
-"info-icon@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "info-icon@npm:0.0.2"
-  dependencies:
-    cssify: "npm:^0.7.0"
-    html2jsify: "npm:0.0.2"
-  checksum: 10c0/b41a2ad3332ada89f9a4fa236b6f2aa5ad96ff6f71bb30bc675f9c0d09ea8c842a0b7f8cf385069dd89224b6980751378bc9e18e00c8a0a988307843f208b932
   languageName: node
   linkType: hard
 
@@ -16674,7 +16646,6 @@ __metadata:
     "@types/is-core-module": "npm:^2"
     "@vitejs/plugin-react": "npm:^4.3.4"
     fake-indexeddb: "npm:^6.0.0"
-    info-icon: "npm:^0.0.2"
     prettier: "npm:^3.3.3"
     prettier-plugin-packagejson: "npm:^2.5.3"
     prettier-plugin-tailwindcss: "npm:^0.6.8"
@@ -20228,7 +20199,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"through@npm:>=2.2.7 <3, through@npm:~2.3.4":
+"through@npm:>=2.2.7 <3":
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: 10c0/4b09f3774099de0d4df26d95c5821a62faee32c7e96fb1f4ebd54a2d7c11c57fe88b0a0d49cf375de5fee5ae6bf4eb56dbbf29d07366864e2ee805349970d3cc
