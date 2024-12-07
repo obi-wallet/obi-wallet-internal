@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
+
 import { IDBFactory } from "fake-indexeddb";
 import { vi } from "vitest";
 
@@ -30,12 +32,29 @@ const mockCanvasContext = {
   rotate: vi.fn(),
   arc: vi.fn(),
   fill: vi.fn(),
-};
+} as unknown as CanvasRenderingContext2D;
 
 // Mock canvas element
 HTMLCanvasElement.prototype.getContext = vi.fn(() => {
   return mockCanvasContext;
-});
+}) as unknown as {
+  (
+    contextId: "2d",
+    options?: CanvasRenderingContext2DSettings,
+  ): CanvasRenderingContext2D | null;
+  (
+    contextId: "bitmaprenderer",
+    options?: ImageBitmapRenderingContextSettings,
+  ): ImageBitmapRenderingContext | null;
+  (
+    contextId: "webgl",
+    options?: WebGLContextAttributes,
+  ): WebGLRenderingContext | null;
+  (
+    contextId: "webgl2",
+    options?: WebGLContextAttributes,
+  ): WebGL2RenderingContext | null;
+};
 
 // Mock requestAnimationFrame
 global.requestAnimationFrame = vi.fn((callback) => {

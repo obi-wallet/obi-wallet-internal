@@ -84,7 +84,7 @@ export const Navbar = observer(function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary lg:flex lg:h-full lg:w-60 lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5">
+    <nav className="bg-background-secondary leading-none sm:leading-none md:leading-none lg:flex lg:h-full lg:w-60 lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5 lg:leading-none xl:leading-none">
       <div className="max-lg:hidden lg:flex lg:h-full lg:w-full lg:flex-col">
         {/* Account and CTA */}
         <div className="flex flex-col gap-2.5">

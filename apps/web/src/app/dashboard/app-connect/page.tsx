@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, Button, Divider, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -10,7 +11,6 @@ import { queryClient } from "@obi-wallet/query-client";
 import { observer } from "mobx-react-lite";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FaQuestionCircle } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa6";
 import { useEffectOnceWhen } from "rooks";
 
@@ -47,17 +47,10 @@ export default observer(function AppConnect() {
       <Box className="rounded-md text-xl">
         <Text size="xl">App Connect</Text>
         <Text className="mt-2">
-          <span className="justify-center align-middle leading-normal">
+          <span className="align-middle leading-normal">
             Navigate to your favorite app, copy the WalletConnect URL, and paste
             it below to connect it to Obi.
-            <div
-              className="ml-2 inline-block cursor-pointer"
-              onClick={() => {
-                setShowExplanationModal(true);
-              }}
-            >
-              <FaQuestionCircle />
-            </div>
+            <InfoIcon topicId="wallet_connect_info" className="inline-block" />
           </span>
         </Text>
 
