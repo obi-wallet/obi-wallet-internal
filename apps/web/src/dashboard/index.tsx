@@ -17,6 +17,7 @@ import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { CiSearch } from "react-icons/ci";
@@ -87,9 +88,12 @@ const Assets = observer(function Assets() {
             size="md"
             leading="none"
             className={`w-full border-dashed ${!editMode ? "invisible" : ""}`}
+            onClick={() => {
+              educationStore.setTopicById("import_new_asset", "router");
+            }}
           >
             <div className="flex items-center justify-center gap-2">
-              + Track an Asset
+              <div data-track-asset>+ Track an Asset</div>
               <InfoIcon
                 topicId="import_new_asset"
                 className="ml-1"
@@ -236,8 +240,11 @@ const AssetBalance = observer(function AssetBalance({
         <p className="break-words text-left text-sm font-light leading-normal text-white">
           You don't have any assets yet. Receive assets on
           <br />
-          <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> to get
-          started!
+          <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> or{" "}
+          <Link href="/dashboard/buy-crypto" className="text-primary underline">
+            buy some assets with fiat
+          </Link>{" "}
+          to get started!
         </p>
       </div>
     );

@@ -32,7 +32,7 @@ export const RouteTopics = observer(function RouteTopics() {
         case "tokens": {
           const subRoute = pathname.split("/")[3] || "";
           if (subRoute === "add") {
-            educationStore.setTopicById("import_asset_info", "router");
+            educationStore.setTopicById("import_new_asset", "router");
           }
           break;
         }

@@ -4,8 +4,8 @@ import { UnderlineLink } from "@/components/links";
 import { useStore } from "@/contexts/store";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
+import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useRef, TouchEvent, useState } from "react";
-import { FaQuestionCircle } from "react-icons/fa";
 
 interface TopicLinkProps {
   topicId: string;
@@ -52,7 +52,7 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
       <>
         <p>
           Choose the blockchain network containing the token you would like to
-          import. Choosing the incorrect network will generally result in no
+          import. Choosing an incorrect network will generally result in no
           token being found.
         </p>
       </>
@@ -94,29 +94,20 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
     description: (
       <>
         <p>
-          Welcome to your Obi dashboard! This is a secure place to use
-          blockchain assets and apps with advanced new account features like
-          non-custodial recovery. Here on the main Dashboard page, you can:
+          The Obi Dashboard is a secure place to use blockchain assets and apps
+          – with advanced new security and account features. On the Dashboard
+          page, you can:
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-4">
+          <li>View and manage your assets</li>
+          <li>Track your balances across different chains</li>
           <li>
-            View and manage your{" "}
-            <TopicLink topicId="assets_info">assets</TopicLink>
+            Add custom tokens to track in Edit Mode, if tokens are not
+            automatically detected
           </li>
-          <li>
-            Track your <TopicLink topicId="balances_info">balances</TopicLink>{" "}
-            across different chains
-          </li>
-          <li>
-            <TopicLink topicId="import_asset_info">
-              Import custom tokens
-            </TopicLink>
-          </li>
-          <li>
-            Initiate{" "}
-            <TopicLink topicId="transactions_info">transactions</TopicLink>
-          </li>
+          <li>Send and receive assets</li>
         </ul>
+        <p>To connect to blockchain applications, use the App Connect tab.</p>
       </>
     ),
   },
@@ -316,10 +307,8 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
             access
           </li>
           <li>Lower numbers are more convenient but provide less security</li>
-          <li>We recommend 2 keys for balanced security and convenience</li>
           <li>
-            Updates of Obi coming soon will allow easy session keys, allowing
-            you to temporarily sign with just 1 key for your session
+            We recommend 2 required keys for balanced security and convenience
           </li>
         </ul>
       </>
@@ -478,31 +467,50 @@ export const Education = observer(function Education() {
   const [isDragging, setIsDragging] = useState(false);
   const startY = useRef<number>(0);
   const currentY = useRef<number>(0);
+  const pathname = usePathname();
 
   // Determine if the topic was set by an info icon click (for mobile)
   const isInfoIconTopic = topic?.source === "info-icon";
+  const isDashboardPage = pathname.split("/")[2] === "";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Only handle click outside for mobile drawer
-      if (!isInfoIconTopic) return;
-
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       const target = event.target as HTMLElement;
-      // Don't dismiss if clicking info icon or inside drawer
-      if (target.closest(".info-icon") || drawerRef.current?.contains(target)) {
+
+      // Check if clicking inside education panel/drawer or on info icon or track asset button
+      const isClickingEducation = target.closest(".education-panel");
+      const isClickingInfoIcon = target.closest(".info-icon");
+      const isClickingDrawer = drawerRef.current?.contains(target);
+      const isClickingTrackAsset = target.closest("[data-track-asset]");
+
+      // If clicking inside any of these elements, don't do anything
+      if (
+        isClickingEducation ||
+        isClickingInfoIcon ||
+        isClickingDrawer ||
+        isClickingTrackAsset
+      ) {
         return;
       }
 
-      // Only close the drawer without clearing the topic
-      educationStore.setDrawerOpen(false);
+      // Mobile: Close drawer if it's open
+      if (educationStore.drawerOpen) {
+        educationStore.setDrawerOpen(false);
+      }
+
+      // Desktop: Reset topic to default only on /dashboard route
+      if (pathname === "/dashboard") {
+        educationStore.clearTopic();
+      }
     }
 
     document.addEventListener("mouseup", handleClickOutside);
     return () => {
       document.removeEventListener("mouseup", handleClickOutside);
     };
-  }, [isInfoIconTopic, educationStore]);
+  }, [pathname, educationStore]);
+
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
     const touch = e.touches[0];
     if (!touch) return;
@@ -536,15 +544,25 @@ export const Education = observer(function Education() {
   if (!isInfoIconTopic || !content) {
     return (
       <div className="education-panel ml-4 h-full w-full space-y-2 overflow-auto p-3 text-gray-300 max-md:hidden">
-        {!content ? (
+        {!content || (isDashboardPage && topic?.source !== "info-icon") ? (
           <>
             <h2 className="text-lg font-medium text-gray-300">About Obi</h2>
-            <p className="text-sm text-gray-300">
-              Welcome to Obi, a secured all-chain manager for all your assets
-              and apps. Select any info icon{" "}
-              <FaQuestionCircle className="inline-block text-gray-400" /> across
-              the interface to learn more about specific features and
-              components.
+            <p>
+              The Obi Dashboard is a secure place to use blockchain assets and
+              apps – with advanced new security and account features. On the
+              Dashboard page, you can:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-4">
+              <li>View and manage your assets</li>
+              <li>Track your balances across different chains</li>
+              <li>
+                Add custom tokens to track in Edit Mode, if tokens are not
+                automatically detected
+              </li>
+              <li>Send and receive assets</li>
+            </ul>
+            <p>
+              To connect to blockchain applications, use the App Connect tab.
             </p>
           </>
         ) : (

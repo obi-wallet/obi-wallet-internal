@@ -28,10 +28,10 @@ export function DashboardCustomLayout({
           {nav}
           <div className="dashboard-custom-layout-notifications-wrapper flex flex-col max-md:w-full md:px-7 md:pt-3">
             {notifications}
-            <div className="flex">
+            <div className="flex h-full">
               <div
                 className={cn(
-                  "dashboard-custom-layout-content scrollbar-hide flex-1",
+                  "dashboard-custom-layout-content scrollbar-hide h-full flex-1",
                   "space-y-2 overflow-auto py-3 max-md:px-1 max-md:py-3 max-sm:px-0",
                 )}
               >

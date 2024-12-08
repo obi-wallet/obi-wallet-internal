@@ -16,6 +16,7 @@ const config: Config = {
         text: "#ffffff",
         accent: "#0e0e25",
         secondary: "#363636",
+        warning: "#ffa70b",
         "banner-bg": "#ee9d38",
         "background-main": "#070707",
         "background-primary": "#32c9af",
