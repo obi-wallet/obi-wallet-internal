@@ -30,9 +30,7 @@ export const Account = observer(function Account() {
         <div className="bg-primary flex flex-col items-start justify-start self-stretch rounded-[5px] p-2.5">
           <div className="flex w-full items-center gap-2">
             <Text className="text-xl font-normal text-black">{name}</Text>
-            <div className="md:hidden">
-              <InfoIcon topicId="dashboard" variant="onPrimary" />
-            </div>
+            <InfoIcon topicId="dashboard_home" variant="onPrimary" />
           </div>
           <div className="mt-2.5 flex flex-col items-start justify-start self-stretch">
             <div className="flex items-center">

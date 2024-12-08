@@ -16,8 +16,10 @@ function TopicLink({ topicId, children }: TopicLinkProps) {
   const { educationStore } = useStore();
   return (
     <button
-      onClick={() => {
-        return educationStore.setTopicById(topicId);
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        educationStore.setTopicById(topicId, "info-icon");
       }}
       className="text-primary hover:text-primary/80 hover:underline"
     >
