@@ -45,7 +45,9 @@ export default observer(function AppConnect() {
   return (
     <div className="grid h-full w-full text-white">
       <Box className="rounded-md text-xl">
-        <Text size="xl">App Connect</Text>
+        <Text size="xl" className="flex items-center gap-2">
+          App Connect <InfoIcon topicId="app_connect" />
+        </Text>
         <Text className="mt-2">
           <span className="align-middle leading-normal">
             Navigate to your favorite app, copy the WalletConnect URL, and paste

@@ -170,14 +170,69 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-4">
           <li>
+            Connect to an app in another tab or on another device
             <TopicLink topicId="wallet_connect_info">
-              Connect to an app in another tab or on another device using
-              WalletConnect
+              using WalletConnect
             </TopicLink>
           </li>
+          <li>Visit or disconnect from connected apps</li>
+        </ul>
+        Some of the most popular apps that support WalletConnect include:
+        <ul className="mt-2 list-disc space-y-1 pl-4">
           <li>
-            Manage your{" "}
-            <TopicLink topicId="dapp_connections">open connections</TopicLink>
+            <a
+              href="https://app.uniswap.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Uniswap
+            </a>{" "}
+            - Leading DEX on Ethereum and L2s
+          </li>
+          <li>
+            <a
+              href="https://opensea.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              OpenSea
+            </a>{" "}
+            - World's largest NFT marketplace
+          </li>
+          <li>
+            <a
+              href="https://app.1inch.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              1inch
+            </a>{" "}
+            - DEX aggregator across multiple chains
+          </li>
+          <li>
+            <a
+              href="https://astroport.fi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Astroport
+            </a>{" "}
+            - Premier DEX on Cosmos chains
+          </li>
+          <li>
+            <a
+              href="https://raydium.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Raydium
+            </a>{" "}
+            - Leading DEX on Solana
           </li>
         </ul>
       </>

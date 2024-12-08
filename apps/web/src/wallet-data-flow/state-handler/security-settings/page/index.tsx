@@ -60,7 +60,14 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       {/* Header */}
       <div className="flex items-start justify-start self-stretch rounded-[5px] bg-[#32c9af] p-2.5">
         <Text size="xl" fontWeight="normal" className="text-[#070707]">
-          {showAddKeyOptions ? "Add New Key" : "Security Settings"}
+          {showAddKeyOptions ? (
+            "Add New Key"
+          ) : (
+            <span className="flex items-center gap-2">
+              Security Settings{" "}
+              <InfoIcon topicId="security_settings" variant="onPrimary" />
+            </span>
+          )}
         </Text>
       </div>
       {!showAddKeyOptions ? (
