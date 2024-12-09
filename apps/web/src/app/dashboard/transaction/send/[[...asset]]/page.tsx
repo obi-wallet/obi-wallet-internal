@@ -611,7 +611,7 @@ const SendInner = observer<{
                           }}
                           className="rounded-[5px] bg-transparent p-2.5"
                         >
-                          <Text className="font-['Roboto Mono'] text-lg text-white">
+                          <Text className="font-['Roboto Mono'] text-sm text-white">
                             {percent}%
                           </Text>
                         </Button>
