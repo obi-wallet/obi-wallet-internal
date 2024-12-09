@@ -31,8 +31,8 @@ export function DashboardCustomLayout({
             <div className="flex h-full">
               <div
                 className={cn(
-                  "dashboard-custom-layout-content scrollbar-hide h-full flex-1",
-                  "space-y-2 overflow-auto py-3 max-md:px-1 max-md:py-3 max-sm:px-0",
+                  "dashboard-custom-layout-content h-full flex-1",
+                  "scrollbar-hide space-y-2 overflow-auto py-3 max-md:px-1 max-md:py-3 max-sm:px-0",
                 )}
               >
                 {children}

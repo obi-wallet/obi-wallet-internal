@@ -30,7 +30,7 @@ export function useSecurityQuestions() {
       },
       {
         label:
-          "What is the full name of the last elementary/primary school I attended?",
+          "What is the full name of the last elementary/primary school you attended?",
         value: SecurityQuestion.SchoolName,
       },
       {
@@ -38,7 +38,7 @@ export function useSecurityQuestions() {
         value: SecurityQuestion.FirstCar,
       },
       {
-        label: "What is the full name of my first kiss?",
+        label: "What is the full name of your first kiss?",
         value: SecurityQuestion.FirstKiss,
       },
     ];

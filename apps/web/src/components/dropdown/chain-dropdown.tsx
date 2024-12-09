@@ -96,7 +96,7 @@ export const ChainDropdown = observer(function ChainDropdown({
                 <>
                   <div className="flex items-center space-x-3">
                     <img
-                      className="h-6 w-6"
+                      className="chain-icon"
                       src={option.image}
                       alt={option.label}
                     />
@@ -112,15 +112,15 @@ export const ChainDropdown = observer(function ChainDropdown({
           return (
             <li
               className={cn(
-                "hover:bg-background-primary-hover flex cursor-pointer items-center space-x-3 p-3",
-                option.value === selectedOption?.value && "bg-gray-600",
-                option.disabled &&
-                  "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                "chain-dropdown-item",
+                option.value === selectedOption?.value &&
+                  "chain-dropdown-item-selected",
+                option.disabled && "chain-dropdown-item-disabled",
               )}
               onClick={handleOption}
               key={option.value}
             >
-              <img src={option.image} alt="asset" className="h-6 w-6" />
+              <img src={option.image} alt="asset" className="chain-icon" />
               <span>{option.label}</span>
             </li>
           );

@@ -84,7 +84,7 @@ export const Navbar = observer(function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary leading-none sm:leading-none md:leading-none lg:flex lg:h-full lg:w-full lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5 lg:leading-none xl:leading-none">
+    <nav className="leading-none sm:leading-none md:leading-none lg:flex lg:h-full lg:w-full lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5 lg:leading-none xl:leading-none">
       <div className="max-lg:hidden lg:flex lg:h-full lg:w-full lg:flex-col">
         {/* Account and CTA */}
         <div className="flex flex-col gap-2.5">
@@ -141,14 +141,14 @@ export const Navbar = observer(function Navbar() {
         </div>
 
         {/* Footer */}
-        <div className="bg-background-secondary fixed bottom-0 left-0 hidden w-full max-w-60 p-2.5 lg:block">
+        <div className="fixed bottom-0 left-0 hidden w-full max-w-60 p-2.5 lg:block">
           <Footer className="!px-0" />
         </div>
       </div>
 
       {/* Mobile Navigation */}
-      <div className="bg-background-secondary fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg lg:hidden">
-        <div className="bg-background-secondary absolute inset-0"></div>
+      <div className="fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg lg:hidden">
+        <div className="absolute inset-0"></div>
         <ul
           role="list"
           className="relative flex w-full justify-between px-4 py-2"

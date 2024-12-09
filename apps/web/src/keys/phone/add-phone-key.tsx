@@ -111,9 +111,8 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
       <div className="flex flex-col gap-4">
         {askForName ? (
           <Input
-            label="Key Name"
             labelClassname="bg-background-secondary"
-            className="w-full"
+            className="h-standardField w-full"
             placeholder="Name"
             value={name}
             onChange={(value) => {
@@ -122,9 +121,8 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           />
         ) : null}
         <Input
-          label="Phone Number"
           labelClassname="bg-background-secondary"
-          className="w-full"
+          className="h-standardField w-full"
           placeholder="+491234567"
           value={number}
           onChange={(value) => {
@@ -142,9 +140,8 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           }}
         />
         <Input
-          label="Security Answer"
           labelClassname="bg-background-secondary"
-          className="w-full"
+          className="h-standardField w-full"
           placeholder="Security Answer"
           value={securityQuestion.securityAnswer}
           onChange={(value) => {
