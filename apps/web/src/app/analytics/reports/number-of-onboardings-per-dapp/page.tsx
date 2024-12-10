@@ -1,13 +1,10 @@
 "use client";
 
-import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { useSearchParams } from "next/navigation";
-import { use } from "react";
 
 export default function NumberOfOnboardingsPerDApp() {
   const searchParams = useSearchParams();
-  const secret = use(ReportsSecretsContext);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const query = useQuery({
@@ -23,11 +20,7 @@ export default function NumberOfOnboardingsPerDApp() {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString(), {
-        headers: {
-          Authorization: `Bearer ${secret}`,
-        },
-      });
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error("Failed to fetch data");

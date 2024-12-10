@@ -1,6 +1,5 @@
 "use client";
 
-import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { Text } from "@/components";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
@@ -15,7 +14,6 @@ export default function UsersPerAsset(props: {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const asset = decodeURIComponent(use(props.params).asset) as Caip19AssetId;
   const searchParams = useSearchParams();
-  const secret = use(ReportsSecretsContext);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const query = useQuery({
@@ -31,11 +29,7 @@ export default function UsersPerAsset(props: {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString(), {
-        headers: {
-          Authorization: `Bearer ${secret}`,
-        },
-      });
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error("Failed to fetch data");

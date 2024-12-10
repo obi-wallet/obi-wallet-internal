@@ -1,16 +1,13 @@
 "use client";
 
-import { ReportsSecretsContext } from "@/analytics/reports-secrets-context";
 import { Text } from "@/components";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use } from "react";
 
 export default function NumberOfUsersPerAsset() {
   const searchParams = useSearchParams();
-  const secret = use(ReportsSecretsContext);
   const router = useRouter();
   const from = searchParams.get("from");
   const to = searchParams.get("to");
@@ -27,11 +24,7 @@ export default function NumberOfUsersPerAsset() {
       if (to) {
         url.searchParams.set("to", to);
       }
-      const response = await fetch(url.toString(), {
-        headers: {
-          Authorization: `Bearer ${secret}`,
-        },
-      });
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error("Failed to fetch data");
