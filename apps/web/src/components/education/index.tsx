@@ -643,7 +643,6 @@ export const Education = observer(function Education() {
     educationStore.drawerOpen ? "translate-y-0" : "translate-y-full",
     "h-[85vh]", // Set height to 85% of viewport
   );
-
   return (
     <>
       {/* Mobile Drawer */}

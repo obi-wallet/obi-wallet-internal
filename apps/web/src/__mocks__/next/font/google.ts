@@ -6,10 +6,10 @@ export function Roboto_Mono() {
   };
 }
 
-export function Inter() {
-  return {
-    className: "mock-inter",
-    style: { fontFamily: "Inter" },
-    variable: "--font-inter",
-  };
-}
+// export function Inter() {
+//   return {
+//     className: "mock-inter",
+//     style: { fontFamily: "Inter" },
+//     variable: "--font-inter",
+//   };
+// }
