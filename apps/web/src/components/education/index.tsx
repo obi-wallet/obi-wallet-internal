@@ -1,3 +1,5 @@
+"use client";
+
 import { UnderlineLink } from "@/components/links";
 import { useStore } from "@/contexts/store";
 import { cn } from "@/lib/utils";
