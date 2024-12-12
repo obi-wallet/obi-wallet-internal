@@ -1,6 +1,5 @@
 import { UnderlineLink } from "@/components/links";
 import { useStore } from "@/contexts/store";
-import { serialize } from "@obi-wallet/sdk-json";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import { usePathname } from "next/navigation";
@@ -528,7 +527,7 @@ export const Education = observer(function Education() {
   // Determine if the topic was set by an info icon click (for mobile)
   const isInfoIconTopic = topic?.source === "info-icon";
   const isDashboardPage = pathname.split("/")[2] === "";
-  
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
