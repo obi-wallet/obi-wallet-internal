@@ -18,6 +18,7 @@
     "storybook": "turbo storybook",
     "test": "turbo test",
     "test-storybook": "turbo test-storybook",
+    "test:bitcoin": "vitest",
     "tsc": "turbo tsc"
   },
   "resolutions": {

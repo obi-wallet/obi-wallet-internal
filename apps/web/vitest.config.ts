@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "happy-dom",
-    setupFiles: ["./src/test/setup.ts"],
+    setupFiles: ["dotenv/config", "./vitest.setup.mts"],
     mockReset: true,
     clearMocks: true,
     globals: true,

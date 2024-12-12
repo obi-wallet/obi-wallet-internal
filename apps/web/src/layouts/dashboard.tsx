@@ -1,9 +1,9 @@
 import { DashboardHeader } from "@/components";
+import { Education } from "@/components/education";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
 import { MainContainer } from "./root";
-import { Education } from "@/components/education";
 
 export function DashboardCustomLayout({
   children,
@@ -34,7 +34,7 @@ export function DashboardCustomLayout({
             >
               {children}
             </div>
-            <div className="education-wrapper max-md:hidden scrollbar-hide flex-1 space-y-2 overflow-auto py-3 max-md:px-1 max-md:py-3 max-sm:px-0 lg:w-[50%]">
+            <div className="education-wrapper scrollbar-hide flex-1 space-y-2 overflow-auto py-3 max-md:hidden max-md:px-1 max-md:py-3 max-sm:px-0 lg:w-[50%]">
               <Education />
             </div>
           </div>
