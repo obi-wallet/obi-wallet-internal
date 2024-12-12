@@ -26,7 +26,7 @@ export function DashboardCustomLayout({
           )}
         >
           {nav}
-          <div className="dashboard-custom-layout-notifications-wrapper flex flex-col max-md:w-full md:px-7 md:pt-3">
+          <div className="dashboard-custom-layout-notifications-wrapper flex w-full flex-col md:px-7 md:pt-3">
             {notifications}
             <div className="flex h-full">
               <div

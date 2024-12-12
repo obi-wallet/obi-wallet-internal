@@ -35,7 +35,7 @@ export default observer(function TokenAdd() {
 
   return (
     <div className="token-add-page w-full">
-      <Box className="token-add-form w-full">
+      <Box className="token-add-form w-full max-lg:w-full xl:w-3/4 2xl:w-1/2">
         <div className="token-add-title my-4 flex flex-1 items-center justify-center gap-2 text-center text-white">
           <div data-track-asset>Track a New Asset</div>
           <InfoIcon topicId="import_new_asset" />

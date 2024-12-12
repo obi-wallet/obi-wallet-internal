@@ -107,7 +107,7 @@ const ReceiveInner = observer<{
         {/* Chain Dropdown */}
         <div className="flex w-full items-center gap-2">
           <div className="flex-1">
-            <div className="flex w-full items-center rounded-[5px] border border-[#32c9af] px-2.5">
+            <div className="relative flex w-full items-center rounded-[5px] border border-[#32c9af] px-2.5">
               <ChainDropdown
                 onChange={setChainId}
                 chainId={chainId}

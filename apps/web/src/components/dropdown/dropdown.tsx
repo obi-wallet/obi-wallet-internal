@@ -111,7 +111,10 @@ export function DropDown<
       {isOpen && (
         <div
           id="dropdown"
-          className={cn("dropdown-content", contentContainerClassname)}
+          className={cn(
+            "dropdown-content absolute right-0 top-full z-[1000] mt-1 w-full overflow-hidden rounded-b-lg bg-gray-700 shadow",
+            contentContainerClassname,
+          )}
         >
           <ul
             className="py-2 text-sm text-white dark:text-gray-200"
