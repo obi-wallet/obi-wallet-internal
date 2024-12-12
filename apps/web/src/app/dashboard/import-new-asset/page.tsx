@@ -6,9 +6,9 @@ import { observer } from "mobx-react-lite";
 export default observer(function ImportNewAsset() {
   return (
     <div className="w-full">
-      <Box className="w-full lg:w-1/2">
+      <Box className="w-full">
         <div className="my-4 flex-1 text-center text-white">
-          Import New Asset
+          Track a New Asset
         </div>
         <div className="my-4">
           <label className="text-sm text-white">Token contract address</label>

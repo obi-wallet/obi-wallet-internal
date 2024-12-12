@@ -77,7 +77,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
         {useCloudKey ? (
           <p className="font-light text-white">
             Create a cloud key to secure your account. This key is associated
-            with a third party cloud storage service.
+            with a third party cloud storage service. Google Drive is currently
+            supported, with more providers coming soon.
             <br />
             <br />
             You can add more keys later for increased security, or{" "}
@@ -87,7 +88,7 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             >
               click here
             </span>{" "}
-            if you’d prefer to create a passkey.
+            if you’d prefer to create a passkey instead.
           </p>
         ) : (
           <p className="font-light text-white">
@@ -102,7 +103,8 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             >
               click here
             </span>{" "}
-            if you can’t create a passkey.
+            if you can’t create a passkey, or if nothing happens when you
+            attempt to create one.
           </p>
         )}
 

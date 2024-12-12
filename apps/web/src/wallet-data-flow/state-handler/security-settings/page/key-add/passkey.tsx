@@ -38,9 +38,8 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
       <Divider className="my-2" />
       <div className="mt-3 space-y-2">
         <Input
-          label="Name"
           labelClassname="bg-background-secondary"
-          className="w-full"
+          className="h-standardField w-full"
           placeholder="Name"
           value={name}
           onChange={(value) => {

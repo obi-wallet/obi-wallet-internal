@@ -108,9 +108,8 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
         <div className="flex flex-col gap-4">
           {askForName ? (
             <Input
-              label="Key Name"
               labelClassname="bg-background-secondary"
-              className="w-full"
+              className="h-standardField w-full"
               placeholder="Name"
               value={name}
               onChange={(value) => {
@@ -127,9 +126,8 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             </Link>
           </Text>
           <Input
-            label="Chat ID"
             labelClassname="bg-background-secondary"
-            className="w-full"
+            className="h-standardField w-full"
             placeholder="123456789"
             value={chatId}
             onChange={(value) => {
@@ -147,9 +145,8 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             }}
           />
           <Input
-            label="Security Answer"
             labelClassname="bg-background-secondary"
-            className="w-full"
+            className="h-standardField w-full"
             placeholder="Security Answer"
             value={securityQuestion.securityAnswer}
             onChange={(value) => {

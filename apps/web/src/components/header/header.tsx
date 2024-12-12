@@ -113,6 +113,7 @@ const LogIn = observer(function LogIn() {
               onClose={() => {
                 return setModalOpen(false);
               }}
+              boxClassname="px-3"
             >
               <div className="mt-3 flex flex-col gap-3 pb-3">
                 {mpcWalletsStore.wallets.map((wallet, i) => {

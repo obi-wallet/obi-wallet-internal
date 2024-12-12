@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, Button, Divider, Modal, renderModal, Text } from "@/components";
+import { Box, Button, Divider, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
@@ -8,10 +9,9 @@ import { AsyncButton } from "@/ui/button";
 import { WalletState } from "@obi-wallet/headless-ui-store";
 import { queryClient } from "@obi-wallet/query-client";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { FaQuestionCircle, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa6";
 import { useEffectOnceWhen } from "rooks";
 
 export default observer(function AppConnect() {
@@ -22,7 +22,6 @@ export default observer(function AppConnect() {
   const { walletConnectStore } = useStore();
   const searchParams = useSearchParams();
   const [uri, setUri] = useState("");
-  const [showExplanationModal, setShowExplanationModal] = useState(false);
 
   useEffectOnceWhen(async () => {
     const uri = searchParams.get("uri");
@@ -43,70 +42,17 @@ export default observer(function AppConnect() {
     },
   );
 
-  function renderExplanationModal() {
-    if (!showExplanationModal) return null;
-
-    return renderModal(
-      <Modal title="How to App Connect with Obi" boxClassname="px-4">
-        <div className="text-ml text-white">
-          <ol className="list-inside list-decimal">
-            <li className="mb-6">
-              Open the app you want to connect to in a browser tab.
-            </li>
-            <li className="mb-6">
-              If you have used a different wallet with this app, you may need to
-              disconnect.
-            </li>
-            <li className="mb-6">
-              Find the <strong className="font-bold">WalletConnect</strong>{" "}
-              option and display the QR code. In some apps, you may need to
-              select <strong className="font-bold">Keplr Mobile</strong> to
-              display the code.
-              <Image
-                className="my-2 w-full object-contain"
-                src="/assets/images/app-connect-pairing.png"
-                width={800}
-                height={600}
-                alt="WalletConnect pairing screen"
-              />
-            </li>
-            <li className="mb-6">
-              Copy the WalletConnect URL and paste it into the Obi App Connect
-              tab.
-            </li>
-          </ol>
-          <div className="mt-5 flex justify-end">
-            <Button
-              onClick={() => {
-                setShowExplanationModal(false);
-              }}
-              variant="primary"
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      </Modal>,
-    );
-  }
-
   return (
     <div className="grid h-full w-full text-white">
-      {renderExplanationModal()}
       <Box className="rounded-md text-xl">
-        <Text size="xl">App Connect</Text>
+        <Text size="xl" className="flex items-center gap-2">
+          App Connect <InfoIcon topicId="app_connect" />
+        </Text>
         <Text className="mt-2">
-          <span className="justify-center align-middle leading-normal">
+          <span className="align-middle leading-normal">
             Navigate to your favorite app, copy the WalletConnect URL, and paste
             it below to connect it to Obi.
-            <div
-              className="ml-2 inline-block cursor-pointer"
-              onClick={() => {
-                setShowExplanationModal(true);
-              }}
-            >
-              <FaQuestionCircle />
-            </div>
+            <InfoIcon topicId="wallet_connect_info" className="inline-block" />
           </span>
         </Text>
 

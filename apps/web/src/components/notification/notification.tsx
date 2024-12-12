@@ -43,7 +43,7 @@ export function Notification({
       </div>
       <div
         dangerouslySetInnerHTML={{ __html: description }}
-        className="text-xs leading-relaxed text-black md:pl-2 md:font-medium lg:text-sm"
+        className="text-xs text-black max-md:leading-none md:pl-2 md:font-medium lg:text-sm lg:leading-tight"
       />
     </div>
   );

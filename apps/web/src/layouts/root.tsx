@@ -25,7 +25,7 @@ export function RootContainer({ children }: { children: ReactNode }) {
 
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
-    <main className="obi-main-container flex min-h-[calc(100vh_-_80px)] w-full flex-1 grow max-md:min-h-[calc(100dvh_-_64px)]">
+    <main className="obi-main-container flex h-[calc(100vh_-_80px)] w-full max-md:h-[calc(100dvh_-_64px)]">
       <div className="obi-main-content flex w-full">
         <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
       </div>

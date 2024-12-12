@@ -68,9 +68,11 @@ export function useChainOptions() {
 export const ChainDropdown = observer(function ChainDropdown({
   onChange,
   chainId,
+  className,
 }: {
   chainId: TargetChainId | null;
   onChange: (chainId: TargetChainId) => void;
+  className?: string;
 }) {
   const { options, setLastUsedTargetChainId } = useChainOptions();
 
@@ -80,27 +82,27 @@ export const ChainDropdown = observer(function ChainDropdown({
         options={options}
         value={chainId ?? undefined}
         description="Select chain"
-        className="w-full bg-transparent"
+        className={cn("w-full bg-transparent", className)}
         onSelectOption={(option) => {
           setLastUsedTargetChainId(option.value);
           onChange(option.value);
         }}
         customSelectedItemComponent={(option) => {
           return (
-            <div className="flex w-full items-center">
+            <div className="flex w-full items-center justify-between">
               {!option ? (
                 <span>Select</span>
               ) : (
                 <>
                   <div className="flex items-center space-x-3">
                     <img
-                      className="h-6 w-6"
+                      className="chain-icon"
                       src={option.image}
                       alt={option.label}
                     />
                     <span>{option.label}</span>
                   </div>
-                  <span className="ml-auto">{chainId}</span>
+                  <span>{chainId}</span>
                 </>
               )}
             </div>
@@ -110,15 +112,15 @@ export const ChainDropdown = observer(function ChainDropdown({
           return (
             <li
               className={cn(
-                "hover:bg-background-primary-hover flex cursor-pointer items-center space-x-3 p-3",
-                option.value === selectedOption?.value && "bg-gray-600",
-                option.disabled &&
-                  "cursor-not-allowed opacity-50 hover:bg-gray-600",
+                "chain-dropdown-item",
+                option.value === selectedOption?.value &&
+                  "chain-dropdown-item-selected",
+                option.disabled && "chain-dropdown-item-disabled",
               )}
               onClick={handleOption}
               key={option.value}
             >
-              <img src={option.image} alt="asset" className="h-6 w-6" />
+              <img src={option.image} alt="asset" className="chain-icon" />
               <span>{option.label}</span>
             </li>
           );

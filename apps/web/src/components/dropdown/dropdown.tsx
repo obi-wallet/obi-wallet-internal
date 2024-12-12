@@ -88,31 +88,30 @@ export function DropDown<
   };
 
   return (
-    <div ref={ref} className={cn("relative", className)}>
+    <div ref={ref} className={cn("relative w-full", className)}>
       <button
         id="dropdownDefaultButton"
         data-dropdown-toggle="dropdown"
-        className="hover:bg-background-primary-hoverfocus:outline-none relative z-10 flex w-full items-center justify-between rounded bg-transparent px-5 py-2.5 text-center font-medium text-white max-sm:px-3"
+        className="dropdown-button"
         type="button"
         disabled={disabled}
         onClick={() => {
           return setIsOpen(!isOpen);
         }}
       >
-        {(customSelectedItemComponent &&
-          customSelectedItemComponent(selectedOption)) ||
-          selectedOption?.label ||
-          description}
-        {!hideDefaultArrow && (isOpen ? <FaAngleUp /> : <FaAngleDown />)}
+        <div className="flex w-full items-center justify-between">
+          {(customSelectedItemComponent &&
+            customSelectedItemComponent(selectedOption)) ||
+            selectedOption?.label ||
+            description}
+          {!hideDefaultArrow && (isOpen ? <FaAngleUp /> : <FaAngleDown />)}
+        </div>
       </button>
 
       {isOpen && (
         <div
           id="dropdown"
-          className={cn(
-            "absolute right-0 z-50 max-h-80 w-full overflow-y-auto rounded-lg bg-gray-700 shadow",
-            contentContainerClassname,
-          )}
+          className={cn("dropdown-content", contentContainerClassname)}
         >
           <ul
             className="py-2 text-sm text-white dark:text-gray-200"
@@ -130,9 +129,10 @@ export function DropDown<
                     return handleClickOption(option);
                   }}
                   className={cn(
-                    "block cursor-pointer px-4 py-2 hover:bg-gray-600",
-                    option.value === selectedOption?.value && "bg-gray-600",
-                    option.disabled && "cursor-not-allowed opacity-50",
+                    "dropdown-item",
+                    option.value === selectedOption?.value &&
+                      "dropdown-item-selected",
+                    option.disabled && "dropdown-item-disabled",
                   )}
                 >
                   {option.label}

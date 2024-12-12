@@ -1,6 +1,7 @@
 "use client";
 
 import { Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useStore } from "@/contexts";
 import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
@@ -26,11 +27,14 @@ export const Account = observer(function Account() {
   return (
     <>
       <div className="flex flex-col gap-2.5">
-        <div className="bg-primary flex flex-col items-start justify-start self-stretch rounded-[5px] p-2.5">
-          <Text className="w-full text-xl font-normal text-black">{name}</Text>
-          <div className="mt-2.5 flex flex-col items-start justify-start self-stretch">
-            <div className="flex items-center">
-              <Text className="self-stretch text-xl font-normal text-[#070707]">
+        <div className="bg-primary flex-col-start self-stretch rounded-[5px] p-2.5">
+          <div className="flex-center w-full gap-2">
+            <Text className="text-xl-normal text-black">{name}</Text>
+            <InfoIcon topicId="dashboard_home" variant="onPrimary" />
+          </div>
+          <div className="flex-col-start mt-2.5 self-stretch">
+            <div className="flex-center">
+              <Text className="text-xl-normal text-[#070707]">
                 {userData.balanceHidden ? "******" : `$${totalData.total}`}
               </Text>
               {userData.balanceHidden ? (
@@ -38,7 +42,7 @@ export const Account = observer(function Account() {
                   onClick={() => {
                     return handleHideBalance(false);
                   }}
-                  className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
+                  className="balance-toggle-btn"
                 >
                   <img
                     src="/assets/icons/eye-closed.svg"
@@ -51,7 +55,7 @@ export const Account = observer(function Account() {
                   onClick={() => {
                     return handleHideBalance(true);
                   }}
-                  className="ml-2 text-[#070707] opacity-40 hover:text-blue-600"
+                  className="balance-toggle-btn"
                 >
                   <img
                     src="/assets/icons/eye-open.svg"

@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
@@ -17,9 +19,8 @@ export function InputContainer({
   return (
     <div
       className={cn(
-        "hover:border-color hover:border-primary relative rounded-xl border border-gray-700 p-6",
-        "focus-within:border-primary",
-        "flex items-center justify-between",
+        "relative flex items-center justify-between rounded-xl border border-gray-700 p-6",
+        "hover:border-primary focus-within:border-primary",
         className,
       )}
       onClick={onClick}

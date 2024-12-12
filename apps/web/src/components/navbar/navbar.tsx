@@ -84,67 +84,71 @@ export const Navbar = observer(function Navbar() {
   const mainURISegment = pathname.split("/")[2] || "";
 
   return (
-    <nav className="bg-background-secondary flex w-full flex-col p-2.5 md:h-full md:w-60 md:overflow-y-auto">
-      <div className="hidden h-full w-full flex-col gap-2.5 md:flex">
+    <nav className="leading-none sm:leading-none md:leading-none lg:flex lg:h-full lg:w-full lg:max-w-60 lg:flex-col lg:overflow-y-auto lg:p-2.5 lg:leading-none xl:leading-none">
+      <div className="max-lg:hidden lg:flex lg:h-full lg:w-full lg:flex-col">
         {/* Account and CTA */}
-        <AccountAndCTA />
+        <div className="flex flex-col gap-2.5">
+          <AccountAndCTA />
 
-        {/* Navigation Menu */}
-        <div className="flex flex-1 flex-col items-start justify-start gap-5">
-          <ul role="list" className="flex w-full flex-col space-y-5">
-            {navMenu
-              .filter((item) => {
-                return item.showOnDesktop;
-              })
-              .map((navItem) => {
-                return (
-                  <li key={navItem.href} className="self-stretch">
-                    <PrimaryLink
-                      href={navItem.href}
-                      className={cn(
-                        "h-standardButton flex w-full items-center gap-2.5 rounded-[5px] px-[5px]",
-                        mainURISegment === navItem.module ? "bg-primary" : "",
-                      )}
-                      target={navItem.target || "_self"}
-                    >
-                      <div className="relative h-8 w-8">
-                        <Image
-                          src={navItem.icon}
-                          width={32}
-                          height={32}
-                          alt={navItem.text}
-                          className={cn(
-                            "h-8 w-8",
-                            mainURISegment === navItem.module
-                              ? "brightness-0"
-                              : "",
-                          )}
-                        />
-                      </div>
-                      <div
+          {/* Navigation Menu */}
+          <div className="flex flex-col items-start justify-start gap-5">
+            <ul role="list" className="flex w-full flex-col space-y-5">
+              {navMenu
+                .filter((item) => {
+                  return item.showOnDesktop;
+                })
+                .map((navItem) => {
+                  return (
+                    <li key={navItem.href} className="self-stretch">
+                      <PrimaryLink
+                        href={navItem.href}
                         className={cn(
-                          "text-md shrink grow basis-0 font-normal",
-                          mainURISegment === navItem.module
-                            ? "text-black"
-                            : "text-white",
+                          "h-standardButton flex w-full items-center gap-2.5 rounded-[5px] px-[5px]",
+                          mainURISegment === navItem.module ? "bg-primary" : "",
                         )}
+                        target={navItem.target || "_self"}
                       >
-                        {navItem.text}
-                      </div>
-                    </PrimaryLink>
-                  </li>
-                );
-              })}
-          </ul>
+                        <div className="relative h-8 w-8">
+                          <Image
+                            src={navItem.icon}
+                            width={32}
+                            height={32}
+                            alt={navItem.text}
+                            className={cn(
+                              "h-8 w-8",
+                              mainURISegment === navItem.module
+                                ? "brightness-0"
+                                : "",
+                            )}
+                          />
+                        </div>
+                        <div
+                          className={cn(
+                            "text-md shrink grow basis-0 font-normal",
+                            mainURISegment === navItem.module
+                              ? "text-black"
+                              : "text-white",
+                          )}
+                        >
+                          {navItem.text}
+                        </div>
+                      </PrimaryLink>
+                    </li>
+                  );
+                })}
+            </ul>
+          </div>
         </div>
 
         {/* Footer */}
-        <Footer className="!px-0" />
+        <div className="fixed bottom-0 left-0 hidden w-full max-w-60 p-2.5 lg:block">
+          <Footer className="!px-0" />
+        </div>
       </div>
 
       {/* Mobile Navigation */}
-      <div className="bg-background-secondary fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg md:hidden">
-        <div className="bg-background-secondary absolute inset-0"></div>
+      <div className="fixed bottom-0 left-0 z-[9999] h-20 w-full shadow-lg lg:hidden">
+        <div className="absolute inset-0"></div>
         <ul
           role="list"
           className="relative flex w-full justify-between px-4 py-2"

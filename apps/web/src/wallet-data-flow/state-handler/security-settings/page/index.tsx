@@ -1,18 +1,49 @@
 import { Box, Divider, KeyListItem, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { AsyncButton } from "@/ui/button";
 import { KeyType } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { FaTrash } from "react-icons/fa";
 
 import { useSecuritySettingsContext } from "../context";
 
 const keyOptions = [
-  { label: "Passkey", type: KeyType.Passkey },
-  { label: "Telegram Key", type: KeyType.Telegram },
-  { label: "Phone Key", type: KeyType.Phone },
-  { label: "Cloud Key", type: KeyType.Cloud },
+  {
+    label: "Passkey",
+    type: KeyType.Passkey,
+    infoTopic: "passkey_info",
+    infoContext: {
+      type: "passkey",
+      description: "A secure key stored on your device using WebAuthn",
+    },
+  },
+  {
+    label: "Telegram Key",
+    type: KeyType.Telegram,
+    infoTopic: "telegram_key_info",
+    infoContext: {
+      type: "telegram",
+      description: "A key linked to your Telegram account",
+    },
+  },
+  {
+    label: "Phone Key",
+    type: KeyType.Phone,
+    infoTopic: "phone_key_info",
+    infoContext: {
+      type: "phone",
+      description: "A key linked to your phone number",
+    },
+  },
+  {
+    label: "Cloud Key",
+    type: KeyType.Cloud,
+    infoTopic: "cloud_key_info",
+    infoContext: {
+      type: "cloud",
+      description: "A key stored in your cloud storage",
+    },
+  },
 ];
 
 export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
@@ -29,7 +60,14 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
       {/* Header */}
       <div className="flex items-start justify-start self-stretch rounded-[5px] bg-[#32c9af] p-2.5">
         <Text size="xl" fontWeight="normal" className="text-[#070707]">
-          {showAddKeyOptions ? "Add New Key" : "Security Settings"}
+          {showAddKeyOptions ? (
+            "Add New Key"
+          ) : (
+            <span className="flex items-center gap-2">
+              Security Settings{" "}
+              <InfoIcon topicId="security_settings" variant="onPrimary" />
+            </span>
+          )}
         </Text>
       </div>
       {!showAddKeyOptions ? (
@@ -48,7 +86,9 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
               fontWeight="normal"
               className="text-center text-[#32c9af]"
             >
-              {`Keys Required to Sign: ${draft.value.threshold} of ${draft.value.keys.length}`}
+              Keys Required to Sign: {draft.value.threshold} of{" "}
+              {draft.value.keys.length}
+              <InfoIcon topicId="keys_required_info" />
             </Text>
           </div>
         </>
@@ -78,6 +118,7 @@ export const SecuritySettingsIndex = observer(function SecuritySettingsIndex() {
                 >
                   <Text size="lg" fontWeight="normal" className="text-left">
                     {option.label}
+                    <InfoIcon topicId={option.infoTopic} />
                   </Text>
                   <Text size="lg" fontWeight="normal" className="text-right">
                     +

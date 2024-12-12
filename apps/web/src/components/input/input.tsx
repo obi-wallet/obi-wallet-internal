@@ -115,11 +115,11 @@ export const Input = forwardRef<ParentRef, InputProps>(function Input(
         <input
           id={id}
           className={cn(
-            "border-foreground-primary-border focus:border-background-primary-active peer w-full rounded-xl border bg-transparent px-7 py-6 text-2xl font-normal text-white focus-visible:outline-none",
+            "border-foreground-primary-border focus:border-background-primary-active peer w-full rounded-[5px] border bg-transparent px-7 py-6 text-2xl font-normal text-white focus-visible:outline-none",
             "[-moz-appearance:_textfield] [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
             StartIcon && "px-9",
             errorMessage
-              ? ":focus:border-red-500 border-red-500"
+              ? ":focus:border-background-warning border-background-warning"
               : "focus:border-background-primary-active",
             className,
           )}
