@@ -112,12 +112,12 @@ export function DropDown<
         <div
           id="dropdown"
           className={cn(
-            "dropdown-content absolute right-0 top-full z-[1000] mt-1 w-full overflow-hidden rounded-b-lg bg-gray-700 shadow",
+            "dropdown-content absolute right-0 top-[calc(100%+4px)] w-full overflow-hidden rounded-b-lg bg-gray-700 shadow",
             contentContainerClassname,
           )}
         >
           <ul
-            className="py-2 text-sm text-white dark:text-gray-200"
+            className="max-h-[min(400px,calc(100vh-12rem))] overflow-y-auto py-2 text-sm text-white dark:text-gray-200"
             aria-labelledby="dropdownDefaultButton"
           >
             {options.map((option) => {

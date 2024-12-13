@@ -83,7 +83,7 @@ export const ChainDropdown = observer(function ChainDropdown({
         value={chainId ?? undefined}
         description="Select chain"
         className={cn("w-full bg-transparent", className)}
-        contentContainerClassname="z-[1000] relative"
+        contentContainerClassname="z-[1000]"
         onSelectOption={(option) => {
           setLastUsedTargetChainId(option.value);
           onChange(option.value);

@@ -52,7 +52,7 @@
   }
 
   .dropdown-content {
-    @apply absolute left-0 right-0 z-50 max-h-80 overflow-y-auto rounded-lg shadow;
+    @apply absolute left-0 right-0 z-50 overflow-y-auto rounded-lg shadow;
   }
 
   .dropdown-item {
@@ -68,7 +68,7 @@
   }
 
   .chain-dropdown-item {
-    @apply flex cursor-pointer items-center space-x-3 p-3;
+    @apply flex cursor-pointer items-center space-x-3 p-3 hover:bg-gray-600;
   }
 
   .chain-dropdown-item-selected {
