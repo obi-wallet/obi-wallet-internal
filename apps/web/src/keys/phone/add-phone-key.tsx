@@ -1,4 +1,5 @@
 import { Button, DropDown } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
   useSecurityQuestionInput,
@@ -110,15 +111,18 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
     return (
       <div className="flex flex-col gap-4">
         {askForName ? (
-          <Input
-            labelClassname="bg-background-secondary"
-            className="h-standardField w-full"
-            placeholder="Name"
-            value={name}
-            onChange={(value) => {
-              setName(value);
-            }}
-          />
+          <div className="flex items-center gap-2">
+            <Input
+              labelClassname="bg-background-secondary"
+              className="h-standardField w-full"
+              placeholder="Name"
+              value={name}
+              onChange={(value) => {
+                setName(value);
+              }}
+            />
+            <InfoIcon topicId="phone_key_name_info" />
+          </div>
         ) : null}
         <Input
           labelClassname="bg-background-secondary"
@@ -139,15 +143,18 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
             securityQuestion.setSecurityQuestion(value.value);
           }}
         />
-        <Input
-          labelClassname="bg-background-secondary"
-          className="h-standardField w-full"
-          placeholder="Security Answer"
-          value={securityQuestion.securityAnswer}
-          onChange={(value) => {
-            securityQuestion.setSecurityAnswer(value);
-          }}
-        />
+        <div className="flex items-center gap-2">
+          <Input
+            labelClassname="bg-background-secondary"
+            className="h-standardField w-full"
+            placeholder="Security Answer"
+            value={securityQuestion.securityAnswer}
+            onChange={(value) => {
+              securityQuestion.setSecurityAnswer(value);
+            }}
+          />
+          <InfoIcon topicId="security_answer_info" />
+        </div>
       </div>
     );
   }
@@ -156,10 +163,9 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
     return (
       <>
         <Input
-          label="Magic Code"
-          labelClassname="bg-background-secondary"
+          labelClassname="h-standardField bg-background-secondary"
           className="w-full"
-          placeholder="12345678"
+          placeholder="Enter Magic SMS Code"
           value={code}
           onChange={(value) => {
             setCode(value);

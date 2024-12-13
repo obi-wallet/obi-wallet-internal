@@ -515,6 +515,53 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
       </>
     ),
   },
+  telegram_magic_code: {
+    title: "Telegram Magic Code",
+    description: (
+      <p>
+        You'll receive a magic code to your Telegram. This code is not a private
+        key or other sensitive information. It adds your Telegram public key to
+        your multi-factor setup. Enter your magic code to continue.
+      </p>
+    ),
+  },
+  key_name_info: {
+    title: "Key Name",
+    description: (
+      <p>
+        Enter "My Telegram" or a similar name that works for you. This name is
+        only for your reference and identifies this key to you when you're using
+        it.
+      </p>
+    ),
+  },
+  phone_key_name_info: {
+    title: "Key Name",
+    description: (
+      <p>
+        Enter "My iPhone" or a similar name that works for you. This name is
+        only for your reference and identifies this key to you when you're using
+        it.
+      </p>
+    ),
+  },
+  security_answer_info: {
+    title: "Security Answer",
+    description: (
+      <>
+        <p>
+          Your security answer prevents or slows down any attackers who might
+          steal your unlocked phone or attempt a SIM swap attack. Pick an answer
+          that you will not forget. Punctuation and capitalization do not
+          matter.
+        </p>
+        <p className="mt-2">
+          If you do forget this security answer, you'll need to set up this key
+          again.
+        </p>
+      </>
+    ),
+  },
 };
 
 export const Education = observer(function Education() {
