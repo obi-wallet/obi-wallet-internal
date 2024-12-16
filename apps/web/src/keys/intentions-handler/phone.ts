@@ -113,10 +113,10 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     }
   }
 
-  public async requestMagicCode() {
+  public async requestMagicCode(viaOverride?: PhoneKeyWorkerVia) {
     const client = new PhoneKeyWorkerClient({
       answer: this.answer,
-      via: this.via,
+      via: viaOverride ?? this.via,
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
       signHashes: this.payload.signHashes.map((hash) => {

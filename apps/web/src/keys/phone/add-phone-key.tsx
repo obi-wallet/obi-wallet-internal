@@ -5,7 +5,6 @@ import {
   useSecurityQuestionInput,
   useSecurityQuestions,
 } from "@/keys/phone/use-security-questions";
-import { cn } from "@/lib/utils";
 import {
   PhoneSingleKeyMetaData,
   SingleKeyMetaData,
@@ -39,13 +38,16 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
   const [code, setCode] = useState("");
   const [retryCountdown, setRetryCountdown] = useState(0);
   const [lastError, setLastError] = useState<string | null>(null);
+  const [isVoiceCall, setIsVoiceCall] = useState(false);
 
   useEffect(() => {
     if (retryCountdown > 0) {
       const timer = setTimeout(() => {
         setRetryCountdown(retryCountdown - 1);
       }, 1000);
-      return () => {return clearTimeout(timer)};
+      return () => {
+        return clearTimeout(timer);
+      };
     }
   }, [retryCountdown]);
 
@@ -59,37 +61,48 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
         decryptMessages: [],
       });
 
-      if (sentMagicCode) {
-        const response = await client.confirmMagicCode(code);
-        const publicKey: Secp256k1PublicKey = {
-          type: "tendermint/PubKeySecp256k1",
-          value: response.publicKey,
-        };
-
-        onSubmit({
-          publicKey,
-          keyMetaData: PhoneSingleKeyMetaData.parse({
-            name,
-            timestamp: DateTime.now().toISO(),
-            payload: {
-              phoneNumber: number,
-              securityQuestion: securityQuestion.securityQuestion,
-            },
-          }),
-        });
-      } else {
+      if (!sentMagicCode || !code) {
         try {
           await client.requestMagicCode();
           setSentMagicCode(true);
           setRetryCountdown(30);
           setLastError(null);
-        } catch (error) {
+          if (via === "voice") {
+            setIsVoiceCall(true);
+          }
+        } catch {
+          setSentMagicCode(true);
+          setRetryCountdown(30);
           setLastError("Failed to send magic code");
-          throw error;
         }
+        return;
       }
+
+      const response = await client.confirmMagicCode(code);
+      const publicKey: Secp256k1PublicKey = {
+        type: "tendermint/PubKeySecp256k1",
+        value: response.publicKey,
+      };
+
+      onSubmit({
+        publicKey,
+        keyMetaData: PhoneSingleKeyMetaData.parse({
+          name,
+          timestamp: DateTime.now().toISO(),
+          payload: {
+            phoneNumber: number,
+            securityQuestion: securityQuestion.securityQuestion,
+          },
+        }),
+      });
     },
   });
+
+  const handleCodeChange = (value: string) => {
+    // Only allow digits and limit to 8 characters
+    const sanitizedValue = value.replace(/[^0-9]/g, "").slice(0, 8);
+    setCode(sanitizedValue);
+  };
 
   return (
     <>
@@ -110,11 +123,17 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           variant="primary"
           block
           onClick={() => {
-            phoneKeyFlow.mutate("sms");
+            if (sentMagicCode) {
+              if (code.length === 8) {
+                phoneKeyFlow.mutate(isVoiceCall ? "voice" : "sms");
+              }
+            } else {
+              phoneKeyFlow.mutate("sms");
+            }
           }}
           disabled={
             sentMagicCode
-              ? !code
+              ? code.length !== 8
               : !(!askForName || name) ||
                 !number ||
                 !securityQuestion.securityAnswer
@@ -182,47 +201,82 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
     return (
       <>
         {lastError ? (
-          <Text className="text-sm text-gray-300">
-            Your provider was unable to receive a Magic SMS. You can{" "}
-            <button
-              onClick={() => {return phoneKeyFlow.mutate("sms")}}
-              disabled={retryCountdown > 0}
-              className={cn(
-                "text-primary hover:text-primary/80 hover:underline",
-                retryCountdown > 0 && "cursor-not-allowed opacity-50",
-              )}
-            >
-              retry
-            </button>{" "}
-            in {retryCountdown} seconds or{" "}
-            <button
-              onClick={() => {return phoneKeyFlow.mutate("voice")}}
-              className="text-primary hover:text-primary/80 hover:underline"
-            >
-              receive a voice call instead
-            </button>
-            .
-          </Text>
-        ) : (
           <>
             <Text className="text-sm text-gray-300">
+              Your carrier was unable to receive an SMS message.
+            </Text>
+            <Text className="text-sm text-gray-300">
               {retryCountdown > 0 ? (
-                <>Resend your magic code in {retryCountdown} seconds</>
+                `Try again in ${retryCountdown} seconds.`
               ) : (
                 <button
-                  onClick={() => {return phoneKeyFlow.mutate("sms")}}
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("sms");
+                  }}
                   className="text-primary hover:text-primary/80 hover:underline"
                 >
-                  Resend your magic code
+                  Try again.
                 </button>
               )}
             </Text>
             <Text className="text-sm text-gray-300">
               <button
-                onClick={() => {return phoneKeyFlow.mutate("voice")}}
+                onClick={() => {
+                  return phoneKeyFlow.mutate("voice");
+                }}
                 className="text-primary hover:text-primary/80 hover:underline"
               >
-                Can't receive an SMS? Get a voice call instead
+                Or, receive a voice call instead.
+              </button>
+            </Text>
+          </>
+        ) : isVoiceCall ? (
+          <>
+            <Text className="text-sm text-gray-300">
+              Calling {number} now. Enter your Magic Obi code below.
+            </Text>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                `If you don't receive a call, try again in ${retryCountdown} seconds.`
+              ) : (
+                <button
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("voice");
+                  }}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  If you don't receive a call, try again
+                </button>
+              )}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text className="text-sm text-gray-300">
+              Your magic SMS code has been sent to {number}.
+            </Text>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                `Resend your magic code in ${retryCountdown} seconds.`
+              ) : (
+                <button
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("sms");
+                  }}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  Resend your magic code.
+                </button>
+              )}
+            </Text>
+            <Text className="text-sm text-gray-300">
+              <button
+                onClick={() => {
+                  return phoneKeyFlow.mutate("voice");
+                }}
+                className="text-primary hover:text-primary/80 hover:underline"
+              >
+                Can't receive an SMS? Get a voice call instead.
               </button>
             </Text>
           </>
@@ -230,11 +284,10 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
         <Input
           labelClassname="h-standardField bg-background-secondary"
           className="w-full"
-          placeholder="Enter Magic SMS Code"
+          placeholder="Enter 8-digit Magic Code"
           value={code}
-          onChange={(value) => {
-            setCode(value);
-          }}
+          onChange={handleCodeChange}
+          maxLength={8}
         />
       </>
     );
