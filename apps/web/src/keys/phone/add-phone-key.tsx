@@ -1,10 +1,11 @@
-import { Button, DropDown } from "@/components";
+import { Button, DropDown, Text } from "@/components";
 import { InfoIcon } from "@/components/info-icon";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
   useSecurityQuestionInput,
   useSecurityQuestions,
 } from "@/keys/phone/use-security-questions";
+import { cn } from "@/lib/utils";
 import {
   PhoneSingleKeyMetaData,
   SingleKeyMetaData,
@@ -14,7 +15,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface AddPhoneKeyProps {
   onSubmit(payload: {
@@ -36,13 +37,24 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
   const securityQuestions = useSecurityQuestions();
   const [sentMagicCode, setSentMagicCode] = useState(false);
   const [code, setCode] = useState("");
+  const [retryCountdown, setRetryCountdown] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (retryCountdown > 0) {
+      const timer = setTimeout(() => {
+        setRetryCountdown(retryCountdown - 1);
+      }, 1000);
+      return () => {return clearTimeout(timer)};
+    }
+  }, [retryCountdown]);
 
   const phoneKeyFlow = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (via: "sms" | "voice" = "sms") => {
       const client = new PhoneKeyWorkerClient({
         to: number,
         answer: securityQuestion.securityAnswer,
-        via: "sms",
+        via,
         signHashes: [],
         decryptMessages: [],
       });
@@ -66,8 +78,15 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           }),
         });
       } else {
-        await client.requestMagicCode();
-        setSentMagicCode(true);
+        try {
+          await client.requestMagicCode();
+          setSentMagicCode(true);
+          setRetryCountdown(30);
+          setLastError(null);
+        } catch (error) {
+          setLastError("Failed to send magic code");
+          throw error;
+        }
       }
     },
   });
@@ -91,7 +110,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           variant="primary"
           block
           onClick={() => {
-            phoneKeyFlow.mutate();
+            phoneKeyFlow.mutate("sms");
           }}
           disabled={
             sentMagicCode
@@ -162,6 +181,52 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
   function renderMagicCodeForm() {
     return (
       <>
+        {lastError ? (
+          <Text className="text-sm text-gray-300">
+            Your provider was unable to receive a Magic SMS. You can{" "}
+            <button
+              onClick={() => {return phoneKeyFlow.mutate("sms")}}
+              disabled={retryCountdown > 0}
+              className={cn(
+                "text-primary hover:text-primary/80 hover:underline",
+                retryCountdown > 0 && "cursor-not-allowed opacity-50",
+              )}
+            >
+              retry
+            </button>{" "}
+            in {retryCountdown} seconds or{" "}
+            <button
+              onClick={() => {return phoneKeyFlow.mutate("voice")}}
+              className="text-primary hover:text-primary/80 hover:underline"
+            >
+              receive a voice call instead
+            </button>
+            .
+          </Text>
+        ) : (
+          <>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                <>Resend your magic code in {retryCountdown} seconds</>
+              ) : (
+                <button
+                  onClick={() => {return phoneKeyFlow.mutate("sms")}}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  Resend your magic code
+                </button>
+              )}
+            </Text>
+            <Text className="text-sm text-gray-300">
+              <button
+                onClick={() => {return phoneKeyFlow.mutate("voice")}}
+                className="text-primary hover:text-primary/80 hover:underline"
+              >
+                Can't receive an SMS? Get a voice call instead
+              </button>
+            </Text>
+          </>
+        )}
         <Input
           labelClassname="h-standardField bg-background-secondary"
           className="w-full"
