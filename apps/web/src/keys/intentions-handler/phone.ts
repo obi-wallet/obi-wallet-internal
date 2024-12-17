@@ -133,6 +133,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
   }
 
   public async requestMagicCode(via: PhoneKeyWorkerVia = "sms") {
+    this.via = via;
     const client = new PhoneKeyWorkerClient({
       answer: this.answer,
       via,
@@ -148,7 +149,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
   public async confirmMagicCode(code: string) {
     const client = new PhoneKeyWorkerClient({
       answer: this.answer,
-      via: "sms",
+      via: this.via,
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
       signHashes: this.payload.signHashes.map((hash) => {
