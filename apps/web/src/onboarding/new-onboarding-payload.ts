@@ -325,7 +325,7 @@ export class NewOnboardingPayload implements Draftable {
 
     const result: { success: boolean } = await response.json();
     if (!result.success) {
-      throw new Error("Failed to update owner");
+      throw new Error(`Failed to update owner: ${serialize(response)}`);
     }
 
     this._homeAccountClaimed = true;
