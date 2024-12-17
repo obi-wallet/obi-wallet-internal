@@ -63,7 +63,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
     const needsTo = !keyItem.keyMetaData.payload;
 
     const confirm = useMutation({
-      mutationFn: async (via: "sms" | "voice" = "sms") => {
+      mutationFn: async (via: "sms" | "voice" | "telegram" = "sms") => {
         function getKeyMetaData() {
           if (needsTo && keyItem.key.type === KeyType.Phone) {
             return PhoneSingleKeyMetaData.parse({
@@ -99,7 +99,9 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
         if (!code) {
           // If no code is provided, this is an initial request
           try {
-            await intentionsHandler.requestMagicCode(via);
+            const requestVia =
+              keyItem.key.type === KeyType.Telegram ? "telegram" : via;
+            await intentionsHandler.requestMagicCode(requestVia);
             setSentMagicCode(true);
             setRetryCountdown(30);
             setLastError(null);
@@ -138,14 +140,16 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
       <Modal
         title={keyItem.label}
         onClose={onCancel}
-        boxClassname="h-fit !min-w-[320px] px-4 py-6 w-full bg-background bg-opacity-95 backdrop-blur-sm"
+        boxClassname="h-fit !min-w-[320px] px-4 py-6 w-full bg-[#1c1c1c] bg-opacity-95 backdrop-blur-sm"
       >
         {sentMagicCode ? (
           <>
             {lastError ? (
               <>
                 <Text className="text-sm text-gray-300">
-                  Your carrier was unable to receive an SMS message.
+                  {keyItem.key.type === KeyType.Phone
+                    ? "Your carrier was unable to receive an SMS message."
+                    : "There was an error sending your Telegram message."}
                 </Text>
                 <Text className="text-sm text-gray-300">
                   {retryCountdown > 0 ? (
@@ -153,7 +157,11 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                   ) : (
                     <button
                       onClick={() => {
-                        return confirm.mutate("sms");
+                        return confirm.mutate(
+                          keyItem.key.type === KeyType.Phone
+                            ? "sms"
+                            : "telegram",
+                        );
                       }}
                       className="text-primary hover:text-primary/80 hover:underline"
                     >
@@ -161,14 +169,16 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                     </button>
                   )}
                 </Text>
-                <Text className="text-sm text-gray-300">
-                  <button
-                    onClick={handleVoiceCall}
-                    className="text-primary hover:text-primary/80 hover:underline"
-                  >
-                    Receive a voice call instead
-                  </button>
-                </Text>
+                {keyItem.key.type === KeyType.Phone ? (
+                  <Text className="text-sm text-gray-300">
+                    <button
+                      onClick={handleVoiceCall}
+                      className="text-primary hover:text-primary/80 hover:underline"
+                    >
+                      Receive a voice call instead
+                    </button>
+                  </Text>
+                ) : null}
               </>
             ) : isVoiceCall ? (
               <>
@@ -202,7 +212,11 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                   ) : (
                     <button
                       onClick={() => {
-                        return confirm.mutate("sms");
+                        return confirm.mutate(
+                          keyItem.key.type === KeyType.Phone
+                            ? "sms"
+                            : "telegram",
+                        );
                       }}
                       className="text-primary hover:text-primary/80 hover:underline"
                     >
@@ -210,20 +224,22 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                     </button>
                   )}
                 </Text>
-                <Text className="text-sm text-gray-300">
-                  <button
-                    onClick={handleVoiceCall}
-                    className="text-primary hover:text-primary/80 hover:underline"
-                  >
-                    Try a voice call instead
-                  </button>
-                </Text>
+                {keyItem.key.type === KeyType.Phone ? (
+                  <Text className="text-sm text-gray-300">
+                    <button
+                      onClick={handleVoiceCall}
+                      className="text-primary hover:text-primary/80 hover:underline"
+                    >
+                      Try a voice call instead
+                    </button>
+                  </Text>
+                ) : null}
               </>
             )}
             <Input
               labelClassname="bg-background-secondary"
               className="h-standardField mt-4 max-w-96 max-sm:w-full"
-              placeholder="12345678"
+              placeholder="Enter magic code"
               value={code}
               onChange={handleCodeChange}
             />
@@ -288,7 +304,13 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
             block
             disabled={confirm.isPending || (sentMagicCode && code.length !== 8)}
             onClick={() => {
-              confirm.mutate(isVoiceCall ? "voice" : "sms");
+              const via =
+                keyItem.key.type === KeyType.Phone
+                  ? isVoiceCall
+                    ? "voice"
+                    : "sms"
+                  : "telegram";
+              confirm.mutate(via);
             }}
           >
             {sentMagicCode ? "Confirm" : "Next"}

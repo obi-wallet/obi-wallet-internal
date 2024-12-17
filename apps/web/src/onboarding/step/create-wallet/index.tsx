@@ -126,8 +126,10 @@ function LoadingDots() {
   return (
     <div className="h-[26px] w-full">
       <div className="flex w-full text-left text-xl font-normal text-white">
-        <span className="inline-block min-w-[280px]">{baseMessage}</span>
-        <span className="inline-block w-[24px]">{dots}</span>
+        <span className="inline-block min-w-[280px]">
+          {baseMessage}
+          {dots}
+        </span>
       </div>
     </div>
   );

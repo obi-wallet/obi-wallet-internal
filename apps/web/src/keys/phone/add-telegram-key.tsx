@@ -125,7 +125,11 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
             To find out your Chat ID, initiate chat with our Telegram bot:
           </Text>
           <Text>
-            <Link href="https://t.me/Obi_telegram_bot" target="_blank">
+            <Link
+              href="https://t.me/Obi_telegram_bot"
+              target="_blank"
+              className="text-primary hover:text-primary/80 hover:underline"
+            >
               https://t.me/Obi_telegram_bot
             </Link>
           </Text>

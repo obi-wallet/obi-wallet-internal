@@ -144,7 +144,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
 
       const result: { success: boolean } = await response.json();
       if (!result.success) {
-        throw new Error("Failed to update owner");
+        throw new Error(`Failed to update owner: ${serialize(response)}`);
       }
 
       invariant(results, "Results not found");
