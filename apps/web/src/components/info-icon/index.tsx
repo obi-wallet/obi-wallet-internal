@@ -15,17 +15,25 @@ export const InfoIcon = observer(function InfoIcon({
   topicId: string;
   variant?: "default" | "onPrimary";
   className?: string;
-  onClick?: (e: React.MouseEvent) => void;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   marginLeft?: string;
 }) {
   const { educationStore } = useStore();
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={(e) => {
         e.stopPropagation();
         educationStore.setTopicById(topicId, "info-icon");
         onClick?.(e);
+      }}
+      onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.stopPropagation();
+          educationStore.setTopicById(topicId, "info-icon");
+        }
       }}
       className={cn(
         "info-icon flex items-center justify-center",
@@ -36,6 +44,6 @@ export const InfoIcon = observer(function InfoIcon({
       )}
     >
       <FaQuestionCircle className="h-4 w-4" />
-    </button>
+    </div>
   );
 });

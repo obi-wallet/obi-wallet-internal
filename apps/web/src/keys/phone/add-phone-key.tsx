@@ -1,4 +1,4 @@
-import { Button, DropDown } from "@/components";
+import { Button, DropDown, Text } from "@/components";
 import { InfoIcon } from "@/components/info-icon";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
@@ -14,7 +14,7 @@ import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface AddPhoneKeyProps {
   onSubmit(payload: {
@@ -36,41 +36,73 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
   const securityQuestions = useSecurityQuestions();
   const [sentMagicCode, setSentMagicCode] = useState(false);
   const [code, setCode] = useState("");
+  const [retryCountdown, setRetryCountdown] = useState(0);
+  const [lastError, setLastError] = useState<string | null>(null);
+  const [isVoiceCall, setIsVoiceCall] = useState(false);
+
+  useEffect(() => {
+    if (retryCountdown > 0) {
+      const timer = setTimeout(() => {
+        setRetryCountdown(retryCountdown - 1);
+      }, 1000);
+      return () => {
+        return clearTimeout(timer);
+      };
+    }
+  }, [retryCountdown]);
 
   const phoneKeyFlow = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (via: "sms" | "voice" = "sms") => {
       const client = new PhoneKeyWorkerClient({
         to: number,
         answer: securityQuestion.securityAnswer,
-        via: "sms",
+        via,
         signHashes: [],
         decryptMessages: [],
       });
 
-      if (sentMagicCode) {
-        const response = await client.confirmMagicCode(code);
-        const publicKey: Secp256k1PublicKey = {
-          type: "tendermint/PubKeySecp256k1",
-          value: response.publicKey,
-        };
-
-        onSubmit({
-          publicKey,
-          keyMetaData: PhoneSingleKeyMetaData.parse({
-            name,
-            timestamp: DateTime.now().toISO(),
-            payload: {
-              phoneNumber: number,
-              securityQuestion: securityQuestion.securityQuestion,
-            },
-          }),
-        });
-      } else {
-        await client.requestMagicCode();
-        setSentMagicCode(true);
+      if (!sentMagicCode || !code) {
+        try {
+          await client.requestMagicCode();
+          setSentMagicCode(true);
+          setRetryCountdown(30);
+          setLastError(null);
+          if (via === "voice") {
+            setIsVoiceCall(true);
+          }
+        } catch {
+          setSentMagicCode(true);
+          setRetryCountdown(30);
+          setLastError("Failed to send magic code");
+        }
+        return;
       }
+
+      const response = await client.confirmMagicCode(code);
+      const publicKey: Secp256k1PublicKey = {
+        type: "tendermint/PubKeySecp256k1",
+        value: response.publicKey,
+      };
+
+      onSubmit({
+        publicKey,
+        keyMetaData: PhoneSingleKeyMetaData.parse({
+          name,
+          timestamp: DateTime.now().toISO(),
+          payload: {
+            phoneNumber: number,
+            securityQuestion: securityQuestion.securityQuestion,
+          },
+        }),
+      });
     },
   });
+
+  const handleCodeChange = (value: string) => {
+    // Only allow digits and limit to 8 characters
+    const sanitizedValue = value.replace(/[^0-9]/g, "").slice(0, 8);
+    setCode(sanitizedValue);
+  };
 
   return (
     <>
@@ -91,11 +123,17 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           variant="primary"
           block
           onClick={() => {
-            phoneKeyFlow.mutate();
+            if (sentMagicCode) {
+              if (code.length === 8) {
+                phoneKeyFlow.mutate("sms");
+              }
+            } else {
+              phoneKeyFlow.mutate("sms");
+            }
           }}
           disabled={
             sentMagicCode
-              ? !code
+              ? code.length !== 8
               : !(!askForName || name) ||
                 !number ||
                 !securityQuestion.securityAnswer
@@ -162,14 +200,94 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
   function renderMagicCodeForm() {
     return (
       <>
+        {lastError ? (
+          <>
+            <Text className="text-sm text-gray-300">
+              Your carrier was unable to receive an SMS message.
+            </Text>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                `Try again in ${retryCountdown} seconds.`
+              ) : (
+                <button
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("sms");
+                  }}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  Try again.
+                </button>
+              )}
+            </Text>
+            <Text className="text-sm text-gray-300">
+              <button
+                onClick={() => {
+                  return phoneKeyFlow.mutate("voice");
+                }}
+                className="text-primary hover:text-primary/80 hover:underline"
+              >
+                Or, receive a voice call instead.
+              </button>
+            </Text>
+          </>
+        ) : isVoiceCall ? (
+          <>
+            <Text className="text-sm text-gray-300">
+              Calling {number} now. Enter your Magic Obi code below.
+            </Text>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                `If you don't receive a call, try again in ${retryCountdown} seconds.`
+              ) : (
+                <button
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("voice");
+                  }}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  If you don't receive a call, try again
+                </button>
+              )}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text className="text-sm text-gray-300">
+              Your magic SMS code has been sent to {number}.
+            </Text>
+            <Text className="text-sm text-gray-300">
+              {retryCountdown > 0 ? (
+                `Resend your magic code in ${retryCountdown} seconds.`
+              ) : (
+                <button
+                  onClick={() => {
+                    return phoneKeyFlow.mutate("sms");
+                  }}
+                  className="text-primary hover:text-primary/80 hover:underline"
+                >
+                  Resend your magic code.
+                </button>
+              )}
+            </Text>
+            <Text className="text-sm text-gray-300">
+              <button
+                onClick={() => {
+                  return phoneKeyFlow.mutate("voice");
+                }}
+                className="text-primary hover:text-primary/80 hover:underline"
+              >
+                Can't receive an SMS? Get a voice call instead.
+              </button>
+            </Text>
+          </>
+        )}
         <Input
           labelClassname="h-standardField bg-background-secondary"
           className="w-full"
-          placeholder="Enter Magic SMS Code"
+          placeholder="Enter 8-digit Magic Code"
           value={code}
-          onChange={(value) => {
-            setCode(value);
-          }}
+          onChange={handleCodeChange}
+          maxLength={8}
         />
       </>
     );

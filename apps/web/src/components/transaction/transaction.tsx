@@ -134,7 +134,7 @@ export function Transaction({
           ) : null}
         </div>
       ) : null}
-      <div className="mt-6 flex w-full flex-col bg-indigo-950">
+      <div className="mt-6 flex w-full flex-col">
         {rawData ? (
           <Button
             className="w-full justify-center"
