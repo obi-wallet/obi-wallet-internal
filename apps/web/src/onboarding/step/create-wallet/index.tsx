@@ -1,6 +1,5 @@
 "use client";
 
-import { Text } from "@/components";
 import { useStore } from "@/contexts";
 import { CreateWalletOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
@@ -59,43 +58,79 @@ export const CreateWalletStep = observer(function CreateWalletStep({
 
   if (createWalletMutation.isPending) {
     return (
-      <div className="flex flex-col items-center justify-center">
-        <img
-          src="/assets/images/loading.gif"
-          alt="loading"
-          style={{
-            marginTop: "-20px",
-          }}
-        />
-
-        <LoadingText />
+      <div className="flex min-h-screen w-full flex-col items-center gap-[105px] bg-[#070707] py-6">
+        {/* Loading Animation */}
+        <div className="flex w-full max-w-md flex-col items-center gap-[22px] px-8">
+          <LoadingText />
+          <LoadingDots />
+        </div>
       </div>
     );
   }
 
   return null;
 });
+
 const messages = [
-  "Building your all-chains account…",
-  "Rolling your secure key shards…",
-  "This will only take a few moments…",
-  "Adding EVM chains…",
-  "Adding Cosmos chains…",
-  "Securing your non-custodial fast travel tunnel…",
+  "Creating Your All-Chains Account",
+  "Adding EVM Chains",
+  "Adding Cosmos Chains",
+  "Adding Solana",
+  "Initializing Your Policy Engine",
 ];
-const getRandomMessage = () => {
-  return messages[Math.floor(Math.random() * messages.length)];
-};
+
 function LoadingText() {
-  const [message, setMessage] = useState(getRandomMessage());
+  const [messageIndex, setMessageIndex] = useState(0);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setMessage(getRandomMessage);
-    }, 4000);
+      setMessageIndex((prevIndex) => {
+        return (prevIndex + 1) % messages.length;
+      });
+    }, 2000);
+
     return () => {
       return clearInterval(interval);
     };
   }, []);
 
-  return <Text className="text-center">{message}</Text>;
+  return (
+    <div className="h-[96px] w-full">
+      <div className="min-h-[32px] w-full text-left text-xl font-normal text-white">
+        <span className="inline-block min-w-[300px]">
+          {messages[messageIndex]}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function LoadingDots() {
+  const [dotCount, setDotCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDotCount((prevCount) => {
+        return (prevCount + 1) % 4;
+      });
+    }, 500);
+
+    return () => {
+      return clearInterval(interval);
+    };
+  }, []);
+
+  const dots = ".".repeat(dotCount);
+  const baseMessage = "This should only take a few seconds";
+
+  return (
+    <div className="h-[26px] w-full">
+      <div className="flex w-full text-left text-xl font-normal text-white">
+        <span className="inline-block min-w-[280px]">
+          {baseMessage}
+          {dots}
+        </span>
+      </div>
+    </div>
+  );
 }

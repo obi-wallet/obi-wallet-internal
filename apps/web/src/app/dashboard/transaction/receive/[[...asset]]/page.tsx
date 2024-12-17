@@ -1,11 +1,16 @@
 "use client";
 
 import { ChainDropdown, TabUi, useChainOptions } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useAddressQuery } from "@/hooks/address";
 import { TargetChainId } from "@/target-chain";
-import { InputContainer } from "@/ui/container";
 import { urlDecodeCatchAllParam } from "@/util/url-decode-catch-all-param";
-import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
+import {
+  Caip19AssetId,
+  Caip2ChainId,
+  parseCaip19AssetId,
+  parseCaip2ChainId,
+} from "@obi-wallet/sdk-caip";
 import copy from "copy-to-clipboard";
 import { observer } from "mobx-react-lite";
 import { useQRCode } from "next-qrcode";
@@ -28,19 +33,39 @@ export default observer<{ params: Promise<{ asset?: string[] }> }>(
       try {
         const assetParam = urlDecodeCatchAllParam(params.asset ?? []);
         if (assetParam) {
-          const { chainId } = parseCaip19AssetId(
+          try {
+            // Try parsing as CAIP-19 asset ID
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            assetParam as Caip19AssetId,
-          );
-          const chainOption = options.find((chain) => {
-            return chain.value === chainId;
-          });
-          if (chainOption) {
-            return chainOption.value;
+            const result = parseCaip19AssetId(assetParam as Caip19AssetId);
+            if (!result) return initialValue;
+
+            const chainOption = options.find((chain) => {
+              return chain.value === result.chainId;
+            });
+            if (chainOption) {
+              return chainOption.value;
+            }
+          } catch {
+            // If that fails, try parsing as CAIP-2 chain ID
+            try {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              const result = parseCaip2ChainId(assetParam as Caip2ChainId);
+              if (!result) return initialValue;
+
+              const chainId = `${result.namespace}:${result.reference}`;
+              const chainOption = options.find((chain) => {
+                return chain.value === chainId;
+              });
+              if (chainOption) {
+                return chainOption.value;
+              }
+            } catch (e) {
+              console.error("Failed to parse chain ID:", e);
+            }
           }
         }
       } catch (e) {
-        console.error(e);
+        console.error("Failed to decode asset param:", e);
       }
 
       // User has not selected a chain and the URL does not have a chain
@@ -78,56 +103,66 @@ const ReceiveInner = observer<{
 
   return (
     <TabUi.Main>
-      <div className="flex w-full flex-col items-center justify-center space-y-7 py-4">
-        <InputContainer
-          className="relative z-10 w-80"
-          label="Chain"
-          labelClassname="bg-background-secondary"
-        >
-          <ChainDropdown onChange={setChainId} chainId={chainId} />
-        </InputContainer>
-        {address ? (
-          <InputContainer
-            label="Address"
-            labelClassname="bg-background-secondary"
-            onClick={handleClickQRCode}
-            className="relative z-0 flex w-80 flex-col"
-          >
-            <div className="flex flex-1 items-center justify-center transition duration-300 group-hover:scale-105 group-active:scale-100">
-              <Canvas
-                text={address}
-                options={{
-                  errorCorrectionLevel: "M",
-                  margin: 3,
-                  scale: 4,
-                  width: 200,
-                }}
+      <div className="flex w-full flex-col items-start gap-4 py-2.5">
+        {/* Chain Dropdown */}
+        <div className="flex w-full items-center gap-2">
+          <div className="flex-1">
+            <div className="relative flex w-full items-center rounded-[5px] border border-[#32c9af] px-2.5">
+              <ChainDropdown
+                onChange={setChainId}
+                chainId={chainId}
+                className="w-full"
               />
             </div>
+          </div>
+          <InfoIcon topicId="receive_chain_info" />
+        </div>
 
+        {/* Click to Copy Text */}
+        <div className="font-['Roboto Mono'] text-sm font-normal text-white">
+          Click or tap to copy your address
+        </div>
+
+        {/* Address Display */}
+        {address ? (
+          <div className="flex items-center gap-2">
             <div
-              className={`absolute bottom-0 left-1/2 flex -translate-x-1/2 -translate-y-1/2 gap-4 rounded-md bg-gray-500 px-4 py-2 text-center text-white transition duration-200 ease-in-out ${
-                isCopied
-                  ? "visible bottom-1/2 opacity-100"
-                  : "invisible bottom-0 opacity-0"
-              } transition-visibility`}
+              onClick={handleClickQRCode}
+              className="flex w-full cursor-pointer items-center rounded-[5px] border border-[#32c9af] px-2.5 py-2.5"
             >
-              <span className="text-green-500">
-                <FaCheck />
-              </span>
-              <p>Copied</p>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="mt-5 text-center text-xs text-white">
+              <span className="font-['Roboto Mono'] w-full break-all text-center text-lg font-normal text-white">
                 {address}
               </span>
-              <span className="mt-1 text-center text-sm font-bold uppercase text-blue-600 transition duration-300 group-hover:scale-105 group-active:scale-100">
-                Click to Copy
-              </span>
             </div>
-          </InputContainer>
+            <InfoIcon topicId="receive_address_info" />
+          </div>
         ) : null}
+
+        {/* QR Code */}
+        {address ? (
+          <div
+            onClick={handleClickQRCode}
+            className="mt-4 flex w-full cursor-pointer items-start"
+          >
+            <Canvas
+              text={address}
+              options={{
+                errorCorrectionLevel: "M",
+                margin: 3,
+                scale: 4,
+                width: 200,
+              }}
+            />
+          </div>
+        ) : null}
+
+        {/* Copied Notification */}
+        {isCopied && (
+          <div className="mt-2 flex items-center gap-2 text-green-500">
+            <FaCheck />
+            <p className="text-white">Copied</p>
+          </div>
+        )}
       </div>
     </TabUi.Main>
   );

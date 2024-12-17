@@ -38,9 +38,7 @@ export function Transaction({
   const targetChainLabel = targetChainId
     ? TargetChain.chainId(targetChainId).label
     : "";
-  const image = targetChainId
-    ? TargetChain.chainId(targetChainId).image
-    : "/assets/icons/transaction-lock.svg";
+  const image = targetChainId ? TargetChain.chainId(targetChainId).image : null;
 
   return (
     <Box
@@ -52,7 +50,7 @@ export function Transaction({
       {...rest}
     >
       {image ? (
-        <div className="absolute -top-8 h-[70px] w-[70px] rounded-full bg-black p-4">
+        <div className="bg-background absolute -top-8 h-[70px] w-[70px] rounded-full p-4">
           <Image
             width="70"
             height="70"
@@ -136,7 +134,7 @@ export function Transaction({
           ) : null}
         </div>
       ) : null}
-      <div className="mt-6 flex w-full flex-col bg-indigo-950">
+      <div className="mt-6 flex w-full flex-col">
         {rawData ? (
           <Button
             className="w-full justify-center"

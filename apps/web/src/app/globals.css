@@ -5,25 +5,109 @@
 @layer base {
   html {
     @apply bg-background-main h-full;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply flex h-full flex-col;
   }
 
-  :root {
-    --background-main: theme("colors.slate.900");
-    --background-primary: theme("colors.blue.600");
-    --background-primary-hover: theme("colors.blue.700");
-    --background-primary-active: theme("colors.blue.500");
-    --background-primary-disabled: theme("colors.blue.600");
-    --background-secondary: theme("colors.slate.900");
-    --background-select: theme("colors.gray.700");
-    --background-select-hover: theme("colors.gray.800");
-    --background-select-active: theme("colors.gray.950");
-    --background-select-disabled: theme("colors.gray.700");
-
-    --foreground-primary: theme("colors.white");
-    --foreground-primary-border: theme("colors.zinc.800");
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+@layer components {
+  .btn-base {
+    @apply flex items-center justify-center rounded-lg p-2;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary hover:bg-background-primary-hover text-black;
+  }
+
+  .btn-secondary {
+    @apply btn-base border-primary hover:bg-background-primary border bg-transparent text-white hover:text-black;
+  }
+
+  .balance-toggle-btn {
+    @apply ml-2 text-[#070707] opacity-40 hover:text-blue-600;
+  }
+
+  .dropdown-button {
+    @apply relative z-10 flex w-full items-center justify-between rounded px-2.5 py-2.5 text-center font-medium text-white focus:outline-none;
+  }
+
+  .dropdown-content {
+    @apply absolute left-0 right-0 z-50 overflow-y-auto rounded-lg shadow;
+  }
+
+  .dropdown-item {
+    @apply block cursor-pointer px-4 py-2 hover:bg-gray-600;
+  }
+
+  .dropdown-item-selected {
+    @apply bg-gray-600;
+  }
+
+  .dropdown-item-disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .chain-dropdown-item {
+    @apply flex cursor-pointer items-center space-x-3 p-3 hover:bg-gray-600;
+  }
+
+  .chain-dropdown-item-selected {
+    @apply bg-gray-600;
+  }
+
+  .chain-dropdown-item-disabled {
+    @apply cursor-not-allowed opacity-50 hover:bg-gray-600;
+  }
+
+  .chain-icon {
+    @apply h-6 w-6;
+  }
+
+  .text-xl-normal {
+    @apply text-xl font-normal;
+  }
+
+  .flex-center {
+    @apply flex items-center;
+  }
+
+  .flex-col-start {
+    @apply flex flex-col items-start justify-start;
+  }
+}
+
+:root {
+  --background-main: #070707;
+  --background-primary: #32c9af;
+  --background-primary-hover: #2ab69c;
+  --background-primary-active: #32c9af;
+  --background-primary-disabled: #2ab69c;
+  --background-select: theme("colors.gray.700");
+  --background-select-hover: theme("colors.gray.800");
+  --background-select-active: theme("colors.gray.950");
+  --background-select-disabled: theme("colors.gray.700");
+  --background-warning: #ffa70b;
+
+  --foreground-primary: theme("colors.white");
+  --foreground-primary-border: theme("colors.zinc.800");
 }

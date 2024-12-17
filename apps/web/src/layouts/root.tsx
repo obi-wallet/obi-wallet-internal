@@ -1,18 +1,21 @@
-import { pressStart2P } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { UserInteractionsHandlers } from "@/user-interactions";
-import { Inter } from "next/font/google";
+import { Roboto_Mono } from "next/font/google";
 import { ReactNode } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
+export const robotoMono = Roboto_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-roboto-mono",
+});
 
 export function RootContainer({ children }: { children: ReactNode }) {
   return (
     <div
       className={cn(
-        pressStart2P.variable,
-        inter.className,
-        "flex h-full flex-grow flex-col",
+        robotoMono.variable,
+        robotoMono.className,
+        "obi-root-container flex h-full flex-grow flex-col",
       )}
     >
       {children}
@@ -22,8 +25,10 @@ export function RootContainer({ children }: { children: ReactNode }) {
 
 export function MainContainer({ children }: { children: ReactNode }) {
   return (
-    <main className="flex h-full w-full flex-1 grow">
-      <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+    <main className="obi-main-container flex h-[calc(100vh_-_80px)] w-full max-md:h-[calc(100dvh_-_64px)]">
+      <div className="obi-main-content flex w-full">
+        <UserInteractionsHandlers>{children}</UserInteractionsHandlers>
+      </div>
     </main>
   );
 }

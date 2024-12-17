@@ -22,7 +22,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
     if (!keyData) return null;
 
     return (
-      <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
+      <Box className="h-fit !min-w-full py-6 max-sm:w-full">
         <Text size="xl" fontWeight="semibold">
           {`${keyData.label} Settings`}
         </Text>
@@ -41,6 +41,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
                   className="relative border-none"
                   variant="secondary"
                   block
+                  textAlign="left"
                   onClick={() => {
                     pushPage({
                       type: "key-item",

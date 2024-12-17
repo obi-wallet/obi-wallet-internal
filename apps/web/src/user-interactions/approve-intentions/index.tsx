@@ -98,11 +98,14 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
             console.error(e);
             // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
             const error = e as Error;
-            alert.showError(`Could not process passkey: ${error.message}`);
+            alert.showError(
+              `It looks like you used the wrong passkey! Try another passkey. Error: ${error.message}`,
+            );
           }
           break;
         }
 
+        case KeyType.Phone:
         case KeyType.Telegram: {
           setModal({
             key,
@@ -154,7 +157,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                           }),
                         );
                       }}
-                      variant={getResult(key.key) ? "confirmed" : "primary"}
+                      variant={getResult(key.key) ? "primary" : "primary"}
                       disabled={
                         !!getResult(key.key) || threshold <= confirmedKeyCount
                       }

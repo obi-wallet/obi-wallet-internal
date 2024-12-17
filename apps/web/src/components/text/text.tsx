@@ -1,3 +1,4 @@
+import { robotoMono } from "@/layouts/root";
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithRef, ReactNode } from "react";
 
@@ -73,6 +74,7 @@ export function Text({
         leading === "loose" && "leading-loose",
         tracking && "tracking-widest",
         uppercase && "uppercase",
+        robotoMono.className,
         className,
       )}
       {...rest}

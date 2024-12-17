@@ -1,14 +1,11 @@
 "use client";
 
-import { Button, Text } from "@/components";
+import { Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useStore } from "@/contexts";
 import { useUsdTotalValue } from "@/hooks/balances";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
-import { FaCircleUser, FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-
-import { PrimaryLink } from "../links";
 
 export const Account = observer(function Account() {
   const { userDataStore } = useStore();
@@ -29,86 +26,47 @@ export const Account = observer(function Account() {
 
   return (
     <>
-      <div className="bg-panel-gradient relative flex w-full flex-col rounded-tl-[10px] rounded-tr-[10px] max-sm:bg-none">
-        <div className="relative flex justify-between px-4 py-1.5">
-          <div className="flex w-3/4 flex-row gap-3">
-            <div className="flex h-full max-h-[43px] w-full max-w-[43px] rounded-full bg-sky-500 max-sm:max-h-[37px] max-sm:max-w-[37px]">
-              {userData.avatar ? (
-                <Image
-                  width={43}
-                  height={43}
-                  className="h-revertLayer rounded-full object-cover max-sm:h-[37px]"
-                  src={userData.avatar}
-                  alt={name}
-                />
+      <div className="flex flex-col gap-2.5">
+        <div className="bg-primary flex-col-start self-stretch rounded-[5px] p-2.5">
+          <div className="flex-center w-full gap-2">
+            <Text className="text-xl-normal text-black">{name}</Text>
+            <InfoIcon topicId="dashboard_home" variant="onPrimary" />
+          </div>
+          <div className="flex-col-start mt-2.5 self-stretch">
+            <div className="flex-center">
+              <Text className="text-xl-normal text-[#070707]">
+                {userData.balanceHidden ? "******" : `$${totalData.total}`}
+              </Text>
+              {userData.balanceHidden ? (
+                <button
+                  onClick={() => {
+                    return handleHideBalance(false);
+                  }}
+                  className="balance-toggle-btn"
+                >
+                  <img
+                    src="/assets/icons/eye-closed.svg"
+                    alt="Reveal Balance"
+                    className="h-4 w-4"
+                  />
+                </button>
               ) : (
-                <FaCircleUser className="h-full w-full text-white" />
+                <button
+                  onClick={() => {
+                    return handleHideBalance(true);
+                  }}
+                  className="balance-toggle-btn"
+                >
+                  <img
+                    src="/assets/icons/eye-open.svg"
+                    alt="Hide Balance"
+                    className="h-4 w-4"
+                  />
+                </button>
               )}
             </div>
-            <div className="relative flex w-full flex-col gap-1">
-              <Text
-                size="xs"
-                color="white"
-                fontWeight="bold"
-                className="sm:text-xs"
-              >
-                {name}
-              </Text>
-
-              <PrimaryLink
-                href="/dashboard/settings/account"
-                className="text-xs text-sky-500 sm:text-xs"
-              >
-                Edit Profile
-              </PrimaryLink>
-            </div>
-          </div>
-          <div className="flex justify-end max-md:absolute max-md:right-3.5 max-md:top-1.5">
-            <img src="/points.svg" alt="points" className="h-5" />
           </div>
         </div>
-        <div className="gap-1 px-4 pb-3.5 pt-1.5">
-          <div className="flex justify-between">
-            <Text fontWeight="normal" className="mb-2 text-sm">
-              Balance
-            </Text>
-            {userData.balanceHidden ? (
-              <FaRegEye
-                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {
-                  return handleHideBalance(false);
-                }}
-              />
-            ) : (
-              <FaRegEyeSlash
-                className="h-4 w-4 cursor-pointer text-white opacity-40 hover:text-blue-600"
-                onClick={() => {
-                  return handleHideBalance(true);
-                }}
-              />
-            )}
-          </div>
-          <div className="flex items-start gap-1">
-            <Text>$</Text>
-            <Text size="3xl" color="white" fontWeight="bold">
-              {userData.balanceHidden ? "******" : totalData.total}
-            </Text>
-          </div>
-        </div>
-      </div>
-      <div className="mb-4 mt-0.5 flex gap-1 text-white">
-        <Button
-          href="/dashboard/transaction/send"
-          className="flex-1 justify-center rounded-bl rounded-br-none rounded-tl-none rounded-tr-none border-0"
-        >
-          Send
-        </Button>
-        <Button
-          href="/dashboard/transaction/receive"
-          className="flex-1 justify-center rounded-bl-none rounded-br rounded-tl-none rounded-tr-none border-0"
-        >
-          Receive
-        </Button>
       </div>
     </>
   );

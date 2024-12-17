@@ -45,6 +45,13 @@ export class PhoneKeyWorkerClient {
   public async requestMagicCode() {
     const response = await this.genericRequest();
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to send magic code:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+        via: this.via,
+      });
       throw new Error("Failed to send magic code");
     }
   }
@@ -56,9 +63,21 @@ export class PhoneKeyWorkerClient {
   }> {
     const response = await this.genericRequest(code);
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Failed to handle magic code:", {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+        via: this.via,
+      });
       throw new Error("Failed to handle magic code");
     }
-    return await response.json();
+    try {
+      return await response.json();
+    } catch (error) {
+      console.error("Failed to parse magic code response:", error);
+      throw new Error("Failed to handle magic code");
+    }
   }
 
   protected async genericRequest(code?: string) {
@@ -113,10 +132,11 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
     }
   }
 
-  public async requestMagicCode() {
+  public async requestMagicCode(via: PhoneKeyWorkerVia = "sms") {
+    this.via = via;
     const client = new PhoneKeyWorkerClient({
       answer: this.answer,
-      via: this.via,
+      via,
       to: this.to,
       decryptMessages: this.messagesToDecrypt,
       signHashes: this.payload.signHashes.map((hash) => {
@@ -140,7 +160,7 @@ export class PhoneKeyIntentionsHandler extends IntentionsHandler {
 
     invariant(
       response.publicKey === this.key.publicKey.value,
-      "Public keys do not match, wrong to/answer combination",
+      `Public keys do not match (wrong to/answer combination) - got: ${response.publicKey}, expected: ${this.key.publicKey.value}`,
     );
     return this.toIntentionsResult({
       signedHashes: response.signedHashes.map((hash) => {

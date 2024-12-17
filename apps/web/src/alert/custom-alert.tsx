@@ -24,7 +24,7 @@ export const CustomAlert = observer<CustomAlertProps>(function CustomAlert({
   const Animation = animations[alert.type];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-background fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
       <div className="min-w-56 max-w-96 rounded-lg bg-gray-900 p-6 text-center shadow-lg">
         <div className={cn("m-0 ml-auto mr-auto w-20")}>
           <Animation />

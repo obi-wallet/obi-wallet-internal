@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, IBalanceOption, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { HomeChain } from "@/home-chain";
 import { useAlert } from "@/hooks/alert";
 import {
@@ -453,22 +454,25 @@ const SendInner = observer<{
     issue.path.length === 0 &&
     issue.code === "custom";
   return (
-    <div className="space-y-7 py-4">
+    <div className="flex flex-col gap-4 p-2.5">
       <Controller
         name="recipient"
         control={form.control}
         rules={{ required: true }}
         render={({ field }) => {
           return (
-            <Input
-              label="Recipient Address"
-              labelClassname="bg-background-secondary"
-              placeholder="Enter recipient address"
-              value={field.value}
-              onChange={(recipient) => {
-                field.onChange(recipient);
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                labelClassname="bg-background-secondary"
+                className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+                placeholder="Enter Recipient Address"
+                value={field.value}
+                onChange={(recipient) => {
+                  field.onChange(recipient);
+                }}
+              />
+              <InfoIcon topicId="recipient_address_info" />
+            </div>
           );
         }}
       />
@@ -481,42 +485,10 @@ const SendInner = observer<{
           const setCoin = field.onChange;
 
           return (
-            <Input
-              label="Amount"
-              labelClassname="bg-background-secondary"
-              placeholder="0.1"
-              value={coin.amount}
-              inputClassName="flex-1"
-              rightContainerClassName="flex-1"
-              onChange={(value) => {
-                setCoin({
-                  amount: value,
-                  asset: coin.asset,
-                });
-              }}
-              topComponent={
-                <div
-                  className={cn(
-                    "m-0 text-xs uppercase",
-                    "cursor-pointer text-slate-500 hover:text-blue-600",
-                  )}
-                  onClick={() => {
-                    if (!coin.asset) return;
-                    setCoin({
-                      amount: coin.asset.balance.toString(),
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  {coin.asset
-                    ? `${coin.asset.balance.toString()} ${
-                        coin.asset.assetInfo.symbol
-                      }`
-                    : ""}
-                </div>
-              }
-              rightComponent={
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
                 <Dropdown
+                  className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
                   items={balanceOptions}
                   selectedItem={coin.asset}
                   getKey={(item) => {
@@ -525,9 +497,12 @@ const SendInner = observer<{
                   itemToString={(item) => {
                     return item ? item.denom : "";
                   }}
-                  className="w-full"
+                  onItemSelect={function (item) {
+                    router.replace(
+                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
+                    );
+                  }}
                   itemComponent={({ getItemProps, item, isSelected }) => {
-                    // TODO: check types here
                     return (
                       <div
                         {...getItemProps({ item })}
@@ -555,14 +530,9 @@ const SendInner = observer<{
                       </div>
                     );
                   }}
-                  onItemSelect={function (item) {
-                    router.replace(
-                      `/dashboard/transaction/send/${encodeURIComponent(item.denom)}`,
-                    );
-                  }}
                   selectedItemComponent={(selected) => {
                     if (!selected.item) {
-                      return <div>Select</div>;
+                      return <div>Select Asset</div>;
                     }
 
                     return (
@@ -583,81 +553,100 @@ const SendInner = observer<{
                     );
                   }}
                 />
-              }
-            >
-              <div className="flex gap-3 text-slate-500">
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.25).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  25%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.5).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  50%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
-                  onClick={() => {
-                    setCoin({
-                      amount:
-                        coin.asset?.balance.multipliedBy(0.75).toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  75%
-                </span>
-                <span
-                  className="cursor-pointer text-xs hover:text-blue-600"
-                  onClick={() => {
-                    setCoin({
-                      amount: coin.asset?.balance.toString() ?? "",
-                      asset: coin.asset,
-                    });
-                  }}
-                >
-                  100%
-                </span>
+                <InfoIcon topicId="send_chain_asset_info" />
               </div>
-            </Input>
+
+              <div className="flex items-center gap-2">
+                <Input
+                  labelClassname="bg-background-secondary"
+                  className="w-full rounded-[5px] border border-[#32c9af] p-2.5"
+                  placeholder="Enter Amount"
+                  value={coin.amount}
+                  inputClassName="flex-1"
+                  rightContainerClassName="flex-1"
+                  onChange={(value) => {
+                    setCoin({
+                      amount: value,
+                      asset: coin.asset,
+                    });
+                  }}
+                  topComponent={
+                    <div
+                      className={cn(
+                        "m-0 text-xs uppercase",
+                        "cursor-pointer text-slate-500 hover:text-blue-600",
+                      )}
+                      onClick={() => {
+                        if (!coin.asset) return;
+                        setCoin({
+                          amount: coin.asset.balance.toString(),
+                          asset: coin.asset,
+                        });
+                      }}
+                    >
+                      {coin.asset
+                        ? `${coin.asset.balance.toString()} ${
+                            coin.asset.assetInfo.symbol
+                          }`
+                        : ""}
+                    </div>
+                  }
+                >
+                  <div className="mt-2 flex gap-2.5">
+                    {[25, 50, 75, 100].map((percent) => {
+                      return (
+                        <Button
+                          key={percent}
+                          onClick={() => {
+                            const amount =
+                              percent === 100
+                                ? (coin.asset?.balance.toString() ?? "")
+                                : (coin.asset?.balance
+                                    .multipliedBy(percent / 100)
+                                    .toString() ?? "");
+                            setCoin({
+                              amount,
+                              asset: coin.asset,
+                            });
+                          }}
+                          className="rounded-[5px] bg-transparent p-2.5"
+                        >
+                          <Text className="font-['Roboto Mono'] text-sm text-white">
+                            {percent}%
+                          </Text>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </Input>
+                <InfoIcon topicId="send_amount_info" />
+              </div>
+            </div>
           );
         }}
       />
-
       <Controller
         name="memo"
         control={form.control}
         rules={{ required: true }}
         render={({ field }) => {
           return (
-            <Input
-              label="Memo (optional)"
-              labelClassname="bg-background-secondary"
-              placeholder="Enter Memo"
-              value={field.value}
-              onChange={(recipient) => {
-                field.onChange(recipient);
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                labelClassname="bg-background-secondary"
+                className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+                placeholder="Memo (optional)"
+                value={field.value}
+                onChange={(memo) => {
+                  field.onChange(memo);
+                }}
+              />
+              <InfoIcon topicId="memo_field_info" />
+            </div>
           );
         }}
       />
-      <div className="flex justify-between">
+      <div className="mt-4 flex justify-between">
         {invalidAddress ? (
           <Text className="ml-2 text-red-600">
             Assets can only be sent to the same chain
@@ -666,13 +655,15 @@ const SendInner = observer<{
           <div />
         )}
         <Button
-          className="block w-44"
+          className="w-full rounded-[5px] bg-[#32c9af] p-2.5"
           disabled={!form.formState.isValid || send.isPending}
           onClick={form.handleSubmit((data) => {
             send.mutate(data);
           })}
         >
-          Next
+          <Text className="font-['Roboto Mono'] text-lg font-normal text-[#070707]">
+            Next
+          </Text>
         </Button>
       </div>
     </div>

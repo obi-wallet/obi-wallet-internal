@@ -14,11 +14,16 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return (
-    <DashboardCustomLayout nav={<Navbar />}>
+  const notifications = (
+    <>
       <WalletDataNotification />
       <NoRecoveryKeysNotification />
       <Ed25519KeyPairNotification />
+    </>
+  );
+
+  return (
+    <DashboardCustomLayout nav={<Navbar />} notifications={notifications}>
       {children}
     </DashboardCustomLayout>
   );

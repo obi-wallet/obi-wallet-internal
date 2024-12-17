@@ -1,78 +1,68 @@
 "use client";
 
-import { ImageDropzone, Text } from "@/components";
-import { TOSModal } from "@/components/modals/tos";
-import { OnboardingButtons } from "@/onboarding/onboarding-buttons";
 import { UserDataOnboardingStep } from "@/onboarding/onboarding-step";
 import { StepProps } from "@/onboarding/step";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
-import { useEffectOnceWhen } from "rooks";
 
 export const UserDataStep = observer(function UserDataStep({
   draft,
   back,
   next,
 }: StepProps<UserDataOnboardingStep>) {
-  const [defaultImageFile, setDefaultImageFile] = useState<File>();
-
-  useEffectOnceWhen(async () => {
-    try {
-      const response = await fetch("/assets/images/default-avatar.png");
-      const blob = await response.blob();
-      const file = new File([blob], "defaultImage.png", {
-        type: "image/png",
-      });
-      setDefaultImageFile(file);
-
-      draft.value.setName("My OBI Wallet");
-    } catch (error) {
-      console.error("Error loading image:", error);
-    }
-  });
-
   return (
-    <>
-      <Text fontWeight="bold" size="3xl" className="font-press-start-2p">
-        Create An Account
-      </Text>
-      <Text
-        className="w-96 text-center"
-        fontWeight="medium"
-        leading="tight"
-        color="zinc"
-      >
-        Start by naming your account and uploading a profile picture associated
-        with it.
-      </Text>
-      <Input
-        label="Name"
-        labelClassname="bg-black"
-        onChange={(value) => {
-          draft.value.setName(value);
-        }}
-        className="w-96 max-sm:w-full"
-        value={draft.value.name}
-      />
-
-      <ImageDropzone
-        placeholder="Upload Picture"
-        onChange={(_, fileBody) => {
-          draft.value.setImage(fileBody);
-        }}
-        defaultImageFile={defaultImageFile}
-        width={120}
-        height={120}
-      />
-
-      <OnboardingButtons
-        back={back}
-        next={next}
-        nextLabel="Continue"
-        nextDisabled={!draft.value.name || !draft.value.image}
-      />
-      <TOSModal />
-    </>
+    <div className="onboarding-container flex min-h-screen w-full flex-col items-center gap-[115px] bg-[#070707] py-6">
+      {/* Main Content */}
+      <div className="onboarding-content flex w-full max-w-xl flex-col gap-[22px] px-8">
+        {/* Heading */}
+        <h1 className="onboarding-heading text-xl font-normal text-white">
+          Create an Account
+        </h1>
+        {/* Subheading */}
+        <p className="onboarding-subheading font-thin text-white">
+          Enter a name for your account below.
+        </p>
+        {/* Input Field */}
+        <div className="onboarding-input-container flex w-full items-center rounded-[5px] border border-[#32c9af]">
+          <Input
+            labelClassname="onboarding-input-label text-white text-lg font-normal"
+            className="onboarding-input h-[46px] w-full border-0 bg-transparent text-lg font-normal text-white placeholder:text-gray-400 focus:outline-none"
+            value={draft.value.name}
+            onChange={(value) => {
+              draft.value.setName(value);
+            }}
+            placeholder="My Obi Wallet"
+          />
+        </div>
+        {/* Buttons */}
+        <div className="onboarding-buttons flex w-full gap-[22px]">
+          {back && (
+            <button
+              onClick={back}
+              className="onboarding-back-button flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
+            >
+              <span className="onboarding-back-text text-center text-xl font-normal text-white">
+                Back
+              </span>
+            </button>
+          )}
+          {next && (
+            <button
+              onClick={next}
+              disabled={!draft.value.name}
+              className={`onboarding-confirm-button h-[46px] flex-1 rounded-[5px] py-2.5 ${
+                draft.value.name
+                  ? "cursor-pointer bg-[#32c9af]"
+                  : "cursor-not-allowed bg-[#32c9af] opacity-50"
+              } flex items-center justify-center`}
+            >
+              <span className="onboarding-confirm-text text-center text-xl font-normal text-[#070707]">
+                Confirm
+              </span>
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 });

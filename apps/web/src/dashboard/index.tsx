@@ -1,11 +1,15 @@
 "use client";
 
-import { Account, Button, Divider, Text } from "@/components";
-import { useStore } from "@/contexts";
+import { AccountAndCTA, Button, Divider, Text } from "@/components";
+import { InlineChainDropdown } from "@/components/dropdown/inline-chain-dropdown";
+import { InfoIcon } from "@/components/info-icon";
+import { useStore } from "@/contexts/store";
 import { PrettyCaip19Asset, useBalances } from "@/hooks/balances";
 import { useCreateViewingKey } from "@/hooks/use-create-viewing-key";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
+import { cn } from "@/lib/utils";
 import { allTargetChainIds, TargetChain, TargetChainId } from "@/target-chain";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
@@ -13,6 +17,7 @@ import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { CiSearch } from "react-icons/ci";
@@ -22,7 +27,7 @@ import { PendingAssets } from "./pending";
 
 export const DashboardPage = observer(function Dashboard() {
   return (
-    <div className="flex w-full flex-col text-white">
+    <div className="dashboard-page bg-background flex h-[calc(100vh-80px)] w-full flex-col text-white max-md:h-[calc(100vh-64px)] max-md:pb-20">
       <Assets />
     </div>
   );
@@ -31,75 +36,90 @@ export const DashboardPage = observer(function Dashboard() {
 const Assets = observer(function Assets() {
   const [searchAsset, setSearchAsset] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const { educationStore } = useStore();
 
   return (
-    <>
-      <div className="hidden w-full flex-1 flex-col max-md:flex">
-        <Account />
-        <Button
-          href="/dashboard/tokens/add"
-          className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"
-        >
-          Import New Asset
-        </Button>
-        <Button
-          onClick={() => {
-            setEditMode((value) => {
-              return !value;
-            });
-          }}
-          className="mb-2 flex-1 justify-center rounded-lg border-dashed border-blue-500 bg-transparent p-2 text-sm font-normal"
-        >
-          Edit
-        </Button>
-      </div>
-      <div className="hidden flex-row items-center gap-3 md:flex">
-        <Input
-          className="mt-0 px-3 py-1.5"
-          leftComponent={<CiSearch className="h-6 w-6" color="white" />}
-          labelClassname="bg-background-secondary"
-          placeholder="Search Assets"
-          value={searchAsset}
-          onChange={(asset) => {
-            setSearchAsset(asset);
-          }}
-          inputClassName="ml-2"
-        />
-        <Button
-          href="/dashboard/tokens/add"
-          className="h-9 w-64 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"
-        >
-          Import New Asset
-        </Button>
-        <Button
-          onClick={() => {
-            setEditMode((value) => {
-              return !value;
-            });
-          }}
-          className="h-9 justify-center rounded-lg border-dashed border-blue-500 bg-transparent text-sm font-normal"
-        >
-          Edit
-        </Button>
+    <div className="relative z-0 flex h-full flex-col overflow-hidden">
+      <AccountAndCTA className={cn("max-lg:mb-2.5 lg:hidden")} />
+      <div className="dashboard-controls flex items-center gap-3">
+        <div className="dashboard-search min-w-0 flex-[1_1_0] text-sm text-white">
+          <Input
+            className="dashboard-search-input bg-background-secondary border-primary h-9 w-full rounded px-3 py-1.5"
+            leftComponent={
+              <CiSearch className="dashboard-search-icon h-6 w-6" />
+            }
+            labelClassname="bg-background-secondary"
+            placeholder="Search"
+            value={searchAsset}
+            onChange={(asset) => {
+              return setSearchAsset(asset);
+            }}
+            inputClassName="ml-2 bg-transparent placeholder-white"
+          />
+        </div>
+
+        <div className="dashboard-edit-button min-w-0 flex-[1_1_0] leading-none">
+          <Button
+            onClick={() => {
+              setEditMode((value) => {
+                const newValue = !value;
+                if (newValue) {
+                  educationStore.setTopicById("edit_assets", "router");
+                }
+                return newValue;
+              });
+            }}
+            variant="accent"
+            size="md"
+            leading="none"
+            className="w-full"
+          >
+            <div className="flex items-center gap-1">
+              {editMode ? "Edit Mode On" : "Edit Mode Off"}
+              <InfoIcon topicId="edit_assets" variant="onPrimary" />
+            </div>
+          </Button>
+        </div>
+
+        <div className="dashboard-import-button min-w-0 flex-[1_1_0] leading-none">
+          <Button
+            href="/dashboard/tokens/add"
+            variant="primary-outline"
+            size="md"
+            leading="none"
+            className={`w-full border-dashed ${!editMode ? "invisible" : ""}`}
+            onClick={() => {
+              educationStore.setTopicById("import_new_asset", "router");
+            }}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <div data-track-asset>+ Track an Asset</div>
+              <InfoIcon
+                topicId="import_new_asset"
+                className="ml-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              />
+            </div>
+          </Button>
+        </div>
       </div>
 
-      <Divider className="mt-5 hidden md:block" />
+      <Divider className="dashboard-divider border-primary mt-1 hidden md:block" />
 
-      {editMode ? (
-        <EditMode searchAsset={searchAsset.toLowerCase()} />
-      ) : (
-        <>
-          <PendingAssets />
-          <AssetBalance searchAsset={searchAsset.toLowerCase()} />
-          <div className="mt-10 flex w-full flex-row items-center justify-center max-md:px-2">
-            <Text size="sm" className="leading-normal" fontWeight="light">
-              Fast Travel transactions may take a few minutes to be processed
-              and will appear here once visible on the network.
-            </Text>
-          </div>
-        </>
-      )}
-    </>
+      <div className="scrollbar-hide flex-1 overflow-y-auto max-md:mb-20">
+        {editMode ? (
+          <EditMode searchAsset={searchAsset.toLowerCase()} />
+        ) : (
+          <>
+            <PendingAssets />
+            <AssetBalance searchAsset={searchAsset.toLowerCase()} />
+          </>
+        )}
+      </div>
+    </div>
   );
 });
 
@@ -161,21 +181,37 @@ const EditMode = observer(function EditMode({
     });
   };
 
-  const enabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === true;
-  });
+  const enabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === true;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const autoEnabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === undefined && !chain.chain.disabled;
-  });
+  const autoEnabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === undefined && !chain.chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const autoDisabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === undefined && chain.chain.disabled;
-  });
+  const autoDisabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === undefined && chain.chain.disabled;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
-  const disabledChains = hydratedChains.filter((chain) => {
-    return chain.config.enabled === false;
-  });
+  const disabledChains = hydratedChains
+    .filter((chain) => {
+      return chain.config.enabled === false;
+    })
+    .sort((a, b) => {
+      return a.chain.label.localeCompare(b.chain.label);
+    });
 
   return (
     <>
@@ -199,11 +235,23 @@ const AssetBalance = observer(function AssetBalance({
   }
 
   if (prettyBalances.status === PrettyBalancesStatus.NoAssets) {
-    return <span className="font-extrabold text-white">No Assets</span>;
+    return (
+      <div className="flex w-full min-w-0 flex-row items-start p-4">
+        <p className="break-words text-left text-sm font-light leading-normal text-white">
+          You don't have any assets yet. Receive assets on
+          <br />
+          <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> or{" "}
+          <Link href="/dashboard/buy-crypto" className="text-primary underline">
+            buy some assets with fiat
+          </Link>{" "}
+          to get started!
+        </p>
+      </div>
+    );
   }
 
   return (
-    <nav className="h-full overflow-y-auto">
+    <nav className="scrollbar-hide h-full w-full max-w-full overflow-y-auto">
       {prettyBalances.data.map((chainBalance) => {
         return (
           <Network key={chainBalance.chain.chainId} assets={chainBalance} />
@@ -219,12 +267,12 @@ export const AssetsContainer = observer(function AssetsContainer({
   children: ReactNode;
 }) {
   return (
-    <ul role="list">
-      <li className="relative flex py-1.5">
+    <ul className="scrollbar-hide" role="list">
+      {/* <li className="relative flex py-1.5">
         <div className="flex w-3/4 justify-between gap-x-4 pl-4 pr-6 sm:flex-none">
           <Text
             fontWeight="light"
-            className="text-[10px] uppercase text-slate-400"
+            className="text-[10px] uppercase text-slate-400 "
           >
             Asset
           </Text>
@@ -251,7 +299,7 @@ export const AssetsContainer = observer(function AssetsContainer({
             Value
           </Text>
         </div>
-      </li>
+      </li> */}
       {children}
     </ul>
   );
@@ -275,75 +323,75 @@ const Network = observer(function NetworkAssets({
   });
 
   return (
-    <div className="relative py-1.5">
-      <div className="sticky top-0 z-10">
-        <h3
-          className="rounded-t-lg px-4 py-1.5"
-          style={{
-            backgroundImage:
-              "linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
-          }}
-        >
-          <div className="flex flex-row items-center gap-2">
-            <img
-              src={assets.chain.image}
-              alt={assets.chain.label}
-              className="h-5 w-5 sm:h-8 sm:w-8"
-            />
-            <Text className="text-xs text-white opacity-70">
+    <div className="network-container scrollbar-hide relative py-1.5">
+      <div className="network-header sticky top-0 z-10">
+        <h3 className="network-title bg-primary flex h-9 items-center gap-2.5 rounded px-2.5 py-[5px]">
+          <div className="network-title-content flex flex-1 flex-row">
+            <Text className="network-chain-name text-background text-base leading-none">
               {assets.chain.label}
             </Text>
-            {editMode ? (
-              <div className="flex flex-grow justify-end gap-3">
-                <Button
-                  variant={
-                    targetChainConfig.enabled === true ? "primary" : "outline"
-                  }
-                  className="h-5"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: { enabled: true },
-                    });
-                  }}
-                >
-                  Enable
-                </Button>
-                <Button
-                  variant={
-                    targetChainConfig.enabled === false ? "primary" : "outline"
-                  }
-                  className="h-5"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: { enabled: false },
-                    });
-                  }}
-                >
-                  Disable
-                </Button>
-                <Button
-                  variant={
-                    targetChainConfig.enabled === undefined
-                      ? "primary"
-                      : "outline"
-                  }
-                  className="h-5"
-                  onClick={() => {
-                    targetChainsStore.setTargetChainConfig({
-                      address: wallet.userEntryAddress,
-                      chainId: assets.chain.chainId,
-                      config: {},
-                    });
-                  }}
-                >
-                  Auto ({assets.chain.disabled ? "disabled" : "enabled"})
-                </Button>
-              </div>
-            ) : null}
+            <div className="network-controls flex flex-grow items-center justify-end text-right">
+              <Button
+                style={
+                  targetChainConfig.enabled === true
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`network-enable-button bg-accent !h-5 rounded leading-5 text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: { enabled: true },
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Enable
+              </Button>
+              <Button
+                style={
+                  targetChainConfig.enabled === false
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`network-disable-button bg-accent !h-5 rounded leading-5 text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: { enabled: false },
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Disable
+              </Button>
+              <Button
+                style={
+                  targetChainConfig.enabled === undefined
+                    ? {}
+                    : { backgroundColor: "#32c9af" }
+                }
+                className={`network-auto-button bg-accent !h-5 rounded leading-5 text-white ${
+                  !editMode ? "invisible" : ""
+                }`}
+                onClick={() => {
+                  targetChainsStore.setTargetChainConfig({
+                    address: wallet.userEntryAddress,
+                    chainId: assets.chain.chainId,
+                    config: {},
+                  });
+                }}
+                disabled={!editMode}
+              >
+                Auto
+              </Button>
+            </div>
           </div>
         </h3>
       </div>
@@ -382,7 +430,7 @@ export const AssetRow = observer(function AssetRow({
 
   return (
     <li
-      className="hover:bg-asset-hover-gradient relative flex cursor-pointer justify-between py-1.5 hover:rounded-lg"
+      className="asset-row hover:bg-accent relative flex cursor-pointer justify-center py-1.5 hover:rounded-lg hover:opacity-70"
       onClick={() => {
         router.push(
           editMode
@@ -391,18 +439,21 @@ export const AssetRow = observer(function AssetRow({
         );
       }}
     >
-      <div className="flex justify-between gap-x-4 pl-4 pr-6 sm:w-3/4 sm:flex-none">
-        <div className="flex flex-row gap-x-4">
+      <div className="asset-row-content flex w-[55%] justify-between gap-x-4 pl-4 pr-6 max-sm:w-[60%]">
+        <div className="asset-row-info flex flex-row items-center gap-x-4">
           {asset.assetInfo?.image ? (
             <img
               src={asset.assetInfo.image}
               alt={asset.assetInfo.symbol}
-              className="h-6 w-6 sm:h-8 sm:w-8"
+              className="asset-row-icon h-6 w-6 sm:h-8 sm:w-8"
             />
           ) : (
-            <div className="h-6 w-6 sm:h-8 sm:w-8" />
+            <div className="asset-row-icon-placeholder h-6 w-6 sm:h-8 sm:w-8" />
           )}
-          <Text fontWeight="bold" className="max-sm:text-sm">
+          <Text
+            fontWeight="bold"
+            className="asset-row-symbol text-white max-sm:text-sm"
+          >
             {asset.assetInfo?.symbol}
           </Text>
         </div>
@@ -411,7 +462,7 @@ export const AssetRow = observer(function AssetRow({
             editMode ? (
               <Button
                 variant="primary"
-                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                className="asset-row-remove-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -425,7 +476,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+              <Text className="asset-row-viewing-key text-right tabular-nums max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -433,7 +484,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="-ml-6 h-5 max-sm:hidden max-sm:text-sm"
+                className="asset-row-create-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -444,18 +495,18 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="-ml-6 text-right tabular-nums max-sm:hidden max-sm:text-sm">
+          <Text className="asset-row-amount text-center tabular-nums max-sm:text-sm">
             {asset.prettyAmount.toString()}
           </Text>
         )}
       </div>
-      <div className="flex items-center justify-end gap-x-4 sm:flex sm:w-1/4 sm:flex-none">
+      <div className="asset-row-value flex w-[45%] items-center justify-end gap-x-4 max-sm:w-[40%] sm:flex sm:flex-none">
         {isPrivateToken ? (
           viewingKey ? (
             editMode ? (
               <Button
                 variant="primary"
-                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                className="asset-row-remove-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (wallet) {
@@ -469,7 +520,7 @@ export const AssetRow = observer(function AssetRow({
                 Remove Viewing Key
               </Button>
             ) : (
-              <Text className="-ml-6 h-5 max-sm:text-sm sm:hidden">
+              <Text className="asset-row-viewing-key -ml-6 h-5 max-sm:text-sm">
                 {asset.prettyAmount.toString()}
               </Text>
             )
@@ -477,7 +528,7 @@ export const AssetRow = observer(function AssetRow({
             <>
               <AsyncButton
                 variant="primary"
-                className="-ml-6 h-5 max-sm:text-sm sm:hidden"
+                className="asset-row-create-viewing-key bg-accent -ml-6 h-5 rounded text-white max-sm:text-sm"
                 onClick={async (e) => {
                   e.stopPropagation();
                   await createViewingKey(asset.assetId);
@@ -488,16 +539,15 @@ export const AssetRow = observer(function AssetRow({
             </>
           )
         ) : (
-          <Text className="-ml-6 pr-4 text-right tabular-nums max-sm:text-sm sm:hidden">
-            {asset.prettyAmount.toString()}
-          </Text>
+          <div>
+            <Text
+              fontWeight="bold"
+              className="asset-row-value tabular-nums max-sm:pr-4 max-sm:text-sm"
+            >
+              ${new BigNumber(asset.usdBalance).toFixed(2)}
+            </Text>
+          </div>
         )}
-        <Text
-          fontWeight="bold"
-          className="tabular-nums max-sm:hidden max-sm:text-sm"
-        >
-          ${new BigNumber(asset.usdBalance).toFixed(2)}
-        </Text>
       </div>
     </li>
   );
@@ -531,11 +581,10 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
     return { status: PrettyBalancesStatus.Loading, data: [] };
   }
 
-  if (
-    balances.every((b) => {
-      return b.data && b.data.length === 0;
-    })
-  ) {
+  const hasAnyData = balances.some((b) => {
+    return b.data && b.data.length > 0;
+  });
+  if (!hasAnyData) {
     return { status: PrettyBalancesStatus.NoAssets, data: [] };
   }
 
@@ -554,6 +603,11 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
       const chain = TargetChain.chainId(chainId as TargetChainId);
       const prettyData = balance
         .filter((asset) => {
+          // Filter out zero balances
+          const amount = new BigNumber(asset.rawAmount);
+          if (amount.isZero()) {
+            return false;
+          }
           return (asset.assetInfo?.symbol.toLowerCase() ?? "").includes(
             searchAsset,
           );
@@ -571,13 +625,20 @@ function usePrettyBalances(searchAsset: string): PrettyBalancesResult {
         chain,
       };
     })
+    .filter((chainBalance) => {
+      // Filter out chains that have no non-zero balances
+      return chainBalance.prettyData.length > 0;
+    })
     .sort((balanceA, balanceB) => {
       if (balanceA.usdValue.lt(balanceB.usdValue)) return 1;
       return -1;
     });
 
   return {
-    status: PrettyBalancesStatus.SomeAssets,
+    status:
+      data.length > 0
+        ? PrettyBalancesStatus.SomeAssets
+        : PrettyBalancesStatus.NoAssets,
     data,
   };
 }

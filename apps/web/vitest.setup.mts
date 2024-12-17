@@ -2,6 +2,31 @@ import { createRootStore } from "@/stores";
 import { obiModalConfig } from "@obi-wallet/config";
 import fs from "node:fs/promises";
 import { vi } from "vitest";
+import "@testing-library/jest-dom";
+
+vi.mock("lottie-web", () => {
+  return {
+    default: {
+      loadAnimation: () => {
+        return {
+          destroy: vi.fn(),
+          play: vi.fn(),
+          pause: vi.fn(),
+          stop: vi.fn(),
+        };
+      },
+    },
+  };
+});
+
+vi.mock("lottie-react", () => {
+  return {
+    __esModule: true,
+    default: vi.fn(() => {
+      return null;
+    }),
+  };
+});
 
 vi.stubGlobal(
   "Worker",
@@ -45,3 +70,25 @@ rootStore.wasmStore.getEciesWasm = async () => {
 rootStore.wasmStore.getMpcEcdsaWasm = async () => {
   return mpcEcdsaWasm;
 };
+
+// Mock createElementNS for SVG elements
+const originalCreateElement = document.createElement.bind(document);
+const originalCreateElementNS = document.createElementNS.bind(document);
+
+// @ts-expect-error - Mocking DOM API
+document.createElementNS = function (
+  namespaceURI: string,
+  qualifiedName: string,
+): Element {
+  if (namespaceURI === "http://www.w3.org/2000/svg") {
+    const element = originalCreateElement(qualifiedName);
+    Object.defineProperties(element, {
+      ownerSVGElement: { value: null },
+      viewportElement: { value: null },
+    });
+    return element;
+  }
+  return originalCreateElementNS(namespaceURI, qualifiedName);
+};
+
+// Add any other global test setup here

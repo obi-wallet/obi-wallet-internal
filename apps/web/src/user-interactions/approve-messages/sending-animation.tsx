@@ -14,7 +14,7 @@ export function SendingAnimation({
   return (
     <div
       className={cn(
-        "absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-black bg-opacity-80",
+        "bg-background absolute top-0 flex h-full w-full flex-1 flex-col items-center justify-center bg-opacity-80",
         className,
       )}
     >

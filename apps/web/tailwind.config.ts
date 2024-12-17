@@ -1,3 +1,4 @@
+import scrollbar from "tailwind-scrollbar";
 import { Config } from "tailwindcss";
 
 const config: Config = {
@@ -6,21 +7,28 @@ const config: Config = {
     extend: {
       height: {
         revertLayer: "revert-layer",
+        standardField: "46px",
+        standardButton: "36px",
       },
       colors: {
-        "background-main": "#05070C",
-        "background-primary": "#3C87CA",
-        "background-primary-hover": "#0284c7",
-        "background-primary-active": "#0EA5E9",
-        "background-primary-disabled": "#3C87CA",
-        "background-secondary": "#070A12",
+        primary: "var(--background-primary)",
+        background: "var(--background-main)",
+        text: "#ffffff",
+        accent: "#0e0e25",
+        secondary: "#363636",
+        warning: "var(--background-warning)",
+        "banner-bg": "#ee9d38",
+        "background-main": "var(--background-main)",
+        "background-primary": "var(--background-primary)",
+        "background-primary-hover": "var(--background-primary-hover)",
+        "background-primary-active": "var(--background-primary-active)",
+        "background-primary-disabled": "var(--background-primary-disabled)",
         "background-select": "var(--background-select)",
         "background-select-hover": "var(--background-select-hover)",
         "background-select-active": "var(--background-select-active)",
         "background-select-disabled": "var(--background-select-disabled)",
-
-        "--foreground-primary": "var(--foreground-primary)",
-        "--foreground-primary-border": "var(--foreground-primary-border)",
+        "foreground-primary": "var(--foreground-primary)",
+        "foreground-primary-border": "var(--foreground-primary-border)",
       },
       flex: {
         2: "2 2 0%",
@@ -39,12 +47,9 @@ const config: Config = {
         "panel-gradient":
           "linear-gradient(134deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 100%)",
       },
-      fontFamily: {
-        "press-start-2p": ["var(--font-press-start-2p)"],
-      },
     },
   },
-  plugins: [],
+  plugins: [scrollbar({ nocompatible: true })],
 };
 
 // eslint-disable-next-line import/no-default-export

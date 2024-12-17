@@ -45,11 +45,11 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           //#region  //*=========== Variants ===========
           [
             variant === "primary" && [
-              "border border-blue-600 bg-blue-600 text-white shadow",
-              "hover:bg-blue-700 hover:text-white",
-              "active:bg-blue-800",
+              "bg-primary border text-white shadow",
+              "hover:bg-active hover:text-white",
+              "active:bg-active",
               "disabled:opacity-30",
-              "disabled:border-blue-600 disabled:bg-blue-600",
+              "disabled:border-active disabled:bg-disabled",
             ],
             variant === "outline" && [
               "border border-gray-600 bg-transparent text-zinc-400",

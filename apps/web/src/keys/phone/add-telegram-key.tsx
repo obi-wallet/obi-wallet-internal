@@ -1,4 +1,5 @@
 import { Button, DropDown, Text } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { PhoneKeyWorkerClient } from "@/keys/intentions-handler";
 import {
   useSecurityQuestionInput,
@@ -107,29 +108,34 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
       return (
         <div className="flex flex-col gap-4">
           {askForName ? (
-            <Input
-              label="Key Name"
-              labelClassname="bg-background-secondary"
-              className="w-full"
-              placeholder="Name"
-              value={name}
-              onChange={(value) => {
-                setName(value);
-              }}
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                labelClassname="bg-background-secondary"
+                className="h-standardField w-full"
+                placeholder="Name"
+                value={name}
+                onChange={(value) => {
+                  setName(value);
+                }}
+              />
+              <InfoIcon topicId="key_name_info" />
+            </div>
           ) : null}
           <Text>
             To find out your Chat ID, initiate chat with our Telegram bot:
           </Text>
           <Text>
-            <Link href="https://t.me/Obi_telegram_bot" target="_blank">
+            <Link
+              href="https://t.me/Obi_telegram_bot"
+              target="_blank"
+              className="text-primary hover:text-primary/80 hover:underline"
+            >
               https://t.me/Obi_telegram_bot
             </Link>
           </Text>
           <Input
-            label="Chat ID"
             labelClassname="bg-background-secondary"
-            className="w-full"
+            className="h-standardField w-full"
             placeholder="123456789"
             value={chatId}
             onChange={(value) => {
@@ -146,16 +152,18 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
               securityQuestion.setSecurityQuestion(value.value);
             }}
           />
-          <Input
-            label="Security Answer"
-            labelClassname="bg-background-secondary"
-            className="w-full"
-            placeholder="Security Answer"
-            value={securityQuestion.securityAnswer}
-            onChange={(value) => {
-              securityQuestion.setSecurityAnswer(value);
-            }}
-          />
+          <div className="flex items-center gap-2">
+            <Input
+              labelClassname="bg-background-secondary"
+              className="h-standardField w-full"
+              placeholder="Security Answer"
+              value={securityQuestion.securityAnswer}
+              onChange={(value) => {
+                securityQuestion.setSecurityAnswer(value);
+              }}
+            />
+            <InfoIcon topicId="security_answer_info" />
+          </div>
         </div>
       );
     }
@@ -163,11 +171,16 @@ export const AddTelegramKey = observer<AddTelegramKeyProps>(
     function renderMagicCodeForm() {
       return (
         <>
+          <div className="flex items-center gap-2">
+            <Text>
+              Enter the magic code your bot has sent to your Telegram account:
+            </Text>
+            <InfoIcon topicId="telegram_magic_code" />
+          </div>
           <Input
-            label="Magic Code"
             labelClassname="bg-background-secondary"
-            className="max-w-96 max-sm:w-full"
-            placeholder="12345678"
+            className="h-standardField max-w-96 max-sm:w-full"
+            placeholder="Magic Code"
             value={code}
             onChange={(value) => {
               setCode(value);

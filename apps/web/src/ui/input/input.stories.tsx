@@ -16,7 +16,7 @@ const meta = {
     labelClassname: {
       type: "string",
       description:
-        "Additional classes for the label. To display the label correctly, it is required to pass the background, such as `bg-black`",
+        "Additional classes for the label. To display the label correctly, it is required to pass the background, such as `bg-background`",
     },
   },
 } satisfies Meta<typeof Input>;
@@ -27,7 +27,7 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
 };
@@ -35,7 +35,7 @@ export const Primary: Story = {
 export const WithRightComponent: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
   render: (args) => {
@@ -50,7 +50,7 @@ export const WithRightComponent: Story = {
 export const WithLeftComponent: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
   render: (args) => {
@@ -66,7 +66,7 @@ export const WithLeftComponent: Story = {
 export const WithLeftIconAndRightButton: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
   render: (args) => {
@@ -93,7 +93,7 @@ export const WithLeftIconAndRightButton: Story = {
 export const WithChildren: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
   render: (args) => {
@@ -107,7 +107,7 @@ export const WithChildren: Story = {
 export const WithTopComponent: Story = {
   args: {
     label: "Label",
-    labelClassname: "bg-black",
+    labelClassname: "bg-background",
     placeholder: "Placeholder",
   },
   render: (args) => {

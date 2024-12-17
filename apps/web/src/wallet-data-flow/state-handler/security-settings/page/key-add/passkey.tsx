@@ -15,7 +15,10 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
   const passkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = await createPasskey();
-      const passkey = draft.value.addPasskeyKey(keyPair.publicKey);
+      const passkey = draft.value.addPasskeyKey({
+        type: keyPair.publicKey.type,
+        value: keyPair.publicKey.value,
+      });
       if (!draft.value.primaryKey) {
         draft.value.setPrimaryKey(passkey);
       }
@@ -28,16 +31,15 @@ export const AddPasskeyPage = observer(function AddPasskeyPage() {
   });
 
   return (
-    <Box className="h-fit w-2/5 !min-w-[320px] px-4 py-6 max-sm:w-full">
+    <Box className="h-fit !min-w-[320px] py-6 max-sm:w-full">
       <Text size="xl" fontWeight="semibold">
         Add a New Passkey
       </Text>
       <Divider className="my-2" />
       <div className="mt-3 space-y-2">
         <Input
-          label="Name"
           labelClassname="bg-background-secondary"
-          className="w-full"
+          className="h-standardField w-full"
           placeholder="Name"
           value={name}
           onChange={(value) => {

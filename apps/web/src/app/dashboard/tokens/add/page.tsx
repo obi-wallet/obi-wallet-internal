@@ -7,10 +7,10 @@ import {
   Input,
   useChainOptions,
 } from "@/components";
+import { InfoIcon } from "@/components/info-icon";
 import { useAlert } from "@/hooks/alert";
 import { TargetChain, TargetChainId } from "@/target-chain";
 import { AsyncButton } from "@/ui/button";
-import { InputContainer } from "@/ui/container";
 import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
@@ -34,33 +34,39 @@ export default observer(function TokenAdd() {
   const chainIdToUse = getChainId();
 
   return (
-    <div className="w-full">
-      <Box className="w-full lg:w-1/2">
-        <div className="my-4 flex-1 text-center text-white">
-          Import New Asset
+    <div className="token-add-page w-full">
+      <Box className="token-add-form w-full max-lg:w-full xl:w-3/4 2xl:w-1/2">
+        <div className="token-add-title my-4 flex flex-1 items-center justify-center gap-2 text-center text-white">
+          <div data-track-asset>Track a New Asset</div>
+          <InfoIcon topicId="import_new_asset" />
         </div>
-        <InputContainer
-          className="relative z-10 w-80"
-          label="Chain"
-          labelClassname="bg-background-secondary"
-        >
-          <ChainDropdown onChange={setChainId} chainId={chainIdToUse} />
-        </InputContainer>
-        <div className="my-4">
-          <label className="text-sm text-white">Token Contract Address</label>
-          <Input
-            className="mt-2 px-3 py-3 text-sm"
-            value={address}
-            onChange={setAddress}
+        <div className="flex items-center gap-2">
+          <ChainDropdown
+            onChange={setChainId}
+            chainId={chainIdToUse}
+            className="token-add-chain-select h-standardField border-foreground-primary-border relative z-10 w-full rounded-[5px] border"
           />
+          <InfoIcon topicId="chain_selection" />
+        </div>
+        <div className="token-add-address-container my-4 w-full">
+          <div className="flex items-center gap-2">
+            <Input
+              className="token-add-address-input mt-2 px-3 py-3 text-sm"
+              value={address}
+              placeholder="Paste Token Contract Address"
+              onChange={setAddress}
+            />
+            <InfoIcon topicId="token_contract_address" />
+          </div>
         </div>
 
-        <div className="mb-4 mt-0.5 flex gap-8 text-white">
+        <div className="token-add-actions mb-4 mt-0.5 flex gap-8 text-white">
           <Button
             onClick={() => {
               router.back();
             }}
-            className="flex-1 justify-center rounded-lg border-blue-500 bg-transparent p-2 text-center"
+            variant="secondary"
+            className="flex-1 justify-center rounded-lg p-2"
           >
             Cancel
           </Button>
@@ -79,7 +85,7 @@ export default observer(function TokenAdd() {
               const assetInfo =
                 assetId && (await targetChain.assetInfo(assetId));
               if (assetInfo && assetId) {
-                router.push(
+                await router.push(
                   `/dashboard/tokens/edit/${encodeURIComponent(assetId)}`,
                 );
               } else {

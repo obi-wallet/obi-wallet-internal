@@ -1,12 +1,12 @@
 "use client";
 
-import { Button, Stepper, Text } from "@/components";
+import { Button, Text } from "@/components";
 import Image from "next/image";
 
 export default function Congratulations() {
   return (
     <section className="flex flex-col items-center space-y-7">
-      <Stepper currentStep={4} totalSteps={4} />
+      {/* <Stepper currentStep={4} totalSteps={4} /> */}
       <Text fontWeight="bold" size="3xl">
         Congratulations 🎉
       </Text>

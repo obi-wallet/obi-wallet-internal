@@ -19,16 +19,12 @@ export function Box({
   ...rest
 }: BoxProps) {
   return (
-    <div
-      className={cn(
-        "bg-background-secondary rounded-md p-4 sm:shadow",
-        className,
+    <div className={cn("obi-box rounded-md sm:shadow", className)} {...rest}>
+      {title && (
+        <Text className={cn("obi-box-title", titleClassName)}>{title}</Text>
       )}
-      {...rest}
-    >
-      {title && <Text className={titleClassName}>{title}</Text>}
-      {RightIcon && <RightIcon />}
-      {children}
+      {RightIcon && <RightIcon className="obi-box-icon" />}
+      <div className="obi-box-content">{children}</div>
     </div>
   );
 }
