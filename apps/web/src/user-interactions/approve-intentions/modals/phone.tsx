@@ -239,7 +239,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
             <Input
               labelClassname="bg-background-secondary"
               className="h-standardField mt-4 max-w-96 max-sm:w-full"
-              placeholder="12345678"
+              placeholder="Enter magic code"
               value={code}
               onChange={handleCodeChange}
             />
