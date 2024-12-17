@@ -125,7 +125,7 @@ export const AddPhoneKey = observer<AddPhoneKeyProps>(function AddPhoneKey({
           onClick={() => {
             if (sentMagicCode) {
               if (code.length === 8) {
-                phoneKeyFlow.mutate(isVoiceCall ? "voice" : "sms");
+                phoneKeyFlow.mutate("sms");
               }
             } else {
               phoneKeyFlow.mutate("sms");

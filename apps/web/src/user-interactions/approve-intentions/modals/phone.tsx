@@ -80,7 +80,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
               ...keyItem.keyMetaData,
               payload: {
                 chatId: to,
-                securityQuestion: "",
+                securityQuestion: securityQuestion.value,
               },
             });
           }
@@ -88,19 +88,16 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
           return keyItem.keyMetaData;
         }
 
-        const metadata = getKeyMetaData();
-
         const intentionsHandler = new PhoneKeyIntentionsHandler({
           key: keyItem.key,
-          keyMetaData: metadata,
+          keyMetaData: getKeyMetaData(),
           index,
           payload: intentions,
           answer: securityAnswer,
         });
 
-        if (sentMagicCode) {
-          onResult(await intentionsHandler.confirmMagicCode(code));
-        } else {
+        if (!code) {
+          // If no code is provided, this is an initial request
           try {
             await intentionsHandler.requestMagicCode(via);
             setSentMagicCode(true);
@@ -109,17 +106,27 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
             if (via === "voice") {
               setIsVoiceCall(true);
             }
-          } catch {
-            setSentMagicCode(true);
-            setRetryCountdown(30);
+          } catch (error) {
+            console.error("Error requesting magic code:", error);
             setLastError("Failed to send magic code");
+            throw error;
           }
+        } else {
+          // If code is provided, this is a confirmation
+          return onResult(await intentionsHandler.confirmMagicCode(code));
         }
       },
-      onError() {
+      onError(error) {
+        console.error(error);
         setLastError("Failed to process request");
       },
     });
+
+    const handleVoiceCall = () => {
+      setLastError(null);
+      setCode(""); // Clear any existing code
+      confirm.mutate("voice");
+    };
 
     const handleCodeChange = (value: string) => {
       // Only allow digits and limit to 8 characters
@@ -156,9 +163,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                 </Text>
                 <Text className="text-sm text-gray-300">
                   <button
-                    onClick={() => {
-                      return confirm.mutate("voice");
-                    }}
+                    onClick={handleVoiceCall}
                     className="text-primary hover:text-primary/80 hover:underline"
                   >
                     Receive a voice call instead
@@ -181,9 +186,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                     `If you don't receive a call, try again in ${retryCountdown} seconds.`
                   ) : (
                     <button
-                      onClick={() => {
-                        return confirm.mutate("voice");
-                      }}
+                      onClick={handleVoiceCall}
                       className="text-primary hover:text-primary/80 hover:underline"
                     >
                       If you don't receive a call, try again.
@@ -209,9 +212,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
                 </Text>
                 <Text className="text-sm text-gray-300">
                   <button
-                    onClick={() => {
-                      return confirm.mutate("voice");
-                    }}
+                    onClick={handleVoiceCall}
                     className="text-primary hover:text-primary/80 hover:underline"
                   >
                     Try a voice call instead
@@ -248,7 +249,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
               />
             ) : null}
             <DropDown
-              className="text-md max-w-96 max-sm:w-full"
+              className="text-md max-w-96 max-sm:w-full [&[aria-disabled=true]]:select-none [&[aria-disabled=true]]:appearance-none"
               contentContainerClassname="max-w-96 max-sm:w-full"
               description="Security Question"
               options={securityQuestions}
