@@ -1,4 +1,6 @@
 import { Box, Button, Divider, Text } from "@/components";
+import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
 import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
@@ -9,8 +11,6 @@ import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
-import { useStore } from "@/contexts";
-import { useCurrentWallet } from "@/hooks/use-current-wallet";
 
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
