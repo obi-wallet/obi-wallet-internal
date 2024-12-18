@@ -88,10 +88,9 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
       return (
         <Modal
           title="Cloud Key"
-          boxClassname="h-fit !w-[320px] !min-w-[320px] px-4 py-6 w-full overflow-y-auto max-h-[400px]"
-          onClose={onClose}
+          boxClassname="h-fit !min-w-[320px] px-4 py-6 w-full"
         >
-          <section className="flex flex-col items-center space-y-4">
+          <section className="flex max-h-[60vh] flex-col items-center gap-4 overflow-y-auto">
             {cloudKeyFiles?.map((file, index) => {
               return (
                 <AsyncButton
