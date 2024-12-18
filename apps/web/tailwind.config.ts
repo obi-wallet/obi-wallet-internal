@@ -9,6 +9,7 @@ const config: Config = {
         revertLayer: "revert-layer",
         standardField: "46px",
         standardButton: "36px",
+        tallButton: "48px",
       },
       colors: {
         primary: "var(--background-primary)",

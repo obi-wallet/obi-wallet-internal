@@ -14,7 +14,7 @@ export type ButtonVariant =
   | "primary-outline"
   | "warning";
 
-export type ButtonSize = "sm" | "base" | "md" | "lg";
+export type ButtonSize = "sm" | "base" | "md" | "lg" | "tall";
 
 export type ButtonLeading = "none" | "tight" | "normal";
 
@@ -59,17 +59,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const style = cn(
       "inline-flex rounded-[5px] items-center font-medium",
-      "h-standardButton max-h-standardButton",
       "focus-visible:ring focus:outline-none focus-visible:ring-primary",
       "shadow-sm",
       "transition-colors duration-75",
       "disabled:shadow-inner",
       block && "w-full",
       // Size
-      size === "base" && "px-3 py-1.5 text-sm md:text-base",
-      size === "sm" && "px-1 py-1 text-xs md:text-sm",
+      size === "base" &&
+        "px-3 py-1.5 text-sm md:text-base h-standardButton max-h-standardButton",
+      size === "sm" &&
+        "px-1 py-1 text-xs md:text-sm h-standardButton max-h-standardButton",
       size === "md" &&
-        "px-3 md:text-sm lg:text-md lg:py-1.5 max-md:py-1 max-sm:text-xs",
+        "px-3 md:text-sm lg:text-md lg:py-1.5 max-md:py-1 max-sm:text-xs h-standardButton max-h-standardButton",
+      size === "tall" &&
+        "px-3 py-2 text-sm md:text-base h-tallButton max-h-tallButton",
       // size === "lg" && "h-12 px-6 text-base",
       // Line Height (Leading)
       leading === "tight" &&

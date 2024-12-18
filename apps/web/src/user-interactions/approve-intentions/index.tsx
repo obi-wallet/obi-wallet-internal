@@ -116,14 +116,44 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
 
         case KeyType.Cloud: {
           const files = await readFiles();
+          if (!files) break;
           const keyFiles = files
-            ?.filter((file) => {
-              return file.name.startsWith("obi-");
+            .filter((file) => {
+              // "CloudKey" is legacy
+              return (
+                file.name.startsWith("obi-") || file.name.startsWith("CloudKey")
+              );
             })
             .filter((file) => {
               return file.name.endsWith(".key");
             });
-          if (keyFiles) {
+          if (keyFiles.length === 1) {
+            // If there's only one key, use it automatically
+            const keyPair = await readFileById(keyFiles[0]!.id);
+            if (keyPair) {
+              try {
+                const keyIntentionsHandler = new KeyPairIntentionsHandler({
+                  owner: multisigKey,
+                  payload: intentions,
+                  keyPair,
+                  type: KeyType.Cloud,
+                });
+                const result = await keyIntentionsHandler.handle();
+                setResultWithPublicKey(
+                  result.publicKey,
+                  result.intentionsResult,
+                );
+              } catch (e) {
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+                const error = e as Error;
+                console.error(error);
+                alert.showError(
+                  `Could not process cloud key: ${error.message}`,
+                );
+              }
+            }
+          } else if (keyFiles.length > 1) {
+            // Only show modal if there are multiple keys
             setCloudKeysModal(keyFiles);
           }
           break;
@@ -203,8 +233,8 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
 
       return (
         <Modal
-          title="Cloud Key"
-          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full"
+          title="Select Cloud Key File"
+          boxClassname="h-fit w-2/5 !w-[320px] !min-w-[320px] px-4 py-6 max-sm:w-full bg-opacity-90 bg-background"
           onClose={onClose}
         >
           <section className="flex max-h-[400px] flex-col items-center space-y-4 overflow-y-auto">
@@ -213,6 +243,7 @@ export const ApproveIntentions = observer<ApproveIntentionsProps>(
                 return (
                   <AsyncButton
                     key={index}
+                    size="tall"
                     onClick={async () => {
                       const keyPair = await readFileById(file.id);
                       if (keyPair) {
