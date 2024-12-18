@@ -355,19 +355,11 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
     description: (
       <>
         <p>
-          Choose how many keys are needed to sign transactions and access your
-          wallet.
+          This is how many keys are needed to sign transactions and access your
+          wallet. This is currently equal to half of your total keys, rounded
+          down. We recommend 2-of-4 or 2-of-5 for the ideal blend of security
+          and convenience.
         </p>
-        <ul className="mt-2 list-disc space-y-1 pl-4">
-          <li>
-            Higher numbers provide more security but require more keys for
-            access
-          </li>
-          <li>Lower numbers are more convenient but provide less security</li>
-          <li>
-            We recommend 2 required keys for balanced security and convenience
-          </li>
-        </ul>
       </>
     ),
   },

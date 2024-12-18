@@ -153,7 +153,12 @@ export class MultisigKey {
   }
 
   protected addKey(key: z.infer<typeof KeySchema>) {
-    this.setKeys([...this._keys, key]);
+    const newKeys = [...this._keys, key];
+    this.setKeys(newKeys);
+    const newThreshold = Math.floor(newKeys.length / 2);
+    if (newThreshold > 0) {
+      this.setThreshold(newThreshold);
+    }
     return key;
   }
 
