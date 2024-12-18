@@ -101,7 +101,7 @@ export function useGoogleAuth() {
     }
 
     signOut();
-    showSuccess("The Key File is successfully uploaded to google drive!");
+    showSuccess("Key uploaded to your Google Drive successfully.");
   };
 
   const readFiles = async (): Promise<
@@ -148,7 +148,6 @@ export function useGoogleAuth() {
 
     const fileContent = await response.json();
     signOut();
-    showSuccess("The Key File is successfully imported!");
     return fileContent;
   };
 
