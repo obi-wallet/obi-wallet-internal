@@ -9,17 +9,25 @@ import { observer } from "mobx-react-lite";
 import { FaTrash } from "react-icons/fa";
 
 import { KeyTypePage, useSecuritySettingsContext } from "../context";
+import { useStore } from "@/contexts";
+import { useCurrentWallet } from "@/hooks/use-current-wallet";
 
 export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
   function SecuritySettingsKeyTypePage({ page }) {
     const { draft, keyList, pushPage, popPage, setKeyMetaData } =
       useSecuritySettingsContext();
     const { uploadFile } = useGoogleAuth();
+    const { userDataStore } = useStore();
+    const currentWallet = useCurrentWallet();
     const keyData = keyList.find((item) => {
       return item.type === page.payload;
     });
 
-    if (!keyData) return null;
+    if (!keyData || !currentWallet) return null;
+
+    const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
+    const walletName = userData.name || "My Obi";
+    const safeWalletName = walletName.replace(/[^a-zA-Z0-9-_ ]/g, "").trim();
 
     return (
       <Box className="h-fit !min-w-full py-6 max-sm:w-full">
@@ -77,10 +85,10 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
               if (!draft.value.primaryKey) {
                 draft.value.setPrimaryKey(cloudkey);
               }
-              const timestamp = DateTime.now().toISO();
-              const fileName = `obi-${timestamp}.key`;
+              const timestamp = DateTime.now().toFormat("yyyy-MM-dd'T'HH:mm");
+              const fileName = `obi-${safeWalletName}-${timestamp}.key`;
               setKeyMetaData(keyPair.publicKey, {
-                name: `CloudKey-${timestamp}`,
+                name: `obi-${safeWalletName}-${timestamp}`,
                 timestamp,
               });
               await uploadFile(keyPair, fileName, "application/json");
