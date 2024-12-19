@@ -21,6 +21,6 @@
     "@types/luxon": "^3.4.2",
     "@types/ramda": "^0.30.2",
     "eslint": "^9.14.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   }
 }
