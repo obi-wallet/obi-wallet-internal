@@ -15895,7 +15895,6 @@ __metadata:
     prettier: "npm:^3.4.2"
     prettier-plugin-packagejson: "npm:^2.5.6"
     prettier-plugin-tailwindcss: "npm:^0.6.9"
-    tailwind-scrollbar: "npm:^3.1.0"
     turbo: "npm:^2.3.3"
   languageName: unknown
   linkType: soft
