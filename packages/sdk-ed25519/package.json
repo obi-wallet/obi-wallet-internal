@@ -11,9 +11,9 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@noble/curves": "^1.6.0",
+    "@noble/curves": "^1.7.0",
     "@obi-wallet/encoding": "workspace:*",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

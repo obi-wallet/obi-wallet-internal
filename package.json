@@ -29,12 +29,12 @@
     "fake-indexeddb": "^6.0.0"
   },
   "devDependencies": {
-    "@types/is-core-module": "^2",
+    "@types/is-core-module": "^2.2.2",
     "prettier": "^3.4.2",
     "prettier-plugin-packagejson": "^2.5.6",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwind-scrollbar": "^3.1.0",
-    "turbo": "^2.2.3"
+    "turbo": "^2.3.3"
   },
   "packageManager": "yarn@4.5.3",
   "engines": {
