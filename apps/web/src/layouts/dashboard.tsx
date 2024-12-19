@@ -1,6 +1,5 @@
 import { DashboardHeader } from "@/components";
 import { Education } from "@/components/education";
-import { RouteTopics } from "@/components/education/route-topics";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
@@ -19,7 +18,6 @@ export function DashboardCustomLayout({
     <>
       <DashboardHeader />
       <MainContainer>
-        <RouteTopics />
         <section
           className={cn(
             "dashboard-custom-layout flex h-full w-full flex-col max-md:px-3 md:flex-row",
