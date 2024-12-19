@@ -237,7 +237,7 @@ const AssetBalance = observer(function AssetBalance({
   if (prettyBalances.status === PrettyBalancesStatus.NoAssets) {
     return (
       <div className="flex w-full min-w-0 flex-row items-start p-4">
-        <p className="break-words text-left text-sm font-light leading-normal text-white">
+        <div className="break-words text-left text-sm font-light leading-normal text-white">
           You don't have any assets yet. Receive assets on
           <br />
           <InlineChainDropdown chainId={Eip155ChainId.Ethereum} /> or{" "}
@@ -245,7 +245,7 @@ const AssetBalance = observer(function AssetBalance({
             buy some assets with fiat
           </Link>{" "}
           to get started!
-        </p>
+        </div>
       </div>
     );
   }
