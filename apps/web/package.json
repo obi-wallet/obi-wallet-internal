@@ -74,7 +74,7 @@
     "mobx": "^6.13.5",
     "mobx-react-lite": "^4.1.0",
     "nanoid": "^5.0.9",
-    "next": "patch:next@npm%3A15.0.3#~/.yarn/patches/next-npm-15.0.3-00384c79d0.patch",
+    "next": "patch:next@npm%3A15.1.2#~/.yarn/patches/next-npm-15.1.2-24e7411703.patch",
     "next-qrcode": "^2.5.1",
     "permissionless": "^0.2.23",
     "ramda": "^0.30.1",
@@ -131,7 +131,7 @@
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2",
-    "vercel": "^37.14.0",
+    "vercel": "^39.2.2",
     "vitest": "^2.1.8",
     "webpack": "^5.97.1",
     "webpack-hook-plugin": "^1.0.7"

@@ -1,8 +1,8 @@
 diff --git a/dist/build/swc/options.js b/dist/build/swc/options.js
-index dceda5c01c3cb8eb8577defb53aa7f75f7f81f49..009f2a45237fdf20e3e15e1f8e30cb47bc6b1818 100644
+index e8f9b77d4a5b21e10366af039353a3d266db9814..c6daf79c0754d5efacf5d845a105c0426d87a659 100644
 --- a/dist/build/swc/options.js
 +++ b/dist/build/swc/options.js
-@@ -49,7 +49,7 @@ function getParserOptions({ filename, jsConfig, ...rest }) {
+@@ -57,7 +57,7 @@ function getParserOptions({ filename, jsConfig, ...rest }) {
          ...rest,
          syntax: hasTsSyntax ? 'typescript' : 'ecmascript',
          dynamicImport: true,
@@ -11,7 +11,7 @@ index dceda5c01c3cb8eb8577defb53aa7f75f7f81f49..009f2a45237fdf20e3e15e1f8e30cb47
          // Exclude regular TypeScript files from React transformation to prevent e.g. generic parameters and angle-bracket type assertion from being interpreted as JSX tags.
          [hasTsSyntax ? 'tsx' : 'jsx']: !isTSFile,
          importAssertions: true
-@@ -94,6 +94,7 @@ function getBaseSWCOptions({ filename, jest, development, hasReactRefresh, globa
+@@ -102,6 +102,7 @@ function getBaseSWCOptions({ filename, jest, development, hasReactRefresh, globa
                  } : {},
                  legacyDecorator: enableDecorators,
                  decoratorMetadata: emitDecoratorMetadata,
