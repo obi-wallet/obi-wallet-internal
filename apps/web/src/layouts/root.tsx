@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { UserInteractionsHandlers } from "@/user-interactions";
 import { Roboto_Mono } from "next/font/google";
 import { ReactNode } from "react";
-import { RouteTopics } from "@/components/education/route-topics";
 
 export const robotoMono = Roboto_Mono({
   subsets: ["latin"],
@@ -19,7 +18,6 @@ export function RootContainer({ children }: { children: ReactNode }) {
         "obi-root-container flex h-full flex-grow flex-col",
       )}
     >
-      <RouteTopics />
       {children}
     </div>
   );

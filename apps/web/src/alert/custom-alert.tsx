@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertType } from "@/alert/type";
 import { DangerAnimation } from "@/animations/danger";
 import { SuccessAnimation } from "@/animations/success";

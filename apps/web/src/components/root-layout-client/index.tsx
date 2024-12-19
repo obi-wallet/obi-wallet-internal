@@ -1,5 +1,6 @@
 "use client";
 import { Alert } from "@/alert";
+import { RouteTopics } from "@/components/education/route-topics";
 import { RootContainer } from "@/layouts/root";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
@@ -37,6 +38,7 @@ export function RootLayoutClient({
   return (
     <RootContainer>
       <Provider>
+        <RouteTopics />
         {children}
         <div id="modal-root" />
         <Alert />
