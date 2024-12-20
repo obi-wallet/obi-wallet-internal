@@ -11,6 +11,7 @@ import {
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
 import { serialize } from "@obi-wallet/sdk-json";
+import { Effect, Schedule } from "effect";
 import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
 import invariant from "tiny-invariant";
@@ -178,55 +179,51 @@ export class SecretJsClient {
 
   public async broadcastSignedTransaction(
     signedTransaction: SignedTransaction,
-  ): Promise<BroadcastTransactionResult> {
-    return await this.withSecretNetworkClient(async (client) => {
-      // TODO: need to do Sync/Async here
-      const broadcastMode = BroadcastMode.Block;
-      const txResponse = await client.tx.broadcastSignedTx(signedTransaction, {
-        ...this.defaultTxOptions,
-        broadcastMode: broadcastMode,
-        waitForCommit: true,
-      });
-      if (broadcastMode !== BroadcastMode.Block) {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 10_000);
-        });
-      }
-      console.warn("Broadcast response: ", serialize(txResponse));
-      let rawResult;
-      if (broadcastMode !== BroadcastMode.Block || !txResponse.rawLog) {
-        rawResult = await client.query.getTx(txResponse.transactionHash);
+  ) {
+    const { transactionHash } = await this.withSecretNetworkClient(
+      async (client) => {
+        return await client.tx.broadcastSignedTx(
+          signedTransaction,
+          this.defaultTxOptions,
+        );
+      },
+    );
+    return await this.fetchTx(transactionHash);
+  }
 
-        if (!rawResult) {
-          // tx might be in mempool, so try block
-          try {
-            const res = await client.tx.broadcastSignedTx(signedTransaction, {
-              ...this.defaultTxOptions,
-              broadcastMode: BroadcastMode.Block,
-              waitForCommit: false,
-            });
-            if (!res.code) {
-              throw new Error("no res code");
-            }
-            return {
-              success: true,
-              transactionHash: res.transactionHash,
-              rawLog: res.rawLog,
-              rawResult: res,
-            };
-          } catch {
-            await new Promise((resolve) => {
-              setTimeout(resolve, 5_000);
-            });
-            rawResult = await client.query.getTx(txResponse.transactionHash);
+  public async fetchTx(transactionHash: string) {
+    const fetchTxTask = Effect.tryPromise(async () => {
+      let lastError = null;
+
+      for (const url of this.chain.urls) {
+        try {
+          const client = new SecretNetworkClient({
+            url,
+            chainId: this.chainId,
+          });
+          const response = await client.query.getTx(transactionHash);
+          if (response) {
+            return response;
           }
+        } catch (e) {
+          lastError = e;
+          console.error(e);
         }
       }
-      // TODO retry handling instead
-      rawResult = txResponse;
-      invariant(rawResult, "no tx response");
-      return this.wrapTxResponse(rawResult);
+
+      if (lastError) {
+        throw lastError;
+      }
+
+      throw new Error("TX Not found");
     });
+    const schedule = Schedule.addDelay(Schedule.recurUpTo("10 seconds"), () => {
+      return "1 second";
+    });
+    const txResponse = await Effect.runPromise(
+      Effect.retry(fetchTxTask, schedule),
+    );
+    return this.wrapTxResponse(txResponse);
   }
 
   protected wrapTxResponse(rawResult: TxResponse): BroadcastTransactionResult {
@@ -273,7 +270,8 @@ export class SecretJsClient {
       gasLimit: 800_000,
       gasPriceInFeeDenom: 0.05,
       feeDenom: this.chain.denom,
-      broadcastMode: BroadcastMode.Block,
+      broadcastMode: BroadcastMode.Sync,
+      waitForCommit: false,
     };
   }
 }
