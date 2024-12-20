@@ -10,11 +10,9 @@ import {
   createStakingAminoConverters,
   createVestingAminoConverters,
 } from "@cosmjs/stargate";
-import { serialize } from "@obi-wallet/sdk-json";
 import { Effect, Schedule } from "effect";
 import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
 import { StdFee } from "secretjs/dist/wallet_amino";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { SecretJsHomeChainId, SecretJsHomeChains } from "../../home-chains";
@@ -167,11 +165,7 @@ export class SecretJsClient {
     hash: string;
   }): Promise<BroadcastTransactionResult> {
     if (process.env.NODE_ENV === "test") {
-      const rawResult = await this.withSecretNetworkClient(async (client) => {
-        return await client.query.getTx(hash);
-      });
-      invariant(rawResult, "no tx response");
-      return this.wrapTxResponse(rawResult);
+      return await this.fetchTx(hash);
     }
 
     return await this.broadcastSignedTransaction(signedTransaction);
