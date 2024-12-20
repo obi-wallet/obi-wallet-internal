@@ -9757,6 +9757,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch":
+  version: 3.1.5
+  resolution: "cross-fetch@patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch::version=3.1.5&hash=843adf"
+  dependencies:
+    node-fetch: "npm:2.6.7"
+  checksum: 10c0/482d68d4d89067fc4150c6a26678490a7b6357e0e83aa91c368d145a1faa848f0eb830508de8a7b402a85eb7af6fe549120602c301591dae903567c0a59e0b2e
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.3, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
