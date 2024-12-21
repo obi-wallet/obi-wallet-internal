@@ -262,7 +262,7 @@ export class SecretJsClient {
   public get defaultTxOptions() {
     return {
       gasLimit: 800_000,
-      gasPriceInFeeDenom: 0.05,
+      gasPriceInFeeDenom: 0.1,
       feeDenom: this.chain.denom,
       broadcastMode: BroadcastMode.Sync,
       waitForCommit: false,
