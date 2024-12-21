@@ -68,6 +68,7 @@ import {
 import { getSdkError } from "@walletconnect/utils";
 import { bech32 } from "bech32";
 import { chains } from "chain-registry";
+import { Effect, Schedule } from "effect";
 import { pubkeyToAddress } from "secretjs";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -429,9 +430,37 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       payload: intentionsPayload,
       results: intentionsResults,
     });
-    return await this.withSigningCosmWasmClient(signer, async (client) => {
-      return await client.signAndBroadcast(signer.address, messages, fee, memo);
+    const txHash = await this.withSigningCosmWasmClient(
+      signer,
+      async (client) => {
+        return await client.signAndBroadcastSync(
+          signer.address,
+          messages,
+          fee,
+          memo,
+        );
+      },
+    );
+    return await this.fetchTx(txHash);
+  }
+
+  public async fetchTx(transactionHash: string) {
+    const fetchTxTask = Effect.tryPromise(async () => {
+      return await this.withCosmWasmClient(async (client) => {
+        const response = await client.getTx(transactionHash);
+        if (response) {
+          return response;
+        }
+        throw new Error("TX Not found");
+      });
     });
+    const schedule = Schedule.addDelay(Schedule.recurUpTo("10 seconds"), () => {
+      return "1 second";
+    });
+    const txResponse = await Effect.runPromise(
+      Effect.retry(fetchTxTask, schedule),
+    );
+    return txResponse;
   }
 
   protected get gasPrice() {

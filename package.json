@@ -22,8 +22,7 @@
     "tsc": "turbo tsc"
   },
   "resolutions": {
-    "@types/react": "npm:types-react@rc",
-    "@types/react-dom": "npm:types-react-dom@rc",
+    "cross-fetch@npm:3.1.5": "patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch",
     "eslint-plugin-react-hooks": "^5.0.0"
   },
   "dependencies": {
@@ -31,14 +30,13 @@
     "fake-indexeddb": "^6.0.0"
   },
   "devDependencies": {
-    "@types/is-core-module": "^2",
-    "prettier": "^3.3.3",
-    "prettier-plugin-packagejson": "^2.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwind-scrollbar": "^3.1.0",
-    "turbo": "^2.2.3"
+    "@types/is-core-module": "^2.2.2",
+    "prettier": "^3.4.2",
+    "prettier-plugin-packagejson": "^2.5.6",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "turbo": "^2.3.3"
   },
-  "packageManager": "yarn@4.5.1",
+  "packageManager": "yarn@4.5.3",
   "engines": {
     "node": "^20.0.0"
   }

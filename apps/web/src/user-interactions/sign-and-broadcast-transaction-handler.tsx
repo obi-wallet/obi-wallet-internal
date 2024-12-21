@@ -8,8 +8,8 @@ import {
   ApproveMessages,
   ApproveMessagesProps,
 } from "@/user-interactions/approve-messages";
-import { isDeliverTxSuccess } from "@cosmjs/stargate";
 import { SignAndBroadcastTransactionUserInteraction } from "@obi-wallet/sdk";
+import { serialize } from "@obi-wallet/sdk-json";
 import { observer } from "mobx-react-lite";
 import { ReactNode } from "react";
 import { TxResultCode } from "secretjs";
@@ -90,16 +90,30 @@ export function signAndBroadcastTransactionUserInteractionToApproveMessagesProps
           return;
         }
 
-        const response = await targetChain.signAndBroadcast(payload);
-        interaction.resolve({
-          approved: true,
-          payload: {
-            success: isDeliverTxSuccess(response),
-            rawLog: response.rawLog,
-            transactionHash: response.transactionHash,
-            rawResult: response,
-          },
-        });
+        try {
+          const response = await targetChain.signAndBroadcast(payload);
+          interaction.resolve({
+            approved: true,
+            payload: {
+              success: response.code === TxResultCode.Success,
+              rawLog: serialize(response.events),
+              transactionHash: response.hash,
+              rawResult: response,
+            },
+          });
+        } catch (e) {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+          const error = e as Error;
+          interaction.resolve({
+            approved: true,
+            payload: {
+              success: false,
+              rawResult: e,
+              rawLog: error.message,
+              transactionHash: "",
+            },
+          });
+        }
       }
 
       if (isSecretChainId(chainId)) {
@@ -122,12 +136,7 @@ export function signAndBroadcastTransactionUserInteractionToApproveMessagesProps
         const response = await targetChain.signAndBroadcast(payload);
         interaction.resolve({
           approved: true,
-          payload: {
-            success: response.code === TxResultCode.Success,
-            rawLog: response.rawLog,
-            transactionHash: response.transactionHash,
-            rawResult: response,
-          },
+          payload: response,
         });
       }
     },

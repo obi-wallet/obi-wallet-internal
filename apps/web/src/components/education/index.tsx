@@ -343,8 +343,8 @@ const TOPIC_CONTENT: Record<string, TopicContent> = {
           <li>Stored in your Google Drive</li>
           <li>Protected by your cloud account security</li>
           <li>
-            Recommended for use in a multi-key setup with 3 or more keys, in
-            case your cloud account is ever compromised
+            Recommended for use in a multi-key setup with 4+ keys so that you're
+            protected even if your cloud account is compromised
           </li>
         </ul>
       </>

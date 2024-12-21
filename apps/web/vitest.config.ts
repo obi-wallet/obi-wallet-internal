@@ -6,6 +6,7 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     setupFiles: ["dotenv/config", "./vitest.setup.mts"],
+    testTimeout: 30_000,
     mockReset: true,
     clearMocks: true,
     globals: true,

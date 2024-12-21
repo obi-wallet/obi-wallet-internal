@@ -25,8 +25,8 @@ export const DashboardHeader = observer(function DashboardHeader() {
         <PrimaryLink href={primaryLinkHref}>
           <Image
             src="/assets/icons/landing-logo.svg"
-            width={68}
-            height={50}
+            width={51}
+            height={37.5}
             alt="logo"
           />
         </PrimaryLink>

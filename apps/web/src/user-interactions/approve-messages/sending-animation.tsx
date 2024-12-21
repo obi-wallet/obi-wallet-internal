@@ -1,3 +1,5 @@
+"use client";
+
 import { Text } from "@/components";
 import { cn } from "@/lib/utils";
 import Lottie from "lottie-react";
