@@ -22,6 +22,7 @@
     "tsc": "turbo tsc"
   },
   "resolutions": {
+    "cross-fetch@npm:3.1.5": "patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch",
     "eslint-plugin-react-hooks": "^5.0.0"
   },
   "dependencies": {

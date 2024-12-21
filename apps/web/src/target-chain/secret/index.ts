@@ -353,15 +353,17 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
       payload: intentionsPayload,
       results: intentionsResults,
     });
-    return await this.client.withSigningSecretNetworkClient(
-      signer,
-      async (client) => {
-        return await client.tx.broadcast(messages, {
-          ...this.client.defaultTxOptions,
-          memo,
-        });
-      },
-    );
+    const { transactionHash } =
+      await this.client.withSigningSecretNetworkClient(
+        signer,
+        async (client) => {
+          return await client.tx.broadcast(messages, {
+            ...this.client.defaultTxOptions,
+            memo,
+          });
+        },
+      );
+    return await this.client.fetchTx(transactionHash);
   }
 
   protected get gasPrice() {

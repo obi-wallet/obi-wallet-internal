@@ -3509,6 +3509,7 @@ __metadata:
     "@types/secp256k1": "npm:^4.0.6"
     bignumber.js: "npm:^9.1.2"
     cosmjs-types: "npm:^0.9.0"
+    effect: "npm:^3.11.9"
     eslint: "npm:^9.17.0"
     ethers: "npm:^6.13.4"
     jscrypto: "npm:^1.0.3"
@@ -9754,6 +9755,15 @@ __metadata:
   dependencies:
     node-fetch: "npm:2.6.7"
   checksum: 10c0/29b457f8df11b46b8388a53c947de80bfe04e6466a59c1628c9870b48505b90ec1d28a05b543a0247416a99f1cfe147d1efe373afdeb46a192334ba5fe91b871
+  languageName: node
+  linkType: hard
+
+"cross-fetch@patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch":
+  version: 3.1.5
+  resolution: "cross-fetch@patch:cross-fetch@npm%3A3.1.5#~/.yarn/patches/cross-fetch-npm-3.1.5-e414995db9.patch::version=3.1.5&hash=843adf"
+  dependencies:
+    node-fetch: "npm:2.6.7"
+  checksum: 10c0/482d68d4d89067fc4150c6a26678490a7b6357e0e83aa91c368d145a1faa848f0eb830508de8a7b402a85eb7af6fe549120602c301591dae903567c0a59e0b2e
   languageName: node
   linkType: hard
 
