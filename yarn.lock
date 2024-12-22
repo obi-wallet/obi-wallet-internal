@@ -1537,10 +1537,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.38":
-  version: 0.50.38
-  resolution: "@chain-registry/types@npm:0.50.38"
-  checksum: 10c0/db5bd1c1ddfc3907ed4651370188506707caa518800e5e412f30df85a49c2a792960bdfa15329acaad7170bfb773de6fd62fb77467cb1c3feea570d7cb409842
+"@chain-registry/types@npm:^0.50.40":
+  version: 0.50.40
+  resolution: "@chain-registry/types@npm:0.50.40"
+  checksum: 10c0/a930da5ca9743c036ee8960ea451bd53be92c11c93d420c1c0c4757d5ac6a2174d60c92f046c96080a7afd43d3db5c96f1972e89bdbe9e211efe2bacb1c4a751
   languageName: node
   linkType: hard
 
@@ -3552,7 +3552,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@obi-wallet/web@workspace:apps/web"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.38"
+    "@chain-registry/types": "npm:^0.50.40"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:^0.32.4"
     "@cosmjs/crypto": "npm:^0.32.4"
@@ -3580,7 +3580,7 @@ __metadata:
     "@obi-wallet/sdk-secp256k1": "workspace:*"
     "@obi-wallet/wallet-connect": "workspace:*"
     "@react-oauth/google": "npm:^0.12.1"
-    "@reactuses/core": "npm:^5.0.23"
+    "@reactuses/core": "npm:^6.0.0"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@sentry/nextjs": "npm:^8.47.0"
@@ -3595,7 +3595,7 @@ __metadata:
     "@storybook/nextjs": "npm:^8.4.7"
     "@storybook/react": "npm:^8.4.7"
     "@storybook/test": "npm:^8.4.7"
-    "@storybook/test-runner": "npm:^0.20.1"
+    "@storybook/test-runner": "npm:^0.21.0"
     "@tanstack/react-query": "npm:^5.62.8"
     "@tanstack/react-query-devtools": "npm:^5.62.8"
     "@types/crypto-js": "npm:^4.2.2"
@@ -3614,7 +3614,7 @@ __metadata:
     axios: "npm:^1.7.9"
     bech32: "npm:^2.0.0"
     bignumber.js: "npm:^9.1.2"
-    chain-registry: "npm:^1.69.67"
+    chain-registry: "npm:^1.69.70"
     client-only: "npm:^0.0.1"
     clsx: "npm:^2.1.1"
     copy-to-clipboard: "npm:^3.3.3"
@@ -3648,7 +3648,7 @@ __metadata:
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
     react-dropzone: "npm:^14.3.5"
-    react-hook-form: "npm:^7.54.1"
+    react-hook-form: "npm:^7.54.2"
     react-icons: "npm:^5.4.0"
     rooks: "npm:^7.14.1"
     secp256k1: "npm:^5.0.1"
@@ -3664,7 +3664,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.7.2"
     vercel: "npm:^39.2.2"
-    viem: "npm:^2.21.55"
+    viem: "npm:^2.21.57"
     vitest: "npm:^2.1.8"
     webpack: "npm:^5.97.1"
     webpack-hook-plugin: "npm:^1.0.7"
@@ -4446,9 +4446,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reactuses/core@npm:^5.0.23":
-  version: 5.0.23
-  resolution: "@reactuses/core@npm:5.0.23"
+"@reactuses/core@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@reactuses/core@npm:6.0.0"
   dependencies:
     "@microsoft/fetch-event-source": "npm:^2.0.1"
     js-cookie: "npm:^3.0.5"
@@ -4457,11 +4457,11 @@ __metadata:
     use-sync-external-store: "npm:^1.2.0"
   peerDependencies:
     qrcode: ^1.5
-    react: ^16.8.0  || ^17.0.0 || ^18.0.0
+    react: ^16.8.0  || ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     qrcode:
       optional: true
-  checksum: 10c0/54dcdc98287a4e34f5754f9543baf1f853d535bf2775d6366fedf0875e222ab43914fba188a25192071cf85f46e0f22e6bf3800cccab39be29035aff41b0d2f0
+  checksum: 10c0/f7563854aafebcb7b3776fcaed604e2d4b289226227de0e359afc789246c2efaf19fee69393e5ae3813247cc26d6c32502c62b2dd11e6b030a1625c8e7534fcc
   languageName: node
   linkType: hard
 
@@ -5889,9 +5889,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test-runner@npm:^0.20.1":
-  version: 0.20.1
-  resolution: "@storybook/test-runner@npm:0.20.1"
+"@storybook/test-runner@npm:^0.21.0":
+  version: 0.21.0
+  resolution: "@storybook/test-runner@npm:0.21.0"
   dependencies:
     "@babel/core": "npm:^7.22.5"
     "@babel/generator": "npm:^7.22.5"
@@ -5916,7 +5916,7 @@ __metadata:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
   bin:
     test-storybook: dist/test-storybook.js
-  checksum: 10c0/ae7061de4d3f53ff00bd08d0e8413f6da274f3997ce6a70293cbfa93e1e398dc2cbf05e4d4851a70bce9ed2153f85e9c0397e36c5987b92141f230f68bfff40a
+  checksum: 10c0/376d9dee64547171407947fd0ee7042bf94152af6b45475917d3a7df2a23a89d46212afdaf946217328b2e6f1c1cf9dc921829cb64e197c50061573707cfafe8
   languageName: node
   linkType: hard
 
@@ -9103,12 +9103,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:^1.69.67":
-  version: 1.69.67
-  resolution: "chain-registry@npm:1.69.67"
+"chain-registry@npm:^1.69.70":
+  version: 1.69.70
+  resolution: "chain-registry@npm:1.69.70"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.38"
-  checksum: 10c0/b671cbcb1d742e5f74ac2a39a31f594debe2382e76c69ccba47c7e82769e82a6510a684352b74ab553a6b5a424898cd6b0ee1475872792f875884a182fe46c45
+    "@chain-registry/types": "npm:^0.50.40"
+  checksum: 10c0/20b9a9e84b78da2d4383c8ea4a628d7fca38e1515a94056c67a3c352dfea8a4c2a327e8cb4e2f7a1a8a92507d8a1e538ca02773e428b6d7a4c37d0f61608696d
   languageName: node
   linkType: hard
 
@@ -17484,12 +17484,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.54.1":
-  version: 7.54.1
-  resolution: "react-hook-form@npm:7.54.1"
+"react-hook-form@npm:^7.54.2":
+  version: 7.54.2
+  resolution: "react-hook-form@npm:7.54.2"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18 || ^19
-  checksum: 10c0/2d960ddf8aa654f34e36f5d995f0ec067a4c01340d650eca44f22aa4421e278dcc449c8522e66c5c66b1c61d62fbdf914b9e0a8de9deb4c6346cc3b37ef4eb82
+  checksum: 10c0/6eebead2900e3d369a989e7a20429f390dc75b3897142aa3107f1f6dabb9ae64fed201ea98cdcd8676e40466c97748aeb0c0d83264f5bd3a84dbc0b8e4863415
   languageName: node
   linkType: hard
 
@@ -20510,9 +20510,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.21.55":
-  version: 2.21.55
-  resolution: "viem@npm:2.21.55"
+"viem@npm:^2.21.57":
+  version: 2.21.57
+  resolution: "viem@npm:2.21.57"
   dependencies:
     "@noble/curves": "npm:1.7.0"
     "@noble/hashes": "npm:1.6.1"
@@ -20528,7 +20528,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10c0/ae0610dde4b2f4164237ef50a52e43d8f4ea47e9091a805d693acfe754a628663f682e22387a3861fae8f4a5bea2e8c59e3372fe74a2bbd5c361ceb7fa2786b1
+  checksum: 10c0/16d59f746dad68a34bcba8df26ad42fb0f919f2f11f7425e3298dc189694b17b66c3e4ba06495226b02020676f6ebab3b72f4f8fb39cfd06c6e03c9d6b3d4b27
   languageName: node
   linkType: hard
 
