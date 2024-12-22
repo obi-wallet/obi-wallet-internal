@@ -68,30 +68,30 @@ export class KeyMetaDataStore {
     });
   }
 
-  public getKeyMetaData(address: string): KeyMetaData {
-    return this.keyMetaDataPerWallet[address] ?? {};
+  public getKeyMetaData(id: string): KeyMetaData {
+    return this.keyMetaDataPerWallet[id] ?? {};
   }
 
   public getSingleKeyMetaData(
-    address: string,
+    id: string,
     publicKey: Secp256k1PublicKey,
   ): SingleKeyMetaData {
-    return this.getKeyMetaData(address)[publicKey.value] ?? {};
+    return this.getKeyMetaData(id)[publicKey.value] ?? {};
   }
 
   @action
-  public setKeyMetaData(address: string, keyMetaData: KeyMetaData) {
-    this.keyMetaDataPerWallet[address] = keyMetaData;
+  public setKeyMetaData(id: string, keyMetaData: KeyMetaData) {
+    this.keyMetaDataPerWallet[id] = keyMetaData;
   }
 
   @action
   public setSingleKeyMetaData(
-    address: string,
+    id: string,
     publicKey: Secp256k1PublicKey,
     singleKeyMetaData: SingleKeyMetaData,
   ) {
-    this.setKeyMetaData(address, {
-      ...this.getKeyMetaData(address),
+    this.setKeyMetaData(id, {
+      ...this.getKeyMetaData(id),
       [publicKey.value]: {
         ...singleKeyMetaData,
         name: singleKeyMetaData.name ? singleKeyMetaData.name : undefined,

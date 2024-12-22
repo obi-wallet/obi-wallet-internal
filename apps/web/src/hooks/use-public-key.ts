@@ -9,7 +9,7 @@ export function useSecp256k1PublicKeyQueryOptions() {
   const query = makeNamespacedQueryParamsOptional(
     homeChain.secp256k1PublicKeyQuery,
   );
-  return query(wallet?.userEntryAddress);
+  return query(wallet?.userEntryAddress ?? undefined);
 }
 
 export function useSecp256k1PublicKeyQuery() {
@@ -22,7 +22,7 @@ export function useEd25519PublicKeyQueryOptions() {
   const query = makeNamespacedQueryParamsOptional(
     homeChain.ed25519PublicKeyQuery,
   );
-  return query(wallet?.userEntryAddress);
+  return query(wallet?.userEntryAddress ?? undefined);
 }
 
 export function useEd25519PublicKeyQuery() {

@@ -26,7 +26,7 @@ import { z } from "zod";
 
 export interface ApproveEvmTransactionProps {
   walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   targetChainId: Eip155ChainId;
   calls: SerializedEvmUserOperationCalls;
@@ -48,9 +48,7 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
     onReject,
   }) {
     const { keyMetaDataStore, mpcWalletsStore } = useStore();
-    const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
-      walletMeta.userEntryAddress,
-    );
+    const wallet = mpcWalletsStore.getWalletById(walletMeta.id);
     const [intentionsResults, setIntentionsResults] = useState<
       IntentionsResults | undefined
     >();
@@ -124,15 +122,17 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
 
     if (!wallet) return null;
 
-    const keyMetaData = keyMetaDataStore.getKeyMetaData(
-      wallet.userEntryAddress,
-    );
+    const keyMetaData = keyMetaDataStore.getKeyMetaData(wallet.id);
     const intentionsPayload: IntentionsPayload | null = userOperationData
       ? {
           signHashes: [
             new Uint8Array(Buffer.from(userOperationData.hash, "hex")),
           ],
-          decryptEasyShare: wallet.encryptedEasyShare,
+          decryptShares: {
+            easy: wallet.encryptedEasyShare,
+            backup: wallet.encryptedBackupShare,
+            network: null,
+          },
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],

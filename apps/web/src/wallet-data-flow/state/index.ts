@@ -218,7 +218,7 @@ export class WalletDataState extends Data.TaggedClass(
       signHashes: this.serializedWalletData
         ? [createHash(Encoding.fromUtf8(this.serializedWalletData).toBytes())]
         : [],
-      decryptEasyShare: null,
+      decryptShares: null,
       decryptMessages: [],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: this.multisigKeyEncryptedMessages,
@@ -380,6 +380,10 @@ export class CommitDataState extends Data.TaggedClass(
                   data: ed25519KeyPair.privateKey,
                 });
               }),
+            },
+            // TODO: can be read from the easy share
+            secp256k1KeyPair: {
+              publicKey: null,
             },
             previousWalletData: walletData,
           },
@@ -575,6 +579,10 @@ export class UpdateOwnerState extends Data.TaggedClass(
             userEntryAddress: this.walletData.userEntryAddress,
             encryptedShares: encryptedSharesForClient,
             ed25519KeyPair: encryptedEd25519KeyPair,
+            // TODO: can be read from the easy share
+            secp256k1KeyPair: {
+              publicKey: null,
+            },
             previousWalletData: walletData,
           },
           keyMetaData: this.next.keyMetaData,

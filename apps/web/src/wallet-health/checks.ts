@@ -12,6 +12,7 @@ import {
   WalletDataStateType,
 } from "@/wallet-data-backup/sync-wallet-data";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { BackedUpMpcWalletSchema } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import {
   skipToken,
@@ -55,7 +56,13 @@ export function useOwnerUpToDateCheck(): WalletHealthCheck {
     queryKey: ["owner-up-to-date", wallet?.userEntryAddress],
     queryFn: wallet
       ? async () => {
-          const owner = await fetchOwner(wallet);
+          if (wallet.userEntryAddress === null) {
+            return true;
+          }
+          const owner = await fetchOwner({
+            homeChainId: wallet.homeChainId,
+            userEntryAddress: wallet.userEntryAddress,
+          });
           return wallet.owner.address === owner;
         }
       : skipToken,
@@ -98,13 +105,20 @@ export function useWalletBackupMutation() {
   return useMutation({
     mutationFn: async () => {
       invariant(wallet, "Expected wallet to be set.");
-      const keyMetaData = keyMetaDataStore.getKeyMetaData(
-        wallet.userEntryAddress,
-      );
+      const keyMetaData = keyMetaDataStore.getKeyMetaData(wallet.id);
+
+      const rawWallet = wallet.toJSON();
+      const backedUpWalletResult = BackedUpMpcWalletSchema.safeParse(rawWallet);
+
+      // TODO: handle local wallets
+      if (!backedUpWalletResult.success) {
+        return;
+      }
+
       const walletData = await HomeChain.chainId(
         wallet.homeChainId,
       ).getWalletData({
-        wallet: wallet.toJSON(),
+        wallet: backedUpWalletResult.data,
         keyMetaData: keyMetaData,
       });
       walletData.revision++;

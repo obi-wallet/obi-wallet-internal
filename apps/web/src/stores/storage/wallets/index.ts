@@ -103,6 +103,10 @@ export async function migrateWallet(
       backup: data.encryptedShares.backup,
     },
     ed25519KeyPair: data.ed25519KeyPair ?? null,
+    // TODO: here we can read from the easy share instead!
+    secp256k1KeyPair: {
+      publicKey: null,
+    },
     previousWalletData: data.previousWalletData ?? null,
   };
 }

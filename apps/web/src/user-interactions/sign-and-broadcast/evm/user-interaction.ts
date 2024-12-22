@@ -8,7 +8,7 @@ import {
 
 export interface SignAndBroadcastEvmPayload {
   readonly walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   readonly targetChainId: Eip155ChainId;
   readonly cancelable: boolean;

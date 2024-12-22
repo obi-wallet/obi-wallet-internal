@@ -44,7 +44,7 @@ export class SecretMpcSigner implements AminoSigner {
   ): Promise<SecretMpcSigner> {
     const publicKey = await HomeChain.chainId(
       wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    ).new__secp256k1PublicKey(wallet);
 
     return new SecretMpcSigner(wallet, publicKey, targetChainId);
   }

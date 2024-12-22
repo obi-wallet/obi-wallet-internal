@@ -3,7 +3,7 @@ import "server-only";
 import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
-import { HomeChainId } from "@obi-wallet/sdk";
+import { HomeChainId, UserEntryAddress } from "@obi-wallet/sdk";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
 import { http } from "viem";
 import { toAccount } from "viem/accounts";
@@ -31,7 +31,7 @@ export async function preparePimplicoClientAndKernelAccount({
 }: {
   homeChainId: HomeChainId;
   targetChainId: Eip155ChainId;
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
 }) {
   const publicKey =
     await HomeChain.chainId(homeChainId).secp256k1PublicKey(userEntryAddress);

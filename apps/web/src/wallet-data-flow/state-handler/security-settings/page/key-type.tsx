@@ -25,7 +25,7 @@ export const SecuritySettingsKeyTypePage = observer<{ page: KeyTypePage }>(
 
     if (!keyData || !currentWallet) return null;
 
-    const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
+    const userData = userDataStore.getUserData(currentWallet.id);
     const walletName = userData.name || "My Obi";
     const safeWalletName = walletName.replace(/[^a-zA-Z0-9-_ ]/g, "").trim();
 

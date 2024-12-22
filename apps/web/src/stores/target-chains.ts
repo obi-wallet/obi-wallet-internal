@@ -79,44 +79,44 @@ export class TargetChainsStore {
     return result.data;
   }
 
-  public getTargetChainsConfig(address: string) {
-    return this.config[address] ?? {};
+  public getTargetChainsConfig(id: string) {
+    return this.config[id] ?? {};
   }
 
   public getTargetChainConfig({
-    address,
+    id,
     chainId,
   }: {
-    address: string;
+    id: string;
     chainId: TargetChainId;
   }): TargetChainConfig {
-    const config = this.getTargetChainsConfig(address);
+    const config = this.getTargetChainsConfig(id);
     return config[chainId] ?? {};
   }
 
   @action
   public setTargetChainConfig({
-    address,
+    id,
     chainId,
     config,
   }: {
-    address: string;
+    id: string;
     chainId: TargetChainId;
     config: TargetChainConfig;
   }) {
     this.config = {
       ...this.config,
-      [address]: {
-        ...this.getTargetChainsConfig(address),
+      [id]: {
+        ...this.getTargetChainsConfig(id),
         [chainId]: config,
       },
     };
   }
 
-  public getTargetChains(address: string) {
+  public getTargetChains(id: string) {
     return allTargetChainIds.map((chainId) => {
       const targetChain = TargetChain.chainId(chainId);
-      const config = this.getTargetChainConfig({ address, chainId });
+      const config = this.getTargetChainConfig({ id, chainId });
       const enabled = config?.enabled ?? !targetChain.disabled;
       return {
         id: chainId,
@@ -127,21 +127,21 @@ export class TargetChainsStore {
     });
   }
 
-  public getLastUsedTargetChainId(address: string) {
-    return this.lastUsedTargetChainId[address];
+  public getLastUsedTargetChainId(id: string) {
+    return this.lastUsedTargetChainId[id];
   }
 
   @action
   public setLastUsedTargetChainId({
-    address,
+    id,
     chainId,
   }: {
-    address: string;
+    id: string;
     chainId: TargetChainId;
   }) {
     this.lastUsedTargetChainId = {
       ...this.lastUsedTargetChainId,
-      [address]: chainId,
+      [id]: chainId,
     };
   }
 }

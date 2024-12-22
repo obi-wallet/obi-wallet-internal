@@ -39,18 +39,13 @@ export const SecuritySettings = observer(function SecuritySettings() {
         <WalletDataFlow
           initialState={SecuritySettingsState.from({
             walletData: walletDataState.data.payload,
-            keyMetaData: keyMetaDataStore.getKeyMetaData(
-              wallet.userEntryAddress,
-            ),
+            keyMetaData: keyMetaDataStore.getKeyMetaData(wallet.id),
             owner: wallet.owner,
           })}
           onDone={({ wallet: walletData, keyMetaData }) => {
             const wallet = ObservableMpcWallet.create(walletData);
 
-            keyMetaDataStore.setKeyMetaData(
-              wallet.userEntryAddress,
-              keyMetaData,
-            );
+            keyMetaDataStore.setKeyMetaData(wallet.id, keyMetaData);
             mpcWalletsStore.upsertWallet(wallet);
             router.replace("/dashboard/settings");
           }}

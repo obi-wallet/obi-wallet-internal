@@ -48,35 +48,35 @@ export class ViewingKeysStore {
     return result.data;
   }
 
-  public getViewingKeys(address: string): ViewingKeys {
-    return this.keys[address] ?? {};
+  public getViewingKeys(id: string): ViewingKeys {
+    return this.keys[id] ?? {};
   }
 
   public getViewingKey({
-    address,
+    id,
     assetId,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
   }): ViewingKey | null {
-    const keys = this.getViewingKeys(address);
+    const keys = this.getViewingKeys(id);
     return keys[assetId] ?? null;
   }
 
   @action
   public setViewingKey({
-    address,
+    id,
     assetId,
     key,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
     key: ViewingKey;
   }) {
     this.keys = {
       ...this.keys,
-      [address]: {
-        ...this.getViewingKeys(address),
+      [id]: {
+        ...this.getViewingKeys(id),
         [assetId]: key,
       },
     };
@@ -84,15 +84,15 @@ export class ViewingKeysStore {
 
   @action
   public removeViewingKey({
-    address,
+    id,
     assetId,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
   }) {
     this.keys = {
       ...this.keys,
-      [address]: omit([assetId], this.getViewingKeys(address)),
+      [id]: omit([assetId], this.getViewingKeys(id)),
     };
   }
 }

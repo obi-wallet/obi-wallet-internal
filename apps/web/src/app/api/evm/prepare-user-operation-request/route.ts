@@ -9,7 +9,7 @@ import {
   getPimlicoUrl,
   preparePimplicoClientAndKernelAccount,
 } from "@/target-chain/eip-155/pimlico";
-import { HomeChainIdSchema } from "@obi-wallet/sdk";
+import { HomeChainIdSchema, UserEntryAddress } from "@obi-wallet/sdk";
 import { createSmartAccountClient } from "permissionless";
 import { http } from "viem";
 import { z } from "zod";
@@ -19,7 +19,7 @@ export const maxDuration = 45;
 const schema = z.object({
   homeChainId: HomeChainIdSchema,
   targetChainId: Eip155ChainIdSchema,
-  userEntryAddress: z.string(),
+  userEntryAddress: UserEntryAddress,
   calls: SerializedEvmUserOperationCalls,
 });
 

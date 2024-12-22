@@ -143,7 +143,7 @@ export const SetWalletDataUserInteractionHandlerInner = observer<{
                   ).toBytes(),
                 ),
               ],
-              decryptEasyShare: null,
+              decryptShares: null,
               decryptMessages: [],
               decryptPrimaryKeyEncryptedMessages: [],
               decryptMultisigKeyEncryptedMessages: [],

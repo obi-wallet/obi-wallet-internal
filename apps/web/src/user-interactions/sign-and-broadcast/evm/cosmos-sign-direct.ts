@@ -7,7 +7,7 @@ import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 export interface CosmosSignDirectUserInteractionPayload {
   readonly walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   readonly cancelable: boolean;
   readonly signerAddress: string;

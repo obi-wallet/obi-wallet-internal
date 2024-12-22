@@ -58,16 +58,14 @@ export class MpcWallets {
     this._currentWalletIndex = null;
   }
 
-  public getWalletByUserEntryAddress(userEntryAddress: string) {
+  public getWalletById(id: string) {
     return this._wallets.find((w) => {
-      return w.userEntryAddress === userEntryAddress;
+      return w.id === id;
     });
   }
 
   public upsertWallet(wallet: MpcWallet) {
-    const existingWallet = this.getWalletByUserEntryAddress(
-      wallet.userEntryAddress,
-    );
+    const existingWallet = this.getWalletById(wallet.id);
     if (existingWallet) {
       this.removeWallet(existingWallet);
     }

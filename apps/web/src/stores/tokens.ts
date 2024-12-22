@@ -58,35 +58,35 @@ export class TokensStore {
     return result.data;
   }
 
-  public getTokensConfig(address: string): TokensConfig {
-    return this.config[address] ?? {};
+  public getTokensConfig(id: string): TokensConfig {
+    return this.config[id] ?? {};
   }
 
   public getTokenConfig({
-    address,
+    id,
     assetId,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
   }): TokenConfig | null {
-    const config = this.getTokensConfig(address);
+    const config = this.getTokensConfig(id);
     return config[assetId] ?? null;
   }
 
   @action
   public setTokenConfig({
-    address,
+    id,
     assetId,
     config,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
     config: TokenConfig;
   }) {
     this.config = {
       ...this.config,
-      [address]: {
-        ...this.getTokensConfig(address),
+      [id]: {
+        ...this.getTokensConfig(id),
         [assetId]: config,
       },
     };
@@ -94,21 +94,21 @@ export class TokensStore {
 
   @action
   public removeTokenConfig({
-    address,
+    id,
     assetId,
   }: {
-    address: string;
+    id: string;
     assetId: Caip19AssetId;
   }) {
     this.config = {
       ...this.config,
-      [address]: omit([assetId], this.getTokensConfig(address)),
+      [id]: omit([assetId], this.getTokensConfig(id)),
     };
   }
 
   // TODO: do we even need this?
-  public getTokens(address: string): Caip19AssetId[] {
-    const config = this.getTokensConfig(address);
+  public getTokens(id: string): Caip19AssetId[] {
+    const config = this.getTokensConfig(id);
     return toPairs(config)
       .filter(([_, config]) => {
         return config?.enabled;

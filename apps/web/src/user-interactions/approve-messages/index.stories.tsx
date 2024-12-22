@@ -34,7 +34,7 @@ const sendMessageCosmos = {
 export const SendMessageCosmos: Story = {
   args: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: CosmosChainId.Sei,
     messages: [sendMessageCosmos],
@@ -59,7 +59,7 @@ const sendMessageSecret = new MsgSend({
 export const SendMessageSecret: Story = {
   args: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: SecretChainId.Secret,
     messages: [sendMessageSecret],
@@ -103,7 +103,7 @@ const encodeObject = targetChain.aminoTypes.fromAmino(executeMessage);
 export const AstroportSwapMessage: Story = {
   args: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: CosmosChainId.Sei,
     messages: [encodeObject],

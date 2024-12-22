@@ -17,6 +17,7 @@ export function createMpcWallet(
     serialized.userEntryAddress,
     serialized.encryptedShares,
     serialized.ed25519KeyPair,
+    serialized.secp256k1KeyPair,
     serialized.previousWalletData,
   );
 }
@@ -34,6 +35,7 @@ export function createObservableMpcWallet(
     | "_userEntryAddress"
     | "_encryptedShares"
     | "_ed25519KeyPair"
+    | "_secp256k1KeyPair"
     | "_previousWalletData"
   >(
     wallet,
@@ -43,10 +45,12 @@ export function createObservableMpcWallet(
       _userEntryAddress: observable,
       _encryptedShares: observable,
       _ed25519KeyPair: observable,
+      _secp256k1KeyPair: observable,
       _previousWalletData: observable,
       setOwner: action,
       setEncryptedShares: action,
       setEd25519KeyPair: action,
+      setSecp256k1KeyPair: action,
       setPreviousWalletData: action,
       toJSON: false,
     },

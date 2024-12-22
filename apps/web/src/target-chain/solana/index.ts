@@ -192,9 +192,9 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
-    );
+    const publicKeys = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).new__publicKeys(wallet);
 
     const solanaChains = allSolanaChains
       .map((targetChainId) => {
@@ -259,7 +259,7 @@ export class SolanaTargetChain extends AbstractTargetChain<SolanaChainId> {
       case "solana_requestAccounts": {
         const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).publicKeys(wallet.userEntryAddress);
+        ).new__publicKeys(wallet);
         const solanaChains = allSolanaChains
           .map((targetChainId) => {
             return new SolanaTargetChain(targetChainId);

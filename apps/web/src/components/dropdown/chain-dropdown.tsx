@@ -21,7 +21,7 @@ export function useChainOptions() {
   }
 
   const options = targetChainsStore
-    .getTargetChains(wallet.userEntryAddress)
+    .getTargetChains(wallet.id)
     .map((chain) => {
       return {
         label: chain.targetChain.label,
@@ -39,7 +39,7 @@ export function useChainOptions() {
 
   const getInitialValue = (): TargetChainId | null => {
     const lastUsedChainId = targetChainsStore.getLastUsedTargetChainId(
-      wallet.userEntryAddress,
+      wallet.id,
     );
     if (lastUsedChainId && isTargetChainId(lastUsedChainId)) {
       return lastUsedChainId;
@@ -58,7 +58,7 @@ export function useChainOptions() {
     initialValue: getInitialValue(),
     setLastUsedTargetChainId: (chainId: TargetChainId) => {
       targetChainsStore.setLastUsedTargetChainId({
-        address: wallet.userEntryAddress,
+        id: wallet.id,
         chainId,
       });
     },

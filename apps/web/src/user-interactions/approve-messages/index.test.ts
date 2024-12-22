@@ -83,7 +83,11 @@ async function mockApproveMessages({
   };
 
   const intentionsPayload = {
-    decryptEasyShare: wallet.encryptedEasyShare,
+    decryptShares: {
+      easy: wallet.encryptedEasyShare,
+      backup: wallet.encryptedBackupShare,
+      network: null,
+    },
     signHashes: [Encoding.fromHex(txInfo.hash).toBytes()],
     decryptMessages: [],
     decryptPrimaryKeyEncryptedMessages: [],
@@ -134,7 +138,7 @@ test("SignAndBroadcastTransactionUserInteractionHandler", async () => {
       cancelable: true,
       targetChainId: CosmosChainId.Sei,
       walletMeta: {
-        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+        id: MOCK_WALLET_DATA.userEntryAddress,
       },
     },
     resolve: () => {},
@@ -151,14 +155,14 @@ test("SignAndBroadcastTransactionUserInteractionHandler", async () => {
 
 test("CosmosSignAminoUserInteraction", async () => {
   const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-    wallet.userEntryAddress,
-  );
+  const publicKeys = await HomeChain.chainId(
+    wallet.homeChainId,
+  ).new__publicKeys(wallet);
 
   const interaction: CosmosSignAminoUserInteraction = {
     payload: {
       walletMeta: {
-        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+        id: MOCK_WALLET_DATA.userEntryAddress,
       },
       signerAddress: await TargetChain.chainId(
         CosmosChainId.Sei,
@@ -189,14 +193,14 @@ test("CosmosSignAminoUserInteraction", async () => {
 
 test("CosmosSignDirectUserInteraction", async () => {
   const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-    wallet.userEntryAddress,
-  );
+  const publicKeys = await HomeChain.chainId(
+    wallet.homeChainId,
+  ).new__publicKeys(wallet);
 
   const interaction: CosmosSignDirectUserInteraction = {
     payload: {
       walletMeta: {
-        userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+        id: MOCK_WALLET_DATA.userEntryAddress,
       },
       signerAddress: await TargetChain.chainId(
         CosmosChainId.Sei,

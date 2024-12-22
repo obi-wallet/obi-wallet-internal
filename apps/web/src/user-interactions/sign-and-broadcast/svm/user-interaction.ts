@@ -14,7 +14,7 @@ export interface SvmSendMessage {
 
 export interface SignAndBroadcastSvmPayload {
   readonly walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   readonly targetChainId: SolanaChainId;
   readonly cancelable: boolean;

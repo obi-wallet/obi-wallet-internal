@@ -85,7 +85,7 @@ function runTest(
     // @ts-expect-error mock
     handleIntentions: async function ({ intentionsPayload }) {
       return {
-        decryptedEasyShare: intentionsPayload.decryptEasyShare,
+        decryptedShares: intentionsPayload.decryptShares,
         decryptedPrimaryKeyEncryptedMessages:
           intentionsPayload.decryptPrimaryKeyEncryptedMessages,
         decryptedMultisigKeyEncryptedMessages:

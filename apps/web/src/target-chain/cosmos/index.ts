@@ -557,9 +557,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
-    );
+    const publicKeys = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).new__publicKeys(wallet);
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -602,9 +602,9 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
   public static async getWalletConnectKeys(): Promise<Key[]> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
-    );
+    const publicKeys = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).new__publicKeys(wallet);
 
     const cosmosChains = allCosmosChains
       .map((targetChainId) => {
@@ -652,7 +652,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_getAccounts": {
         const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).publicKeys(wallet.userEntryAddress);
+        ).new__publicKeys(wallet);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
@@ -682,7 +682,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_signAmino": {
         const response = await CosmosSignAminoUserInteraction.start({
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
           cancelable: true,
           signerAddress: request.params.signerAddress,
@@ -697,7 +697,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_signDirect": {
         const response = await CosmosSignDirectUserInteraction.start({
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
           cancelable: true,
           signerAddress: request.params.signerAddress,

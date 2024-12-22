@@ -1,11 +1,17 @@
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { rootStore } from "@/stores";
 import {
+  handleEncryptedBackupShare,
   handleEncryptedEasyShare,
   IntentionsResults,
 } from "@/user-interactions/approve-intentions/utils";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
-import { EasyShare, MpcWallet, SecretJsClient } from "@obi-wallet/sdk";
+import {
+  BackupShare,
+  EasyShare,
+  MpcWallet,
+  SecretJsClient,
+} from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -21,6 +27,7 @@ export class MpcSigner {
     HexEncodedString,
     HexEncodedString[]
   >();
+  protected backupShare: BackupShare | undefined;
   protected easyShare: EasyShare | undefined;
   protected lastHash: Uint8Array | undefined;
 
@@ -33,13 +40,22 @@ export class MpcSigner {
     payload: IntentionsPayload;
     results: IntentionsResults;
   }) {
-    if (payload.decryptEasyShare) {
+    if (payload.decryptShares?.easy) {
       this.easyShare = await handleEncryptedEasyShare({
         multisigKey: this.wallet.owner,
-        encryptedEasyShare: payload.decryptEasyShare,
+        encryptedEasyShare: payload.decryptShares.easy,
         results,
       });
     }
+
+    if (payload.decryptShares?.backup) {
+      this.backupShare = await handleEncryptedBackupShare({
+        multisigKey: this.wallet.owner,
+        encryptedBackupShare: payload.decryptShares.backup,
+        results,
+      });
+    }
+
     payload.signHashes.forEach((hash, index) => {
       this.bytesSignedBySignersPerHash.set(
         Encoding.fromBytes(hash).toHex(),
@@ -59,11 +75,31 @@ export class MpcSigner {
 
   public async signHash(hash: Uint8Array) {
     this.lastHash = hash;
-    if (this.easyShare) {
-      return await this.signHashWithEasyShare(hash);
-    }
 
-    throw new Error("No easy share found");
+    if (this.wallet.userEntryAddress) {
+      if (!this.easyShare) {
+        throw new Error("Cannot sign using contract without easy share");
+      }
+
+      try {
+        return await this.signHashUsingContract(hash);
+      } catch (e) {
+        console.log("Failed to sign using contract, trying backup share", e);
+        if (!this.backupShare) {
+          throw new Error(
+            "Cannot sign using backup share without backup share",
+          );
+        }
+        return await this.signHashUsingBackupShare(hash);
+      }
+    } else {
+      if (!this.easyShare || !this.backupShare) {
+        throw new Error(
+          "Cannot sign using backup share without easy and backup shares",
+        );
+      }
+      return await this.signHashUsingBackupShare(hash);
+    }
   }
 
   public async calculateHashToSign(f: () => Promise<void>) {
@@ -82,9 +118,11 @@ export class MpcSigner {
     return this.lastHash;
   }
 
-  protected async signHashWithEasyShare(hash: Uint8Array) {
+  protected async signHashUsingContract(hash: Uint8Array) {
     invariant(rootStore.current, "Root store is not initialized");
     invariant(this.easyShare, "No easy share found");
+    const userEntryAddress = this.wallet.userEntryAddress;
+    invariant(userEntryAddress, "No user entry address found");
 
     const bytes = Encoding.fromBytes(hash).toHex();
     const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
@@ -94,9 +132,6 @@ export class MpcSigner {
     );
 
     const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
-
-    const primaryKey = this.wallet.owner.primaryKey;
-    invariant(primaryKey, "No primary key found");
 
     const signers = mpcPackage.createSigners([
       this.easyShare.preSignForNetworkShare,
@@ -111,7 +146,7 @@ export class MpcSigner {
     const userEntryCodeHash = await client.withSecretNetworkClient(
       async (secretNetworkClient) => {
         const info = await secretNetworkClient.query.compute.contractInfo({
-          contract_address: this.wallet.userEntryAddress,
+          contract_address: userEntryAddress,
         });
         const response =
           await secretNetworkClient.query.compute.codeHashByCodeId({
@@ -139,6 +174,37 @@ export class MpcSigner {
         },
       },
       schema: MpcSignature,
+    });
+  }
+
+  protected async signHashUsingBackupShare(hash: Uint8Array) {
+    invariant(rootStore.current, "Root store is not initialized");
+    invariant(this.easyShare, "No easy share found");
+    invariant(this.backupShare, "No backup share found");
+
+    const bytes = Encoding.fromBytes(hash).toHex();
+    const bytesSignedBySigners = this.bytesSignedBySignersPerHash.get(bytes);
+    invariant(
+      bytesSignedBySigners,
+      `Hash ${bytes} has not been signed, but ${serialize([...this.bytesSignedBySignersPerHash.keys()])} have`,
+    );
+
+    const mpcPackage = await rootStore.current.wasmStore.getMpcEcdsaWasm();
+
+    const signers = mpcPackage.createSigners([
+      this.easyShare.preSignForBackupShare,
+      this.backupShare,
+    ]);
+
+    const partialSignatures = signers.map((signer) => {
+      return signer.partial(hash);
+    });
+
+    const finalSignature = signers[1].create([partialSignatures[0]]);
+    return MpcSignature.parse({
+      r: finalSignature.signature.r.scalar,
+      s: finalSignature.signature.s.scalar,
+      recid: finalSignature.signature.recid,
     });
   }
 }

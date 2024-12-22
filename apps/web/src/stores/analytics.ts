@@ -1,6 +1,6 @@
 import { PrettyCaip19Asset } from "@/hooks/balances";
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
-import { MpcWallets } from "@obi-wallet/sdk";
+import { MpcWallets, UserEntryAddress } from "@obi-wallet/sdk";
 import {
   Caip19AssetId,
   Caip2ChainId,
@@ -147,7 +147,7 @@ export class AnalyticsStore {
     chainId,
     balances,
   }: {
-    userEntryAddress: string;
+    userEntryAddress: UserEntryAddress;
     chainId: Caip2ChainId;
     balances: PrettyCaip19Asset[];
   }) {
@@ -214,7 +214,7 @@ export class AnalyticsStore {
     userEntryAddress,
     balances,
   }: {
-    userEntryAddress: string;
+    userEntryAddress: UserEntryAddress;
     balances: {
       assetId: Caip19AssetId;
       rawAmount: string;

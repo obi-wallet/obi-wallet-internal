@@ -105,7 +105,7 @@ export class RootStore {
     autorun(() => {
       const currentWallet = this.mpcWalletsStore.currentWallet;
       if (currentWallet) {
-        Cookies.set(CURRENT_WALLET_COOKIE_NAME, currentWallet.userEntryAddress);
+        Cookies.set(CURRENT_WALLET_COOKIE_NAME, currentWallet.id);
       } else {
         Cookies.remove(CURRENT_WALLET_COOKIE_NAME);
       }

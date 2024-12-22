@@ -31,7 +31,7 @@ import invariant from "tiny-invariant";
 
 export interface ApproveSvmTransactionProps {
   walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   targetChainId: SolanaChainId;
   message: SvmSendMessage;
@@ -57,9 +57,7 @@ export const ApproveSvmTransaction = observer<ApproveSvmTransactionProps>(
     onReject,
   }) {
     const { keyMetaDataStore, mpcWalletsStore } = useStore();
-    const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
-      walletMeta.userEntryAddress,
-    );
+    const wallet = mpcWalletsStore.getWalletById(walletMeta.id);
     const [intentionsResults, setIntentionsResults] = useState<
       IntentionsResults | undefined
     >();
@@ -199,12 +197,14 @@ export const ApproveSvmTransaction = observer<ApproveSvmTransactionProps>(
 
     if (!wallet) return null;
 
-    const keyMetaData = keyMetaDataStore.getKeyMetaData(
-      wallet.userEntryAddress,
-    );
+    const keyMetaData = keyMetaDataStore.getKeyMetaData(wallet.id);
     const intentionsPayload: IntentionsPayload | null = {
       signHashes: [],
-      decryptEasyShare: null,
+      decryptShares: {
+        easy: wallet.encryptedEasyShare,
+        backup: wallet.encryptedBackupShare,
+        network: null,
+      },
       decryptMessages: [],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: wallet.encryptedEd25519PrivateKey

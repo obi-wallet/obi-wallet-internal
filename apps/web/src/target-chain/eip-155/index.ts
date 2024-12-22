@@ -399,9 +399,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
-    );
+    const publicKeys = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).new__publicKeys(wallet);
 
     const eip155Chains = allEip155Chains
       .map((targetChainId) => {
@@ -468,7 +468,7 @@ export class Eip155TargetChain extends AbstractTargetChain<
           cancelable: true,
           targetChainId: this.chainId,
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
         });
         if (response.approved) {

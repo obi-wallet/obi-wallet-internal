@@ -32,7 +32,7 @@ export class Eip155MpcSigner {
   ): Promise<Eip155MpcSigner> {
     const publicKey = await HomeChain.chainId(
       wallet.homeChainId,
-    ).secp256k1PublicKey(wallet.userEntryAddress);
+    ).new__secp256k1PublicKey(wallet);
 
     return new Eip155MpcSigner(wallet, publicKey, targetChainId);
   }

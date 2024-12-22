@@ -8,16 +8,17 @@ import { Draftable } from "@/stores/drafts/draft";
 import { DistributeSharesResponse } from "@/stores/mpc";
 import { Base58EncodedString } from "@obi-wallet/encoding";
 import {
+  BackedUpMpcWalletSchema,
   BackupShare,
   EasyShare,
   HomeChainId,
   HomeChainIdSchema,
   KeyType,
-  MpcWalletSchema,
   MultisigKey,
   MultisigKeySchema,
   NetworkShare,
   ObservableMultisigKey,
+  UserEntryAddress,
   WalletData,
 } from "@obi-wallet/sdk";
 import { generateEd25519KeyPair } from "@obi-wallet/sdk-ed25519";
@@ -28,7 +29,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 const UnclaimedHomeAccount = z.object({
-  homeAccountAddress: z.string(),
+  homeAccountAddress: UserEntryAddress,
   ownerAddress: z.string(),
   ownerIndex: z.number(),
 });
@@ -131,13 +132,13 @@ export class NewOnboardingPayload implements Draftable {
     });
   }
 
-  public toMpcWalletData(): z.infer<typeof MpcWalletSchema> {
+  public toMpcWalletData(): z.infer<typeof BackedUpMpcWalletSchema> {
     invariant(this._ed25519KeyPair, "Ed25519 key pair is not available");
     invariant(this._encryptedShares, "Shares are not encrypted");
     invariant(this._unclaimedHomeAccount, "Home account is not available");
     invariant(this._distributedShares, "Shares have not been distributed");
 
-    return MpcWalletSchema.parse({
+    return BackedUpMpcWalletSchema.parse({
       homeChain: this.homeChainId,
       owner: this._multisigKey.toJSON(),
       encryptedShares: {
