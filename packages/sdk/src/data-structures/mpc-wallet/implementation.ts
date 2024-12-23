@@ -115,14 +115,37 @@ export class MpcWallet {
   }
 
   public toJSON(): z.infer<typeof MpcWalletSchema> {
-    return {
-      homeChain: this._homeChainId,
-      owner: this._owner.toJSON(),
-      userEntryAddress: UserEntryAddress.parse(this._userEntryAddress),
-      encryptedShares: this._encryptedShares,
-      ed25519KeyPair: this._ed25519KeyPair,
-      secp256k1KeyPair: this._secp256k1KeyPair,
-      previousWalletData: toJS(this._previousWalletData),
-    };
+    if (this._userEntryAddress) {
+      return {
+        homeChain: this._homeChainId,
+        owner: this._owner.toJSON(),
+        userEntryAddress: this._userEntryAddress,
+        encryptedShares: this._encryptedShares,
+        ed25519KeyPair: this._ed25519KeyPair,
+        secp256k1KeyPair: this._secp256k1KeyPair,
+        previousWalletData: toJS(this._previousWalletData),
+      };
+    } else if (
+      this._encryptedShares.network &&
+      this._secp256k1KeyPair.publicKey
+    ) {
+      return {
+        homeChain: this._homeChainId,
+        owner: this._owner.toJSON(),
+        userEntryAddress: null,
+        encryptedShares: {
+          easy: this._encryptedShares.easy,
+          backup: this._encryptedShares.backup,
+          network: this._encryptedShares.network,
+        },
+        ed25519KeyPair: this._ed25519KeyPair,
+        secp256k1KeyPair: {
+          publicKey: this._secp256k1KeyPair.publicKey,
+        },
+        previousWalletData: null,
+      };
+    }
+
+    throw new Error("Invalid MPC wallet state");
   }
 }
