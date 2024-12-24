@@ -169,9 +169,14 @@ export class CreateWalletState extends Data.TaggedClass(
         LocalMpcWalletSchema.parse(walletData),
       );
 
-      // TODO: queue backup
-
       invariant(rootStore.current, "Root store is not initialized");
+      rootStore.current.userDataStore.setUserData(wallet.id, {
+        name: this.name,
+      });
+      void rootStore.current.homeAccountSetupStore.setupHomeAccount({
+        wallet,
+        shares,
+      });
       rootStore.current.mpcWalletsStore.upsertWallet(wallet);
     });
   }
