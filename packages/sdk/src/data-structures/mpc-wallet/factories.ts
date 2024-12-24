@@ -48,6 +48,7 @@ export function createObservableMpcWallet(
       _secp256k1KeyPair: observable,
       _previousWalletData: observable,
       setOwner: action,
+      setUserEntryAddress: action,
       setEncryptedShares: action,
       setEd25519KeyPair: action,
       setSecp256k1KeyPair: action,

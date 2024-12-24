@@ -1,11 +1,18 @@
+import { HomeChain } from "@/home-chain";
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import {
+  HomeChainId,
+  LocalMpcWalletSchema,
+  MpcWallet,
   MpcWallets,
+  MultisigKey,
   SecretJsHomeChainId,
   UserEntryAddress,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import { z } from "zod";
+
+import { DistributeSharesResponse } from "./mpc";
 
 const UnclaimedHomeAccount = z.object({
   homeAccountAddress: UserEntryAddress,
@@ -21,6 +28,7 @@ export class HomeAccountSetupStore {
   protected readonly walletsStore: MpcWallets;
   protected readonly kvStore: AbstractKVStore;
   protected _homeAccountPromise: Promise<UnclaimedHomeAccount> | undefined;
+  protected _setupPromises = new Map<string, Promise<void>>();
 
   constructor({
     walletsStore,
@@ -33,17 +41,161 @@ export class HomeAccountSetupStore {
     this.kvStore = kvStore;
   }
 
-  public async setup() {
-    const homeAcc = await this.createHomeAccountSingleton();
-    console.log(homeAcc);
+  public async setupHomeAccount({
+    wallet,
+    shares,
+  }: {
+    wallet: MpcWallet;
+    shares: DistributeSharesResponse;
+  }) {
+    await this.createSetupHomeAccountPromiseSingleton({ wallet, shares });
+    this._setupPromises.delete(wallet.id);
   }
 
-  // TODO: probably protected and only used by other methods;
-  public async getHomeAccount() {
+  protected createSetupHomeAccountPromiseSingleton({
+    wallet,
+    shares,
+  }: {
+    wallet: MpcWallet;
+    shares: DistributeSharesResponse;
+  }) {
+    const walletData = wallet.toJSON();
+    const result = LocalMpcWalletSchema.safeParse(walletData);
+    if (!result.success) {
+      return Promise.resolve();
+    }
+
+    const pendingPromise = this._setupPromises.get(wallet.id);
+    if (pendingPromise) {
+      return pendingPromise;
+    }
+
+    const promise = this.createSetupHomeAccountPromise({
+      wallet,
+      walletData: result.data,
+      shares,
+    });
+    this._setupPromises.set(wallet.id, promise);
+    return promise;
+  }
+
+  protected async createSetupHomeAccountPromise({
+    wallet,
+    walletData,
+    shares,
+  }: {
+    wallet: MpcWallet;
+    walletData: z.infer<typeof LocalMpcWalletSchema>;
+    shares: DistributeSharesResponse;
+  }) {
+    // TODO: pass home chain id to getHomeAccount;
+    const homeAccount = await this.getHomeAccount();
+    await this.distributeShares({
+      homeChainId: wallet.homeChainId,
+      homeAccount,
+      shares,
+    });
+    await this.claimHomeAccount({ homeAccount, wallet: walletData });
+
+    const previousWalletId = wallet.id;
+    wallet.setUserEntryAddress(homeAccount.homeAccountAddress);
+    const nextWalletId = wallet.id;
+    console.log({ previousWalletId, nextWalletId });
+    // TODO: update wallet and ids;
+  }
+
+  protected async getHomeAccount() {
     const homeAccount = await this.createHomeAccountSingleton();
     this._homeAccountPromise = undefined;
     await this.clearUnclaimedHomeAccount();
     return homeAccount;
+  }
+
+  protected async distributeShares({
+    homeChainId,
+    homeAccount,
+    shares,
+  }: {
+    homeChainId: HomeChainId;
+    homeAccount: UnclaimedHomeAccount;
+    shares: DistributeSharesResponse;
+  }) {
+    // TODO: handle retry;
+    const response = await fetch("/api/setup/distribute-shares", {
+      method: "POST",
+      body: serialize({
+        homeChainId,
+        networkParticipants: shares.networkParticipants,
+        networkShare: shares.networkShare,
+        userEntryAddress: homeAccount.homeAccountAddress,
+        userEntryCodeHash: await HomeChain.chainId(
+          homeChainId,
+        ).userEntryCodeHash(homeAccount.homeAccountAddress),
+        ownerIndex: homeAccount.ownerIndex,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to distribute shares: ${response.status}`);
+    }
+
+    const result: { success: boolean } = await response.json();
+    if (!result.success) {
+      throw new Error("Failed to distribute shares");
+    }
+  }
+
+  protected async claimHomeAccount({
+    homeAccount,
+    wallet,
+  }: {
+    homeAccount: UnclaimedHomeAccount;
+    wallet: z.infer<typeof LocalMpcWalletSchema>;
+  }) {
+    // TODO: handle retry;
+    const homeChain = HomeChain.chainId(wallet.homeChain);
+    const walletData = await homeChain.getWalletData({
+      wallet: {
+        ...wallet,
+        userEntryAddress: homeAccount.homeAccountAddress,
+      },
+      // TODO: fetch from key meta data store
+      keyMetaData: {},
+    });
+
+    const userEntryCodeHash = await homeChain.userEntryCodeHash(
+      homeAccount.homeAccountAddress,
+    );
+    const userAccount = await homeChain.userAccount({
+      userEntryAddress: homeAccount.homeAccountAddress,
+      userEntryCodeHash,
+    });
+
+    const multisigKey = MultisigKey.create(wallet.homeChain, wallet.owner);
+
+    const response = await fetch("/api/setup/first-update-owner", {
+      method: "POST",
+      body: serialize({
+        homeChainId: wallet.homeChain,
+        owner: wallet.owner,
+        ownerAddress: multisigKey.address,
+        userEntryAddress: homeAccount.homeAccountAddress,
+        userEntryCodeHash,
+        userAccountAddress: userAccount.userAccountAddress,
+        userAccountCodeHash: userAccount.userAccountCodeHash,
+        ownerIndex: homeAccount.ownerIndex,
+        walletData,
+      }),
+    });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to update owner: ${response.status}`);
+    }
+
+    const result: { success: boolean } = await response.json();
+    if (!result.success) {
+      throw new Error(`Failed to update owner: ${serialize(response)}`);
+    }
   }
 
   protected createHomeAccountSingleton(): Promise<UnclaimedHomeAccount> {
@@ -54,7 +206,6 @@ export class HomeAccountSetupStore {
 
   protected async createHomeAccount(): Promise<UnclaimedHomeAccount> {
     // TODO: handle retry;
-
     const homeAccount = await this.getUnclaimedHomeAccount();
 
     if (homeAccount) return homeAccount;

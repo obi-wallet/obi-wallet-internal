@@ -90,6 +90,14 @@ export class MpcWallet {
     return this._previousWalletData;
   }
 
+  public setUserEntryAddress(userEntryAddress: UserEntryAddress) {
+    this._userEntryAddress = userEntryAddress;
+    this._encryptedShares = {
+      easy: this._encryptedShares.easy,
+      backup: this._encryptedShares.backup,
+    };
+  }
+
   public setEncryptedShares(encryptedShares: {
     easy: EncryptedEasyShareForClient;
     backup: EncryptedBackupShare;
