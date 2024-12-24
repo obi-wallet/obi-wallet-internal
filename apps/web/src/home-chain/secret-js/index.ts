@@ -1,5 +1,4 @@
 import { MultisigKeyEncryption } from "@/lib/encryption";
-import { rootStore } from "@/stores";
 import { KeyMetaData } from "@/stores/key-meta-data";
 import { LegacyWalletData } from "@/wallet-data-backup";
 import {
@@ -200,12 +199,10 @@ export class SecretJsHomeChain {
     return result.data;
   }
 
-  public async new__publicKeys(
-    wallet: MpcWallet,
-  ): Promise<ObiAccountPublicKeys> {
+  public async publicKeys(wallet: MpcWallet): Promise<ObiAccountPublicKeys> {
     const [secp256k1, ed25519] = await Promise.all([
-      this.new__secp256k1PublicKey(wallet),
-      this.ed25519PublicKey(wallet.id),
+      this.secp256k1PublicKey(wallet),
+      this.ed25519PublicKey(wallet),
     ]);
     return {
       secp256k1,
@@ -213,20 +210,15 @@ export class SecretJsHomeChain {
     };
   }
 
-  public async publicKeys(
-    userEntryAddresss: UserEntryAddress,
-  ): Promise<ObiAccountPublicKeys> {
-    const [secp256k1, ed25519] = await Promise.all([
-      this.secp256k1PublicKey(userEntryAddresss),
-      this.ed25519PublicKey(userEntryAddresss),
-    ]);
-    return {
-      secp256k1,
-      ed25519,
-    };
+  public get secp256k1PublicKeyQuery() {
+    return this.queryNamespace.createQuery({
+      name: "secp256k1PublicKey",
+      fn: this.secp256k1PublicKey.bind(this),
+      staleTime: { day: 1 },
+    });
   }
 
-  public async new__secp256k1PublicKey(
+  public async secp256k1PublicKey(
     wallet: MpcWallet,
   ): Promise<Secp256k1PublicKey> {
     if (wallet.secp256k1PublicKey) {
@@ -236,7 +228,27 @@ export class SecretJsHomeChain {
       };
     }
     if (wallet.userEntryAddress) {
-      return await this.secp256k1PublicKey(wallet.userEntryAddress);
+      const response = await this.client.queryContract({
+        contract: this.chain.secretSigner.address,
+        codeHash: this.chain.secretSigner.codeHash,
+        query: {
+          passport_pubkey: { user_entry_address: wallet.userEntryAddress },
+        },
+        schema: HexEncodedString,
+      });
+
+      const secp256k1PublicKey: Secp256k1PublicKey = {
+        type: "tendermint/PubKeySecp256k1",
+        value: Encoding.concat(
+          // Append missing first byte
+          Encoding.fromHex(HexEncodedString.parse("04")),
+          Encoding.fromHex(response),
+        ).toBase64(),
+      };
+      wallet.setSecp256k1KeyPair({
+        publicKey: secp256k1PublicKey.value,
+      });
+      return secp256k1PublicKey;
     }
     invariant(
       false,
@@ -244,42 +256,8 @@ export class SecretJsHomeChain {
     );
   }
 
-  public secp256k1PublicKey(userEntryAddress: UserEntryAddress) {
-    return queryClient.fetchQuery(
-      this.secp256k1PublicKeyQuery(userEntryAddress),
-    );
-  }
-  public get secp256k1PublicKeyQuery() {
-    return this.queryNamespace.createQuery({
-      name: "sec256k1PublicKey",
-      fn: this.secp256k1PublicKeyQueryFn.bind(this),
-      staleTime: { day: 1 },
-    });
-  }
-  protected async secp256k1PublicKeyQueryFn(
-    userEntryAddress: UserEntryAddress,
-  ): Promise<Secp256k1PublicKey> {
-    const response = await this.client.queryContract({
-      contract: this.chain.secretSigner.address,
-      codeHash: this.chain.secretSigner.codeHash,
-      query: {
-        passport_pubkey: { user_entry_address: userEntryAddress },
-      },
-      schema: HexEncodedString,
-    });
-
-    return {
-      type: "tendermint/PubKeySecp256k1",
-      value: Encoding.concat(
-        // Append missing first byte
-        Encoding.fromHex(HexEncodedString.parse("04")),
-        Encoding.fromHex(response),
-      ).toBase64(),
-    };
-  }
-
-  public ed25519PublicKey(id: string) {
-    return queryClient.fetchQuery(this.ed25519PublicKeyQuery(id));
+  public ed25519PublicKey(wallet: MpcWallet) {
+    return queryClient.fetchQuery(this.ed25519PublicKeyQuery(wallet));
   }
   public get ed25519PublicKeyQuery() {
     return this.queryNamespace.createQuery({
@@ -288,10 +266,9 @@ export class SecretJsHomeChain {
     });
   }
   protected async ed25519PublicKeyQueryFn(
-    id: string,
+    wallet: MpcWallet,
   ): Promise<Ed25519PublicKey | null> {
-    const wallet = rootStore.current?.mpcWalletsStore.getWalletById(id);
-    const value = wallet?.ed25519PublicKey;
+    const value = wallet.ed25519PublicKey;
 
     if (!value) return null;
 

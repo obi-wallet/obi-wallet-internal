@@ -4,30 +4,20 @@ import { useQuery } from "@obi-wallet/headless-ui";
 import { makeNamespacedQueryParamsOptional } from "@obi-wallet/query-client";
 import { SecretJsHomeChainId } from "@obi-wallet/sdk";
 
-export function useSecp256k1PublicKeyQueryOptions() {
+export function useSecp256k1PublicKeyQuery() {
   const { wallet, homeChain } = useWalletAndHomeChain();
   const query = makeNamespacedQueryParamsOptional(
     homeChain.secp256k1PublicKeyQuery,
   );
-  return query(wallet?.userEntryAddress ?? undefined);
+  return useQuery(query(wallet ?? undefined));
 }
 
-export function useSecp256k1PublicKeyQuery() {
-  const query = useSecp256k1PublicKeyQueryOptions();
-  return useQuery(query);
-}
-
-export function useEd25519PublicKeyQueryOptions() {
+export function useEd25519PublicKeyQuery() {
   const { wallet, homeChain } = useWalletAndHomeChain();
   const query = makeNamespacedQueryParamsOptional(
     homeChain.ed25519PublicKeyQuery,
   );
-  return query(wallet?.userEntryAddress ?? undefined);
-}
-
-export function useEd25519PublicKeyQuery() {
-  const query = useEd25519PublicKeyQueryOptions();
-  return useQuery(query);
+  return useQuery(query(wallet ?? undefined));
 }
 
 function useWalletAndHomeChain() {

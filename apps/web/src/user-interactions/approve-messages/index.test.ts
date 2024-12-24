@@ -155,9 +155,9 @@ test("SignAndBroadcastTransactionUserInteractionHandler", async () => {
 
 test("CosmosSignAminoUserInteraction", async () => {
   const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-  const publicKeys = await HomeChain.chainId(
-    wallet.homeChainId,
-  ).new__publicKeys(wallet);
+  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+    wallet,
+  );
 
   const interaction: CosmosSignAminoUserInteraction = {
     payload: {
@@ -193,9 +193,9 @@ test("CosmosSignAminoUserInteraction", async () => {
 
 test("CosmosSignDirectUserInteraction", async () => {
   const wallet = ObservableMpcWallet.create(MOCK_WALLET_DATA);
-  const publicKeys = await HomeChain.chainId(
-    wallet.homeChainId,
-  ).new__publicKeys(wallet);
+  const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+    wallet,
+  );
 
   const interaction: CosmosSignDirectUserInteraction = {
     payload: {

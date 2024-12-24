@@ -364,12 +364,14 @@ export class Eip155TargetChain extends AbstractTargetChain<
       intentionsPayload,
       intentionsResults,
     });
+    const secp256k1PublicKey = await HomeChain.chainId(
+      wallet.homeChainId,
+    ).secp256k1PublicKey(wallet);
     const response = await fetch("/api/evm/send-user-operation", {
       method: "POST",
       body: serialize({
-        homeChainId: wallet.homeChainId,
         targetChainId: this.chainData.id,
-        userEntryAddress: wallet.userEntryAddress,
+        secp256k1PublicKey,
         userOperation: serializeUserOperation(userOperation),
       }),
     });
@@ -399,9 +401,9 @@ export class Eip155TargetChain extends AbstractTargetChain<
   public static async getSupportedWalletConnectNamespaces() {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
-    const publicKeys = await HomeChain.chainId(
-      wallet.homeChainId,
-    ).new__publicKeys(wallet);
+    const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
+      wallet,
+    );
 
     const eip155Chains = allEip155Chains
       .map((targetChainId) => {

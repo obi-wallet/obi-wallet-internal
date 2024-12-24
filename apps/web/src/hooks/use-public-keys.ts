@@ -1,27 +1,19 @@
 import {
-  useEd25519PublicKeyQueryOptions,
-  useSecp256k1PublicKeyQueryOptions,
+  useEd25519PublicKeyQuery,
+  useSecp256k1PublicKeyQuery,
 } from "@/hooks/use-public-key";
 import { ObiAccountPublicKeys } from "@obi-wallet/sdk-obi-account";
-import { useQueries } from "@tanstack/react-query";
 
-export function usePublicKeys() {
-  const secp256k1PublicKeyQuery = useSecp256k1PublicKeyQueryOptions();
-  const ed25519PublicKeyQuery = useEd25519PublicKeyQueryOptions();
-  return useQueries({
-    queries: [secp256k1PublicKeyQuery, ed25519PublicKeyQuery],
-    combine: (results): ObiAccountPublicKeys | undefined => {
-      const secp256k1 = results[0].data;
-      const ed25519 = results[1].data;
+export function usePublicKeys(): ObiAccountPublicKeys | undefined {
+  const secp256k1 = useSecp256k1PublicKeyQuery();
+  const ed25519 = useEd25519PublicKeyQuery();
 
-      if (!secp256k1 || ed25519 === undefined) {
-        return undefined;
-      }
+  if (!secp256k1.data || ed25519.data === undefined) {
+    return undefined;
+  }
 
-      return {
-        secp256k1,
-        ed25519,
-      };
-    },
-  });
+  return {
+    secp256k1: secp256k1.data,
+    ed25519: ed25519.data,
+  };
 }

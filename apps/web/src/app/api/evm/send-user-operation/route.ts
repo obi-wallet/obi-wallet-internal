@@ -4,15 +4,14 @@ import {
 } from "@/target-chain/eip-155";
 import { Eip155ChainIdSchema } from "@/target-chain/eip-155/chains";
 import { preparePimplicoClientAndKernelAccount } from "@/target-chain/eip-155/pimlico";
-import { HomeChainIdSchema, UserEntryAddress } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 export const maxDuration = 45;
 
 const schema = z.object({
-  homeChainId: HomeChainIdSchema,
   targetChainId: Eip155ChainIdSchema,
-  userEntryAddress: UserEntryAddress,
+  secp256k1PublicKey: Secp256k1PublicKey,
   userOperation: SerializedEvmUserOperation,
 });
 
@@ -25,14 +24,12 @@ export async function POST(request: Request) {
     });
   }
 
-  const { homeChainId, targetChainId, userEntryAddress, userOperation } =
-    result.data;
+  const { targetChainId, secp256k1PublicKey, userOperation } = result.data;
 
   const { pimlicoClient, kernelAccount } =
     await preparePimplicoClientAndKernelAccount({
-      homeChainId,
       targetChainId,
-      userEntryAddress,
+      secp256k1PublicKey,
     });
 
   const hash = await pimlicoClient.sendUserOperation({

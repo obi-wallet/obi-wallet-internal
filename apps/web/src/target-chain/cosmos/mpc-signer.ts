@@ -52,7 +52,7 @@ export class CosmosMpcSigner
   ): Promise<CosmosMpcSigner> {
     const publicKey = await HomeChain.chainId(
       wallet.homeChainId,
-    ).new__secp256k1PublicKey(wallet);
+    ).secp256k1PublicKey(wallet);
     return new CosmosMpcSigner(wallet, publicKey, targetChainId);
   }
 

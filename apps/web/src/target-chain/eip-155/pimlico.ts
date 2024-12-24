@@ -1,9 +1,8 @@
 import "server-only";
 
-import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
-import { HomeChainId, UserEntryAddress } from "@obi-wallet/sdk";
+import { Secp256k1PublicKey } from "@obi-wallet/sdk";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
 import { http } from "viem";
 import { toAccount } from "viem/accounts";
@@ -25,20 +24,16 @@ export function preparePimlicoClient(targetChainId: Eip155ChainId) {
 }
 
 export async function preparePimplicoClientAndKernelAccount({
-  homeChainId,
   targetChainId,
-  userEntryAddress,
+  secp256k1PublicKey,
 }: {
-  homeChainId: HomeChainId;
   targetChainId: Eip155ChainId;
-  userEntryAddress: UserEntryAddress;
+  secp256k1PublicKey: Secp256k1PublicKey;
 }) {
-  const publicKey =
-    await HomeChain.chainId(homeChainId).secp256k1PublicKey(userEntryAddress);
   const targetChain = TargetChain.chainId(targetChainId);
 
   const account = toAccount({
-    address: targetChain.computeAddress(publicKey),
+    address: targetChain.computeAddress(secp256k1PublicKey),
     async signMessage() {
       throw new Error("signMessage not implemented");
     },
@@ -51,7 +46,6 @@ export async function preparePimplicoClientAndKernelAccount({
   });
 
   const kernelAccount = await targetChain.kernelAccount(account);
-
   const pimlicoClient = preparePimlicoClient(targetChainId);
 
   return {

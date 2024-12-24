@@ -331,7 +331,7 @@ const SendInner = observer<{
         const targetChain = TargetChain.chainId(chainId);
         const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).new__publicKeys(wallet);
+        ).publicKeys(wallet);
         const response = await SignAndBroadcastSvm.start({
           targetChainId: chainId,
           cancelable: true,

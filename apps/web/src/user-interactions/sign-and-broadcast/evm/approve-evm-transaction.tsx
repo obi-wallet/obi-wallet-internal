@@ -1,5 +1,6 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
+import { HomeChain } from "@/home-chain";
 import { IntentionsPayload } from "@/keys/intentions-handler";
 import { TargetChain } from "@/target-chain";
 import {
@@ -59,14 +60,16 @@ export const ApproveEvmTransaction = observer<ApproveEvmTransactionProps>(
       queryKey: ["user-operation", { walletMeta, targetChainId, calls }],
       queryFn: wallet
         ? async () => {
+            const secp256k1PublicKey = await HomeChain.chainId(
+              wallet.homeChainId,
+            ).secp256k1PublicKey(wallet);
             const response = await fetch(
               "/api/evm/prepare-user-operation-request",
               {
                 method: "POST",
                 body: serialize({
-                  homeChainId: wallet.homeChainId,
                   targetChainId,
-                  userEntryAddress: wallet.userEntryAddress,
+                  secp256k1PublicKey,
                   calls,
                 }),
               },
