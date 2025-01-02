@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
 import {
   AminoTypes,
@@ -12,7 +13,6 @@ import {
 } from "@cosmjs/stargate";
 import { Effect, Schedule } from "effect";
 import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
-import { StdFee } from "secretjs/dist/wallet_amino";
 import { z } from "zod";
 
 import { SecretJsHomeChainId, SecretJsHomeChains } from "../../home-chains";

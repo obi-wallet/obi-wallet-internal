@@ -434,7 +434,7 @@ function messageToAmountCosmos({ message }: { message: EncodeObject }): Coin[] {
 
 function messageToAmountSecret({ message }: { message: Msg }) {
   if (message instanceof MsgSend) {
-    return message.amount;
+    return message.params.amount;
   }
 
   console.warn("Unknown message: ", message);
@@ -459,7 +459,7 @@ function messageToAddressCosmos({
 
 function messageToAddressSecret({ message }: { message: Msg }) {
   if (message instanceof MsgSend) {
-    return [message.to_address];
+    return [message.params.to_address];
   }
 
   console.warn("Unknown message: ", message);
@@ -508,7 +508,7 @@ async function messageToDescriptionSecret({
           coin: amount,
           targetChainId,
         });
-        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${message.to_address}`;
+        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${message.params.to_address}`;
       }),
     );
   }
