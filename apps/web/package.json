@@ -16,7 +16,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@chain-registry/types": "^0.50.38",
+    "@chain-registry/types": "^0.50.44",
     "@cosmjs/amino": "^0.32.4",
     "@cosmjs/cosmwasm-stargate": "^0.32.4",
     "@cosmjs/crypto": "^0.32.4",
@@ -54,7 +54,7 @@
     "axios": "^1.7.9",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
-    "chain-registry": "^1.69.67",
+    "chain-registry": "^1.69.81",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
@@ -85,7 +85,7 @@
     "react-icons": "^5.4.0",
     "rooks": "^7.14.1",
     "secp256k1": "^5.0.1",
-    "secretjs": "^1.12.5",
+    "secretjs": "^1.15.0",
     "server-only": "^0.0.1",
     "sss-wasm": "^0.4.0",
     "swr": "^2.2.5",

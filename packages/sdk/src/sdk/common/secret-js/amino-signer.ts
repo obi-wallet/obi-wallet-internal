@@ -2,15 +2,13 @@ import {
   AminoSignResponse,
   encodeSecp256k1Signature,
   serializeSignDoc,
+  AccountData,
+  StdSignDoc,
 } from "@cosmjs/amino";
 import { Sha256 } from "@cosmjs/crypto";
 import { Encoding } from "@obi-wallet/encoding";
 import { pubkeyToAddress } from "secretjs";
-import type {
-  AccountData,
-  AminoSigner,
-  StdSignDoc,
-} from "secretjs/dist/wallet_amino";
+import type { AminoSigner } from "secretjs/dist/wallet_amino";
 
 import { Signer } from "../../../signers";
 
