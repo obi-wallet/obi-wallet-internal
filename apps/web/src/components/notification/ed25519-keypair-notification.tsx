@@ -33,7 +33,9 @@ export const Ed25519KeyPairNotification = observer(
               publicKey: currentWallet.owner.primaryKey.publicKey,
             });
 
-            return !!walletData?.ed25519KeyPair;
+            return walletData
+              ? !!walletData.ed25519KeyPair
+              : !!currentWallet.ed25519PublicKey;
           }
         : skipToken,
     });

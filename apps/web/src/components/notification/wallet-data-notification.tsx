@@ -16,7 +16,17 @@ export const WalletDataNotification = observer(
     const router = useRouter();
 
     switch (walletDataState.data?.type) {
-      case WalletDataStateType.NotAvailable:
+      case WalletDataStateType.HomeAccountNotAvailable:
+        return (
+          <Notification
+            description="Caution: Your account has not been persisted on chain yet. Please finish setting up your account by clicking this banner."
+            type="warning"
+            onClick={() => {
+              router.push("/dashboard/settings/security");
+            }}
+          />
+        );
+      case WalletDataStateType.BackupNotAvailable:
         return (
           <Notification
             description="Caution: Your account has not been backed up yet. Please back up your account to enable recovery by clicking this banner."

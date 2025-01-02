@@ -1,5 +1,6 @@
 "use client";
 
+import { SetupHomeAccount } from "@/app/home-account-setup";
 import { useStore } from "@/contexts";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import {
@@ -24,7 +25,7 @@ export const SecuritySettings = observer(function SecuritySettings() {
   const walletDataState = useWalletDataStateQuery();
 
   useEffectOnceWhen(() => {
-    if (walletDataState.data?.type === WalletDataStateType.NotAvailable) {
+    if (walletDataState.data?.type === WalletDataStateType.BackupNotAvailable) {
       backupWallet.mutate();
     }
   }, !!wallet && !!walletDataState.data);
@@ -32,6 +33,8 @@ export const SecuritySettings = observer(function SecuritySettings() {
   if (!wallet || !walletDataState.data) return null;
 
   switch (walletDataState.data.type) {
+    case WalletDataStateType.HomeAccountNotAvailable:
+      return <SetupHomeAccount />;
     case WalletDataStateType.Outdated:
       return <SyncWalletData />;
     case WalletDataStateType.UpToDate:
