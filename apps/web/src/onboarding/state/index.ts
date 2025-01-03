@@ -176,6 +176,7 @@ export class CreateWalletState extends Data.TaggedClass(
         shares,
       });
       rootStore.current.mpcWalletsStore.upsertWallet(wallet);
+      void rootStore.current.analyticsStore.trackOnboarding();
     });
   }
 }
