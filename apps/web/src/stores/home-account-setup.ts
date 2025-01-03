@@ -10,6 +10,7 @@ import {
   UserEntryAddress,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
+import { Effect, Schedule } from "effect";
 import { z } from "zod";
 
 import { DistributeSharesResponse } from "./mpc";
@@ -120,29 +121,30 @@ export class HomeAccountSetupStore {
     homeAccount: UnclaimedHomeAccount;
     shares: DistributeSharesResponse;
   }) {
-    // TODO: handle retry;
-    const response = await fetch("/api/setup/distribute-shares", {
-      method: "POST",
-      body: serialize({
-        homeChainId,
-        networkParticipants: shares.networkParticipants,
-        networkShare: shares.networkShare,
-        userEntryAddress: homeAccount.homeAccountAddress,
-        userEntryCodeHash: await HomeChain.chainId(
+    return await this.withRetry(async () => {
+      const response = await fetch("/api/setup/distribute-shares", {
+        method: "POST",
+        body: serialize({
           homeChainId,
-        ).userEntryCodeHash(homeAccount.homeAccountAddress),
-        ownerIndex: homeAccount.ownerIndex,
-      }),
+          networkParticipants: shares.networkParticipants,
+          networkShare: shares.networkShare,
+          userEntryAddress: homeAccount.homeAccountAddress,
+          userEntryCodeHash: await HomeChain.chainId(
+            homeChainId,
+          ).userEntryCodeHash(homeAccount.homeAccountAddress),
+          ownerIndex: homeAccount.ownerIndex,
+        }),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to distribute shares: ${response.status}`);
+      }
+
+      const result: { success: boolean } = await response.json();
+      if (!result.success) {
+        throw new Error("Failed to distribute shares");
+      }
     });
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to distribute shares: ${response.status}`);
-    }
-
-    const result: { success: boolean } = await response.json();
-    if (!result.success) {
-      throw new Error("Failed to distribute shares");
-    }
   }
 
   protected async claimHomeAccount({
@@ -152,50 +154,51 @@ export class HomeAccountSetupStore {
     homeAccount: UnclaimedHomeAccount;
     wallet: z.infer<typeof LocalMpcWalletSchema>;
   }) {
-    // TODO: handle retry;
-    const homeChain = HomeChain.chainId(wallet.homeChain);
-    const walletData = await homeChain.getWalletData({
-      wallet: {
-        ...wallet,
-        userEntryAddress: homeAccount.homeAccountAddress,
-      },
-      // TODO: fetch from key meta data store
-      keyMetaData: {},
-    });
+    return await this.withRetry(async () => {
+      const homeChain = HomeChain.chainId(wallet.homeChain);
+      const walletData = await homeChain.getWalletData({
+        wallet: {
+          ...wallet,
+          userEntryAddress: homeAccount.homeAccountAddress,
+        },
+        // TODO: fetch from key meta data store
+        keyMetaData: {},
+      });
 
-    const userEntryCodeHash = await homeChain.userEntryCodeHash(
-      homeAccount.homeAccountAddress,
-    );
-    const userAccount = await homeChain.userAccount({
-      userEntryAddress: homeAccount.homeAccountAddress,
-      userEntryCodeHash,
-    });
-
-    const multisigKey = MultisigKey.create(wallet.homeChain, wallet.owner);
-
-    const response = await fetch("/api/setup/first-update-owner", {
-      method: "POST",
-      body: serialize({
-        homeChainId: wallet.homeChain,
-        owner: wallet.owner,
-        ownerAddress: multisigKey.address,
+      const userEntryCodeHash = await homeChain.userEntryCodeHash(
+        homeAccount.homeAccountAddress,
+      );
+      const userAccount = await homeChain.userAccount({
         userEntryAddress: homeAccount.homeAccountAddress,
         userEntryCodeHash,
-        userAccountAddress: userAccount.userAccountAddress,
-        userAccountCodeHash: userAccount.userAccountCodeHash,
-        ownerIndex: homeAccount.ownerIndex,
-        walletData,
-      }),
+      });
+
+      const multisigKey = MultisigKey.create(wallet.homeChain, wallet.owner);
+
+      const response = await fetch("/api/setup/first-update-owner", {
+        method: "POST",
+        body: serialize({
+          homeChainId: wallet.homeChain,
+          owner: wallet.owner,
+          ownerAddress: multisigKey.address,
+          userEntryAddress: homeAccount.homeAccountAddress,
+          userEntryCodeHash,
+          userAccountAddress: userAccount.userAccountAddress,
+          userAccountCodeHash: userAccount.userAccountCodeHash,
+          ownerIndex: homeAccount.ownerIndex,
+          walletData,
+        }),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to update owner: ${response.status}`);
+      }
+
+      const result: { success: boolean } = await response.json();
+      if (!result.success) {
+        throw new Error(`Failed to update owner: ${serialize(response)}`);
+      }
     });
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to update owner: ${response.status}`);
-    }
-
-    const result: { success: boolean } = await response.json();
-    if (!result.success) {
-      throw new Error(`Failed to update owner: ${serialize(response)}`);
-    }
   }
 
   protected createHomeAccountSingleton(): Promise<UnclaimedHomeAccount> {
@@ -205,31 +208,32 @@ export class HomeAccountSetupStore {
   }
 
   protected async createHomeAccount(): Promise<UnclaimedHomeAccount> {
-    // TODO: handle retry;
-    const homeAccount = await this.getUnclaimedHomeAccount();
+    return await this.withRetry(async () => {
+      const homeAccount = await this.getUnclaimedHomeAccount();
 
-    if (homeAccount) return homeAccount;
+      if (homeAccount) return homeAccount;
 
-    const response = await fetch("/api/setup/home-account", {
-      method: "POST",
-      body: serialize({
-        chainId: SecretJsHomeChainId.MAINNET,
-      }),
+      const response = await fetch("/api/setup/home-account", {
+        method: "POST",
+        body: serialize({
+          chainId: SecretJsHomeChainId.MAINNET,
+        }),
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to create magic account: ${response.status}`);
+      }
+
+      const result = UnclaimedHomeAccount.safeParse(await response.json());
+      if (!result.success) {
+        throw new Error(
+          `Failed to parse magic account: ${serialize(result.error)}`,
+        );
+      }
+
+      await this.setUnclaimedHomeAccount(result.data);
+      return result.data;
     });
-
-    if (response.status !== 200) {
-      throw new Error(`Failed to create magic account: ${response.status}`);
-    }
-
-    const result = UnclaimedHomeAccount.safeParse(await response.json());
-    if (!result.success) {
-      throw new Error(
-        `Failed to parse magic account: ${serialize(result.error)}`,
-      );
-    }
-
-    await this.setUnclaimedHomeAccount(result.data);
-    return result.data;
   }
 
   protected async getUnclaimedHomeAccount(): Promise<
@@ -246,5 +250,13 @@ export class HomeAccountSetupStore {
 
   protected async clearUnclaimedHomeAccount() {
     await this.kvStore.set(unclaimedHomeAccountKvStoreEntry, null);
+  }
+
+  protected async withRetry<T>(promise: () => Promise<T>) {
+    const task = Effect.tryPromise(promise);
+    const schedule = Schedule.addDelay(Schedule.recurUpTo("60 seconds"), () => {
+      return "1 second";
+    });
+    return await Effect.runPromise(Effect.retry(task, schedule));
   }
 }
