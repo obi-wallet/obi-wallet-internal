@@ -12,6 +12,7 @@ import {
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
 import { Effect, Schedule } from "effect";
+import { action, observable } from "mobx";
 import { z } from "zod";
 
 import { AnalyticsStore } from "./analytics";
@@ -40,6 +41,8 @@ export class HomeAccountSetupStore {
   protected readonly kvStore: AbstractKVStore;
   protected _homeAccountPromise: Promise<UnclaimedHomeAccount> | undefined;
   protected _setupPromises = new Map<string, Promise<void>>();
+  @observable
+  protected accessor _hasPendingSetup = new Set<string>();
 
   constructor({
     walletsStore,
@@ -67,6 +70,11 @@ export class HomeAccountSetupStore {
     this.kvStore = kvStore;
   }
 
+  public isSetupPending(walletId: string) {
+    return this._hasPendingSetup.has(walletId);
+  }
+
+  @action
   public async setupHomeAccount({
     wallet,
     shares,
@@ -74,8 +82,13 @@ export class HomeAccountSetupStore {
     wallet: MpcWallet;
     shares: DistributeSharesResponse;
   }) {
-    await this.createSetupHomeAccountPromiseSingleton({ wallet, shares });
-    this._setupPromises.delete(wallet.id);
+    this._hasPendingSetup.add(wallet.id);
+    try {
+      await this.createSetupHomeAccountPromiseSingleton({ wallet, shares });
+    } finally {
+      this._hasPendingSetup.delete(wallet.id);
+      this._setupPromises.delete(wallet.id);
+    }
   }
 
   protected createSetupHomeAccountPromiseSingleton({
