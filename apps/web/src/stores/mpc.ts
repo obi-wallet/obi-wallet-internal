@@ -1,26 +1,12 @@
+import { DistributeSharesResponse } from "@/mpc";
 import { WasmStore } from "@/stores/wasm";
 import {
   AbstractKVStore,
   RootStore,
   WalletState,
 } from "@obi-wallet/headless-ui-store";
-import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
-import {
-  BackupShare,
-  EasyShare,
-  NetworkShare,
-  MpcWallets,
-} from "@obi-wallet/sdk";
+import { MpcWallets } from "@obi-wallet/sdk";
 import { autorun } from "mobx";
-
-export interface DistributeSharesResponse {
-  keygenParam: KeygenParam;
-  backupParticipants: number[];
-  networkParticipants: number[];
-  easyShare: EasyShare;
-  backupShare: BackupShare;
-  networkShare: NetworkShare;
-}
 
 export type UnclaimedShares = DistributeSharesResponse;
 
@@ -29,7 +15,7 @@ const unclaimedSharesKvStoreEntry = "shares";
 export class MpcStore {
   protected readonly walletsStore: MpcWallets;
   protected readonly wasmStore: WasmStore;
-  protected readonly unclaimedSharesKVStore: AbstractKVStore;
+  protected readonly kvStore: AbstractKVStore;
   protected _sharesPromise: Promise<UnclaimedShares> | undefined;
   protected webWorker;
 
@@ -44,7 +30,7 @@ export class MpcStore {
     sdkRootStore: RootStore;
     wasmStore: WasmStore;
   }) {
-    this.unclaimedSharesKVStore = kvStore;
+    this.kvStore = kvStore;
     this.walletsStore = walletsStore;
     this.wasmStore = wasmStore;
 
@@ -91,16 +77,14 @@ export class MpcStore {
   }
 
   protected async getUnclaimedShares(): Promise<UnclaimedShares | undefined> {
-    return await this.unclaimedSharesKVStore.get<UnclaimedShares>(
-      unclaimedSharesKvStoreEntry,
-    );
+    return await this.kvStore.get<UnclaimedShares>(unclaimedSharesKvStoreEntry);
   }
 
   protected async setUnclaimedShares(shares: UnclaimedShares) {
-    await this.unclaimedSharesKVStore.set(unclaimedSharesKvStoreEntry, shares);
+    await this.kvStore.set(unclaimedSharesKvStoreEntry, shares);
   }
 
   protected async clearUnclaimedShares() {
-    await this.unclaimedSharesKVStore.set(unclaimedSharesKvStoreEntry, null);
+    await this.kvStore.set(unclaimedSharesKvStoreEntry, null);
   }
 }

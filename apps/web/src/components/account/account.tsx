@@ -14,11 +14,11 @@ export const Account = observer(function Account() {
 
   if (!currentWallet) return null;
 
-  const userData = userDataStore.getUserData(currentWallet.userEntryAddress);
+  const userData = userDataStore.getUserData(currentWallet.id);
   const name = userData.name || "My Account";
 
   const handleHideBalance = (hide: boolean) => {
-    userDataStore.setUserData(currentWallet.userEntryAddress, {
+    userDataStore.setUserData(currentWallet.id, {
       ...userData,
       balanceHidden: hide,
     });

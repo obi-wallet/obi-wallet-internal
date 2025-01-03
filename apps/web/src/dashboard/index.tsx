@@ -138,7 +138,7 @@ const EditMode = observer(function EditMode({
     return {
       chain: TargetChain.chainId(id),
       config: targetChainsStore.getTargetChainConfig({
-        address: wallet.userEntryAddress,
+        id: wallet.id,
         chainId: id,
       }),
     };
@@ -318,7 +318,7 @@ const Network = observer(function NetworkAssets({
   if (!wallet) return null;
 
   const targetChainConfig = targetChainsStore.getTargetChainConfig({
-    address: wallet.userEntryAddress,
+    id: wallet.id,
     chainId: assets.chain.chainId,
   });
 
@@ -342,7 +342,7 @@ const Network = observer(function NetworkAssets({
                 }`}
                 onClick={() => {
                   targetChainsStore.setTargetChainConfig({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     chainId: assets.chain.chainId,
                     config: { enabled: true },
                   });
@@ -362,7 +362,7 @@ const Network = observer(function NetworkAssets({
                 }`}
                 onClick={() => {
                   targetChainsStore.setTargetChainConfig({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     chainId: assets.chain.chainId,
                     config: { enabled: false },
                   });
@@ -382,7 +382,7 @@ const Network = observer(function NetworkAssets({
                 }`}
                 onClick={() => {
                   targetChainsStore.setTargetChainConfig({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     chainId: assets.chain.chainId,
                     config: {},
                   });
@@ -418,7 +418,7 @@ export const AssetRow = observer(function AssetRow({
   const { viewingKeysStore } = useStore();
 
   const viewingKey = viewingKeysStore.getViewingKey({
-    address: wallet?.userEntryAddress ?? "",
+    id: wallet?.id ?? "",
     assetId: asset.assetId,
   });
   const assetInfo = parseCaip19AssetId(asset.assetId);
@@ -467,7 +467,7 @@ export const AssetRow = observer(function AssetRow({
                   e.stopPropagation();
                   if (wallet) {
                     viewingKeysStore.removeViewingKey({
-                      address: wallet.userEntryAddress,
+                      id: wallet.id,
                       assetId: asset.assetId,
                     });
                   }
@@ -511,7 +511,7 @@ export const AssetRow = observer(function AssetRow({
                   e.stopPropagation();
                   if (wallet) {
                     viewingKeysStore.removeViewingKey({
-                      address: wallet.userEntryAddress,
+                      id: wallet.id,
                       assetId: asset.assetId,
                     });
                   }

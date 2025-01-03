@@ -6,7 +6,7 @@ import {
 
 export interface CosmosSignAminoUserInteractionPayload {
   readonly walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   readonly cancelable: boolean;
   readonly signerAddress: string;

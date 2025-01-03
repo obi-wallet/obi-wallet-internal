@@ -4,6 +4,8 @@ import { MpcWalletSchema } from "./schema";
 import { AbstractDataStructure } from "../abstract";
 
 export {
+  BackedUpMpcWalletSchema,
+  LocalMpcWalletSchema,
   UserEntryAddress,
   WalletData,
   LegacyMpcWalletSchema,
@@ -11,6 +13,7 @@ export {
   EncryptedEasyShareForClient,
   EncryptedEasyShareForBackup,
   EncryptedBackupShare,
+  EncryptedNetworkShare,
 } from "./schema";
 
 export type MpcWallet = MpcWalletInterface;

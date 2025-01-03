@@ -3,6 +3,8 @@ import { Base64EncodedString } from "@obi-wallet/encoding";
 import {
   AesGcmEncryptedData,
   EncryptedEasyShareForClient,
+  EncryptedBackupShare,
+  EncryptedNetworkShare,
   KeySchema,
   MultisigKey,
   MultisigKeyEncryptedData,
@@ -36,7 +38,11 @@ interface NewMultisigKeyEncryptedMessage {
 
 export interface IntentionsPayload {
   signHashes: Uint8Array[];
-  decryptEasyShare: EncryptedEasyShareForClient | null;
+  decryptShares: {
+    easy: EncryptedEasyShareForClient | null;
+    backup: EncryptedBackupShare | null;
+    network: EncryptedNetworkShare | null;
+  } | null;
   decryptMessages: Secp256k1EncryptedData[];
   decryptPrimaryKeyEncryptedMessages: PrimaryKeyEncryptedData[];
   decryptMultisigKeyEncryptedMessages: MultisigKeyEncryptedData[];
@@ -44,7 +50,11 @@ export interface IntentionsPayload {
 
 export interface IntentionsResult {
   signedHashes: Uint8Array[];
-  decryptedEasyShareShare: Base64EncodedString | null;
+  decryptedShares: {
+    easy: Base64EncodedString | null;
+    backup: Base64EncodedString | null;
+    network: Base64EncodedString | null;
+  };
   decryptedMessages: string[];
   decryptedPrimaryKeyEncryptedMessagesShares: Base64EncodedString[];
   decryptedMultisigKeyEncryptedMessagesShares: Base64EncodedString[];
@@ -81,7 +91,13 @@ export abstract class IntentionsHandler {
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
-    const decryptedEasyShareShare = this.payload.decryptEasyShare
+    const decryptedEasyShareShare = this.payload.decryptShares?.easy
+      ? rest.shift()
+      : null;
+    const decryptedBackupShare = this.payload.decryptShares?.backup
+      ? rest.shift()
+      : null;
+    const decryptedNetworkShare = this.payload.decryptShares?.network
       ? rest.shift()
       : null;
     const [
@@ -91,9 +107,17 @@ export abstract class IntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedEasyShareShare: decryptedEasyShareShare
-        ? Base64EncodedString.parse(decryptedEasyShareShare)
-        : null,
+      decryptedShares: {
+        easy: decryptedEasyShareShare
+          ? Base64EncodedString.parse(decryptedEasyShareShare)
+          : null,
+        backup: decryptedBackupShare
+          ? Base64EncodedString.parse(decryptedBackupShare)
+          : null,
+        network: decryptedNetworkShare
+          ? Base64EncodedString.parse(decryptedNetworkShare)
+          : null,
+      },
       decryptedPrimaryKeyEncryptedMessagesShares:
         decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
           return Base64EncodedString.parse(message);
@@ -169,7 +193,13 @@ export abstract class NewIntentionsHandler {
       this.payload.decryptMessages.length,
       result.decryptedMessages,
     );
-    const decryptedEasyShareShare = this.payload.decryptEasyShare
+    const decryptedEasyShareShare = this.payload.decryptShares?.easy
+      ? rest.shift()
+      : null;
+    const decryptedBackupShare = this.payload.decryptShares?.backup
+      ? rest.shift()
+      : null;
+    const decryptedNetworkShare = this.payload.decryptShares?.network
       ? rest.shift()
       : null;
     const [
@@ -180,9 +210,17 @@ export abstract class NewIntentionsHandler {
     return {
       signedHashes: result.signedHashes,
       decryptedMessages,
-      decryptedEasyShareShare: decryptedEasyShareShare
-        ? Base64EncodedString.parse(decryptedEasyShareShare)
-        : null,
+      decryptedShares: {
+        easy: decryptedEasyShareShare
+          ? Base64EncodedString.parse(decryptedEasyShareShare)
+          : null,
+        backup: decryptedBackupShare
+          ? Base64EncodedString.parse(decryptedBackupShare)
+          : null,
+        network: decryptedNetworkShare
+          ? Base64EncodedString.parse(decryptedNetworkShare)
+          : null,
+      },
       decryptedPrimaryKeyEncryptedMessagesShares:
         decryptedPrimaryKeyEncryptedMessagesShares.map((message) => {
           return Base64EncodedString.parse(message);
@@ -197,11 +235,25 @@ export abstract class NewIntentionsHandler {
   protected getMessagesToDecrypt(publicKey: string): Secp256k1EncryptedData[] {
     return [
       ...this.payload.decryptMessages,
-      ...(this.payload.decryptEasyShare
+      ...(this.payload.decryptShares?.easy
         ? [
             this.stringToPrimaryKeyEncryptedMessage(
-              this.payload.decryptEasyShare,
+              this.payload.decryptShares.easy,
             ).multisigKeyEncryptedMessage.encryptedShares[publicKey]!,
+          ]
+        : []),
+      ...(this.payload.decryptShares?.backup
+        ? [
+            this.stringToMultisigKeyEncryptedMessage(
+              this.payload.decryptShares.backup,
+            ).encryptedShares[publicKey]!,
+          ]
+        : []),
+      ...(this.payload.decryptShares?.network
+        ? [
+            this.stringToMultisigKeyEncryptedMessage(
+              this.payload.decryptShares.network,
+            ).encryptedShares[publicKey]!,
           ]
         : []),
       ...this.payload.decryptPrimaryKeyEncryptedMessages.map((m) => {

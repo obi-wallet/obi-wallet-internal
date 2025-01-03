@@ -26,7 +26,7 @@ BigInt.prototype.toJSON = function () {
 const interaction: CosmosSignDirectUserInteraction = {
   payload: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     cancelable: false,
     signerAddress: "sei1rptyr50v9sdythznd46vvml5wpp3uzvhdyfwqf",

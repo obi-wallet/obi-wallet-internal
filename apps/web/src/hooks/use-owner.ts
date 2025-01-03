@@ -1,10 +1,10 @@
 import { HomeChain } from "@/home-chain";
-import { HomeChainId, SecretJsClient } from "@obi-wallet/sdk";
+import { HomeChainId, SecretJsClient, UserEntryAddress } from "@obi-wallet/sdk";
 import { z } from "zod";
 
 export async function fetchOwner(wallet: {
   homeChainId: HomeChainId;
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
 }): Promise<string> {
   const client = new SecretJsClient(wallet.homeChainId);
   const homeChain = HomeChain.chainId(wallet.homeChainId);

@@ -21,7 +21,7 @@ export const Recovery = observer(function Recovery() {
       onDone={({ wallet: walletData, keyMetaData }) => {
         const wallet = ObservableMpcWallet.create(walletData);
 
-        keyMetaDataStore.setKeyMetaData(wallet.userEntryAddress, keyMetaData);
+        keyMetaDataStore.setKeyMetaData(wallet.id, keyMetaData);
         mpcWalletsStore.upsertWallet(wallet);
         router.push("/dashboard");
       }}

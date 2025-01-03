@@ -31,7 +31,7 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
     const isImportFlow =
       !wallet?.userEntryAddress ||
       !tokensStore.getTokenConfig({
-        address: wallet.userEntryAddress,
+        id: wallet.id,
         assetId,
       });
 
@@ -52,7 +52,7 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
       if (wallet) {
         educationStore.setTopicById("confirm_asset");
         const persistedAssetInfo = tokensStore.getTokenConfig({
-          address: wallet.userEntryAddress,
+          id: wallet.id,
           assetId,
         });
         if (persistedAssetInfo) {
@@ -83,11 +83,11 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
         // In import flow, Cancel should remove the token config
         if (wallet) {
           tokensStore.removeTokenConfig({
-            address: wallet.userEntryAddress,
+            id: wallet.id,
             assetId,
           });
           viewingKeysStore.removeViewingKey({
-            address: wallet.userEntryAddress,
+            id: wallet.id,
             assetId,
           });
         }
@@ -180,11 +180,11 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
               <Button
                 onClick={() => {
                   tokensStore.removeTokenConfig({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     assetId,
                   });
                   viewingKeysStore.removeViewingKey({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     assetId,
                   });
                   router.back();
@@ -213,14 +213,14 @@ export default observer<{ params: Promise<{ id: Caip19AssetId }> }>(
               }
               onClick={async () => {
                 tokensStore.setTokenConfig({
-                  address: wallet.userEntryAddress,
+                  id: wallet.id,
                   assetId,
                   config: state,
                 });
 
                 if (reference && isSecretChainId(chainId)) {
                   const viewingKey = viewingKeysStore.getViewingKey({
-                    address: wallet.userEntryAddress,
+                    id: wallet.id,
                     assetId,
                   });
                   if (!viewingKey) {

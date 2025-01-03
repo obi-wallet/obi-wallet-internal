@@ -36,13 +36,22 @@ export class UserDataStore {
     });
   }
 
-  public getUserData(address: string): UserData {
-    return this.userDataPerWallet[address] ?? {};
+  public getUserData(id: string): UserData {
+    return this.userDataPerWallet[id] ?? {};
   }
 
   @action
-  public setUserData(address: string, userData: UserData) {
-    this.userDataPerWallet[address] = userData;
+  public setUserData(id: string, userData: UserData) {
+    this.userDataPerWallet[id] = userData;
+  }
+
+  @action
+  public changeId(previousId: string, newId: string) {
+    const previousUserData = this.userDataPerWallet[previousId];
+    if (previousUserData) {
+      this.userDataPerWallet[newId] = previousUserData;
+      delete this.userDataPerWallet[previousId];
+    }
   }
 
   public async getFromKVStore(): Promise<UserDataPerWallet> {

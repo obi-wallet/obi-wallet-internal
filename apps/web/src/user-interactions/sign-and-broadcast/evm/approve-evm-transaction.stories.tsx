@@ -20,7 +20,7 @@ type Story = StoryObj<typeof meta>;
 export const SendMessage: Story = {
   args: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: Eip155ChainId.EthereumTestnet,
     calls: serializeUserOperationCalls([
@@ -53,7 +53,7 @@ export const SendMessage: Story = {
 export const SendErc20Message: Story = {
   args: {
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
     targetChainId: Eip155ChainId.EthereumTestnet,
     calls: serializeUserOperationCalls([

@@ -1,4 +1,4 @@
-import { Base58EncodedString } from "@obi-wallet/encoding";
+import { Base58EncodedString, Base64EncodedString } from "@obi-wallet/encoding";
 import { z } from "zod";
 
 import { Secp256k1PublicKey } from "../../keys";
@@ -30,7 +30,13 @@ export const EncryptedBackupShare = MultisigKeyEncryptedData.brand(
 );
 export type EncryptedBackupShare = z.infer<typeof EncryptedBackupShare>;
 
+export const EncryptedNetworkShare = MultisigKeyEncryptedData.brand(
+  "EncryptedNetworkShare",
+);
+export type EncryptedNetworkShare = z.infer<typeof EncryptedNetworkShare>;
+
 export const UserEntryAddress = z.string().brand("UserEntryAddress");
+export type UserEntryAddress = z.infer<typeof UserEntryAddress>;
 
 export const WalletData = z.object({
   homeChainId: HomeChainIdSchema,
@@ -114,7 +120,29 @@ export const LegacyMpcWalletSchema = migratable(
     },
   });
 
-export const MpcWalletSchema = z.object({
+export const LocalMpcWalletSchema = z.object({
+  homeChain: HomeChainIdSchema,
+  owner: MultisigKeySchema,
+  userEntryAddress: z.null(),
+  encryptedShares: z.object({
+    easy: EncryptedEasyShareForClient,
+    backup: EncryptedBackupShare,
+    network: EncryptedNetworkShare,
+  }),
+  secp256k1KeyPair: z.object({
+    publicKey: Base64EncodedString,
+    // TODO: here we want the encrypted shares
+  }),
+  ed25519KeyPair: z
+    .object({
+      publicKey: Base58EncodedString,
+      encryptedPrivateKey: MultisigKeyEncryptedData,
+    })
+    .nullable(),
+  previousWalletData: z.null(),
+});
+
+export const BackedUpMpcWalletSchema = z.object({
   homeChain: HomeChainIdSchema,
   owner: MultisigKeySchema,
   userEntryAddress: UserEntryAddress,
@@ -122,6 +150,14 @@ export const MpcWalletSchema = z.object({
     easy: EncryptedEasyShareForClient,
     backup: EncryptedBackupShare,
   }),
+  secp256k1KeyPair: z
+    .object({
+      publicKey: Base64EncodedString.or(z.null()),
+      // TODO: here we want the encrypted shares
+    })
+    .default({
+      publicKey: null,
+    }),
   ed25519KeyPair: z
     .object({
       publicKey: Base58EncodedString,
@@ -130,3 +166,8 @@ export const MpcWalletSchema = z.object({
     .nullable(),
   previousWalletData: WalletData.nullable(),
 });
+
+export const MpcWalletSchema = z.union([
+  LocalMpcWalletSchema,
+  BackedUpMpcWalletSchema,
+]);

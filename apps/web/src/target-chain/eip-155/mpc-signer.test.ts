@@ -46,7 +46,11 @@ test("signMessage", async () => {
   const intentionsPayload = {
     signHashes: [hash],
     decryptMessages: [],
-    decryptEasyShare: wallet.encryptedEasyShare,
+    decryptShares: {
+      easy: wallet.encryptedEasyShare,
+      backup: wallet.encryptedBackupShare,
+      network: null,
+    },
     decryptPrimaryKeyEncryptedMessages: [],
     decryptMultisigKeyEncryptedMessages: [],
   };

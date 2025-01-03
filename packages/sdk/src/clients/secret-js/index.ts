@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/amino";
 import { createWasmAminoConverters } from "@cosmjs/cosmwasm-stargate";
 import {
   AminoTypes,
@@ -12,15 +13,14 @@ import {
 } from "@cosmjs/stargate";
 import { Effect, Schedule } from "effect";
 import { BroadcastMode, Msg, SecretNetworkClient, TxResponse } from "secretjs";
-import { StdFee } from "secretjs/dist/wallet_amino";
 import { z } from "zod";
 
 import { SecretJsHomeChainId, SecretJsHomeChains } from "../../home-chains";
-import { BroadcastTransactionResult } from "../../sdk";
 import {
-  AminoSignerWithAddress,
-  SecretJsAminoSigner,
-} from "../../sdk/common/secret-js/amino-signer";
+  BroadcastTransactionResult,
+  DirectSignerWithAddress,
+  SecretJsDirectSigner,
+} from "../../sdk";
 import { Signer } from "../../signers";
 import { Message, SignedTransaction } from "../../transactions";
 
@@ -52,7 +52,7 @@ export async function withSigningSecretNetworkClient<T>(
     signer,
   }: {
     chainId: SecretJsHomeChainId;
-    signer: AminoSignerWithAddress;
+    signer: DirectSignerWithAddress;
   },
   f: (client: SecretNetworkClient) => Promise<T>,
 ) {
@@ -86,7 +86,7 @@ export class SecretJsClient {
   }
 
   public withSigningSecretNetworkClient<T>(
-    signer: AminoSignerWithAddress,
+    signer: DirectSignerWithAddress,
     f: (client: SecretNetworkClient) => Promise<T>,
   ) {
     return withSigningSecretNetworkClient({ chainId: this.chainId, signer }, f);
@@ -146,7 +146,7 @@ export class SecretJsClient {
     gasLimit?: number;
   }): Promise<SignedTransaction> {
     return await this.withSigningSecretNetworkClient(
-      SecretJsAminoSigner.fromSigner({ signer, prefix: this.chain.prefix }),
+      SecretJsDirectSigner.fromSigner({ signer, prefix: this.chain.prefix }),
       async (client) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return await client.tx.signTx(messages as Msg[], {

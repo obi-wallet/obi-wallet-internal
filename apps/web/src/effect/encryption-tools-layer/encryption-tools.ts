@@ -8,6 +8,7 @@ import {
   EncryptedEasyShareForClient,
   MultisigKey,
   MultisigKeyEncryptedData,
+  NetworkShare,
 } from "@obi-wallet/sdk";
 
 export interface EncryptionTools {
@@ -36,7 +37,11 @@ export interface EncryptionTools {
     intentionsPayload: IntentionsPayload;
     results: IntentionsResults;
   }) => Promise<{
-    decryptedEasyShare: EasyShare | null;
+    decryptedShares: {
+      easy: EasyShare | null;
+      backup: BackupShare | null;
+      network: NetworkShare | null;
+    };
     decryptedPrimaryKeyEncryptedMessages: string[];
     decryptedMultisigKeyEncryptedMessages: string[];
   }>;

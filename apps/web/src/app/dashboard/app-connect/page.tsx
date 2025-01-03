@@ -32,7 +32,7 @@ export default observer(function AppConnect() {
       await walletConnectStore.pair(uri);
     } else {
       walletConnectStore.queueUri(uri);
-      router.push("/onboarding/internal");
+      router.push("/onboarding");
     }
   }, walletsStoreState === WalletState.READY);
 

@@ -16,13 +16,13 @@ export default observer(function AccountSettings() {
 
   if (!wallet) return null;
 
-  const userData = userDataStore.getUserData(wallet.userEntryAddress);
+  const userData = userDataStore.getUserData(wallet.id);
 
   return (
     <Form
       userData={userData}
       onSave={async (userData) => {
-        userDataStore.setUserData(wallet.userEntryAddress, userData);
+        userDataStore.setUserData(wallet.id, userData);
         navigator.push("/dashboard/settings");
       }}
     />

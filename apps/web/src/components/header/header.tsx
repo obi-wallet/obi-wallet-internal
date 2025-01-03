@@ -129,8 +129,8 @@ const LogIn = observer(function LogIn() {
                       className="bg-primary border-primary w-full"
                     >
                       <div className="w-full overflow-hidden text-ellipsis text-left">
-                        {userDataStore.getUserData(wallet.userEntryAddress)
-                          .name || "My Account"}
+                        {userDataStore.getUserData(wallet.id).name ||
+                          "My Account"}
                       </div>
                     </Button>
                   );

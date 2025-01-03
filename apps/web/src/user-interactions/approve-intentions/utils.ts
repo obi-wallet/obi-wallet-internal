@@ -1,10 +1,14 @@
 import { IntentionsResult } from "@/keys/intentions-handler";
 import { MultisigKeyDecryption, PrimaryKeyDecryption } from "@/lib/encryption";
 import {
+  BackupShare,
   EasyShare,
+  EncryptedBackupShare,
   EncryptedEasyShareForClient,
+  EncryptedNetworkShare,
   MultisigKey,
   MultisigKeyEncryptedData,
+  NetworkShare,
   PrimaryKeyEncryptedData,
 } from "@obi-wallet/sdk";
 import { deserialize } from "@obi-wallet/sdk-json";
@@ -108,7 +112,7 @@ export async function handleEncryptedEasyShare({
   results: IntentionsResults;
 }) {
   const decryptedShares = multisigKey.keys.map((key) => {
-    return results.get(key.publicKey.value)?.decryptedEasyShareShare ?? null;
+    return results.get(key.publicKey.value)?.decryptedShares.easy ?? null;
   });
   return EasyShare.parse(
     deserialize(
@@ -116,6 +120,48 @@ export async function handleEncryptedEasyShare({
         data: encryptedEasyShare,
         input: decryptedShares,
       }),
+    ),
+  );
+}
+
+export async function handleEncryptedBackupShare({
+  encryptedBackupShare,
+  multisigKey,
+  results,
+}: {
+  encryptedBackupShare: EncryptedBackupShare;
+  multisigKey: MultisigKey;
+  results: IntentionsResults;
+}) {
+  const decryptedShares = multisigKey.keys.map((key) => {
+    return results.get(key.publicKey.value)?.decryptedShares.backup ?? null;
+  });
+  return BackupShare.parse(
+    deserialize(
+      await new MultisigKeyDecryption(decryptedShares).decrypt(
+        encryptedBackupShare,
+      ),
+    ),
+  );
+}
+
+export async function handleEncryptedNetworkShare({
+  encryptedNetworkShare,
+  multisigKey,
+  results,
+}: {
+  encryptedNetworkShare: EncryptedNetworkShare;
+  multisigKey: MultisigKey;
+  results: IntentionsResults;
+}) {
+  const decryptedShares = multisigKey.keys.map((key) => {
+    return results.get(key.publicKey.value)?.decryptedShares.network ?? null;
+  });
+  return NetworkShare.parse(
+    deserialize(
+      await new MultisigKeyDecryption(decryptedShares).decrypt(
+        encryptedNetworkShare,
+      ),
     ),
   );
 }

@@ -18,14 +18,18 @@ import { useRouter } from "next/navigation";
 import invariant from "tiny-invariant";
 
 export enum WalletDataStateType {
-  NotAvailable = "NotAvailable",
+  HomeAccountNotAvailable = "HomeAccountNotAvailable",
+  BackupNotAvailable = "BackupNotAvailable",
   UpToDate = "UpToDate",
   Outdated = "Outdated",
 }
 
 export type WalletDataState =
   | {
-      type: WalletDataStateType.NotAvailable;
+      type: WalletDataStateType.HomeAccountNotAvailable;
+    }
+  | {
+      type: WalletDataStateType.BackupNotAvailable;
     }
   | {
       type: WalletDataStateType.UpToDate;
@@ -49,6 +53,13 @@ export function useWalletDataStateQuery() {
       ? async (): Promise<WalletDataState> => {
           const primaryKey = wallet.owner.primaryKey;
           invariant(primaryKey, "Expected wallet to have a primary key");
+
+          if (!wallet.userEntryAddress) {
+            return {
+              type: WalletDataStateType.HomeAccountNotAvailable,
+            };
+          }
+
           const homeChain = HomeChain.chainId(wallet.homeChainId);
           const walletData = await homeChain.lookupWalletBackup({
             homeChainId: wallet.homeChainId,
@@ -57,7 +68,7 @@ export function useWalletDataStateQuery() {
 
           if (!walletData) {
             return {
-              type: WalletDataStateType.NotAvailable,
+              type: WalletDataStateType.BackupNotAvailable,
             };
           }
 
@@ -82,7 +93,7 @@ export function useWalletDataStateQuery() {
 
           if (!containsPrimaryKey) {
             return {
-              type: WalletDataStateType.NotAvailable,
+              type: WalletDataStateType.BackupNotAvailable,
             };
           }
 
@@ -113,7 +124,7 @@ export const SyncWalletData = observer(function SyncWalletData() {
   if (!walletDataState.data) return null;
 
   switch (walletDataState.data.type) {
-    case WalletDataStateType.NotAvailable:
+    case WalletDataStateType.BackupNotAvailable:
       return (
         <Text size="xl">
           This device does not have a wallet.{" "}
@@ -134,10 +145,7 @@ export const SyncWalletData = observer(function SyncWalletData() {
           onDone={({ wallet: walletData, keyMetaData }) => {
             const wallet = ObservableMpcWallet.create(walletData);
 
-            keyMetaDataStore.setKeyMetaData(
-              wallet.userEntryAddress,
-              keyMetaData,
-            );
+            keyMetaDataStore.setKeyMetaData(wallet.id, keyMetaData);
             mpcWalletsStore.upsertWallet(wallet);
             router.push("/dashboard/settings");
           }}

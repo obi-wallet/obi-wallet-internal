@@ -44,7 +44,7 @@ test("PrimaryKeyEncryption: decrypt with multisig key", async () => {
   const results: IntentionsResults = new Map();
 
   const intentions = {
-    decryptEasyShare: null,
+    decryptShares: null,
     decryptMultisigKeyEncryptedMessages: [],
     decryptPrimaryKeyEncryptedMessages: [encrypted],
     decryptMessages: [],

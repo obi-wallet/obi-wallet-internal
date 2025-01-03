@@ -558,7 +558,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
     const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
+      wallet,
     );
 
     const cosmosChains = allCosmosChains
@@ -603,7 +603,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
     const wallet = rootStore.current?.mpcWalletsStore.currentWallet;
     invariant(wallet, "Wallet not found");
     const publicKeys = await HomeChain.chainId(wallet.homeChainId).publicKeys(
-      wallet.userEntryAddress,
+      wallet,
     );
 
     const cosmosChains = allCosmosChains
@@ -652,7 +652,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_getAccounts": {
         const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).publicKeys(wallet.userEntryAddress);
+        ).publicKeys(wallet);
         const cosmosChains = allCosmosChains
           .map((targetChainId) => {
             return new CosmosTargetChain(targetChainId);
@@ -682,7 +682,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_signAmino": {
         const response = await CosmosSignAminoUserInteraction.start({
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
           cancelable: true,
           signerAddress: request.params.signerAddress,
@@ -697,7 +697,7 @@ export class CosmosTargetChain extends AbstractTargetChain<CosmosChainId> {
       case "cosmos_signDirect": {
         const response = await CosmosSignDirectUserInteraction.start({
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
           cancelable: true,
           signerAddress: request.params.signerAddress,

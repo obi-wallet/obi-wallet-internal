@@ -13,9 +13,7 @@ export default observer(function TargetChains() {
     return null;
   }
 
-  const targetChains = targetChainsStore.getTargetChains(
-    currentWallet.userEntryAddress,
-  );
+  const targetChains = targetChainsStore.getTargetChains(currentWallet.id);
 
   return (
     <ul className="text-white">
@@ -27,7 +25,7 @@ export default observer(function TargetChains() {
               variant={chain.config?.enabled === true ? "primary" : "outline"}
               onClick={() => {
                 targetChainsStore.setTargetChainConfig({
-                  address: currentWallet.userEntryAddress,
+                  id: currentWallet.id,
                   chainId: chain.id,
                   config: { enabled: true },
                 });
@@ -39,7 +37,7 @@ export default observer(function TargetChains() {
               variant={chain.config?.enabled === false ? "primary" : "outline"}
               onClick={() => {
                 targetChainsStore.setTargetChainConfig({
-                  address: currentWallet.userEntryAddress,
+                  id: currentWallet.id,
                   chainId: chain.id,
                   config: { enabled: false },
                 });
@@ -53,7 +51,7 @@ export default observer(function TargetChains() {
               }
               onClick={() => {
                 targetChainsStore.setTargetChainConfig({
-                  address: currentWallet.userEntryAddress,
+                  id: currentWallet.id,
                   chainId: chain.id,
                   config: {},
                 });

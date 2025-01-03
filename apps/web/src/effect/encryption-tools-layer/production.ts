@@ -3,7 +3,9 @@ import {
   SharesEncryptionForClient,
 } from "@/lib/encryption";
 import {
+  handleEncryptedBackupShare,
   handleEncryptedEasyShare,
+  handleEncryptedNetworkShare,
   handleMultisigKeyDecryptedMessages,
   handlePrimaryKeyDecryptedMessages,
 } from "@/user-interactions/approve-intentions/utils";
@@ -45,13 +47,29 @@ export const encryptionToolsLayer = Layer.succeed(EncryptionTools, {
     results,
   }) {
     return {
-      decryptedEasyShare: intentionsPayload.decryptEasyShare
-        ? await handleEncryptedEasyShare({
-            multisigKey,
-            encryptedEasyShare: intentionsPayload.decryptEasyShare,
-            results,
-          })
-        : null,
+      decryptedShares: {
+        easy: intentionsPayload.decryptShares?.easy
+          ? await handleEncryptedEasyShare({
+              multisigKey,
+              encryptedEasyShare: intentionsPayload.decryptShares.easy,
+              results,
+            })
+          : null,
+        backup: intentionsPayload.decryptShares?.backup
+          ? await handleEncryptedBackupShare({
+              multisigKey,
+              encryptedBackupShare: intentionsPayload.decryptShares.backup,
+              results,
+            })
+          : null,
+        network: intentionsPayload.decryptShares?.network
+          ? await handleEncryptedNetworkShare({
+              multisigKey,
+              encryptedNetworkShare: intentionsPayload.decryptShares.network,
+              results,
+            })
+          : null,
+      },
       decryptedPrimaryKeyEncryptedMessages:
         await handlePrimaryKeyDecryptedMessages({
           primaryKeyEncryptedMessages:
