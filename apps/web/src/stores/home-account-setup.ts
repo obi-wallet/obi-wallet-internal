@@ -96,10 +96,14 @@ export class HomeAccountSetupStore {
       homeAccount,
       shares,
     });
-    await this.claimHomeAccount({ homeAccount, wallet: walletData });
+    const previousWalletData = await this.claimHomeAccount({
+      homeAccount,
+      wallet: walletData,
+    });
 
     const previousWalletId = wallet.id;
     wallet.setUserEntryAddress(homeAccount.homeAccountAddress);
+    wallet.setPreviousWalletData(previousWalletData);
     const nextWalletId = wallet.id;
     console.log({ previousWalletId, nextWalletId });
     // TODO: update wallet and ids;
@@ -198,6 +202,8 @@ export class HomeAccountSetupStore {
       if (!result.success) {
         throw new Error(`Failed to update owner: ${serialize(response)}`);
       }
+
+      return walletData;
     });
   }
 
