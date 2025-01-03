@@ -1,8 +1,8 @@
 import { Button, Text, Transaction } from "@/components";
 import { useStore } from "@/contexts";
+import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { IntentionsPayload } from "@/keys/intentions-handler";
-import { AsyncButton } from "@/ui/button";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
   handleEncryptedBackupShare,
@@ -17,6 +17,7 @@ import {
 } from "@/wallet-data-backup/sync-wallet-data";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -35,6 +36,8 @@ export const SetupHomeAccount = observer(function SetupHomeAccount() {
 const SetupHomeAccountInner = observer(function SetupHomeAccountInner() {
   const { homeAccountSetupStore, keyMetaDataStore } = useStore();
   const wallet = useCurrentWallet();
+  const alert = useAlert();
+  const router = useRouter();
 
   const [results, setResults] = useState<IntentionsResults | undefined>(
     undefined,
@@ -78,6 +81,8 @@ const SetupHomeAccountInner = observer(function SetupHomeAccountInner() {
           networkShare: network,
         },
       });
+      router.push("/dashboard");
+      alert.showSuccess("Home Account Setup Complete");
     },
     onError(error) {
       console.error(error);
@@ -120,9 +125,22 @@ const SetupHomeAccountInner = observer(function SetupHomeAccountInner() {
             amountInfo={[]}
             feeInfo={[]}
             memo=""
-            descriptions={["Setup Home Account"]}
-            // TODO
-            rawData={{}}
+            descriptions={["Finish Home Account Setup"]}
+            rawData={{
+              homeChainId: wallet.homeChainId,
+              owner: wallet.owner.toJSON(),
+              encryptedShares: {
+                easy: "...",
+                backup: "...",
+              },
+              encryptedKeyMetaData: "...",
+              ed25519KeyPair: wallet.ed25519PublicKey
+                ? {
+                    publicKey: wallet.ed25519PublicKey,
+                    encryptedPrivateKey: "...",
+                  }
+                : undefined,
+            }}
           />
 
           <ApproveIntentions
@@ -135,15 +153,6 @@ const SetupHomeAccountInner = observer(function SetupHomeAccountInner() {
           />
 
           <div className="mt-6 flex w-full flex-row space-x-6">
-            <AsyncButton
-              block
-              variant="outline"
-              onClick={async () => {
-                // await dispatch(state.cancel());
-              }}
-            >
-              Reject
-            </AsyncButton>
             <Button
               block
               disabled={!results || approve.isPending}
