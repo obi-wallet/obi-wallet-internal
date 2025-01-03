@@ -102,6 +102,15 @@ export class KeyMetaDataStore {
     });
   }
 
+  @action
+  public changeId(previousId: string, newId: string) {
+    const previousKeyMetaData = this.keyMetaDataPerWallet[previousId];
+    if (previousKeyMetaData) {
+      this.keyMetaDataPerWallet[newId] = previousKeyMetaData;
+      delete this.keyMetaDataPerWallet[previousId];
+    }
+  }
+
   public async getFromKVStore(): Promise<KeyMetaDataPerWallet> {
     const data = await this.kvStore.get("key-meta-data");
     const result = KeyMetaDataPerWallet.safeParse(data);

@@ -95,4 +95,13 @@ export class ViewingKeysStore {
       [id]: omit([assetId], this.getViewingKeys(id)),
     };
   }
+
+  @action
+  public changeId(previousId: string, newId: string) {
+    const previousViewingKeys = this.keys[previousId];
+    if (previousViewingKeys) {
+      this.keys[newId] = previousViewingKeys;
+      delete this.keys[previousId];
+    }
+  }
 }

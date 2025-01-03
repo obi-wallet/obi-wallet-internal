@@ -127,8 +127,10 @@ export class HomeAccountSetupStore {
     wallet.setUserEntryAddress(homeAccount.homeAccountAddress);
     wallet.setPreviousWalletData(previousWalletData);
     const nextWalletId = wallet.id;
-    console.log({ previousWalletId, nextWalletId });
-    // TODO: update wallet and ids;
+    this.keyMetaDataStore.changeId(previousWalletId, nextWalletId);
+    this.targetChainsStore.changeId(previousWalletId, nextWalletId);
+    this.userDataStore.changeId(previousWalletId, nextWalletId);
+    this.viewingKeysStore.changeId(previousWalletId, nextWalletId);
   }
 
   protected async getHomeAccount() {

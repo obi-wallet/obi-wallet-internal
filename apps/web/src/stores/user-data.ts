@@ -45,6 +45,15 @@ export class UserDataStore {
     this.userDataPerWallet[id] = userData;
   }
 
+  @action
+  public changeId(previousId: string, newId: string) {
+    const previousUserData = this.userDataPerWallet[previousId];
+    if (previousUserData) {
+      this.userDataPerWallet[newId] = previousUserData;
+      delete this.userDataPerWallet[previousId];
+    }
+  }
+
   public async getFromKVStore(): Promise<UserDataPerWallet> {
     const data = await this.kvStore.get("user-data");
     const result = userDataPerWalletSchema.safeParse(data);
