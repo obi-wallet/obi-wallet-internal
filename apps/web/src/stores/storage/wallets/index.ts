@@ -1,4 +1,5 @@
 import { PrimaryKeyEncryption, Secp256k1Decryption } from "@/lib/encryption";
+import { easyShareToSecp256k1PublicKey } from "@/mpc";
 import { Base64EncodedString } from "@obi-wallet/encoding";
 import {
   createMigratableStorage,
@@ -6,6 +7,7 @@ import {
 } from "@obi-wallet/headless-ui-store";
 import {
   AbstractSerialized,
+  EasyShare,
   EncryptedEasyShareForClient,
   KeySchema,
   LegacyKey,
@@ -20,6 +22,7 @@ import {
   MultisigKey,
   MultisigKeySchema,
 } from "@obi-wallet/sdk";
+import { deserialize } from "@obi-wallet/sdk-json";
 import { Secp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { Redacted } from "effect";
 import { has } from "ramda";
@@ -92,6 +95,9 @@ export async function migrateWallet(
   const encryptedEasyShare = EncryptedEasyShareForClient.parse(
     await easyShareEncryption.encrypt(Redacted.value(easyShare)),
   );
+  const secp256k1PublicKey = easyShareToSecp256k1PublicKey(
+    EasyShare.parse(deserialize(Redacted.value(easyShare))),
+  );
   Redacted.unsafeWipe(easyShare);
 
   return {
@@ -103,9 +109,8 @@ export async function migrateWallet(
       backup: data.encryptedShares.backup,
     },
     ed25519KeyPair: data.ed25519KeyPair ?? null,
-    // TODO: here we can read from the easy share instead!
     secp256k1KeyPair: {
-      publicKey: null,
+      publicKey: secp256k1PublicKey.value,
     },
     previousWalletData: data.previousWalletData ?? null,
   };

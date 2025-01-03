@@ -1,26 +1,12 @@
+import { DistributeSharesResponse } from "@/mpc";
 import { WasmStore } from "@/stores/wasm";
 import {
   AbstractKVStore,
   RootStore,
   WalletState,
 } from "@obi-wallet/headless-ui-store";
-import { Parameters as KeygenParam } from "@obi-wallet/mpc-ecdsa-wasm-types";
-import {
-  BackupShare,
-  EasyShare,
-  NetworkShare,
-  MpcWallets,
-} from "@obi-wallet/sdk";
+import { MpcWallets } from "@obi-wallet/sdk";
 import { autorun } from "mobx";
-
-export interface DistributeSharesResponse {
-  keygenParam: KeygenParam;
-  backupParticipants: number[];
-  networkParticipants: number[];
-  easyShare: EasyShare;
-  backupShare: BackupShare;
-  networkShare: NetworkShare;
-}
 
 export type UnclaimedShares = DistributeSharesResponse;
 

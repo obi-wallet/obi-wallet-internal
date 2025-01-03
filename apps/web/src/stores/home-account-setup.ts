@@ -1,4 +1,5 @@
 import { HomeChain } from "@/home-chain";
+import { DistributeSharesResponse } from "@/mpc";
 import { AbstractKVStore } from "@obi-wallet/headless-ui-store";
 import {
   HomeChainId,
@@ -14,7 +15,6 @@ import { Effect, Schedule } from "effect";
 import { z } from "zod";
 
 import { KeyMetaData, KeyMetaDataStore } from "./key-meta-data";
-import { DistributeSharesResponse } from "./mpc";
 import { TargetChainsStore } from "./target-chains";
 import { UserDataStore } from "./user-data";
 import { ViewingKeysStore } from "./viewing-keys";

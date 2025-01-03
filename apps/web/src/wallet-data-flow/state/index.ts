@@ -3,6 +3,7 @@ import { EncryptionTools } from "@/effect/encryption-tools-layer";
 import { HomeChain } from "@/home-chain";
 import { SecretJsHomeChain } from "@/home-chain/secret-js";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { easyShareToSecp256k1PublicKey } from "@/mpc";
 import { Draft } from "@/stores";
 import { KeyMetaData, SingleKeyMetaData } from "@/stores/key-meta-data";
 import { IntentionsResults } from "@/user-interactions/approve-intentions/utils";
@@ -381,9 +382,8 @@ export class CommitDataState extends Data.TaggedClass(
                 });
               }),
             },
-            // TODO: can be read from the easy share
             secp256k1KeyPair: {
-              publicKey: null,
+              publicKey: easyShareToSecp256k1PublicKey(easyShare).value,
             },
             previousWalletData: walletData,
           },
@@ -579,9 +579,8 @@ export class UpdateOwnerState extends Data.TaggedClass(
             userEntryAddress: this.walletData.userEntryAddress,
             encryptedShares: encryptedSharesForClient,
             ed25519KeyPair: encryptedEd25519KeyPair,
-            // TODO: can be read from the easy share
             secp256k1KeyPair: {
-              publicKey: null,
+              publicKey: easyShareToSecp256k1PublicKey(easyShare).value,
             },
             previousWalletData: walletData,
           },

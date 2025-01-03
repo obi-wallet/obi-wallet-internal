@@ -1,4 +1,4 @@
-import { DistributeSharesResponse } from "@/stores/mpc";
+import { DistributeSharesResponse } from "@/mpc";
 
 export const MOCK_MPC_DISTRIBUTE_SHARES_RESPONSE: DistributeSharesResponse = {
   keygenParam: {

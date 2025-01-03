@@ -1,7 +1,7 @@
 import { EffectState } from "@/effect/effect-state";
 import { EncryptionTools } from "@/effect/encryption-tools-layer";
+import { easyShareToSecp256k1PublicKey } from "@/mpc";
 import { rootStore } from "@/stores";
-import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
 import {
   EncryptedNetworkShare,
   HomeChainId,
@@ -116,11 +116,9 @@ export class CreateWalletState extends Data.TaggedClass(
       })();
       multisigKey.setPrimaryKey(newKey);
 
-      const secp256k1PublicKey = Encoding.fromHex(
-        HexEncodedString.parse(
-          shares.easyShare.preSignForBackupShare.pubkey.point,
-        ),
-      ).toBase64();
+      const secp256k1PublicKey = easyShareToSecp256k1PublicKey(
+        shares.easyShare,
+      );
 
       const encryptionTools = yield* EncryptionTools;
       const { easy, backup } = yield* Effect.promise(() => {
@@ -157,7 +155,7 @@ export class CreateWalletState extends Data.TaggedClass(
           network,
         },
         secp256k1KeyPair: {
-          publicKey: secp256k1PublicKey,
+          publicKey: secp256k1PublicKey.value,
         },
         ed25519KeyPair: {
           publicKey: ed25519KeyPair.publicKey.value,

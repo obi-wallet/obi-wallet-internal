@@ -3,6 +3,7 @@ import { useStore } from "@/contexts";
 import { useAlert } from "@/hooks/alert";
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { IntentionsPayload } from "@/keys/intentions-handler";
+import { decryptedSharesToDistributeSharesResponse } from "@/mpc";
 import { ApproveIntentions } from "@/user-interactions/approve-intentions";
 import {
   handleEncryptedBackupShare,
@@ -71,15 +72,11 @@ const SetupHomeAccountInner = observer(function SetupHomeAccountInner() {
 
       await homeAccountSetupStore.setupHomeAccount({
         wallet,
-        shares: {
-          // TODO: should be dynamic
-          keygenParam: { parties: 3, threshold: 1 },
-          backupParticipants: [2, 3],
-          networkParticipants: [1, 3],
+        shares: decryptedSharesToDistributeSharesResponse({
           easyShare: easy,
           backupShare: backup,
           networkShare: network,
-        },
+        }),
       });
       router.push("/dashboard");
       alert.showSuccess("Home Account Setup Complete");
