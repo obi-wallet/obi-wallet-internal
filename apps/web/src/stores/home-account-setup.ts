@@ -13,7 +13,11 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { Effect, Schedule } from "effect";
 import { z } from "zod";
 
+import { KeyMetaData, KeyMetaDataStore } from "./key-meta-data";
 import { DistributeSharesResponse } from "./mpc";
+import { TargetChainsStore } from "./target-chains";
+import { UserDataStore } from "./user-data";
+import { ViewingKeysStore } from "./viewing-keys";
 
 const UnclaimedHomeAccount = z.object({
   homeAccountAddress: UserEntryAddress,
@@ -27,18 +31,34 @@ const unclaimedHomeAccountKvStoreEntry = "home-account";
 
 export class HomeAccountSetupStore {
   protected readonly walletsStore: MpcWallets;
+  protected readonly keyMetaDataStore: KeyMetaDataStore;
+  protected readonly targetChainsStore: TargetChainsStore;
+  protected readonly userDataStore: UserDataStore;
+  protected readonly viewingKeysStore: ViewingKeysStore;
   protected readonly kvStore: AbstractKVStore;
   protected _homeAccountPromise: Promise<UnclaimedHomeAccount> | undefined;
   protected _setupPromises = new Map<string, Promise<void>>();
 
   constructor({
     walletsStore,
+    keyMetaDataStore,
+    targetChainsStore,
+    userDataStore,
+    viewingKeysStore,
     kvStore,
   }: {
     walletsStore: MpcWallets;
+    keyMetaDataStore: KeyMetaDataStore;
+    targetChainsStore: TargetChainsStore;
+    userDataStore: UserDataStore;
+    viewingKeysStore: ViewingKeysStore;
     kvStore: AbstractKVStore;
   }) {
     this.walletsStore = walletsStore;
+    this.keyMetaDataStore = keyMetaDataStore;
+    this.targetChainsStore = targetChainsStore;
+    this.userDataStore = userDataStore;
+    this.viewingKeysStore = viewingKeysStore;
     this.kvStore = kvStore;
   }
 
@@ -96,9 +116,11 @@ export class HomeAccountSetupStore {
       homeAccount,
       shares,
     });
+    const keyMetaData = this.keyMetaDataStore.getKeyMetaData(wallet.id);
     const previousWalletData = await this.claimHomeAccount({
       homeAccount,
       wallet: walletData,
+      keyMetaData,
     });
 
     const previousWalletId = wallet.id;
@@ -154,9 +176,11 @@ export class HomeAccountSetupStore {
   protected async claimHomeAccount({
     homeAccount,
     wallet,
+    keyMetaData,
   }: {
     homeAccount: UnclaimedHomeAccount;
     wallet: z.infer<typeof LocalMpcWalletSchema>;
+    keyMetaData: KeyMetaData;
   }) {
     return await this.withRetry(async () => {
       const homeChain = HomeChain.chainId(wallet.homeChain);
@@ -165,8 +189,7 @@ export class HomeAccountSetupStore {
           ...wallet,
           userEntryAddress: homeAccount.homeAccountAddress,
         },
-        // TODO: fetch from key meta data store
-        keyMetaData: {},
+        keyMetaData,
       });
 
       const userEntryCodeHash = await homeChain.userEntryCodeHash(

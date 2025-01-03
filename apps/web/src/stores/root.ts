@@ -95,6 +95,10 @@ export class RootStore {
     this.homeAccountSetupStore = new HomeAccountSetupStore({
       kvStore: new KVStore("home-account-setup-store"),
       walletsStore: this.mpcWalletsStore,
+      keyMetaDataStore: this.keyMetaDataStore,
+      targetChainsStore: this.targetChainsStore,
+      userDataStore: this.userDataStore,
+      viewingKeysStore: this.viewingKeysStore,
     });
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
