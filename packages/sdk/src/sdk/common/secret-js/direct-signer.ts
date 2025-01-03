@@ -1,22 +1,21 @@
+import { encodeSecp256k1Signature, AccountData } from "@cosmjs/amino";
+import { sha256 } from "@cosmjs/crypto";
 import {
-  AminoSignResponse,
-  encodeSecp256k1Signature,
-  serializeSignDoc,
-  AccountData,
-  StdSignDoc,
-} from "@cosmjs/amino";
-import { Sha256 } from "@cosmjs/crypto";
+  DirectSignResponse,
+  OfflineDirectSigner,
+  makeSignBytes,
+} from "@cosmjs/proto-signing";
 import { Encoding } from "@obi-wallet/encoding";
+import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { pubkeyToAddress } from "secretjs";
-import type { AminoSigner } from "secretjs/dist/wallet_amino";
 
 import { Signer } from "../../../signers";
 
-export interface AminoSignerWithAddress extends AminoSigner {
+export interface DirectSignerWithAddress extends OfflineDirectSigner {
   readonly address: string;
 }
 
-export class SecretJsAminoSigner implements AminoSignerWithAddress {
+export class SecretJsDirectSigner implements DirectSignerWithAddress {
   protected constructor(
     protected signer: Signer,
     protected prefix: string,
@@ -29,7 +28,7 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
     signer: Signer;
     prefix: string;
   }) {
-    return new SecretJsAminoSigner(signer, prefix);
+    return new SecretJsDirectSigner(signer, prefix);
   }
 
   public get address(): string {
@@ -50,22 +49,20 @@ export class SecretJsAminoSigner implements AminoSignerWithAddress {
     ];
   }
 
-  public async signAmino(
-    signerAddress: string,
-    signDoc: StdSignDoc,
-  ): Promise<AminoSignResponse> {
-    if (signerAddress !== this.address) {
-      throw new Error(`Address ${signerAddress} not found in wallet`);
+  public async signDirect(
+    address: string,
+    signDoc: SignDoc,
+  ): Promise<DirectSignResponse> {
+    if (address !== this.address) {
+      throw new Error(`Address ${address} not found in wallet`);
     }
-    const signature = await this.signStdSignDoc(signDoc);
+
+    const messageHash = sha256(makeSignBytes(signDoc));
+    const signature = await this.signer.signHash(messageHash);
+
     return {
       signed: signDoc,
       signature: encodeSecp256k1Signature(this.publicKey, signature),
     };
-  }
-
-  public async signStdSignDoc(signDoc: StdSignDoc) {
-    const hash = new Sha256(serializeSignDoc(signDoc)).digest();
-    return await this.signer.signHash(hash);
   }
 }

@@ -2,24 +2,22 @@ import { HomeChain } from "@/home-chain";
 import { TargetChain } from "@/target-chain";
 import { MpcSigner } from "@/target-chain/mpc-signer";
 import { SecretChainId } from "@/target-chain/secret/chains";
-import {
-  AminoSignResponse,
-  encodeSecp256k1Signature,
-  serializeSignDoc,
-  StdSignature,
-  StdSignDoc,
-} from "@cosmjs/amino";
+import { encodeSecp256k1Signature, StdSignature } from "@cosmjs/amino";
 import { sha256 } from "@cosmjs/crypto";
-import { AccountData } from "@cosmjs/proto-signing";
+import {
+  AccountData,
+  DirectSignResponse,
+  makeSignBytes,
+} from "@cosmjs/proto-signing";
 import { Encoding, HexEncodedString } from "@obi-wallet/encoding";
-import { MpcWallet } from "@obi-wallet/sdk";
+import { DirectSignerWithAddress, MpcWallet } from "@obi-wallet/sdk";
 import {
   getSecp256k1CompressedPublicKey,
   Secp256k1PublicKey,
 } from "@obi-wallet/sdk-secp256k1";
-import { AminoSigner } from "secretjs/dist/wallet_amino";
+import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
-export class SecretMpcSigner implements AminoSigner {
+export class SecretMpcSigner implements DirectSignerWithAddress {
   public readonly mpcSigner: MpcSigner;
 
   public get address(): string {
@@ -59,16 +57,20 @@ export class SecretMpcSigner implements AminoSigner {
     ];
   }
 
-  public async signAmino(
+  public async signDirect(
     address: string,
-    signDoc: StdSignDoc,
-  ): Promise<AminoSignResponse> {
-    const signBytes = serializeSignDoc(signDoc);
-    const stdSignature = await this.signHash(address, sha256(signBytes));
+    signDoc: SignDoc,
+  ): Promise<DirectSignResponse> {
+    if (address !== this.address) {
+      throw new Error(`Address ${address} not found in wallet`);
+    }
+
+    const messageHash = sha256(makeSignBytes(signDoc));
+    const signature = await this.signHash(this.address, messageHash);
 
     return {
       signed: signDoc,
-      signature: stdSignature,
+      signature,
     };
   }
 
