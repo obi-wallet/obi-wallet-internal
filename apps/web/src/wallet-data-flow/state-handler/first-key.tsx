@@ -134,11 +134,7 @@ export const FirstKeyStep = observer<FirstKeyStepProps>(function FirstKeyStep({
           >
             Recover another wallet
           </AsyncButton>
-          <ButtonLink
-            href="/onboarding/internal"
-            variant="outline"
-            className="w-full"
-          >
+          <ButtonLink href="/onboarding" variant="outline" className="w-full">
             Create a new wallet
           </ButtonLink>
         </Modal>,

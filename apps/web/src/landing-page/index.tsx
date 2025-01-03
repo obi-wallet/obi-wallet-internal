@@ -22,7 +22,7 @@ export function LandingPage() {
               </p> */}
               <div className="mt-6 flex flex-col gap-5 lg:flex-row">
                 <Link
-                  href="/onboarding/internal"
+                  href="/onboarding"
                   className="bg-primary flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow"
                 >
                   START NOW
@@ -171,7 +171,7 @@ export function LandingPage() {
               </div>
               <div className="flex items-center">
                 <Link
-                  href="/onboarding/internal"
+                  href="/onboarding"
                   className="flex items-center justify-center rounded-md bg-white px-10 py-5 text-xl font-normal text-[#070707]"
                 >
                   START NOW
@@ -188,19 +188,6 @@ export function LandingPage() {
               />
             </div>
           </section>
-
-          {/* CTA Section
-          <section className="bg-primary flex flex-col items-center gap-8 px-6 py-12">
-            <h2 className="text-center text-3xl font-bold text-[#070707]">
-              One dashboard to manage assets across all chains and networks
-            </h2>
-            <Link
-              href="/onboarding/internal"
-              className="flex items-center justify-center rounded bg-white px-10 py-5 text-xl font-normal text-[#070707]"
-            >
-              START NOW
-            </Link>
-          </section> */}
 
           {/* Empathy Guide */}
           <section className="flex flex-col gap-8 px-6 py-12 lg:px-28">
