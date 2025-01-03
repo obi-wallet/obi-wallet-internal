@@ -137,10 +137,8 @@ export function useBalances() {
   function getQueries() {
     if (!wallet || !publicKeys) return [];
 
-    const targetChains = targetChainsStore.getTargetChains(
-      wallet.userEntryAddress,
-    );
-    const tokensConfig = tokensStore.getTokensConfig(wallet.userEntryAddress);
+    const targetChains = targetChainsStore.getTargetChains(wallet.id);
+    const tokensConfig = tokensStore.getTokensConfig(wallet.id);
 
     return targetChains.map((chain) => {
       return {
@@ -155,11 +153,13 @@ export function useBalances() {
             targetChainId: chain.id,
             tokensConfig,
           });
-          await analyticsStore.trackBalancesPerChain({
-            userEntryAddress: wallet.userEntryAddress,
-            chainId: chain.id,
-            balances: chainBalances,
-          });
+          if (wallet.userEntryAddress) {
+            await analyticsStore.trackBalancesPerChain({
+              userEntryAddress: wallet.userEntryAddress,
+              chainId: chain.id,
+              balances: chainBalances,
+            });
+          }
           return chainBalances;
         },
       };

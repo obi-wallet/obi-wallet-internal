@@ -1,51 +1,31 @@
 "use client";
 
+import { useEffectState } from "@/effect/effect-state";
+import { SecretJsHomeChainId } from "@obi-wallet/sdk";
 import { observer } from "mobx-react-lite";
-import { useRouter } from "next/navigation";
 
-import { OnboardingStep } from "./onboarding-step";
-import { Step } from "./step";
-import { useOnboardingDraft } from "./use-onboarding-draft";
+import { InitialState, OnboardingState, OnboardingStateType } from "./state";
+import { CreateWalletStep } from "./state-handler/create-wallet";
+import { PrimaryKeyStep } from "./state-handler/primary-key";
+import { UserDataStep } from "./state-handler/user-data";
 
-export interface OnboardingProps {
-  draftId: string;
-  steps: Readonly<OnboardingStep[]>;
-  step: number;
-}
+const initialState = new InitialState({
+  chainId: SecretJsHomeChainId.MAINNET,
+  initialName: "",
+});
 
-export const Onboarding = observer(function Onboarding({
-  draftId,
-  steps,
-  step,
-}: OnboardingProps) {
-  const draft = useOnboardingDraft({ draftId });
-  const router = useRouter();
+export const Onboarding = observer(function Onboarding() {
+  const { state, dispatch } = useEffectState(OnboardingState, initialState);
 
-  if (!draft) return null;
+  if (state._tag === OnboardingStateType.Initial) {
+    return <UserDataStep state={state} dispatch={dispatch} />;
+  }
 
-  const currentStep = steps[step];
-  if (!currentStep) return null;
+  if (state._tag === OnboardingStateType.PrimaryKey) {
+    return <PrimaryKeyStep state={state} dispatch={dispatch} />;
+  }
 
-  console.log({ currentStep });
-  const back =
-    step > 0
-      ? () => {
-          return router.push(`${step - 1}`);
-        }
-      : () => {
-          return router.push("/");
-        };
-  const next =
-    step + 1 < steps.length
-      ? () => {
-          return router.push(`${step + 1}`);
-        }
-      : undefined;
-
-  return (
-    <section className="flex flex-col items-center space-y-7">
-      {/* <Stepper currentStep={step + 1} totalSteps={steps.length} /> */}
-      <Step draft={draft} step={currentStep} back={back} next={next} />
-    </section>
-  );
+  if (state._tag === OnboardingStateType.CreateWallet) {
+    return <CreateWalletStep state={state} dispatch={dispatch} />;
+  }
 });

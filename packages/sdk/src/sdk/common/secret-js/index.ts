@@ -1,1 +1,1 @@
-export * from "./amino-signer";
+export * from "./direct-signer";

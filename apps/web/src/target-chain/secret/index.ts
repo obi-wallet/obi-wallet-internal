@@ -165,9 +165,8 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
 
         if (!wallet) return "0";
 
-        const userEntryAddress = wallet.userEntryAddress;
         const key = rootStore.current.viewingKeysStore.getViewingKey({
-          address: userEntryAddress,
+          id: wallet.id,
           assetId,
         });
 
@@ -193,7 +192,7 @@ export class SecretTargetChain extends AbstractTargetChain<SecretChainId> {
             if ("viewing_key_error" in response) {
               // When viewing key is invalid, response will include `viewing_key_error: {msg: "Wrong viewing key for this address or viewing key not set"}`
               rootStore.current?.viewingKeysStore.removeViewingKey({
-                address: userEntryAddress,
+                id: wallet.id,
                 assetId,
               });
               return "0";

@@ -16,10 +16,10 @@ import { observer } from "mobx-react-lite";
 
 async function computeKadoUrl({
   publicKeys,
-  userEntryAddress,
+  id,
 }: {
   publicKeys: ObiAccountPublicKeys;
-  userEntryAddress: string;
+  id: string;
 }): Promise<string> {
   interface KadoNetwork {
     network: string;
@@ -27,8 +27,7 @@ async function computeKadoUrl({
   }
 
   const targetChains =
-    rootStore.current?.targetChainsStore.getTargetChains(userEntryAddress) ??
-    [];
+    rootStore.current?.targetChainsStore.getTargetChains(id) ?? [];
   const networks = await filterMap(
     async (chain): Promise<KadoNetwork | null> => {
       if (!chain.enabled) {
@@ -132,8 +131,8 @@ export default observer(function BuyCrypto() {
       wallet && publicKeys
         ? async () => {
             return await computeKadoUrl({
+              id: wallet.id,
               publicKeys,
-              userEntryAddress: wallet.userEntryAddress,
             });
           }
         : skipToken,

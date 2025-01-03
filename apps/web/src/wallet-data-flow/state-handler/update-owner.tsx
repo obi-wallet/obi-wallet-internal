@@ -229,7 +229,7 @@ export const UpdateOwner = observer<UpdateOwnerProps>(function UpdateOwner({
               keyMetaData={keyMetaData}
               intentions={{
                 signHashes: [Encoding.fromHex(nextHash.data).toBytes()],
-                decryptEasyShare: null,
+                decryptShares: null,
                 decryptMessages: [],
                 decryptPrimaryKeyEncryptedMessages: [],
                 decryptMultisigKeyEncryptedMessages:

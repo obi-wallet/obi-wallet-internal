@@ -23,7 +23,7 @@ export const SignOnly: Story = {
     keyMetaData: {},
     intentions: {
       signHashes: [new Uint8Array(32)],
-      decryptEasyShare: null,
+      decryptShares: null,
       decryptMessages: [],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],
@@ -41,7 +41,7 @@ export const DecryptOnly: Story = {
     keyMetaData: {},
     intentions: {
       signHashes: [],
-      decryptEasyShare: null,
+      decryptShares: null,
       decryptMessages: [],
       decryptPrimaryKeyEncryptedMessages: [],
       decryptMultisigKeyEncryptedMessages: [],

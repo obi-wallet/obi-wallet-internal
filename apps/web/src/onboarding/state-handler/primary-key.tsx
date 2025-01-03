@@ -1,8 +1,8 @@
 "use client";
 
+import { EffectStateDispatch } from "@/effect/effect-state";
 import { useGoogleAuth } from "@/hooks/use-google-auth";
-import { PrimaryKeyOnboardingStep } from "@/onboarding/onboarding-step";
-import { StepProps } from "@/onboarding/step";
+import { OnboardingState, PrimaryKeyState } from "@/onboarding/state";
 import { createPasskey, KeyType } from "@obi-wallet/sdk";
 import { generateSecp256k1KeyPair } from "@obi-wallet/sdk-secp256k1";
 import { useMutation } from "@tanstack/react-query";
@@ -10,42 +10,43 @@ import { DateTime } from "luxon";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
+export interface PrimaryKeyStepProps {
+  state: PrimaryKeyState;
+  dispatch: EffectStateDispatch<typeof OnboardingState>;
+}
+
 export const PrimaryKeyStep = observer(function PrimaryKeyStep({
-  draft,
-  back,
-  next,
-}: StepProps<PrimaryKeyOnboardingStep>) {
-  // Ignore this if we're running in dev mode
+  state,
+  dispatch,
+}: PrimaryKeyStepProps) {
   const { uploadFile } = useGoogleAuth();
   const [useCloudKey, setUseCloudKey] = useState(false);
 
   const passkeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = await createPasskey();
-      draft.value.setPrimaryKey({
-        key: {
+      await dispatch(
+        state.setPrimaryKey({
           type: KeyType.Passkey,
-          payload: keyPair,
-        },
-      });
-      if (next) next();
+          payload: keyPair.publicKey,
+        }),
+      );
     },
   });
 
   const cloudKeyFlow = useMutation({
     mutationFn: async () => {
       const keyPair = generateSecp256k1KeyPair();
-      draft.value.setPrimaryKey({
-        key: {
-          type: KeyType.Cloud,
-          payload: keyPair,
-        },
-      });
       const timestamp = DateTime.now().toISO();
       const fileName = `obi-${timestamp}.key`;
       try {
         await uploadFile(keyPair, fileName, "application/json");
-        if (next) next();
+        await dispatch(
+          state.setPrimaryKey({
+            type: KeyType.Cloud,
+            payload: keyPair.publicKey,
+          }),
+        );
       } catch (e) {
         console.error(e);
       }
@@ -88,12 +89,12 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             >
               click here
             </span>{" "}
-            if you’d prefer to create a passkey instead.
+            if you'd prefer to create a passkey instead.
           </p>
         ) : (
           <p className="font-light text-white">
             Create a passkey to secure your account. This key is associated with
-            the device you’re currently using.
+            the device you're currently using.
             <br />
             <br />
             You can add more keys later for increased security, or{" "}
@@ -103,23 +104,23 @@ export const PrimaryKeyStep = observer(function PrimaryKeyStep({
             >
               click here
             </span>{" "}
-            if you can’t create a passkey, or if nothing happens when you
+            if you can't create a passkey, or if nothing happens when you
             attempt to create one.
           </p>
         )}
 
         {/* Buttons */}
         <div className="flex w-full gap-[22px]">
-          {back && (
-            <button
-              onClick={back}
-              className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
-            >
-              <span className="text-center text-xl font-normal text-white">
-                Back
-              </span>
-            </button>
-          )}
+          <button
+            onClick={async () => {
+              await dispatch(state.back());
+            }}
+            className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] border border-white py-2.5"
+          >
+            <span className="text-center text-xl font-normal text-white">
+              Back
+            </span>
+          </button>
           <button
             onClick={handlePrimaryAction}
             className="flex h-[46px] flex-1 items-center justify-center rounded-[5px] bg-[#32c9af] py-2.5"

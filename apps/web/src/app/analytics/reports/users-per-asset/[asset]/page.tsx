@@ -3,6 +3,7 @@
 import { Text } from "@/components";
 import { TargetChain } from "@/target-chain";
 import { useQuery } from "@obi-wallet/headless-ui";
+import { UserEntryAddress } from "@obi-wallet/sdk";
 import { Caip19AssetId, parseCaip19AssetId } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
 import { useSearchParams } from "next/navigation";
@@ -37,7 +38,7 @@ export default function UsersPerAsset(props: {
 
       const data: {
         asset: Caip19AssetId;
-        userEntryAddress: string;
+        userEntryAddress: UserEntryAddress;
         amount: number;
         usd_value: number;
       }[] = await response.json();

@@ -49,7 +49,11 @@ test.skip("Re-encrypt MPC shares and Ed25519 private key", async () => {
   });
 
   const intention: IntentionsPayload = {
-    decryptEasyShare: sourceWallet.encryptedEasyShare,
+    decryptShares: {
+      easy: sourceWallet.encryptedEasyShare,
+      backup: null,
+      network: null,
+    },
     signHashes: [],
     decryptPrimaryKeyEncryptedMessages: [],
     decryptMessages: [],

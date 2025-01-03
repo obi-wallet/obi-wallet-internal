@@ -23,7 +23,7 @@ import { SendingAnimation } from "./sending-animation";
 
 export interface ApproveMessagesProps {
   walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   targetChainId: TargetChainId;
   messages: unknown[];
@@ -54,9 +54,7 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
     calculateHashToSign,
   }) {
     const { keyMetaDataStore, mpcWalletsStore } = useStore();
-    const wallet = mpcWalletsStore.getWalletByUserEntryAddress(
-      walletMeta.userEntryAddress,
-    );
+    const wallet = mpcWalletsStore.getWalletById(walletMeta.id);
     const [intentionsResults, setIntentionsResults] = useState<
       IntentionsResults | undefined
     >();
@@ -142,13 +140,15 @@ export const ApproveMessages = observer<ApproveMessagesProps>(
 
     if (!wallet) return null;
 
-    const keyMetaData = keyMetaDataStore.getKeyMetaData(
-      wallet.userEntryAddress,
-    );
+    const keyMetaData = keyMetaDataStore.getKeyMetaData(wallet.id);
     const intentionsPayload: IntentionsPayload | null = txInfoData
       ? {
           signHashes: [Encoding.fromHex(txInfoData.hash).toBytes()],
-          decryptEasyShare: wallet.encryptedEasyShare,
+          decryptShares: {
+            easy: wallet.encryptedEasyShare,
+            backup: wallet.encryptedBackupShare,
+            network: null,
+          },
           decryptMessages: [],
           decryptPrimaryKeyEncryptedMessages: [],
           decryptMultisigKeyEncryptedMessages: [],
@@ -434,7 +434,7 @@ function messageToAmountCosmos({ message }: { message: EncodeObject }): Coin[] {
 
 function messageToAmountSecret({ message }: { message: Msg }) {
   if (message instanceof MsgSend) {
-    return message.amount;
+    return message.params.amount;
   }
 
   console.warn("Unknown message: ", message);
@@ -459,7 +459,7 @@ function messageToAddressCosmos({
 
 function messageToAddressSecret({ message }: { message: Msg }) {
   if (message instanceof MsgSend) {
-    return [message.to_address];
+    return [message.params.to_address];
   }
 
   console.warn("Unknown message: ", message);
@@ -508,7 +508,7 @@ async function messageToDescriptionSecret({
           coin: amount,
           targetChainId,
         });
-        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${message.to_address}`;
+        return `Send ${prettyAmount.amount} ${prettyAmount.denom} to ${message.params.to_address}`;
       }),
     );
   }

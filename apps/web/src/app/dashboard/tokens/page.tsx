@@ -14,7 +14,7 @@ export default observer(function Tokens() {
     return null;
   }
 
-  const tokens = tokensStore.getTokensConfig(currentWallet.userEntryAddress);
+  const tokens = tokensStore.getTokensConfig(currentWallet.id);
 
   return (
     <ul className="text-white">
@@ -27,7 +27,7 @@ export default observer(function Tokens() {
                 variant={config?.enabled === true ? "primary" : "outline"}
                 onClick={() => {
                   tokensStore.setTokenConfig({
-                    address: currentWallet.userEntryAddress,
+                    id: currentWallet.id,
                     assetId: id,
                     config: {
                       ...config,
@@ -42,7 +42,7 @@ export default observer(function Tokens() {
                 variant={config?.enabled !== true ? "primary" : "outline"}
                 onClick={() => {
                   tokensStore.setTokenConfig({
-                    address: currentWallet.userEntryAddress,
+                    id: currentWallet.id,
                     assetId: id,
                     config: {
                       ...config,
@@ -63,7 +63,7 @@ export default observer(function Tokens() {
                 variant="outline"
                 onClick={() => {
                   tokensStore.removeTokenConfig({
-                    address: currentWallet.userEntryAddress,
+                    id: currentWallet.id,
                     assetId: id,
                   });
                 }}

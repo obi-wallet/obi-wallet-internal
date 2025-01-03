@@ -7,7 +7,7 @@ import { BroadcastTransactionResult } from "../sdk";
 
 export interface SignAndBroadcastTransactionUserInteractionPayload {
   readonly walletMeta: {
-    userEntryAddress: string;
+    id: string;
   };
   readonly targetChainId: string;
   readonly cancelable: boolean;

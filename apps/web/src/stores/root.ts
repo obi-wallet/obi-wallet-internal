@@ -16,6 +16,7 @@ import { ChainStore } from "./chain";
 import { ConfigStore } from "./config";
 import { DraftsStore } from "./drafts";
 import { EducationStore } from "./education";
+import { HomeAccountSetupStore } from "./home-account-setup";
 import { KeyMetaDataStore } from "./key-meta-data";
 import { MpcStore } from "./mpc";
 import { TargetChainsStore } from "./target-chains";
@@ -44,6 +45,7 @@ export class RootStore {
   public readonly configStore: ConfigStore;
   public readonly draftsStore: DraftsStore;
   public readonly educationStore: EducationStore;
+  public readonly homeAccountSetupStore: HomeAccountSetupStore;
   public readonly keyMetaDataStore: KeyMetaDataStore;
   public readonly mpcStore: MpcStore;
   public readonly sdkRootStore: SdkRootStore;
@@ -90,6 +92,15 @@ export class RootStore {
     this.chainStore = new ChainStore({
       configStore: this.configStore,
     });
+    this.homeAccountSetupStore = new HomeAccountSetupStore({
+      kvStore: new KVStore("home-account-setup-store"),
+      walletsStore: this.mpcWalletsStore,
+      analyticsStore: this.analyticsStore,
+      keyMetaDataStore: this.keyMetaDataStore,
+      targetChainsStore: this.targetChainsStore,
+      userDataStore: this.userDataStore,
+      viewingKeysStore: this.viewingKeysStore,
+    });
     this.mpcStore = new MpcStore({
       kvStore: new KVStore("mpc-store"),
       walletsStore: this.mpcWalletsStore,
@@ -105,7 +116,7 @@ export class RootStore {
     autorun(() => {
       const currentWallet = this.mpcWalletsStore.currentWallet;
       if (currentWallet) {
-        Cookies.set(CURRENT_WALLET_COOKIE_NAME, currentWallet.userEntryAddress);
+        Cookies.set(CURRENT_WALLET_COOKIE_NAME, currentWallet.id);
       } else {
         Cookies.remove(CURRENT_WALLET_COOKIE_NAME);
       }

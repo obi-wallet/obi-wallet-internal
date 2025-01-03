@@ -45,7 +45,7 @@ export function useCreateViewingKey() {
       cancelable: true,
       targetChainId: chainId,
       walletMeta: {
-        userEntryAddress: wallet.userEntryAddress,
+        id: wallet.id,
       },
     });
 
@@ -53,7 +53,7 @@ export function useCreateViewingKey() {
       const broadcastResult = response.payload;
       if (broadcastResult.success) {
         viewingKeysStore.setViewingKey({
-          address: wallet.userEntryAddress,
+          id: wallet.id,
           assetId,
           key,
         });

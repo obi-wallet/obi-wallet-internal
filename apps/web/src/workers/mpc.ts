@@ -1,10 +1,6 @@
-import type { DistributeSharesResponse } from "@/stores/mpc";
+import { getDefaultMpcParams, type DistributeSharesResponse } from "@/mpc";
 import type { KeyGenerator, Signer } from "@obi-wallet/mpc-ecdsa-wasm";
-import {
-  Parameters,
-  Parameters as KeygenParam,
-  PartySignup,
-} from "@obi-wallet/mpc-ecdsa-wasm-types";
+import { Parameters, PartySignup } from "@obi-wallet/mpc-ecdsa-wasm-types";
 import invariant from "tiny-invariant";
 
 let mpcPackage: typeof import("@obi-wallet/mpc-ecdsa-wasm") | null = null;
@@ -19,13 +15,15 @@ async function distributeShares(): Promise<DistributeSharesResponse> {
     await mpcPackage.default();
   }
 
-  const keygenParam: KeygenParam = { parties: 3, threshold: 1 };
-  const networkCombo: number[] = [1, 3];
-  const backupCombo: number[] = [2, 3];
+  const { keygenParam, networkParticipants, backupParticipants } =
+    getDefaultMpcParams();
 
   const shares = keygen(keygenParam);
 
-  const signersForContract = createSignersAndPresign(shares, networkCombo);
+  const signersForContract = createSignersAndPresign(
+    shares,
+    networkParticipants,
+  );
   const contractSignersCompletedOfflineStage =
     signersForContract[0]?.completedOfflineStage();
 
@@ -39,7 +37,7 @@ async function distributeShares(): Promise<DistributeSharesResponse> {
     pubkey: completedOfflineStageForContract.local_key.y_sum_s,
   };
 
-  const signersForBackup = createSignersAndPresign(shares, backupCombo);
+  const signersForBackup = createSignersAndPresign(shares, backupParticipants);
   const backupSignersCompletedOfflineStage =
     signersForBackup[0]?.completedOfflineStage();
 
@@ -63,8 +61,8 @@ async function distributeShares(): Promise<DistributeSharesResponse> {
 
   return {
     keygenParam,
-    backupParticipants: backupCombo,
-    networkParticipants: networkCombo,
+    backupParticipants,
+    networkParticipants,
     easyShare,
     backupShare,
     networkShare,

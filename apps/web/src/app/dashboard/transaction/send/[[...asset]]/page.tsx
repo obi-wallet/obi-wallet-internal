@@ -241,7 +241,7 @@ const SendInner = observer<{
           cancelable: true,
           targetChainId: chainId,
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
         });
         await invalidateBalancesQueries(chainId);
@@ -310,7 +310,7 @@ const SendInner = observer<{
             cancelable: true,
             targetChainId: chainId,
             walletMeta: {
-              userEntryAddress: wallet.userEntryAddress,
+              id: wallet.id,
             },
           },
         );
@@ -331,12 +331,12 @@ const SendInner = observer<{
         const targetChain = TargetChain.chainId(chainId);
         const publicKeys = await HomeChain.chainId(
           wallet.homeChainId,
-        ).publicKeys(wallet.userEntryAddress);
+        ).publicKeys(wallet);
         const response = await SignAndBroadcastSvm.start({
           targetChainId: chainId,
           cancelable: true,
           walletMeta: {
-            userEntryAddress: wallet.userEntryAddress,
+            id: wallet.id,
           },
           message: {
             fromAddress: await targetChain.obiAccountAddress(publicKeys),
@@ -421,7 +421,7 @@ const SendInner = observer<{
         cancelable: true,
         targetChainId: chainId,
         walletMeta: {
-          userEntryAddress: wallet.userEntryAddress,
+          id: wallet.id,
         },
       });
 

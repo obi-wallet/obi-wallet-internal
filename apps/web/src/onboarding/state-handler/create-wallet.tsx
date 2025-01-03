@@ -1,62 +1,31 @@
 "use client";
 
-import { useStore } from "@/contexts";
-import { CreateWalletOnboardingStep } from "@/onboarding/onboarding-step";
-import { StepProps } from "@/onboarding/step";
-import { ObservableMpcWallet } from "@obi-wallet/sdk";
-import { useMutation } from "@tanstack/react-query";
+import { EffectStateDispatch } from "@/effect/effect-state";
+import { encryptionToolsLayer } from "@/effect/encryption-tools-layer/production";
+import { Effect } from "effect";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useEffectOnceWhen } from "rooks";
 
-export const CreateWalletStep = observer(function CreateWalletStep({
-  draft,
-  step,
-}: StepProps<CreateWalletOnboardingStep>) {
-  const { analyticsStore, mpcWalletsStore, userDataStore } = useStore();
-  const router = useRouter();
+import { CreateWalletState, OnboardingState } from "../state";
 
-  const onDone = () => {
-    router.replace(step.redirectTo);
-  };
+export interface CreateWalletStepProps {
+  state: CreateWalletState;
+  dispatch: EffectStateDispatch<typeof OnboardingState>;
+}
 
-  const createWalletMutation = useMutation({
-    mutationFn: async () => {
-      if (step.demoMode) {
-        await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(true);
-          }, 5000);
-        });
-        return;
-      }
+export const CreateWalletStep = observer<CreateWalletStepProps>(
+  function CreateWalletStep({ state }) {
+    const router = useRouter();
 
-      draft.value.confirmOwner();
-      await draft.value.continueFlow();
-      const walletData = draft.value.toMpcWalletData();
-      userDataStore.setUserData(walletData.userEntryAddress, {
-        name: draft.value.name,
-        avatar: draft.value.image,
-      });
-      mpcWalletsStore.upsertWallet(ObservableMpcWallet.create(walletData));
-      await analyticsStore.trackOnboarding();
-      return true;
-    },
-    onSuccess() {
-      if (step.waitUntilDone) onDone();
-    },
-    retry: 3,
-  });
+    useEffectOnceWhen(async () => {
+      await Effect.runPromise(
+        Effect.provide(state.createLocalWallet(), encryptionToolsLayer),
+      );
+      router.replace("/dashboard");
+    });
 
-  useEffectOnceWhen(() => {
-    createWalletMutation.mutate();
-    if (!step.waitUntilDone) onDone();
-  });
-
-  if (!step.waitUntilDone) return null;
-
-  if (createWalletMutation.isPending) {
     return (
       <div className="flex min-h-screen w-full flex-col items-center gap-[105px] bg-[#070707] py-6">
         {/* Loading Animation */}
@@ -66,10 +35,8 @@ export const CreateWalletStep = observer(function CreateWalletStep({
         </div>
       </div>
     );
-  }
-
-  return null;
-});
+  },
+);
 
 const messages = [
   "Creating Your All-Chains Account",

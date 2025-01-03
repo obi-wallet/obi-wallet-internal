@@ -39,7 +39,7 @@ const interactionCosmos: SignAndBroadcastTransactionUserInteraction = {
     cancelable: true,
     targetChainId: CosmosChainId.Sei,
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
   },
   resolve: () => {},
@@ -71,7 +71,7 @@ const interactionSecret: SignAndBroadcastTransactionUserInteraction = {
     cancelable: true,
     targetChainId: SecretChainId.Secret,
     walletMeta: {
-      userEntryAddress: MOCK_WALLET_DATA.userEntryAddress,
+      id: MOCK_WALLET_DATA.userEntryAddress,
     },
   },
   resolve: () => {},

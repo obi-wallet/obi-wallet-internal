@@ -1,3 +1,4 @@
+import { UserEntryAddress } from "@obi-wallet/sdk";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
 
@@ -5,7 +6,7 @@ export async function trackAppConnect({
   userEntryAddress,
   dAppUrl,
 }: {
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
   dAppUrl: string;
 }) {
   const response = await fetch(
@@ -28,7 +29,7 @@ export async function trackBalances({
   userEntryAddress,
   balances,
 }: {
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
   balances: {
     assetId: Caip19AssetId;
     rawAmount: string;
@@ -61,7 +62,7 @@ export async function trackOnboarding({
   userEntryAddress,
   dAppUrl,
 }: {
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
   dAppUrl?: string;
 }) {
   const response = await fetch(

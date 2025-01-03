@@ -2,6 +2,7 @@ import {
   HomeChainId,
   MultisigKeySchema,
   Secp256k1PublicKey,
+  UserEntryAddress,
   WalletData,
 } from "@obi-wallet/sdk";
 import { serialize } from "@obi-wallet/sdk-json";
@@ -49,7 +50,7 @@ export async function lookupWallet({
   userEntryAddress,
 }: {
   homeChainId: HomeChainId;
-  userEntryAddress: string;
+  userEntryAddress: UserEntryAddress;
 }) {
   return await fetch(
     `https://wallets.obiwallet.workers.dev/${encodeURIComponent(homeChainId)}/wallet/${encodeURIComponent(userEntryAddress)}`,
