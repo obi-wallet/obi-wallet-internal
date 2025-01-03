@@ -95,6 +95,7 @@ export class RootStore {
     this.homeAccountSetupStore = new HomeAccountSetupStore({
       kvStore: new KVStore("home-account-setup-store"),
       walletsStore: this.mpcWalletsStore,
+      analyticsStore: this.analyticsStore,
       keyMetaDataStore: this.keyMetaDataStore,
       targetChainsStore: this.targetChainsStore,
       userDataStore: this.userDataStore,

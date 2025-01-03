@@ -14,6 +14,7 @@ import { serialize } from "@obi-wallet/sdk-json";
 import { Effect, Schedule } from "effect";
 import { z } from "zod";
 
+import { AnalyticsStore } from "./analytics";
 import { KeyMetaData, KeyMetaDataStore } from "./key-meta-data";
 import { TargetChainsStore } from "./target-chains";
 import { UserDataStore } from "./user-data";
@@ -31,6 +32,7 @@ const unclaimedHomeAccountKvStoreEntry = "home-account";
 
 export class HomeAccountSetupStore {
   protected readonly walletsStore: MpcWallets;
+  protected readonly analyticsStore: AnalyticsStore;
   protected readonly keyMetaDataStore: KeyMetaDataStore;
   protected readonly targetChainsStore: TargetChainsStore;
   protected readonly userDataStore: UserDataStore;
@@ -41,6 +43,7 @@ export class HomeAccountSetupStore {
 
   constructor({
     walletsStore,
+    analyticsStore,
     keyMetaDataStore,
     targetChainsStore,
     userDataStore,
@@ -48,6 +51,7 @@ export class HomeAccountSetupStore {
     kvStore,
   }: {
     walletsStore: MpcWallets;
+    analyticsStore: AnalyticsStore;
     keyMetaDataStore: KeyMetaDataStore;
     targetChainsStore: TargetChainsStore;
     userDataStore: UserDataStore;
@@ -55,6 +59,7 @@ export class HomeAccountSetupStore {
     kvStore: AbstractKVStore;
   }) {
     this.walletsStore = walletsStore;
+    this.analyticsStore = analyticsStore;
     this.keyMetaDataStore = keyMetaDataStore;
     this.targetChainsStore = targetChainsStore;
     this.userDataStore = userDataStore;
@@ -131,6 +136,7 @@ export class HomeAccountSetupStore {
     this.targetChainsStore.changeId(previousWalletId, nextWalletId);
     this.userDataStore.changeId(previousWalletId, nextWalletId);
     this.viewingKeysStore.changeId(previousWalletId, nextWalletId);
+    await this.analyticsStore.changeId(previousWalletId, nextWalletId);
   }
 
   protected async getHomeAccount() {

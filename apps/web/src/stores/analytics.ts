@@ -9,7 +9,7 @@ import {
 import { serialize } from "@obi-wallet/sdk-json";
 import { Session } from "@obi-wallet/wallet-connect";
 import { DateTime } from "luxon";
-import { autorun, observable, runInAction, toJS, when } from "mobx";
+import { action, autorun, observable, runInAction, toJS, when } from "mobx";
 import { z } from "zod";
 
 const lastBalancesTrackSchema = z.object({
@@ -36,13 +36,25 @@ export type LastBalancesTracksPerWallet = z.infer<
   typeof lastBalancesTracksPerWalletSchema
 >;
 
+const queuedEventSchema = z.object({
+  type: z.literal("onboarding"),
+  dAppUrl: z.string().optional(),
+});
+
+const queuedEventsPerLocalWalletSchema = z.record(z.array(queuedEventSchema));
+
+export type QueuedEventsPerLocalWallet = z.infer<
+  typeof queuedEventsPerLocalWalletSchema
+>;
+
 export class AnalyticsStore {
   @observable
   protected accessor lastBalanceTracks: LastBalancesTracksPerWallet = {};
-  @observable protected accessor pairingTopicToSession: Record<
-    string,
-    Session
-  > = {};
+  @observable
+  protected accessor queuedEventsForLocalWallets: QueuedEventsPerLocalWallet =
+    {};
+  @observable
+  protected accessor pairingTopicToSession: Record<string, Session> = {};
 
   protected readonly kvStore: AbstractKVStore;
   protected readonly walletsStore: MpcWallets;
@@ -60,23 +72,42 @@ export class AnalyticsStore {
   }
 
   protected async init() {
-    const lastBalanceTracks = await this.getFromKVStore();
+    const [lastBalanceTracks, queuedEventsForLocalWallets] = await Promise.all([
+      this.getLAstBalancesTracksPerWalletFromKVStore(),
+      this.getQueuedEventsPerLocalWalletFromKVStore(),
+    ]);
 
     runInAction(() => {
       this.lastBalanceTracks = lastBalanceTracks;
+      this.queuedEventsForLocalWallets = queuedEventsForLocalWallets;
     });
 
     autorun(async () => {
-      const data = lastBalancesTracksPerWalletSchema.parse(
-        toJS(this.lastBalanceTracks),
-      );
-      await this.kvStore.set("last-balances-tracks", data);
+      await Promise.all([
+        this.kvStore.set(
+          "last-balances-tracks",
+          lastBalancesTracksPerWalletSchema.parse(toJS(this.lastBalanceTracks)),
+        ),
+        this.kvStore.set(
+          "queued-events-for-local-wallets",
+          queuedEventsPerLocalWalletSchema.parse(
+            toJS(this.queuedEventsForLocalWallets),
+          ),
+        ),
+      ]);
     });
   }
 
-  protected async getFromKVStore(): Promise<LastBalancesTracksPerWallet> {
+  protected async getLAstBalancesTracksPerWalletFromKVStore(): Promise<LastBalancesTracksPerWallet> {
     const data = await this.kvStore.get("last-balances-tracks");
     const result = lastBalancesTracksPerWalletSchema.safeParse(data);
+    if (!result.success) return {};
+    return result.data;
+  }
+
+  protected async getQueuedEventsPerLocalWalletFromKVStore(): Promise<QueuedEventsPerLocalWallet> {
+    const data = await this.kvStore.get("queued-events-for-local-wallets");
+    const result = queuedEventsPerLocalWalletSchema.safeParse(data);
     if (!result.success) return {};
     return result.data;
   }
@@ -96,12 +127,7 @@ export class AnalyticsStore {
   }
 
   public async trackOnboarding() {
-    await fetch("/api/analytics/onboarding", {
-      method: "POST",
-      body: serialize({
-        userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-      }),
-    });
+    await this.genericTrackOnboarding({});
   }
 
   public async trackOnboardingViaPairingUri(pairingUri: string) {
@@ -123,21 +149,13 @@ export class AnalyticsStore {
 
       const session = this.pairingTopicToSession[pairingTopic];
 
-      await fetch("/api/analytics/onboarding", {
-        method: "POST",
-        body: serialize({
-          userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-          dAppUrl: session?.peer.metadata.url,
-        }),
+      await this.genericTrackOnboarding({
+        dAppUrl: session?.peer.metadata.url,
       });
     } catch (error) {
       console.log(error);
-      await fetch("/api/analytics/onboarding", {
-        method: "POST",
-        body: serialize({
-          userEntryAddress: this.walletsStore.currentWallet?.userEntryAddress,
-          dAppUrl: "UNKNOWN",
-        }),
+      await this.genericTrackOnboarding({
+        dAppUrl: "UNKNOWN",
       });
     }
   }
@@ -210,6 +228,48 @@ export class AnalyticsStore {
     });
   }
 
+  @action
+  protected async genericTrackOnboarding({
+    dAppUrl,
+  }: {
+    dAppUrl?: string | undefined;
+  }) {
+    const currentWallet = this.walletsStore.currentWallet;
+    if (!currentWallet) return;
+
+    const userEntryAddress = currentWallet.userEntryAddress;
+    if (userEntryAddress) {
+      await this.handleTrackOnboarding({
+        userEntryAddress,
+        dAppUrl,
+      });
+    } else {
+      this.queuedEventsForLocalWallets[currentWallet.id] = [
+        ...(this.queuedEventsForLocalWallets[currentWallet.id] || []),
+        {
+          type: "onboarding",
+          dAppUrl,
+        },
+      ];
+    }
+  }
+
+  protected async handleTrackOnboarding({
+    userEntryAddress,
+    dAppUrl,
+  }: {
+    userEntryAddress: UserEntryAddress;
+    dAppUrl?: string | undefined;
+  }) {
+    await fetch("/api/analytics/onboarding", {
+      method: "POST",
+      body: serialize({
+        userEntryAddress,
+        dAppUrl,
+      }),
+    });
+  }
+
   protected async trackBalances({
     userEntryAddress,
     balances,
@@ -228,5 +288,22 @@ export class AnalyticsStore {
         balances,
       }),
     });
+  }
+
+  @action
+  public async changeId(previousId: string, newId: string) {
+    const result = UserEntryAddress.safeParse(newId);
+    if (!result.success) return;
+
+    const events = this.queuedEventsForLocalWallets[previousId];
+    if (events) {
+      for (const event of events) {
+        await this.handleTrackOnboarding({
+          userEntryAddress: result.data,
+          dAppUrl: event.dAppUrl,
+        });
+      }
+      delete this.queuedEventsForLocalWallets[previousId];
+    }
   }
 }
