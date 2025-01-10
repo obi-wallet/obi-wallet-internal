@@ -52,48 +52,48 @@ const ChooseAsset = observer<{ onDone: () => void }>(function ChooseAsset({
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
       <Text size="xl" className="flex items-center gap-2">
-        Deposit Here to Receive $XYZ
+        Deposit your asset here to receive $XYZ
       </Text>
-      <Text className="mt-4">
-        {/* TODO: label instead */}
-        <span className="align-middle leading-normal">
-          Select an asset and amount you'd like to deposit.
-        </span>
-      </Text>
-      <Input
-        labelClassname="bg-background-secondary"
-        className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-        placeholder="0.5"
-        // TODO: dropdown
-        rightComponent={
-          <div className="flex w-full justify-end">
-            <Text>ETH</Text>
-          </div>
-        }
-        // value={field.value}
-        // onChange={(recipient) => {
-        //   field.onChange(recipient);
-        // }}
-      />
-      <Text className="mt-6">
-        {/* TODO: label instead */}
-        <span className="align-middle leading-normal">
-          You are expected to receive:
-        </span>
-      </Text>
-      <Input
-        labelClassname="bg-background-secondary"
-        className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-        placeholder="0.5"
-        // value={field.value}
-        // onChange={(recipient) => {
-        //   field.onChange(recipient);
-        // }}
-      />
+
+      <div className="mt-6 flex flex-col">
+        <label htmlFor="assetAmount" className="mb-2">
+          <Text size="sm" className="text-gray-200">
+            How much are you depositing?
+          </Text>
+        </label>
+        <Input
+          id="assetAmount"
+          labelClassname="bg-background-secondary"
+          className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+          placeholder="0.5"
+          // Future: replace rightComponent with a dropdown if needed
+          rightComponent={
+            <div className="flex w-full justify-end">
+              <Text>ETH</Text>
+            </div>
+          }
+          // onChange / value can be hooked up later
+        />
+      </div>
+
+      <div className="mt-6 flex flex-col">
+        <label htmlFor="expectedReceive" className="mb-2">
+          <Text size="sm" className="text-gray-200">
+            You are expected to receive:
+          </Text>
+        </label>
+        <Input
+          id="expectedReceive"
+          labelClassname="bg-background-secondary"
+          className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+          placeholder="0.5"
+          // onChange / value can be hooked up later
+        />
+      </div>
+
       <AsyncButton
         className="mt-8 w-full"
         variant="secondary"
-        // TODO: handle disabled state
         onClick={async () => {
           onDone();
         }}
