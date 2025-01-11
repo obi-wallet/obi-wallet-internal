@@ -6,6 +6,8 @@ import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
+import { AssetDropdown } from "./asset-dropdown";
+
 export const TunnelEmbed = observer(function TunnelEmbed() {
   const [step, setStep] = useState(1);
 
@@ -66,10 +68,13 @@ const ChooseAsset = observer<{ onDone: () => void }>(function ChooseAsset({
           labelClassname="bg-background-secondary"
           className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
           placeholder="0.5"
-          // Future: replace rightComponent with a dropdown if needed
           rightComponent={
             <div className="flex w-full justify-end">
-              <Text>ETH</Text>
+              <AssetDropdown
+                items={["ETH", "LUNA", "KWEEN"]}
+                // selectedItem={selectedAsset ?? undefined}
+                // onSelectedItemChange={(value) => setSelectedAsset(value)}
+              />
             </div>
           }
           // onChange / value can be hooked up later
