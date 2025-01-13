@@ -1,31 +1,27 @@
 "use client";
 
 import { Text } from "@/components";
+import { EffectStateDispatch, useEffectState } from "@/effect/effect-state";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 import { AssetDropdown } from "./asset-dropdown";
+import {
+  ChooseAddressState,
+  ChooseAssetState,
+  StatusState,
+  TunnelState,
+  TunnelStateType,
+} from "./state";
+import { TunnelService, TunnelServiceState } from "./tunnel-service";
 
 export const TunnelEmbed = observer(function TunnelEmbed() {
-  const [step, setStep] = useState(1);
-
-  const nextStep = () => {
-    setStep((prevStep) => {
-      return Math.min(prevStep + 1, 3);
-    });
-  };
-
-  //   const prevStep = () => {
-  //     setStep((prevStep) => {
-  //       return Math.max(prevStep - 1, 1);
-  //     });
-  //   };
-
-  //   const handleAction = async () => {
-  //     console.log(await getPasskey());
-  //   };
+  const { state, dispatch } = useEffectState(
+    TunnelState,
+    new ChooseAssetState(),
+  );
 
   //   const handleSubmit = async () => {
   //     console.log("Submitting...", window.opener, window.parent);
@@ -37,20 +33,44 @@ export const TunnelEmbed = observer(function TunnelEmbed() {
   //     }
   //   };
 
-  if (step === 1) {
-    return <ChooseAsset onDone={nextStep} />;
+  if (state._tag === TunnelStateType.ChooseAsset) {
+    return <ChooseAsset state={state} dispatch={dispatch} />;
   }
-  if (step === 2) {
-    return <ChooseAddress onDone={nextStep} />;
+  if (state._tag === TunnelStateType.ChooseAddress) {
+    return <ChooseAddress state={state} dispatch={dispatch} />;
   }
-  if (step === 3) {
-    return <Deposit />;
+  if (state._tag === TunnelStateType.Status) {
+    return <Deposit state={state} dispatch={dispatch} />;
   }
 });
 
-const ChooseAsset = observer<{ onDone: () => void }>(function ChooseAsset({
-  onDone,
+export interface ChooseAssetProps {
+  state: ChooseAssetState;
+  dispatch: EffectStateDispatch<typeof TunnelState>;
+}
+
+const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
+  state,
+  dispatch,
 }) {
+  const [s, setState] = useState<TunnelServiceState>({
+    status: "idle",
+    from: {
+      asset: "",
+      rawAmount: "",
+    },
+    to: {
+      asset: "",
+      rawAmount: "",
+    },
+  });
+  const [service, _] = useState(() => {
+    return new TunnelService((state) => {
+      setState(state);
+    });
+  });
+  console.log({ s });
+
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
       <Text size="xl" className="flex items-center gap-2">
@@ -68,16 +88,24 @@ const ChooseAsset = observer<{ onDone: () => void }>(function ChooseAsset({
           labelClassname="bg-background-secondary"
           className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
           placeholder="0.5"
+          value={s.from.rawAmount}
+          onChange={(value) => {
+            service.setRawAmount(value);
+          }}
           rightComponent={
             <div className="flex w-full justify-end">
               <AssetDropdown
                 items={["ETH", "LUNA", "KWEEN"]}
                 // selectedItem={selectedAsset ?? undefined}
-                // onSelectedItemChange={(value) => setSelectedAsset(value)}
+                onSelectedItemChange={(value) => {
+                  console.log(value);
+                  if (value) {
+                    service.setAsset(value);
+                  }
+                }}
               />
             </div>
           }
-          // onChange / value can be hooked up later
         />
       </div>
 
@@ -92,25 +120,32 @@ const ChooseAsset = observer<{ onDone: () => void }>(function ChooseAsset({
           labelClassname="bg-background-secondary"
           className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
           placeholder="0.5"
-          // onChange / value can be hooked up later
+          value={s.status === "done" ? s.to.rawAmount : ""}
         />
       </div>
 
       <AsyncButton
         className="mt-8 w-full"
         variant="secondary"
+        disabled={s.status !== "done"}
         onClick={async () => {
-          onDone();
+          await dispatch(state.setSimulationResponse());
         }}
       >
-        Continue
+        {s.status === "simulating" ? "Simulating..." : "Continue"}
       </AsyncButton>
     </div>
   );
 });
 
-const ChooseAddress = observer<{ onDone: () => void }>(function ChooseAddress({
-  onDone,
+export interface ChooseAddressProps {
+  state: ChooseAddressState;
+  dispatch: EffectStateDispatch<typeof TunnelState>;
+}
+
+const ChooseAddress = observer<ChooseAddressProps>(function ChooseAddress({
+  state,
+  dispatch,
 }) {
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
@@ -128,9 +163,7 @@ const ChooseAddress = observer<{ onDone: () => void }>(function ChooseAddress({
         className="mt-2 w-full"
         variant="primary"
         // TODO: handle disabled state
-        onClick={async () => {
-          console.log("continue");
-        }}
+        onClick={async () => {}}
       >
         Connect Phantom
       </AsyncButton>
@@ -164,7 +197,7 @@ const ChooseAddress = observer<{ onDone: () => void }>(function ChooseAddress({
         variant="secondary"
         // TODO: handle disabled state
         onClick={async () => {
-          onDone();
+          await dispatch(state.setAddress());
         }}
       >
         Continue
@@ -173,7 +206,12 @@ const ChooseAddress = observer<{ onDone: () => void }>(function ChooseAddress({
   );
 });
 
-const Deposit = observer(function Deposit() {
+export interface StatusProps {
+  state: StatusState;
+  dispatch: EffectStateDispatch<typeof TunnelState>;
+}
+
+const Deposit = observer<StatusProps>(function Deposit() {
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
       <Text size="xl" className="flex items-center gap-2">
