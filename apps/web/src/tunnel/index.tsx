@@ -96,7 +96,7 @@ const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             <div className="flex w-full justify-end">
               <AssetDropdown
                 items={["ETH", "LUNA", "KWEEN"]}
-                // selectedItem={selectedAsset ?? undefined}
+                selectedItem={s.from.asset || null}
                 onSelectedItemChange={(value) => {
                   console.log(value);
                   if (value) {

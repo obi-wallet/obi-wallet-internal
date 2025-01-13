@@ -4,7 +4,7 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface AssetDropdownProps {
   items: string[];
-  selectedItem?: string;
+  selectedItem?: string | null;
   onSelectedItemChange?: (item: string | null) => void;
   placeholder?: string;
 }
