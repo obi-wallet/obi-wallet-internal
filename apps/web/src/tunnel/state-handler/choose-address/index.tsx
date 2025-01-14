@@ -92,9 +92,9 @@ export const ChooseAddress = observer<ChooseAddressProps>(
         <AsyncButton
           className="mt-2 w-full"
           variant="secondary"
-          // TODO: handle disabled state
+          disabled={!walletProviders.targetChain.validateAddress(s)}
           onClick={async () => {
-            await dispatch(state.setAddress());
+            await dispatch(state.setAddress(s));
           }}
         >
           Continue

@@ -3,12 +3,7 @@
 import { useEffectState } from "@/effect/effect-state";
 import { observer } from "mobx-react-lite";
 
-import {
-  ChooseAddressState,
-  ChooseAssetState,
-  TunnelState,
-  TunnelStateType,
-} from "./state";
+import { ChooseAssetState, TunnelState, TunnelStateType } from "./state";
 import { ChooseAddress } from "./state-handler/choose-address";
 import { ChooseAsset } from "./state-handler/choose-asset";
 import { Status } from "./state-handler/status";
@@ -16,24 +11,8 @@ import { Status } from "./state-handler/status";
 export const TunnelEmbed = observer(function TunnelEmbed() {
   const { state, dispatch } = useEffectState(
     TunnelState,
-    // new ChooseAssetState({
-    //   to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
-    // }),
-    new ChooseAddressState({
-      previousState: new ChooseAssetState({
-        to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
-      }),
-      from: {
-        asset: "eip155:1/native:0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-        rawAmount: "1",
-        prettyAmount: "0.000000000000000001",
-      },
-      to: {
-        asset:
-          "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
-        rawAmount: "1",
-        prettyAmount: "1",
-      },
+    new ChooseAssetState({
+      to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
     }),
   );
 

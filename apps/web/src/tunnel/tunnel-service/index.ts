@@ -30,6 +30,7 @@ export interface TunnelServiceStateDone extends TunnelServiceStateCommon {
     asset: Caip19AssetId;
     rawAmount: string;
     prettyAmount: string;
+    address: string;
   };
   to: {
     asset: Caip19AssetId;
@@ -158,6 +159,8 @@ export class TunnelService {
               prettyAmount: params.prettyAmount,
               rawAmount: fromAssetRawAmount,
               asset: params.asset,
+              // TODO: get address from actual simulation response
+              address: "TODO",
             },
             to: {
               rawAmount: fromAssetRawAmount,

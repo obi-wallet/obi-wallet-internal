@@ -1,6 +1,9 @@
+import { HomeChain } from "@/home-chain";
+import { rootStore } from "@/stores";
 import { TargetChain } from "@/target-chain";
 import { isEip155ChainId } from "@/target-chain/eip-155/chains";
 import { isSolanaChainId } from "@/target-chain/solana/chains";
+import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import {
   Caip19AssetId,
   Caip2ChainId,
@@ -60,10 +63,9 @@ export class WalletProviders {
 
       try {
         const resp = await provider.connect();
-        const targetChain = TargetChain.chainId(this.toChainId);
         const address = resp.publicKey.toString();
 
-        if (!targetChain.validateAddress(address)) {
+        if (!this.targetChain.validateAddress(address)) {
           return {
             success: false,
             error: `Invalid address: ${address}`,
@@ -106,9 +108,7 @@ export class WalletProviders {
           };
         }
 
-        const targetChain = TargetChain.chainId(this.toChainId);
-
-        if (!targetChain.validateAddress(address)) {
+        if (!this.targetChain.validateAddress(address)) {
           return {
             success: false,
             error: `Invalid address: ${address}`,
@@ -135,10 +135,30 @@ export class WalletProviders {
   }
 
   public async connectObi(): Promise<WalletProvidersResponse> {
+    const currentWallet = rootStore.current?.mpcWalletsStore.currentWallet;
+
+    if (!currentWallet) {
+      return {
+        success: false,
+        error: "No wallet found",
+      };
+    }
+
+    const publicKeys = await HomeChain.chainId(
+      currentWallet.homeChainId,
+    ).publicKeys(currentWallet);
+    const address = await TargetChain.chainId(this.toChainId).obiAccountAddress(
+      publicKeys,
+    );
+
     return {
-      success: false,
-      error: "Not implemented",
+      success: true,
+      address,
     };
+  }
+
+  public get targetChain(): AbstractTargetChain<string, string> {
+    return TargetChain.chainId(this.toChainId);
   }
 
   protected get toChainId(): Caip2ChainId {

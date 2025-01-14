@@ -22,7 +22,12 @@ export class ChooseAssetState extends Data.TaggedClass(
     from,
     to,
   }: {
-    from: { asset: Caip19AssetId; rawAmount: string; prettyAmount: string };
+    from: {
+      asset: Caip19AssetId;
+      rawAmount: string;
+      prettyAmount: string;
+      address: string;
+    };
     to: { asset: Caip19AssetId; rawAmount: string; prettyAmount: string };
   }) {
     return Effect.gen(this, function* () {
@@ -38,7 +43,6 @@ export class ChooseAssetState extends Data.TaggedClass(
   }
 }
 
-// TODO: needs simulation response (i.e., fromAsset & amount, toAsset & amount, deposit address)
 export class ChooseAddressState extends Data.TaggedClass(
   TunnelStateType.ChooseAddress,
 )<{
@@ -47,6 +51,7 @@ export class ChooseAddressState extends Data.TaggedClass(
     asset: Caip19AssetId;
     rawAmount: string;
     prettyAmount: string;
+    address: string;
   };
   to: {
     asset: Caip19AssetId;
@@ -63,21 +68,37 @@ export class ChooseAddressState extends Data.TaggedClass(
     });
   }
 
-  public setAddress() {
+  public setAddress(address: string) {
     return Effect.gen(this, function* () {
       const state = yield* TunnelState;
       yield* state.set((_) => {
         return new StatusState({
           previousState: this,
+          from: this.from,
+          to: {
+            ...this.to,
+            address,
+          },
         });
       });
     });
   }
 }
 
-// TODO: needs recipient address, and probably all information from ChooseAddressState
 export class StatusState extends Data.TaggedClass(TunnelStateType.Status)<{
   previousState: ChooseAddressState;
+  from: {
+    asset: Caip19AssetId;
+    rawAmount: string;
+    prettyAmount: string;
+    address: string;
+  };
+  to: {
+    asset: Caip19AssetId;
+    rawAmount: string;
+    prettyAmount: string;
+    address: string;
+  };
 }> {
   public back() {
     return Effect.gen(this, function* () {
