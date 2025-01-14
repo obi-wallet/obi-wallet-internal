@@ -1,3 +1,4 @@
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { Effect, Stream, SubscriptionRef } from "effect";
 
 export interface TunnelServiceState {
@@ -17,6 +18,7 @@ export class TunnelService {
   protected amountRef: SubscriptionRef.SubscriptionRef<string>;
 
   constructor(
+    protected readonly to: Caip19AssetId,
     protected readonly setState: (state: TunnelServiceState) => void,
   ) {
     this.assetRef = Effect.runSync(SubscriptionRef.make(""));
@@ -104,7 +106,7 @@ export class TunnelService {
             },
             to: {
               rawAmount: params.rawAmount,
-              asset: params.asset,
+              asset: this.to,
             },
           };
           this.setState(simulationResponse);

@@ -4,6 +4,9 @@ import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
+import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useGetIsMounted } from "rooks";
@@ -34,17 +37,33 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
     },
   });
   const [service, _] = useState(() => {
-    return new TunnelService((state) => {
+    return new TunnelService(state.to, (state) => {
       if (isMounted()) {
         setState(state);
       }
     });
   });
 
+  const toAsset = useQuery({
+    queryKey: ["to-asset", state.to],
+    queryFn: async () => {
+      return await AssetRegistry.getInstance().byId(state.to);
+    },
+  });
+
+  if (!toAsset.data) {
+    return null;
+  }
+
+  const toSymbol = toAsset.data.assetInfo?.symbol ?? toAsset.data.denom;
+  const toAmount = new BigNumber(s.to.rawAmount)
+    .dividedBy(10 ** (toAsset.data.assetInfo?.decimals ?? 0))
+    .toString();
+
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
       <Text size="xl" className="flex items-center gap-2">
-        Deposit your asset here to receive $XYZ
+        Deposit your asset here to receive ${toSymbol}
       </Text>
 
       <div className="mt-6 flex flex-col">
@@ -84,7 +103,11 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
           You are expected to receive:
         </Text>
         <div className="bg-background-secondary flex h-[48px] w-full items-center rounded-[5px] border border-[#32c9af] px-6">
-          {s.status === "done" ? s.to.rawAmount : ""}
+          {s.status === "simulating"
+            ? "Simulating…"
+            : s.status === "done"
+              ? `${toAmount} ${toSymbol}`
+              : ""}
         </div>
       </div>
 
@@ -96,7 +119,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
           await dispatch(state.setSimulationResponse());
         }}
       >
-        {s.status === "simulating" ? "Simulating…" : "Continue"}
+        Continue
       </AsyncButton>
     </div>
   );

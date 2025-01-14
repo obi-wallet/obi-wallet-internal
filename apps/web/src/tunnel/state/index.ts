@@ -1,4 +1,5 @@
 import { EffectState } from "@/effect/effect-state";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { Context, Data, Effect } from "effect";
 
 export enum TunnelStateType {
@@ -12,10 +13,11 @@ export class TunnelState extends Context.Tag("TunnelState")<
   EffectState<ChooseAssetState | ChooseAddressState | StatusState>
 >() {}
 
-// TODO: needs FromAsset
 export class ChooseAssetState extends Data.TaggedClass(
   TunnelStateType.ChooseAsset,
-) {
+)<{
+  to: Caip19AssetId;
+}> {
   public setSimulationResponse() {
     return Effect.gen(this, function* () {
       const state = yield* TunnelState;

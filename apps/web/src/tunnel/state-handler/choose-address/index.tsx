@@ -6,7 +6,7 @@ import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 
-import { ChooseAddressState, TunnelState } from "../state";
+import { ChooseAddressState, TunnelState } from "../../state";
 
 export interface ChooseAddressProps {
   state: ChooseAddressState;

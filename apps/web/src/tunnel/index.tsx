@@ -11,7 +11,14 @@ import { Status } from "./state-handler/status";
 export const TunnelEmbed = observer(function TunnelEmbed() {
   const { state, dispatch } = useEffectState(
     TunnelState,
-    new ChooseAssetState(),
+    new ChooseAssetState({
+      to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
+    }),
+    // new ChooseAddressState({
+    //   previousState: new ChooseAssetState({
+    //     to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
+    //   }),
+    // }),
   );
 
   //   const handleSubmit = async () => {
