@@ -2,11 +2,14 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 
+import { WalletProviders } from "./wallet-providers";
 import { ChooseAddressState, TunnelState } from "../../state";
 
 export interface ChooseAddressProps {
@@ -16,10 +19,15 @@ export interface ChooseAddressProps {
 
 export const ChooseAddress = observer<ChooseAddressProps>(
   function ChooseAddress({ state, dispatch }) {
-    const { from, to } = state;
-    const assets = useAssets([from.asset, to.asset]);
-    const fromAsset = assets[from.asset];
-    const toAsset = assets[to.asset];
+    const [s, setState] = useState<string>("");
+    const [walletProviders, _] = useState(() => {
+      return new WalletProviders(state.to.asset);
+    });
+    const alert = useAlert();
+
+    const assets = useAssets([state.from.asset, state.to.asset]);
+    const fromAsset = assets[state.from.asset];
+    const toAsset = assets[state.to.asset];
 
     if (!fromAsset || !toAsset) {
       return null;
@@ -28,7 +36,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
     return (
       <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
         <Text size="xl" className="flex items-center gap-2">
-          Receive {to.prettyAmount} $
+          Receive {state.to.prettyAmount} $
           {toAsset.assetInfo?.symbol ?? toAsset.denom}
         </Text>
         <Text className="mt-4">
@@ -40,7 +48,14 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           className="mt-2 w-full"
           variant="primary"
           // TODO: handle disabled state
-          onClick={async () => {}}
+          onClick={async () => {
+            const res = await walletProviders.connectPhantom();
+            if (res.success) {
+              setState(res.address);
+            } else {
+              alert.showError(res.error);
+            }
+          }}
         >
           Connect Phantom
         </AsyncButton>
@@ -49,7 +64,12 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           variant="primary"
           // TODO: handle disabled state
           onClick={async () => {
-            console.log("continue");
+            const res = await walletProviders.connectObi();
+            if (res.success) {
+              setState(res.address);
+            } else {
+              alert.showError(res.error);
+            }
           }}
         >
           Connect Obi
@@ -64,10 +84,10 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           labelClassname="bg-background-secondary"
           className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
           placeholder="Paste your address here"
-          // value={field.value}
-          // onChange={(recipient) => {
-          //   field.onChange(recipient);
-          // }}
+          value={s}
+          onChange={(e) => {
+            return setState(e);
+          }}
         />
         <AsyncButton
           className="mt-2 w-full"

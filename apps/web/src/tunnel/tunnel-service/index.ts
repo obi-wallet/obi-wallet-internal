@@ -47,7 +47,7 @@ export class TunnelService {
   protected assetRef: SubscriptionRef.SubscriptionRef<Caip19AssetId | null>;
   protected amountRef: SubscriptionRef.SubscriptionRef<string>;
 
-  constructor(
+  public constructor(
     protected readonly to: Caip19AssetId,
     protected readonly setState: (state: TunnelServiceState) => void,
   ) {
