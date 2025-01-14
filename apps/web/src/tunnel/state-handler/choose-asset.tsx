@@ -6,6 +6,7 @@ import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "../asset-dropdown";
 import { ChooseAssetState, TunnelState } from "../state";
@@ -20,6 +21,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
+  const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
@@ -33,10 +35,11 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   });
   const [service, _] = useState(() => {
     return new TunnelService((state) => {
-      setState(state);
+      if (isMounted()) {
+        setState(state);
+      }
     });
   });
-  console.log({ s });
 
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
@@ -45,50 +48,44 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       </Text>
 
       <div className="mt-6 flex flex-col">
-        <label htmlFor="assetAmount" className="mb-2">
-          <Text size="sm" className="text-gray-200">
+        <label>
+          <Text size="sm" className="mb-2 text-gray-200">
             How much are you depositing?
           </Text>
+          <Input
+            id="assetAmount"
+            labelClassname="bg-background-secondary"
+            className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+            placeholder="0.5"
+            value={s.from.rawAmount}
+            onChange={(value) => {
+              service.setRawAmount(value);
+            }}
+            rightComponent={
+              <div className="flex w-full justify-end">
+                <AssetDropdown
+                  items={["ETH", "LUNA", "KWEEN"]}
+                  selectedItem={s.from.asset || null}
+                  onSelectedItemChange={(value) => {
+                    console.log(value);
+                    if (value) {
+                      service.setAsset(value);
+                    }
+                  }}
+                />
+              </div>
+            }
+          />
         </label>
-        <Input
-          id="assetAmount"
-          labelClassname="bg-background-secondary"
-          className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-          placeholder="0.5"
-          value={s.from.rawAmount}
-          onChange={(value) => {
-            service.setRawAmount(value);
-          }}
-          rightComponent={
-            <div className="flex w-full justify-end">
-              <AssetDropdown
-                items={["ETH", "LUNA", "KWEEN"]}
-                selectedItem={s.from.asset || null}
-                onSelectedItemChange={(value) => {
-                  console.log(value);
-                  if (value) {
-                    service.setAsset(value);
-                  }
-                }}
-              />
-            </div>
-          }
-        />
       </div>
 
       <div className="mt-6 flex flex-col">
-        <label htmlFor="expectedReceive" className="mb-2">
-          <Text size="sm" className="text-gray-200">
-            You are expected to receive:
-          </Text>
-        </label>
-        <Input
-          id="expectedReceive"
-          labelClassname="bg-background-secondary"
-          className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-          placeholder="0.5"
-          value={s.status === "done" ? s.to.rawAmount : ""}
-        />
+        <Text size="sm" className="mb-2 text-gray-200">
+          You are expected to receive:
+        </Text>
+        <div className="bg-background-secondary flex h-[48px] w-full items-center rounded-[5px] border border-[#32c9af] px-6">
+          {s.status === "done" ? s.to.rawAmount : ""}
+        </div>
       </div>
 
       <AsyncButton
@@ -99,7 +96,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
           await dispatch(state.setSimulationResponse());
         }}
       >
-        {s.status === "simulating" ? "Simulating..." : "Continue"}
+        {s.status === "simulating" ? "Simulating…" : "Continue"}
       </AsyncButton>
     </div>
   );
