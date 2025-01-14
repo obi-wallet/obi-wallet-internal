@@ -18,12 +18,20 @@ export class ChooseAssetState extends Data.TaggedClass(
 )<{
   to: Caip19AssetId;
 }> {
-  public setSimulationResponse() {
+  public setSimulationResponse({
+    from,
+    to,
+  }: {
+    from: { asset: Caip19AssetId; rawAmount: string; prettyAmount: string };
+    to: { asset: Caip19AssetId; rawAmount: string; prettyAmount: string };
+  }) {
     return Effect.gen(this, function* () {
       const state = yield* TunnelState;
       yield* state.set((_) => {
         return new ChooseAddressState({
           previousState: this,
+          from,
+          to,
         });
       });
     });
@@ -35,6 +43,16 @@ export class ChooseAddressState extends Data.TaggedClass(
   TunnelStateType.ChooseAddress,
 )<{
   previousState: ChooseAssetState;
+  from: {
+    asset: Caip19AssetId;
+    rawAmount: string;
+    prettyAmount: string;
+  };
+  to: {
+    asset: Caip19AssetId;
+    rawAmount: string;
+    prettyAmount: string;
+  };
 }> {
   public back() {
     return Effect.gen(this, function* () {

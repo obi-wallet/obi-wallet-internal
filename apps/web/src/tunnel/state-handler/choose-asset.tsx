@@ -2,7 +2,9 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
-import { useAsset } from "@/hooks/assets";
+import { useAssets } from "@/hooks/assets";
+import { TargetChain } from "@/target-chain";
+import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
@@ -26,12 +28,8 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: "",
-      rawAmount: "",
-    },
-    to: {
-      asset: "",
-      rawAmount: "",
+      asset: null,
+      prettyAmount: "",
     },
   });
   const [service, _] = useState(() => {
@@ -42,19 +40,21 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
     });
   });
 
-  const toAsset = useAsset(state.to);
+  const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
+  const toAsset = assets[state.to];
 
   if (!toAsset) {
     return null;
   }
 
+  const fromAsset = s.from.asset ? assets[s.from.asset] : null;
   const toSymbol = toAsset.assetInfo?.symbol ?? toAsset.denom;
-  const toAmount = toAsset.rawAmountToPrettyAmount(s.from.rawAmount);
 
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
       <Text size="xl" className="flex items-center gap-2">
-        Deposit your asset here to receive ${toSymbol}
+        Deposit your {fromAsset?.assetInfo?.symbol ?? "asset"} here to receive $
+        {toSymbol}
       </Text>
 
       <div className="mt-6 flex flex-col">
@@ -67,14 +67,17 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             labelClassname="bg-background-secondary"
             className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
             placeholder="0.5"
-            value={s.from.rawAmount}
+            value={s.from.prettyAmount}
             onChange={(value) => {
-              service.setRawAmount(value);
+              service.setPrettyAmount(value);
             }}
             rightComponent={
               <div className="flex w-full justify-end">
                 <AssetDropdown
-                  items={["ETH", "LUNA", "KWEEN"]}
+                  items={[
+                    TargetChain.chainId(Eip155ChainId.Ethereum)
+                      .nativeCaip19AssetId,
+                  ]}
                   selectedItem={s.from.asset || null}
                   onSelectedItemChange={(value) => {
                     console.log(value);
@@ -97,7 +100,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
           {s.status === "simulating"
             ? "Simulating…"
             : s.status === "done"
-              ? `${toAmount} ${toSymbol}`
+              ? `${s.to.prettyAmount} ${toSymbol}`
               : ""}
         </div>
       </div>
@@ -107,7 +110,14 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
         variant="secondary"
         disabled={s.status !== "done"}
         onClick={async () => {
-          await dispatch(state.setSimulationResponse());
+          if (s.status === "done") {
+            await dispatch(
+              state.setSimulationResponse({
+                from: s.from,
+                to: s.to,
+              }),
+            );
+          }
         }}
       >
         Continue

@@ -1,11 +1,13 @@
+import { useAssets } from "@/hooks/assets";
 import { cn } from "@/lib/utils";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { useSelect } from "downshift";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface AssetDropdownProps {
-  items: string[];
-  selectedItem?: string | null;
-  onSelectedItemChange?: (item: string | null) => void;
+  items: Caip19AssetId[];
+  selectedItem?: Caip19AssetId | null;
+  onSelectedItemChange?: (item: Caip19AssetId | null) => void;
   placeholder?: string;
 }
 
@@ -28,6 +30,8 @@ export function AssetDropdown({
       onSelectedItemChange?.(changes.selectedItem ?? null);
     },
   });
+  const assets = useAssets(items);
+  const selectedAsset = selectedItem ? assets[selectedItem] : null;
 
   return (
     <div className="relative inline-block text-left">
@@ -36,7 +40,7 @@ export function AssetDropdown({
         className="bg-background-secondary flex h-[48px] w-full items-center justify-between rounded-[5px] px-3 text-white"
         {...getToggleButtonProps()}
       >
-        {selectedItem || placeholder}
+        {selectedAsset?.assetInfo?.symbol ?? placeholder}
         <span className="ml-2">{isOpen ? <FaAngleUp /> : <FaAngleDown />}</span>
       </button>
 
@@ -54,7 +58,7 @@ export function AssetDropdown({
 
             return (
               <li
-                key={`${item}${index}`}
+                key={item}
                 className={cn(
                   "cursor-pointer px-3 py-2 text-white",
                   "hover:bg-background-hover",
@@ -65,7 +69,7 @@ export function AssetDropdown({
                 )}
                 {...getItemProps({ item, index })}
               >
-                {item}
+                {assets[item]?.assetInfo?.symbol ?? item}
               </li>
             );
           })}
