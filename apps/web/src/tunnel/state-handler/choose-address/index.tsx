@@ -2,6 +2,7 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
@@ -15,14 +16,22 @@ export interface ChooseAddressProps {
 
 export const ChooseAddress = observer<ChooseAddressProps>(
   function ChooseAddress({ state, dispatch }) {
+    const { from, to } = state;
+    const assets = useAssets([from.asset, to.asset]);
+    const fromAsset = assets[from.asset];
+    const toAsset = assets[to.asset];
+
+    if (!fromAsset || !toAsset) {
+      return null;
+    }
+
     return (
       <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
         <Text size="xl" className="flex items-center gap-2">
-          {/* TODO: get asset name & amount */}
-          Receive XXX $XYZ
+          Receive {to.prettyAmount} $
+          {toAsset.assetInfo?.symbol ?? toAsset.denom}
         </Text>
         <Text className="mt-4">
-          {/* TODO: label instead */}
           <span className="align-middle leading-normal">
             Connect your wallet:
           </span>
