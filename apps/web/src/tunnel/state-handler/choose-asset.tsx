@@ -2,11 +2,9 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAsset } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
-import { useQuery } from "@obi-wallet/headless-ui";
-import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
-import BigNumber from "bignumber.js";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useGetIsMounted } from "rooks";
@@ -44,21 +42,14 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
     });
   });
 
-  const toAsset = useQuery({
-    queryKey: ["to-asset", state.to],
-    queryFn: async () => {
-      return await AssetRegistry.getInstance().byId(state.to);
-    },
-  });
+  const toAsset = useAsset(state.to);
 
-  if (!toAsset.data) {
+  if (!toAsset) {
     return null;
   }
 
-  const toSymbol = toAsset.data.assetInfo?.symbol ?? toAsset.data.denom;
-  const toAmount = new BigNumber(s.to.rawAmount)
-    .dividedBy(10 ** (toAsset.data.assetInfo?.decimals ?? 0))
-    .toString();
+  const toSymbol = toAsset.assetInfo?.symbol ?? toAsset.denom;
+  const toAmount = toAsset.rawAmountToPrettyAmount(s.from.rawAmount);
 
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">

@@ -3411,6 +3411,7 @@ __metadata:
     "@obi-wallet/sdk-caip": "workspace:*"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
+    bignumber.js: "npm:^9.1.2"
     eslint: "npm:^9.17.0"
     typescript: "npm:^5.7.2"
     zod: "npm:^3.24.1"
