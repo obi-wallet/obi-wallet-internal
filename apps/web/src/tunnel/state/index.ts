@@ -12,6 +12,7 @@ export class TunnelState extends Context.Tag("TunnelState")<
   EffectState<ChooseAssetState | ChooseAddressState | StatusState>
 >() {}
 
+// TODO: needs FromAsset
 export class ChooseAssetState extends Data.TaggedClass(
   TunnelStateType.ChooseAsset,
 ) {
@@ -27,6 +28,7 @@ export class ChooseAssetState extends Data.TaggedClass(
   }
 }
 
+// TODO: needs simulation response (i.e., fromAsset & amount, toAsset & amount, deposit address)
 export class ChooseAddressState extends Data.TaggedClass(
   TunnelStateType.ChooseAddress,
 )<{
@@ -53,6 +55,7 @@ export class ChooseAddressState extends Data.TaggedClass(
   }
 }
 
+// TODO: needs recipient address, and probably all information from ChooseAddressState
 export class StatusState extends Data.TaggedClass(TunnelStateType.Status)<{
   previousState: ChooseAddressState;
 }> {
