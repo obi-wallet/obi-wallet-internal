@@ -2,13 +2,12 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
-import { TargetChain } from "@/target-chain";
-import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "../asset-dropdown";
@@ -24,21 +23,33 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
+  const alert = useAlert();
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: null,
+      asset: "cosmos:phoenix-1/native:uluna",
       prettyAmount: "",
     },
   });
   const [service, _] = useState(() => {
-    return new TunnelService(state.to, (state) => {
-      if (isMounted()) {
-        setState(state);
-      }
-    });
+    return new TunnelService(
+      state.to,
+      s.from.asset,
+      s.from.prettyAmount,
+      (state) => {
+        if (isMounted()) {
+          setState(state);
+        }
+      },
+    );
   });
+
+  useEffect(() => {
+    if (s.status === "error") {
+      alert.showError(s.error);
+    }
+  }, [s, alert]);
 
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
@@ -74,10 +85,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             rightComponent={
               <div className="flex w-full justify-end">
                 <AssetDropdown
-                  items={[
-                    TargetChain.chainId(Eip155ChainId.Ethereum)
-                      .nativeCaip19AssetId,
-                  ]}
+                  items={["cosmos:phoenix-1/native:uluna"]}
                   selectedItem={s.from.asset || null}
                   onSelectedItemChange={(value) => {
                     console.log(value);

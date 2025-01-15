@@ -94,7 +94,13 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           variant="secondary"
           disabled={!walletProviders.targetChain.validateAddress(s)}
           onClick={async () => {
-            await dispatch(state.setAddress(s));
+            // TODO: Simulate again to get deposit address
+            await dispatch(
+              state.setAddress({
+                fromAddress: s,
+                toAddress: s,
+              }),
+            );
           }}
         >
           Continue

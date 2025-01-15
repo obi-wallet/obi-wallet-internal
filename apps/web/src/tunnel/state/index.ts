@@ -26,7 +26,6 @@ export class ChooseAssetState extends Data.TaggedClass(
       asset: Caip19AssetId;
       rawAmount: string;
       prettyAmount: string;
-      address: string;
     };
     to: { asset: Caip19AssetId; rawAmount: string; prettyAmount: string };
   }) {
@@ -51,7 +50,6 @@ export class ChooseAddressState extends Data.TaggedClass(
     asset: Caip19AssetId;
     rawAmount: string;
     prettyAmount: string;
-    address: string;
   };
   to: {
     asset: Caip19AssetId;
@@ -68,16 +66,25 @@ export class ChooseAddressState extends Data.TaggedClass(
     });
   }
 
-  public setAddress(address: string) {
+  public setAddress({
+    fromAddress,
+    toAddress,
+  }: {
+    fromAddress: string;
+    toAddress: string;
+  }) {
     return Effect.gen(this, function* () {
       const state = yield* TunnelState;
       yield* state.set((_) => {
         return new StatusState({
           previousState: this,
-          from: this.from,
+          from: {
+            ...this.from,
+            address: fromAddress,
+          },
           to: {
             ...this.to,
-            address,
+            address: toAddress,
           },
         });
       });
