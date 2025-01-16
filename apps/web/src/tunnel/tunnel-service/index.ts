@@ -1,13 +1,8 @@
-import { isSolanaChainId } from "@/target-chain/solana/chains";
 import { Asset, AssetRegistry } from "@obi-wallet/sdk-asset-registry";
-import {
-  Caip19AssetId,
-  parseCaip19AssetId,
-  parseCaip2ChainId,
-} from "@obi-wallet/sdk-caip";
-import { serialize } from "@obi-wallet/sdk-json";
-import { Effect, Stream, SubscriptionRef } from "effect";
-import { findLast } from "ramda";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
+import { Effect, pipe, Stream, SubscriptionRef } from "effect";
+
+import { simulate } from "../fast-travel-worker";
 
 export interface TunnelServiceStateCommon {
   from: {
@@ -151,8 +146,8 @@ export class TunnelService {
             ? fromAsset.prettyAmountToRawAmount(params.prettyAmount)
             : params.prettyAmount;
 
-          const response = yield* Effect.promise(async () => {
-            return await this.simulate({
+          const nextState = yield* pipe(
+            simulate({
               from: {
                 asset: params.asset,
                 rawAmount: fromAssetRawAmount,
@@ -161,10 +156,39 @@ export class TunnelService {
                 asset: this.to,
               },
               slippage: "5",
-            });
-          });
+            }),
+            Effect.match({
+              onFailure: (error): TunnelServiceState => {
+                return {
+                  status: "error",
+                  error,
+                  from: {
+                    asset: params.asset,
+                    prettyAmount: params.prettyAmount,
+                  },
+                };
+              },
+              onSuccess: (toRawAmount): TunnelServiceState => {
+                return {
+                  status: "done",
+                  from: {
+                    prettyAmount: params.prettyAmount,
+                    rawAmount: fromAssetRawAmount,
+                    asset: params.asset,
+                  },
+                  to: {
+                    rawAmount: toRawAmount,
+                    prettyAmount: toAsset
+                      ? toAsset.rawAmountToPrettyAmount(toRawAmount)
+                      : toRawAmount,
+                    asset: this.to,
+                  },
+                };
+              },
+            }),
+          );
 
-          // Check if the inputs are still the same
+          // Skip state update if the inputs changed in the meantime
           const currentAsset = yield* SubscriptionRef.get(this.assetRef);
           const currentPrettyAmount = yield* SubscriptionRef.get(
             this.amountRef,
@@ -176,34 +200,7 @@ export class TunnelService {
             return;
           }
 
-          if (response.success) {
-            const toRawAmount = response.rawAmount;
-            const simulationResponse: TunnelServiceState = {
-              status: "done",
-              from: {
-                prettyAmount: params.prettyAmount,
-                rawAmount: fromAssetRawAmount,
-                asset: params.asset,
-              },
-              to: {
-                rawAmount: toRawAmount,
-                prettyAmount: toAsset
-                  ? toAsset.rawAmountToPrettyAmount(toRawAmount)
-                  : toRawAmount,
-                asset: this.to,
-              },
-            };
-            this.setState(simulationResponse);
-          } else {
-            this.setState({
-              status: "error",
-              error: response.error,
-              from: {
-                asset: params.asset,
-                prettyAmount: params.prettyAmount,
-              },
-            });
-          }
+          this.setState(nextState);
         });
       });
     });
@@ -214,115 +211,5 @@ export class TunnelService {
       const assetInfo = await AssetRegistry.getInstance().byId(assetId);
       return assetInfo ? new Asset(assetInfo) : null;
     });
-  }
-
-  protected async simulate({
-    from,
-    to,
-    slippage,
-  }: {
-    from: {
-      asset: Caip19AssetId;
-      rawAmount: string;
-    };
-    to: {
-      asset: Caip19AssetId;
-    };
-    slippage: string;
-  }): Promise<
-    | {
-        success: true;
-        rawAmount: string;
-      }
-    | {
-        success: false;
-        error: string;
-      }
-  > {
-    const parsedFrom = parseCaip19AssetId(from.asset);
-    const parsedFromChain = parseCaip2ChainId(parsedFrom.chainId);
-    const parsedTo = parseCaip19AssetId(to.asset);
-    const parsedToChain = parseCaip2ChainId(parsedTo.chainId);
-
-    const body = {
-      from: {
-        chainId: parsedFromChain.reference,
-        asset: parsedFrom.reference,
-        amount: from.rawAmount,
-      },
-      to: {
-        chainId: isSolanaChainId(parsedTo.chainId)
-          ? "solana"
-          : parsedToChain.reference,
-        asset: parsedTo.reference,
-      },
-      // TODO: Fake pubkey, will be removed later
-      pubkey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
-      slippage,
-      simulateOnly: true,
-    };
-    const response = await fetch(
-      "https://fast-travel-ts-worker-git-staging-obi-money.vercel.app/api/simulate",
-      {
-        method: "POST",
-        body: serialize(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
-
-    if (response.status !== 200) {
-      try {
-        const json = await response.json();
-        if ("error" in json) {
-          return {
-            success: false,
-            error: json.error,
-          };
-        }
-      } catch {
-        return {
-          success: false,
-          error: "Failed to simulate",
-        };
-      }
-    }
-
-    // TODO: schema
-    const { simulationOutput } = await response.json();
-    const parseSimulationOutput = (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      simulationOutput: any,
-    ): {
-      swapInfo: {
-        outAmount: string;
-      };
-    } => {
-      if (simulationOutput === null) {
-        return simulationOutput;
-      }
-      if (Array.isArray(simulationOutput)) {
-        return parseSimulationOutput(
-          findLast((step) => {
-            const keys = Object.keys(step);
-            if (keys.length === 1) {
-              return keys[0] !== "FinalTransfer";
-            }
-            return true;
-          }, simulationOutput),
-        );
-      }
-      const keys = Object.keys(simulationOutput);
-      if (keys.length === 1 && keys[0]) {
-        return parseSimulationOutput(simulationOutput[keys[0]]);
-      }
-      return simulationOutput;
-    };
-    const foo = parseSimulationOutput(simulationOutput);
-    return {
-      success: true,
-      rawAmount: foo.swapInfo.outAmount,
-    };
   }
 }
