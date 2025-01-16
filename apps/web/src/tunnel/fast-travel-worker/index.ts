@@ -5,8 +5,7 @@ import {
   parseCaip2ChainId,
 } from "@obi-wallet/sdk-caip";
 import { serialize } from "@obi-wallet/sdk-json";
-import { Effect, pipe } from "effect";
-import { findLast } from "ramda";
+import { Effect, pipe, Schema } from "effect";
 
 export function simulate({
   from,
@@ -117,8 +116,7 @@ export function genericSimulateRequest({
       });
       return yield* Effect.fail(json === "Unknown error" ? json : json.error);
     }
-    // TODO: schema
-    const { simulationOutput, deposit_address } = yield* Effect.tryPromise({
+    const simulationResponse = yield* Effect.tryPromise({
       try: () => {
         return response.json();
       },
@@ -128,38 +126,108 @@ export function genericSimulateRequest({
         return `Failed to parse response JSON: ${error.message}`;
       },
     });
-    const parseSimulationOutput = (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      simulationOutput: any,
-    ): {
-      swapInfo: {
-        outAmount: string;
-      };
-    } => {
-      if (simulationOutput === null) {
-        return simulationOutput;
-      }
-      if (Array.isArray(simulationOutput)) {
-        return parseSimulationOutput(
-          findLast((step) => {
-            const keys = Object.keys(step);
-            if (keys.length === 1) {
-              return keys[0] !== "FinalTransfer";
-            }
-            return true;
-          }, simulationOutput),
-        );
-      }
-      const keys = Object.keys(simulationOutput);
-      if (keys.length === 1 && keys[0]) {
-        return parseSimulationOutput(simulationOutput[keys[0]]);
-      }
-      return simulationOutput;
-    };
-    const output = parseSimulationOutput(simulationOutput);
-    return yield* Effect.succeed({
-      depositAddress: deposit_address,
-      toRawAmount: output.swapInfo.outAmount,
-    });
+    return yield* Effect.matchEffect(
+      parseSimulationResponse(simulationResponse),
+      {
+        onSuccess: ({ depositAddress, toRawAmount }) => {
+          if (toRawAmount === null) {
+            return Effect.fail("Failed to parse simulation response");
+          }
+          return Effect.succeed({ depositAddress, toRawAmount });
+        },
+        onFailure: (error) => {
+          return Effect.fail(
+            `Failed to parse simulation response: ${error.message}`,
+          );
+        },
+      },
+    );
   });
+}
+
+const JupiterSwapStrategy = Schema.Struct({
+  JupiterSwapStrategy: Schema.Array(
+    Schema.Struct({
+      swapInfo: Schema.Struct({
+        outAmount: Schema.String,
+      }),
+    }),
+  ),
+});
+
+const SkipStrategy = Schema.Struct({
+  SkipStrategy: Schema.Unknown,
+});
+
+const SquidStrategy = Schema.Struct({
+  SquidStrategy: Schema.Unknown,
+});
+
+const UnknownStrategy = Schema.Record({
+  key: Schema.String,
+  value: Schema.Unknown,
+});
+
+const SimulationStrategyLeaf = Schema.Union(
+  JupiterSwapStrategy.pipe(
+    Schema.attachPropertySignature("kind", "JupiterSwapStrategy"),
+  ),
+  SkipStrategy.pipe(Schema.attachPropertySignature("kind", "SkipStrategy")),
+  SquidStrategy.pipe(Schema.attachPropertySignature("kind", "SquidStrategy")),
+  UnknownStrategy.pipe(
+    Schema.attachPropertySignature("kind", "UnknownStrategy"),
+  ),
+);
+
+const HybridStrategy = Schema.Struct({
+  HybridStrategy: Schema.Array(SimulationStrategyLeaf),
+});
+
+const SimulationStrategy = Schema.Union(
+  HybridStrategy.pipe(Schema.attachPropertySignature("kind", "HybridStrategy")),
+  SimulationStrategyLeaf,
+);
+
+const SimulationResponse = Schema.Struct({
+  response: Schema.Struct({
+    deposit_address: Schema.NullOr(Schema.String),
+  }),
+  simulationOutput: SimulationStrategy,
+});
+
+export function parseSimulationResponse(response: unknown) {
+  return Effect.gen(function* () {
+    const decoded = yield* Schema.decodeUnknown(SimulationResponse)(response);
+    return {
+      depositAddress: decoded.response.deposit_address,
+      toRawAmount: parseSimulationStrategy(decoded.simulationOutput),
+    };
+  });
+}
+
+export function parseSimulationStrategy(
+  strategy: typeof SimulationStrategy.Type,
+): string | null {
+  switch (strategy.kind) {
+    case "JupiterSwapStrategy":
+      return parseJupiterSwapStrategy(strategy);
+    case "HybridStrategy":
+      return parseHybridStrategy(strategy);
+    default:
+      return null;
+  }
+}
+
+export function parseHybridStrategy(strategy: typeof HybridStrategy.Type) {
+  const lastStrategy =
+    strategy.HybridStrategy[strategy.HybridStrategy.length - 1];
+  return lastStrategy ? parseSimulationStrategy(lastStrategy) : null;
+}
+
+export function parseJupiterSwapStrategy(
+  strategy: typeof JupiterSwapStrategy.Type,
+): string | null {
+  const lastStep =
+    strategy.JupiterSwapStrategy[strategy.JupiterSwapStrategy.length - 1];
+  return lastStep ? lastStep.swapInfo.outAmount : null;
 }
