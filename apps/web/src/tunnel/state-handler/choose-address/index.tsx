@@ -4,8 +4,10 @@ import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
 import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
+import { genericSimulateRequest } from "@/tunnel/fast-travel-worker";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { Effect } from "effect";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
@@ -94,13 +96,30 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           variant="secondary"
           disabled={!walletProviders.targetChain.validateAddress(s)}
           onClick={async () => {
-            // TODO: Simulate again to get deposit address
-            await dispatch(
-              state.setAddress({
-                fromAddress: s,
-                toAddress: s,
+            const response = await Effect.runPromise(
+              genericSimulateRequest({
+                from: {
+                  asset: state.from.asset,
+                  rawAmount: state.from.rawAmount,
+                },
+                to: {
+                  asset: state.to.asset,
+                  address: s,
+                  // TODO: get public key from address where possible (e.g., connected by wallet)
+                  publicKey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
+                },
+                slippage: "5",
+                simulateOnly: false,
               }),
             );
+            if (response.depositAddress) {
+              await dispatch(
+                state.setAddress({
+                  fromAddress: response.depositAddress,
+                  toAddress: s,
+                }),
+              );
+            }
           }}
         >
           Continue
