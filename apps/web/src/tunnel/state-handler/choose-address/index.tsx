@@ -13,6 +13,7 @@ import { useState } from "react";
 
 import { WalletProviders } from "./wallet-providers";
 import { ChooseAddressState, TunnelState } from "../../state";
+import { ObiWallet, PhantomWallet } from "../../wallets";
 
 export interface ChooseAddressProps {
   state: ChooseAddressState;
@@ -52,9 +53,8 @@ export const ChooseAddress = observer<ChooseAddressProps>(
             Connect your wallet:
           </span>
         </Text>
-        <AsyncButton
-          className="mt-2 w-full"
-          variant="primary"
+        <PhantomWallet
+          label="Connect Phantom"
           onClick={async () => {
             const res = await walletProviders.connectPhantom();
             if (res.success) {
@@ -66,12 +66,9 @@ export const ChooseAddress = observer<ChooseAddressProps>(
               alert.showError(res.error);
             }
           }}
-        >
-          Connect Phantom
-        </AsyncButton>
-        <AsyncButton
-          className="mt-2 w-full"
-          variant="primary"
+        />
+        <ObiWallet
+          label="Connect Obi"
           onClick={async () => {
             const res = await walletProviders.connectObi();
             if (res.success) {
@@ -83,9 +80,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
               alert.showError(res.error);
             }
           }}
-        >
-          Connect Obi
-        </AsyncButton>
+        />
         <Text className="mt-4">
           {/* TODO: label instead */}
           <span className="align-middle leading-normal">
@@ -129,6 +124,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
                 state.setAddress({
                   fromAddress: response.depositAddress,
                   toAddress: s.address,
+                  walletType: s.type,
                 }),
               );
             }

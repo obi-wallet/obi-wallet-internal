@@ -69,9 +69,11 @@ export class ChooseAddressState extends Data.TaggedClass(
   public setAddress({
     fromAddress,
     toAddress,
+    walletType,
   }: {
     fromAddress: string;
     toAddress: string;
+    walletType?: "obi" | "phantom" | undefined;
   }) {
     return Effect.gen(this, function* () {
       const state = yield* TunnelState;
@@ -86,6 +88,7 @@ export class ChooseAddressState extends Data.TaggedClass(
             ...this.to,
             address: toAddress,
           },
+          walletType,
         });
       });
     });
@@ -106,6 +109,7 @@ export class StatusState extends Data.TaggedClass(TunnelStateType.Status)<{
     prettyAmount: string;
     address: string;
   };
+  walletType?: "obi" | "phantom" | undefined;
 }> {
   public back() {
     return Effect.gen(this, function* () {
