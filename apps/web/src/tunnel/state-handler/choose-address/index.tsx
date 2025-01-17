@@ -81,23 +81,24 @@ export const ChooseAddress = observer<ChooseAddressProps>(
             }
           }}
         />
-        <Text className="mt-4">
-          {/* TODO: label instead */}
-          <span className="align-middle leading-normal">
-            Or paste an address:
-          </span>
-        </Text>
-        <Input
-          labelClassname="bg-background-secondary"
-          className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-          placeholder="Paste your address here"
-          value={s.address}
-          onChange={(e) => {
-            return setState({
-              address: e,
-            });
-          }}
-        />
+        <label>
+          <Text className="mt-4">
+            <span className="align-middle leading-normal">
+              Or paste an address:
+            </span>
+          </Text>
+          <Input
+            labelClassname="bg-background-secondary"
+            className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+            placeholder="Paste your address here"
+            value={s.address}
+            onChange={(e) => {
+              return setState({
+                address: e,
+              });
+            }}
+          />
+        </label>
         <AsyncButton
           className="mt-2 w-full"
           variant="secondary"
