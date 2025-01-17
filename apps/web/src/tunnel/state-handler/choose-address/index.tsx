@@ -21,7 +21,13 @@ export interface ChooseAddressProps {
 
 export const ChooseAddress = observer<ChooseAddressProps>(
   function ChooseAddress({ state, dispatch }) {
-    const [s, setState] = useState<string>("");
+    const [s, setState] = useState<{
+      type?: "obi" | "phantom";
+      address: string;
+    }>({
+      type: "obi",
+      address: "",
+    });
     const [walletProviders, _] = useState(() => {
       return new WalletProviders(state.to.asset);
     });
@@ -49,11 +55,13 @@ export const ChooseAddress = observer<ChooseAddressProps>(
         <AsyncButton
           className="mt-2 w-full"
           variant="primary"
-          // TODO: handle disabled state
           onClick={async () => {
             const res = await walletProviders.connectPhantom();
             if (res.success) {
-              setState(res.address);
+              setState({
+                type: "phantom",
+                address: res.address,
+              });
             } else {
               alert.showError(res.error);
             }
@@ -64,11 +72,13 @@ export const ChooseAddress = observer<ChooseAddressProps>(
         <AsyncButton
           className="mt-2 w-full"
           variant="primary"
-          // TODO: handle disabled state
           onClick={async () => {
             const res = await walletProviders.connectObi();
             if (res.success) {
-              setState(res.address);
+              setState({
+                type: "obi",
+                address: res.address,
+              });
             } else {
               alert.showError(res.error);
             }
@@ -86,15 +96,17 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           labelClassname="bg-background-secondary"
           className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
           placeholder="Paste your address here"
-          value={s}
+          value={s.address}
           onChange={(e) => {
-            return setState(e);
+            return setState({
+              address: e,
+            });
           }}
         />
         <AsyncButton
           className="mt-2 w-full"
           variant="secondary"
-          disabled={!walletProviders.targetChain.validateAddress(s)}
+          disabled={!walletProviders.targetChain.validateAddress(s.address)}
           onClick={async () => {
             const response = await Effect.runPromise(
               genericSimulateRequest({
@@ -104,7 +116,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
                 },
                 to: {
                   asset: state.to.asset,
-                  address: s,
+                  address: s.address,
                   // TODO: get public key from address where possible (e.g., connected by wallet)
                   publicKey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
                 },
@@ -116,7 +128,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
               await dispatch(
                 state.setAddress({
                   fromAddress: response.depositAddress,
-                  toAddress: s,
+                  toAddress: s.address,
                 }),
               );
             }
