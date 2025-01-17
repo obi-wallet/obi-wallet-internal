@@ -37,8 +37,6 @@ export const Status = observer<StatusProps>(function Deposit({
         {toAsset?.assetInfo?.symbol ?? toAsset?.denom}
       </Text>
       <Text className="mt-4">
-        {/* TODO: handle wallet type */}
-        {/* TODO: label instead */}
         <span className="align-middle leading-normal">Receiving address:</span>
       </Text>
 
@@ -48,24 +46,22 @@ export const Status = observer<StatusProps>(function Deposit({
         }}
         label={state.to.address}
       />
-      <Text className="mt-4">
-        {/* TODO: label instead */}
-        <span className="align-middle leading-normal">
-          Please send {state.from.prettyAmount}{" "}
-          {fromAsset?.assetInfo?.symbol ?? fromAsset?.denom} to the address
-          below to complete the transaction:
-        </span>
-      </Text>
-      <Input
-        labelClassname="bg-background-secondary"
-        className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-        // TODO: handle value, copy-paste
-        value={state.from.address}
-        // value={field.value}
-        // onChange={(recipient) => {
-        //   field.onChange(recipient);
-        // }}
-      />
+      <label>
+        <Text className="mt-4">
+          <span className="align-middle leading-normal">
+            Please send {state.from.prettyAmount}{" "}
+            {fromAsset?.assetInfo?.symbol ?? fromAsset?.denom} to the address
+            below to complete the transaction:
+          </span>
+        </Text>
+        <Input
+          labelClassname="bg-background-secondary"
+          className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+          // TODO: handle value, copy-paste
+          value={state.from.address}
+          readOnly
+        />
+      </label>
       <AsyncButton
         className="mt-2 w-full"
         variant="outline"
