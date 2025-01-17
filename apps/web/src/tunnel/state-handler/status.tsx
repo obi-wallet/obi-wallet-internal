@@ -75,7 +75,7 @@ export const Status = observer<StatusProps>(function Deposit({
                   }, 2000);
                 }}
               >
-                <img src="/assets/icons/copy.svg" alt="copy" />
+                <img src="/assets/icons/copy.svg" alt="Copy" title="Copy" />
               </button>
             </div>
           }
