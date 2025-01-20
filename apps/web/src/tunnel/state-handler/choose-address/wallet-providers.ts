@@ -34,6 +34,7 @@ export class WalletProviders {
               toString: () => string;
             };
           }>;
+          disconnect: () => Promise<void>;
         };
         ethereum?: {
           isPhantom: boolean;
@@ -71,6 +72,8 @@ export class WalletProviders {
             error: `Invalid address: ${address}`,
           };
         }
+
+        await provider.disconnect();
 
         return {
           success: true,

@@ -22,13 +22,7 @@ export interface ChooseAddressProps {
 
 export const ChooseAddress = observer<ChooseAddressProps>(
   function ChooseAddress({ state, dispatch }) {
-    const [s, setState] = useState<{
-      type?: "obi" | "phantom";
-      address: string;
-    }>({
-      type: "obi",
-      address: "",
-    });
+    const [address, setAddress] = useState("");
     const [walletProviders, _] = useState(() => {
       return new WalletProviders(state.to.asset);
     });
@@ -37,6 +31,40 @@ export const ChooseAddress = observer<ChooseAddressProps>(
     const assets = useAssets([state.from.asset, state.to.asset]);
     const fromAsset = assets[state.from.asset];
     const toAsset = assets[state.to.asset];
+
+    const confirmAddress = async ({
+      address,
+      type,
+    }: {
+      address: string;
+      type?: "obi" | "phantom";
+    }) => {
+      const response = await Effect.runPromise(
+        genericSimulateRequest({
+          from: {
+            asset: state.from.asset,
+            rawAmount: state.from.rawAmount,
+          },
+          to: {
+            asset: state.to.asset,
+            address,
+            // TODO: get public key from address where possible (e.g., connected by wallet)
+            publicKey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
+          },
+          slippage: "5",
+          simulateOnly: false,
+        }),
+      );
+      if (response.depositAddress) {
+        await dispatch(
+          state.setAddress({
+            fromAddress: response.depositAddress,
+            toAddress: address,
+            walletType: type,
+          }),
+        );
+      }
+    };
 
     if (!fromAsset || !toAsset) {
       return null;
@@ -58,7 +86,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           onClick={async () => {
             const res = await walletProviders.connectPhantom();
             if (res.success) {
-              setState({
+              await confirmAddress({
                 type: "phantom",
                 address: res.address,
               });
@@ -72,7 +100,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           onClick={async () => {
             const res = await walletProviders.connectObi();
             if (res.success) {
-              setState({
+              await confirmAddress({
                 type: "obi",
                 address: res.address,
               });
@@ -91,44 +119,20 @@ export const ChooseAddress = observer<ChooseAddressProps>(
             labelClassname="bg-background-secondary"
             className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
             placeholder="Paste your address here"
-            value={s.address}
+            value={address}
             onChange={(e) => {
-              return setState({
-                address: e,
-              });
+              return setAddress(e);
             }}
           />
         </label>
         <AsyncButton
           className="mt-2 w-full"
           variant="secondary"
-          disabled={!walletProviders.targetChain.validateAddress(s.address)}
+          disabled={!walletProviders.targetChain.validateAddress(address)}
           onClick={async () => {
-            const response = await Effect.runPromise(
-              genericSimulateRequest({
-                from: {
-                  asset: state.from.asset,
-                  rawAmount: state.from.rawAmount,
-                },
-                to: {
-                  asset: state.to.asset,
-                  address: s.address,
-                  // TODO: get public key from address where possible (e.g., connected by wallet)
-                  publicKey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
-                },
-                slippage: "5",
-                simulateOnly: false,
-              }),
-            );
-            if (response.depositAddress) {
-              await dispatch(
-                state.setAddress({
-                  fromAddress: response.depositAddress,
-                  toAddress: s.address,
-                  walletType: s.type,
-                }),
-              );
-            }
+            await confirmAddress({
+              address,
+            });
           }}
         >
           Continue
