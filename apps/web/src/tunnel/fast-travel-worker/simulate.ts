@@ -85,13 +85,16 @@ export function genericSimulateRequest({
     };
     const response = yield* Effect.tryPromise({
       try: async () => {
-        return await fetch(`${process.env.FAST_TRAVEL_API_URL}/api/simulate`, {
-          method: "POST",
-          body: serialize(body),
-          headers: {
-            "Content-Type": "application/json",
+        return await fetch(
+          `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/simulate`,
+          {
+            method: "POST",
+            body: serialize(body),
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        });
+        );
       },
       catch: (e) => {
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

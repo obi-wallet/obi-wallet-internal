@@ -14,7 +14,7 @@ export function getTransactionsBy({
     }) {
   return Effect.gen(function* () {
     const url = new URL(
-      `${process.env.FAST_TRAVEL_API_URL}/api/checkStatus?test=false`,
+      `${process.env.NEXT_PUBLIC_FAST_TRAVEL_API_URL}/api/checkStatus?test=false`,
     );
     if (publicKey) {
       url.searchParams.set("pubkey", publicKey);
