@@ -10,9 +10,9 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useGetIsMounted } from "rooks";
 
-import { AssetDropdown } from "../asset-dropdown";
-import { ChooseAssetState, TunnelState } from "../state";
-import { TunnelService, TunnelServiceState } from "../tunnel-service";
+import { AssetDropdown } from "./asset-dropdown";
+import { TunnelService, TunnelServiceState } from "./tunnel-service";
+import { ChooseAssetState, TunnelState } from "../../state";
 
 export interface ChooseAssetProps {
   state: ChooseAssetState;

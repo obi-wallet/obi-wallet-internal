@@ -2,7 +2,7 @@ import { Asset, AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { Effect, pipe, Stream, SubscriptionRef } from "effect";
 
-import { simulate } from "../fast-travel-worker";
+import { simulate } from "../../fast-travel-worker";
 
 export interface TunnelServiceStateCommon {
   from: {

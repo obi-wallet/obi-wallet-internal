@@ -12,8 +12,8 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 
 import { WalletProviders } from "./wallet-providers";
+import { ObiWallet, PhantomWallet } from "./wallets";
 import { ChooseAddressState, TunnelState } from "../../state";
-import { ObiWallet, PhantomWallet } from "../../wallets";
 
 export interface ChooseAddressProps {
   state: ChooseAddressState;
