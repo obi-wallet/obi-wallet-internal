@@ -69,10 +69,12 @@ export class ChooseAddressState extends Data.TaggedClass(
   public setAddress({
     fromAddress,
     toAddress,
+    toPublicKey,
     walletType,
   }: {
     fromAddress: string;
     toAddress: string;
+    toPublicKey?: string | undefined;
     walletType?: "obi" | "phantom" | undefined;
   }) {
     return Effect.gen(this, function* () {
@@ -87,6 +89,7 @@ export class ChooseAddressState extends Data.TaggedClass(
           to: {
             ...this.to,
             address: toAddress,
+            publicKey: toPublicKey,
           },
           walletType,
         });
@@ -108,6 +111,7 @@ export class StatusState extends Data.TaggedClass(TunnelStateType.Status)<{
     rawAmount: string;
     prettyAmount: string;
     address: string;
+    publicKey?: string | undefined;
   };
   walletType?: "obi" | "phantom" | undefined;
 }> {

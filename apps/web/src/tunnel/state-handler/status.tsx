@@ -37,11 +37,12 @@ export const Status = observer<StatusProps>(function Deposit({
   const [isCopied, setIsCopied] = useState(false);
 
   const status = useQuery({
-    queryKey: ["status", state.to.address],
+    queryKey: ["status", state.to],
     queryFn: async () => {
       return await Effect.runPromise(
         getTransactionsBy({
           recipientAddress: state.to.address,
+          publicKey: state.to.publicKey,
         }),
       );
     },

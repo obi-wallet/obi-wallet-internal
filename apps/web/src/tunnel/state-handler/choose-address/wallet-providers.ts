@@ -14,6 +14,7 @@ export type WalletProvidersResponse =
   | {
       success: true;
       address: string;
+      publicKey?: string | undefined;
     }
   | {
       success: false;
@@ -78,6 +79,7 @@ export class WalletProviders {
         return {
           success: true,
           address,
+          publicKey: resp.publicKey.toString(),
         };
       } catch (e) {
         const error = e instanceof Error ? e.message : "Unknown error";
@@ -157,6 +159,9 @@ export class WalletProviders {
     return {
       success: true,
       address,
+      publicKey: isSolanaChainId(this.toChainId)
+        ? publicKeys.ed25519?.value
+        : publicKeys.secp256k1?.value,
     };
   }
 

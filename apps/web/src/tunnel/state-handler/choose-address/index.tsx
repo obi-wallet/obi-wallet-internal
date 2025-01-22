@@ -34,9 +34,11 @@ export const ChooseAddress = observer<ChooseAddressProps>(
 
     const confirmAddress = async ({
       address,
+      publicKey,
       type,
     }: {
       address: string;
+      publicKey?: string | undefined;
       type?: "obi" | "phantom";
     }) => {
       const response = await Effect.runPromise(
@@ -48,8 +50,8 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           to: {
             asset: state.to.asset,
             address,
-            // TODO: get public key from address where possible (e.g., connected by wallet)
-            publicKey: "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
+            publicKey:
+              publicKey ?? "AkDYMk/Avmkc8tFcfGOKOfFxETF0/g2v6IEg/Z1NnKLr",
           },
           slippage: "5",
           simulateOnly: false,
@@ -60,6 +62,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
           state.setAddress({
             fromAddress: response.depositAddress,
             toAddress: address,
+            toPublicKey: publicKey,
             walletType: type,
           }),
         );
@@ -89,6 +92,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
               await confirmAddress({
                 type: "phantom",
                 address: res.address,
+                publicKey: res.publicKey,
               });
             } else {
               alert.showError(res.error);
@@ -103,6 +107,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
               await confirmAddress({
                 type: "obi",
                 address: res.address,
+                publicKey: res.publicKey,
               });
             } else {
               alert.showError(res.error);

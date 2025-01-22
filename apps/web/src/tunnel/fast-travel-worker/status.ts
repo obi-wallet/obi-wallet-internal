@@ -5,11 +5,11 @@ export function getTransactionsBy({
   recipientAddress,
 }:
   | {
-      publicKey?: string;
+      publicKey?: string | undefined;
       recipientAddress: string;
     }
   | {
-      publicKey: string;
+      publicKey: string | undefined;
       recipientAddress?: string;
     }) {
   return Effect.gen(function* () {
@@ -18,8 +18,7 @@ export function getTransactionsBy({
     );
     if (publicKey) {
       url.searchParams.set("pubkey", publicKey);
-    }
-    if (recipientAddress) {
+    } else if (recipientAddress) {
       url.searchParams.set("destinationAddress", recipientAddress);
     }
     const response = yield* Effect.tryPromise({
