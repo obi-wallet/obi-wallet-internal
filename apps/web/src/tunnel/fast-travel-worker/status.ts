@@ -14,7 +14,7 @@ export function getTransactionsBy({
     }) {
   return Effect.gen(function* () {
     const url = new URL(
-      "https://fast-travel-ts-worker-git-staging-obi-money.vercel.app/api/checkStatus?test=false",
+      `${process.env.FAST_TRAVEL_API_URL}/api/checkStatus?test=false`,
     );
     if (publicKey) {
       url.searchParams.set("pubkey", publicKey);
