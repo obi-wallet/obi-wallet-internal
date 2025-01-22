@@ -7,6 +7,8 @@ import {
 import { serialize } from "@obi-wallet/sdk-json";
 import { Effect, pipe, Schema } from "effect";
 
+export * from "./status";
+
 export function simulate({
   from,
   to,
@@ -83,7 +85,7 @@ export function genericSimulateRequest({
       slippage,
       simulateOnly,
     };
-    const e = Effect.tryPromise({
+    const response = yield* Effect.tryPromise({
       try: async () => {
         return await fetch(
           "https://fast-travel-ts-worker-git-staging-obi-money.vercel.app/api/simulate",
@@ -102,7 +104,6 @@ export function genericSimulateRequest({
         return `Failed to fetch: ${error.message}`;
       },
     });
-    const response = yield* e;
     if (response.status !== 200) {
       const json = yield* Effect.tryPromise({
         try: () => {

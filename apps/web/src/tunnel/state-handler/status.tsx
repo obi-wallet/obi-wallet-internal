@@ -3,15 +3,24 @@
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
 import { useAssets } from "@/hooks/assets";
+import { cn } from "@/lib/utils";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { deserialize } from "@obi-wallet/sdk-json";
 import copy from "copy-to-clipboard";
+import { Effect } from "effect";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
-import { FaCheck } from "react-icons/fa6";
+import {
+  FaArrowsRotate,
+  FaCheck,
+  FaClock,
+  FaRegCircleXmark,
+} from "react-icons/fa6";
 
+import { getTransactionsBy } from "../fast-travel-worker";
 import { StatusState, TunnelState } from "../state";
-import { GenericWallet, ObiWallet, PhantomWallet } from "../wallets";
 
 export interface StatusProps {
   state: StatusState;
@@ -27,12 +36,34 @@ export const Status = observer<StatusProps>(function Deposit({
   const toAsset = assets[state.to.asset];
   const [isCopied, setIsCopied] = useState(false);
 
-  const Wallet =
-    state.walletType === "phantom"
-      ? PhantomWallet
-      : state.walletType === "obi"
-        ? ObiWallet
-        : GenericWallet;
+  const status = useQuery({
+    queryKey: ["status", state.to.address],
+    queryFn: async () => {
+      return await Effect.runPromise(
+        getTransactionsBy({
+          recipientAddress: state.to.address,
+        }),
+      );
+    },
+    refetchInterval: 5000,
+  });
+
+  const transaction = status.data?.find((transaction) => {
+    const intent = deserialize(transaction.transaction.intent);
+    return (
+      transaction.transaction.deposit_address === state.from.address &&
+      intent.destinationAddress === state.to.address
+    );
+  });
+  const rawTransactionStatus = transaction?.transaction.status;
+  const currentStepIndex = parseInt(
+    transaction?.transaction.status.match(/InProgress\((\d+)\)/)?.[1] ?? "0",
+    10,
+  );
+  const transactionStatus = rawTransactionStatus
+    ? toTitleCase(rawTransactionStatus)
+    : null;
+  const _steps = transaction?.step_statuses.length;
 
   return (
     <div className="bg-background-main flex min-h-screen flex-col justify-center p-8 text-white">
@@ -40,16 +71,33 @@ export const Status = observer<StatusProps>(function Deposit({
         You are expected to receive {state.to.prettyAmount} $
         {toAsset?.assetInfo?.symbol ?? toAsset?.denom}
       </Text>
-      <Text className="mt-4">
-        <span className="align-middle leading-normal">Receiving address:</span>
-      </Text>
 
-      <Wallet
-        onClick={async () => {
-          await dispatch(state.back());
-        }}
-        label={state.to.address}
-      />
+      <label>
+        <Text className="mt-4">
+          <span className="align-middle leading-normal">
+            Receiving address:
+          </span>
+        </Text>
+        <Input
+          labelClassname="bg-background-secondary"
+          className="mt-2 h-[48px] w-full rounded-[5px] !border-none"
+          value={state.to.address}
+          readOnly
+          rightComponent={
+            <div className="flex w-full justify-end">
+              <button
+                onClick={async () => {
+                  await dispatch(state.back());
+                }}
+                className="px-1"
+              >
+                <FaRegCircleXmark title="Disconnect" />
+              </button>
+            </div>
+          }
+        />
+      </label>
+
       <label>
         <Text className="mt-4">
           <span className="align-middle leading-normal">
@@ -88,15 +136,57 @@ export const Status = observer<StatusProps>(function Deposit({
         </div>
       )}
       <AsyncButton
-        className="mt-2 w-full"
+        className={cn("mt-2 w-full", {
+          "cursor-not-allowed": transactionStatus !== "Done",
+        })}
         variant="outline"
-        // TODO: handle disabled state
+        disabled={transactionStatus !== "Done"}
         onClick={async () => {
           console.log("continue");
         }}
       >
-        Awaiting Deposit
+        {transactionStatus ? transactionStatus : "Awaiting Deposit"}
+        {transactionStatus === "Done" ? null : (
+          <FaArrowsRotate className="ml-2 animate-spin" />
+        )}
       </AsyncButton>
+
+      <div className="mt-4 flex flex-col gap-2">
+        <Text size="sm" className="text-gray-400">
+          Transaction Steps:
+        </Text>
+        {transaction?.step_statuses.map((step, index) => {
+          return (
+            <div
+              key={index}
+              className="bg-background-secondary flex items-center gap-2 rounded-md p-2"
+            >
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-sm">
+                {index + 1}
+              </div>
+              <div className="flex flex-col">
+                <Text size="sm">{toTitleCase(step.action)}</Text>
+              </div>
+              <div className="ml-auto">
+                {index < currentStepIndex ? (
+                  <FaCheck className="text-green-500" />
+                ) : index === currentStepIndex ? (
+                  <FaArrowsRotate className="animate-spin" />
+                ) : (
+                  <FaClock className="text-gray-400" />
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 });
+
+function toTitleCase(str: string) {
+  return str
+    .replace(/([A-Z])/g, " $1")
+    .trim()
+    .replace("Ibc", "IBC");
+}
