@@ -5,6 +5,7 @@ import { EffectStateDispatch } from "@/effect/effect-state";
 import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { genericSimulateRequest } from "@/tunnel/fast-travel-worker";
+import { TerraStationModal } from "@/tunnel/terra-station-modal";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Effect } from "effect";
@@ -130,6 +131,7 @@ export const ChooseAddress = observer<ChooseAddressProps>(
             }}
           />
         </label>
+
         <AsyncButton
           className="mt-2 w-full"
           variant="secondary"
@@ -142,6 +144,8 @@ export const ChooseAddress = observer<ChooseAddressProps>(
         >
           Continue
         </AsyncButton>
+
+        <TerraStationModal />
       </div>
     );
   },
