@@ -76,32 +76,6 @@ export const Status = observer<StatusProps>(function Deposit({
       <label>
         <Text className="mt-4">
           <span className="align-middle leading-normal">
-            Receiving address:
-          </span>
-        </Text>
-        <Input
-          labelClassname="bg-background-secondary"
-          className="mt-2 h-[48px] w-full rounded-[5px] !border-none"
-          value={state.to.address}
-          readOnly
-          rightComponent={
-            <div className="flex w-full justify-end">
-              <button
-                onClick={async () => {
-                  await dispatch(state.back());
-                }}
-                className="px-1"
-              >
-                <FaRegCircleXmark title="Disconnect" />
-              </button>
-            </div>
-          }
-        />
-      </label>
-
-      <label>
-        <Text className="mt-4">
-          <span className="align-middle leading-normal">
             Please send {state.from.prettyAmount}{" "}
             {fromAsset?.assetInfo?.symbol ?? fromAsset?.denom} to the address
             below to complete the transaction:
@@ -110,6 +84,7 @@ export const Status = observer<StatusProps>(function Deposit({
         <Input
           labelClassname="bg-background-secondary"
           className="mt-2 h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+          inputClassName="text-[#32c9af]"
           value={state.from.address}
           readOnly
           rightComponent={
@@ -136,8 +111,24 @@ export const Status = observer<StatusProps>(function Deposit({
           <p className="text-white">Copied</p>
         </div>
       )}
+
+      <Text className="mt-8">
+        <span className="align-middle leading-normal">Receiving address:</span>
+      </Text>
+      <Text className="mt-2">
+        {state.to.address}{" "}
+        <button
+          onClick={async () => {
+            await dispatch(state.back());
+          }}
+          className="ml-2 px-1"
+        >
+          <FaRegCircleXmark title="Disconnect" />
+        </button>
+      </Text>
+
       <AsyncButton
-        className={cn("mt-2 w-full", {
+        className={cn("mt-8 w-full", {
           "cursor-not-allowed": transactionStatus !== "Done",
         })}
         variant="outline"
