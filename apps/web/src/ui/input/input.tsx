@@ -73,7 +73,7 @@ export function Input({
             className={cn("flex w-full flex-1", inputClassName)}
           />
           {rightComponent && (
-            <div className={cn("flex flex-1", rightContainerClassName)}>
+            <div className={cn("flex flex-shrink", rightContainerClassName)}>
               {rightComponent}
             </div>
           )}
