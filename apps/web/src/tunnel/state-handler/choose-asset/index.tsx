@@ -2,12 +2,11 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
-import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "./asset-dropdown";
@@ -23,7 +22,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
-  const alert = useAlert();
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
@@ -44,12 +42,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       },
     );
   });
-
-  useEffect(() => {
-    if (s.status === "error") {
-      alert.showError(s.error);
-    }
-  }, [s, alert]);
 
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
@@ -98,6 +90,11 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             }
           />
         </label>
+        {s.status === "error" && (
+          <Text size="sm" className="mt-2 text-red-500">
+            {s.error}
+          </Text>
+        )}
       </div>
 
       <div className="mt-6 flex flex-col">
