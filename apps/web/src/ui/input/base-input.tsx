@@ -13,7 +13,7 @@ export const BaseInput = forwardRef<HTMLInputElement, BaseInputProps>(
         ref={ref}
         className={cn(
           // we need to remove focus and hover styles
-          "lg:text-md p-0 text-white hover:border-transparent focus:border-transparent focus:outline-none focus:ring-0 max-sm:text-xs md:text-sm",
+          "p-0 text-base text-white hover:border-transparent focus:border-transparent focus:outline-none focus:ring-0",
           "bg-transparent",
           className,
         )}
