@@ -68,6 +68,7 @@ export function AssetDropdown({
         <ComboboxInput
           aria-label="Asset"
           as={BaseInput}
+          className="max-sm:flex-grow"
           placeholder={placeholder}
           displayValue={(asset: FuseItem | null) => {
             if (!asset) {

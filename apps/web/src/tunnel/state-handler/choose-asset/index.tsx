@@ -80,6 +80,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
               <BaseInput
                 id="assetAmount"
                 placeholder="0.5"
+                className="max-sm:flex-grow"
                 value={s.from.prettyAmount}
                 onChange={(e) => {
                   service.setPrettyAmount(e.target.value);
