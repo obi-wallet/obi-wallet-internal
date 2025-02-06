@@ -64,71 +64,73 @@ export function AssetDropdown({
         setFilteredAssets(items);
       }}
     >
-      <ComboboxInput
-        aria-label="Assignee"
-        as={BaseInput}
-        placeholder={placeholder}
-        displayValue={(asset: FuseItem | null) => {
-          if (!asset) {
-            return "";
-          }
-          return `${asset.assetInfo.symbol.toUpperCase()} (on ${asset.chainInfo.name})`;
-        }}
-        onChange={(event) => {
-          const query = event.target.value;
-          if (query.length === 0) {
-            setFilteredAssets(items);
-          } else {
-            setFilteredAssets(
-              fuseRef.current?.search(query).map((result) => {
-                return result.item;
-              }) ?? [],
+      <div className="flex flex-row">
+        <ComboboxInput
+          aria-label="Asset"
+          as={BaseInput}
+          placeholder={placeholder}
+          displayValue={(asset: FuseItem | null) => {
+            if (!asset) {
+              return "";
+            }
+            return `${asset.assetInfo.symbol.toUpperCase()} (on ${asset.chainInfo.name})`;
+          }}
+          onChange={(event) => {
+            const query = event.target.value;
+            if (query.length === 0) {
+              setFilteredAssets(items);
+            } else {
+              setFilteredAssets(
+                fuseRef.current?.search(query).map((result) => {
+                  return result.item;
+                }) ?? [],
+              );
+            }
+          }}
+        />
+        <ComboboxButton className="p-2">
+          {({ open }) => {
+            return open ? <FaAngleUp /> : <FaAngleDown />;
+          }}
+        </ComboboxButton>
+        <ComboboxOptions
+          anchor="bottom"
+          className="bg-background-main w-[var(--input-width)] border border-[#32c9af] empty:invisible"
+        >
+          {({ option: asset }) => {
+            return (
+              <ComboboxOption value={asset} className="w-[var(--input-width)]">
+                {({ focus, selected }) => {
+                  return (
+                    <div
+                      className={cn(
+                        "hover:bg-background-primary-hover flex w-full cursor-pointer flex-row space-x-3 p-3",
+                        {
+                          "bg-background-primary-hover": focus,
+                          "bg-gray-600": selected,
+                        },
+                      )}
+                    >
+                      <div className="flex items-center justify-center">
+                        <img
+                          src={asset.assetInfo.image}
+                          alt={asset.assetInfo.symbol}
+                          width={24}
+                          height={24}
+                        />
+                      </div>
+                      <div className="text-white">
+                        <div>{asset.assetInfo.symbol}</div>
+                        <div>{asset.chainInfo.name}</div>
+                      </div>
+                    </div>
+                  );
+                }}
+              </ComboboxOption>
             );
-          }
-        }}
-      />
-      <ComboboxButton className="p-2">
-        {({ open }) => {
-          return open ? <FaAngleUp /> : <FaAngleDown />;
-        }}
-      </ComboboxButton>
-      <ComboboxOptions
-        anchor="bottom"
-        className="bg-background-main w-[var(--input-width)] border border-[#32c9af] empty:invisible"
-      >
-        {({ option: asset }) => {
-          return (
-            <ComboboxOption value={asset} className="w-[var(--input-width)]">
-              {({ focus, selected }) => {
-                return (
-                  <div
-                    className={cn(
-                      "hover:bg-background-primary-hover flex w-full cursor-pointer flex-row space-x-3 p-3",
-                      {
-                        "bg-background-primary-hover": focus,
-                        "bg-gray-600": selected,
-                      },
-                    )}
-                  >
-                    <div className="flex items-center justify-center">
-                      <img
-                        src={asset.assetInfo.image}
-                        alt={asset.assetInfo.symbol}
-                        width={24}
-                        height={24}
-                      />
-                    </div>
-                    <div className="text-white">
-                      <div>{asset.assetInfo.symbol}</div>
-                      <div>{asset.chainInfo.name}</div>
-                    </div>
-                  </div>
-                );
-              }}
-            </ComboboxOption>
-          );
-        }}
-      </ComboboxOptions>
+          }}
+        </ComboboxOptions>
+      </div>
     </Combobox>
   );
 }

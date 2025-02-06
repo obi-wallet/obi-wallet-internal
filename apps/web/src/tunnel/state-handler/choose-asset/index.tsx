@@ -75,7 +75,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             )
           }
         >
-          <div className="flex h-[48px] flex-row items-center p-6">
+          <div className="flex h-[96px] flex-col p-6 md:h-[48px] md:flex-row md:items-center">
             <div className="flex flex-grow">
               <BaseInput
                 id="assetAmount"
@@ -90,7 +90,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
               items={items.data ?? []}
               selectedItem={s.from.asset || null}
               onSelectedItemChange={(value) => {
-                console.log(value);
                 if (value) {
                   service.setAsset(value);
                 }
