@@ -4,7 +4,10 @@ import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
-import { Input } from "@/ui/input";
+import { Fieldset } from "@/ui/fieldset";
+import { BaseInput } from "@/ui/input";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useGetIsMounted } from "rooks";
@@ -22,6 +25,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
+  const items = useQuery(AssetRegistry.getInstance().cosmosFeeTokensQuery({}));
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
@@ -61,40 +65,39 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       </Text>
 
       <div className="mt-6 flex flex-col">
-        <label>
-          <Text size="sm" className="mb-2 text-gray-200">
-            How much are you depositing?
-          </Text>
-          <Input
-            id="assetAmount"
-            labelClassname="bg-background-secondary"
-            className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
-            placeholder="0.5"
-            value={s.from.prettyAmount}
-            onChange={(value) => {
-              service.setPrettyAmount(value);
-            }}
-            rightComponent={
-              <div className="flex w-full justify-end">
-                <AssetDropdown
-                  items={["cosmos:phoenix-1/native:uluna"]}
-                  selectedItem={s.from.asset || null}
-                  onSelectedItemChange={(value) => {
-                    console.log(value);
-                    if (value) {
-                      service.setAsset(value);
-                    }
-                  }}
-                />
-              </div>
-            }
-          />
-        </label>
-        {s.status === "error" && (
-          <Text size="sm" className="mt-2 text-red-500">
-            {s.error}
-          </Text>
-        )}
+        <Fieldset
+          legend="How much are you depositing?"
+          footer={
+            s.status === "error" && (
+              <Text size="sm" className="mt-2 text-red-500">
+                {s.error}
+              </Text>
+            )
+          }
+        >
+          <div className="flex h-[48px] flex-row items-center p-6">
+            <div className="flex flex-grow">
+              <BaseInput
+                id="assetAmount"
+                placeholder="0.5"
+                value={s.from.prettyAmount}
+                onChange={(e) => {
+                  service.setPrettyAmount(e.target.value);
+                }}
+              />
+            </div>
+            <AssetDropdown
+              items={items.data ?? []}
+              selectedItem={s.from.asset || null}
+              onSelectedItemChange={(value) => {
+                console.log(value);
+                if (value) {
+                  service.setAsset(value);
+                }
+              }}
+            />
+          </div>
+        </Fieldset>
       </div>
 
       <div className="mt-6 flex flex-col">
