@@ -153,7 +153,7 @@ export class TunnelService {
             parseFloat(params.prettyAmount) < minAmount
               ? {
                   status: "error" as const,
-                  error: `Due to bridge costs, amounts under ${minAmount} LUNA are likely to temporarily fail.`,
+                  error: `Due to bridge costs, amounts under ${minAmount} ${fromAsset?.assetInfo?.symbol} are likely to temporarily fail.`,
                   from: {
                     asset: params.asset,
                     prettyAmount: params.prettyAmount,
