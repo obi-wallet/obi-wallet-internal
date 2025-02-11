@@ -142,6 +142,43 @@ export class AssetRegistry {
       },
     });
   }
+
+  public async getSquidSupportedTokens() {
+    return await queryClient.fetchQuery(this.squidSupportedTokensQuery({}));
+  }
+
+  public get squidSupportedTokensQuery() {
+    return this.queryNamespace.createQuery({
+      name: "squid-supported-tokens",
+      fn: async (): Promise<
+        {
+          id: Caip19AssetId;
+          chainInfo: { name: string };
+          assetInfo: AssetInfo;
+        }[]
+      > => {
+        const url = `https://asset-registry.obiwallet.workers.dev/index/squid`;
+        const response = await fetch(url);
+        const pairs = await response.json();
+
+        return toPairs(pairs).flatMap(([chainId, chain]) => {
+          return toPairs(chain.assets).flatMap(([assetId, assetInfo]) => {
+            return {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              id: `${chainId}/${assetId}` as Caip19AssetId,
+              chainInfo: {
+                name: chain.name,
+              },
+              assetInfo,
+            };
+          });
+        });
+      },
+      staleTime: {
+        hour: 1,
+      },
+    });
+  }
 }
 
 export class Asset implements AssetRegistryResponse {

@@ -52,9 +52,11 @@ export const Status = observer<StatusProps>(function Deposit({
 
   const transaction = status.data?.find((transaction) => {
     const intent = deserialize(transaction.transaction.intent);
+    // TODO: also filter by maxSlippage
     return (
       transaction.transaction.deposit_address === state.from.address &&
-      intent.destinationAddress === state.to.address
+      intent.destinationAddress === state.to.address &&
+      state.to.asset.includes(intent.destinationAsset)
     );
   });
   const rawTransactionStatus = transaction?.transaction.status;
