@@ -15,8 +15,8 @@ export default function InstantTunnelsPage() {
           <section className="bg-background relative flex min-h-screen flex-col justify-center gap-8 px-6 py-20 text-center text-white lg:flex-row lg:items-center lg:px-28 lg:text-left">
             <div className="lg:w-2/3">
               <h1 className="text-4xl font-normal uppercase lg:text-5xl">
-                ONBOARD ANY TARGET MARKET<br />
-                <span className="font-bold">with Universal Tunnel Widgets</span>
+                ONBOARD ANY USER<br />
+                <span className="font-bold">with Secure, Universal Widgets</span>
               </h1>
               <p className="mt-6 text-xl font-light">
                 Users one-click into your ecosystem from any crypto or fiat currency
@@ -48,38 +48,38 @@ export default function InstantTunnelsPage() {
           {/* Features Section */}
           <section className="flex flex-col items-center gap-16 px-6 py-12 lg:px-28">
             <h2 className="text-center text-3xl font-bold">
-              Why Choose Instant Tunnels?
+              Non-Custodial, Non-Hassle
             </h2>
             <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
               <FeatureCard
                 icon="/assets/icons/speed.svg"
-                title="Lightning Fast"
-                description="Sub-second cross-chain message delivery with guaranteed finality"
+                title="No Custody"
+                description="Tunnels are cryptographically bound and cannot do anything the user does not intend"
               />
               <FeatureCard
                 icon="/assets/icons/security.svg"
                 title="Bank-Grade Security"
-                description="End-to-end encryption with quantum-resistant cryptography"
+                description="End-to-end encryption with near-zero-latency multi-party cryptography"
               />
               <FeatureCard
                 icon="/assets/icons/scalability.svg"
-                title="Infinite Scalability"
-                description="Handle millions of messages per second with zero congestion"
+                title="Frontrun Prevention"
+                description="The user's final intent is not revealed until it is executed"
               />
               <FeatureCard
                 icon="/assets/icons/compatibility.svg"
                 title="Universal Compatibility"
-                description="Works with any blockchain that supports basic cryptographic primitives"
+                description="Works with any common blockchain architecture, even Bitcoin"
               />
               <FeatureCard
                 icon="/assets/icons/simplicity.svg"
                 title="Simple Integration"
-                description="Add cross-chain messaging to your dApp in less than 10 lines of code"
+                description="Embed a link to easily onboard users to your ecosystem"
               />
               <FeatureCard
                 icon="/assets/icons/cost.svg"
-                title="Cost Effective"
-                description="Pay only for what you use with transparent, predictable pricing"
+                title="Users From Anywhere"
+                description="Even users with no wallet experience can get your asset with instant, non-custodial single sign-on accounts"
               />
             </div>
           </section>
@@ -90,72 +90,21 @@ export default function InstantTunnelsPage() {
             <div className="flex flex-col gap-8">
               <Step
                 number="1"
-                title="Initialize"
-                description="Add the Instant Tunnels SDK to your project and initialize with your API key"
-                code="npm install @obi/instant-tunnels"
+                title="Copy"
+                description="Copy the Instant Tunnels URL"
+                code="https://obi.money/embed/tunnel"
               />
               <Step
                 number="2"
-                title="Configure"
-                description="Set up your source and destination chains with a simple configuration object"
-                code={`const tunnel = new InstantTunnel({
-  sourceChain: 'ethereum',
-  destChain: 'cosmos',
-  apiKey: 'your-api-key'
-})`}
+                title="Paste"
+                description="Embed it in your app or webpage"
+                code={"No code!"}
               />
               <Step
                 number="3"
-                title="Send Messages"
-                description="Start sending cross-chain messages with a single function call"
-                code={`await tunnel.sendMessage({
-  message: 'Hello Cross-Chain World!',
-  destination: 'cosmos1...'
-})`}
-              />
-            </div>
-          </section>
-
-          {/* Pricing Section */}
-          <section className="flex flex-col items-center gap-12 px-6 py-12 lg:px-28">
-            <h2 className="text-center text-3xl font-bold">Simple Pricing</h2>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              <PricingCard
-                title="Developer"
-                price="Free"
-                features={[
-                  "Up to 1,000 messages/month",
-                  "Basic support",
-                  "2 chains supported",
-                  "Community access"
-                ]}
-                ctaText="Start Free"
-                ctaLink="https://docs.obi.money/instant-tunnels/get-started"
-              />
-              <PricingCard
-                title="Business"
-                price="$99/mo"
-                features={[
-                  "Up to 100,000 messages/month",
-                  "Priority support",
-                  "All chains supported",
-                  "Advanced analytics"
-                ]}
-                ctaText="Start Trial"
-                ctaLink="https://docs.obi.money/instant-tunnels/business"
-                highlighted
-              />
-              <PricingCard
-                title="Enterprise"
-                price="Custom"
-                features={[
-                  "Unlimited messages",
-                  "24/7 support",
-                  "Custom integrations",
-                  "SLA guarantee"
-                ]}
-                ctaText="Contact Us"
-                ctaLink="https://docs.obi.money/instant-tunnels/enterprise"
+                title="Tweak"
+                description="Specify your destination asset and a default origin asset"
+                code={`https://obi.money/embed/tunnel?to=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr&from=ETH`}
               />
             </div>
           </section>
@@ -163,16 +112,20 @@ export default function InstantTunnelsPage() {
           {/* CTA Section */}
           <section className="flex flex-col items-center gap-8 px-6 py-12 text-center lg:px-28">
             <h2 className="text-3xl font-bold">
-              Ready to Add Cross-Chain Messaging?
+              Customize, Test, and Embed Now
             </h2>
-            <p className="text-xl">
-              Get started with Instant Tunnels today and unlock the full potential of cross-chain communication.
-            </p>
+            <div className="lg:w-1/3">
+              <iframe
+                src="https://obi.money/embed/tunnel"
+                className="mx-auto h-[600px] w-full max-w-[400px] rounded-lg border-0 bg-transparent"
+                allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
+              />
+            </div>
             <Link
               href="https://docs.obi.money/instant-tunnels"
-              className="bg-primary mt-4 inline-flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow"
+              className="bg-primary flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow"
             >
-              Start Building Now
+              GET THE WIDGET
             </Link>
           </section>
         </section>
