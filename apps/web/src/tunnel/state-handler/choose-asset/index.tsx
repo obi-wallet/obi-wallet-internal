@@ -32,7 +32,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: "cosmos:phoenix-1/native:uluna",
+      asset: state.from,
       prettyAmount: "",
     },
   });
