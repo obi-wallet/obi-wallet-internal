@@ -55,6 +55,8 @@
     "axios": "^1.7.9",
     "bech32": "^2.0.0",
     "bignumber.js": "^9.1.2",
+    "bip32": "^5.0.0-rc.0",
+    "bitcoinjs-lib": "^6.1.7",
     "chain-registry": "^1.69.81",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",

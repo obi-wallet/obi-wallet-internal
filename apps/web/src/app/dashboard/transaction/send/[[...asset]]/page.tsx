@@ -12,6 +12,7 @@ import {
 import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { cn } from "@/lib/utils";
 import { TargetChain } from "@/target-chain";
+import { isBitcoinChainId } from "@/target-chain/bitcoin/chains";
 import { isCosmosChainId } from "@/target-chain/cosmos/chains";
 import { CosmosMpcSigner } from "@/target-chain/cosmos/mpc-signer";
 import {
@@ -350,6 +351,11 @@ const SendInner = observer<{
         if (response.approved) {
           alert.showSuccess("TX sent");
         }
+        return;
+      }
+
+      if (isBitcoinChainId(chainId)) {
+        alert.showError("Bitcoin is not supported yet");
         return;
       }
 

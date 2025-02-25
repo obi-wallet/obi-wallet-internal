@@ -4,6 +4,7 @@ import { useCurrentWallet } from "@/hooks/use-current-wallet";
 import { usePublicKeys } from "@/hooks/use-public-keys";
 import { rootStore } from "@/stores";
 import { TargetChainId } from "@/target-chain";
+import { BitcoinChainId } from "@/target-chain/bitcoin/chains";
 import { CosmosChainId } from "@/target-chain/cosmos/chains";
 import { Eip155ChainId } from "@/target-chain/eip-155/chains";
 import { SecretChainId } from "@/target-chain/secret/chains";
@@ -117,6 +118,9 @@ function toKadoNetwork(targetChainId: TargetChainId): string | null {
     case SolanaChainId.Devnet:
     case SolanaChainId.Mainnet:
       // TODO:
+      return null;
+    case BitcoinChainId.Bitcoin:
+    case BitcoinChainId.BitcoinTestnet:
       return null;
   }
 }

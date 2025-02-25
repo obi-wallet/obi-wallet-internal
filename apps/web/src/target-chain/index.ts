@@ -7,6 +7,12 @@ import {
 import { AbstractTargetChain } from "@obi-wallet/sdk-abstract-target-chain";
 import { Key } from "@obi-wallet/wallet-connect";
 
+import { BitcoinTargetChain } from "./bitcoin";
+import {
+  allBitcoinChains,
+  BitcoinChainId,
+  isBitcoinChainId,
+} from "./bitcoin/chains";
 import { CosmosTargetChain } from "./cosmos";
 import {
   allCosmosChains,
@@ -27,6 +33,7 @@ import {
 } from "./solana/chains";
 
 export type TargetChainId =
+  | BitcoinChainId
   | CosmosChainId
   | Eip155ChainId
   | SecretChainId
@@ -34,6 +41,7 @@ export type TargetChainId =
 
 export function isTargetChainId(chainId: string): chainId is TargetChainId {
   return (
+    isBitcoinChainId(chainId) ||
     isCosmosChainId(chainId) ||
     isEip155ChainId(chainId) ||
     isSecretChainId(chainId) ||
@@ -42,6 +50,7 @@ export function isTargetChainId(chainId: string): chainId is TargetChainId {
 }
 
 export const allTargetChainIds = [
+  ...allBitcoinChains,
   ...allCosmosChains,
   ...allEip155Chains,
   ...allSecretChains,
@@ -51,6 +60,7 @@ export const allTargetChainIds = [
 export class TargetChain {
   protected constructor(protected chainId: TargetChainId) {}
 
+  public static chainId(chainId: BitcoinChainId): BitcoinTargetChain;
   public static chainId(chainId: CosmosChainId): CosmosTargetChain;
   public static chainId(chainId: Eip155ChainId): Eip155TargetChain;
   public static chainId(chainId: SecretChainId): SecretTargetChain;
@@ -63,12 +73,16 @@ export class TargetChain {
   public static chainId(
     chainId: string,
   ):
+    | BitcoinTargetChain
     | CosmosTargetChain
     | Eip155TargetChain
     | SecretTargetChain
     | SolanaTargetChain
     | AbstractTargetChain<TargetChainId>
     | AbstractTargetChain {
+    if (isBitcoinChainId(chainId)) {
+      return new BitcoinTargetChain(chainId);
+    }
     if (isCosmosChainId(chainId)) {
       return new CosmosTargetChain(chainId);
     }
