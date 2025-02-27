@@ -83,7 +83,7 @@ export const Header = observer(function Header() {
                   pathname === "/instant-tunnels" && "after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary"
                 )}
               >
-                For Apps
+                HyperJump
               </PrimaryLink>
             </li>
             <li>
@@ -125,7 +125,7 @@ export const Header = observer(function Header() {
                   pathname === "/instant-tunnels" && "text-primary"
                 )}
               >
-                For Apps
+                HyperJump
               </PrimaryLink>
               <PrimaryLink
                 href="/ai-agents"
@@ -177,7 +177,7 @@ const LogIn = observer(function LogIn() {
           }
         }}
       >
-        Log in
+        Connect
       </TextButton>
       {modalOpen
         ? renderModal(

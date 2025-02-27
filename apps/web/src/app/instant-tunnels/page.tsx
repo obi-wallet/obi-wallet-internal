@@ -15,8 +15,8 @@ export default function InstantTunnelsPage() {
           <section className="bg-background relative flex min-h-screen flex-col justify-center gap-8 px-6 py-20 text-center text-white lg:flex-row lg:items-center lg:px-28 lg:text-left">
             <div className="lg:w-2/3">
               <h1 className="text-4xl font-normal uppercase lg:text-5xl">
-                ONBOARD ANY USER<br />
-                <span className="font-bold">with Secure, Universal Widgets</span>
+                Onboard Users and Liquidity<br />
+                <span className="font-bold">From Anywhere</span>
               </h1>
               <p className="mt-6 text-xl font-light">
                 Users one-click into your ecosystem from any crypto or fiat currency
@@ -52,32 +52,17 @@ export default function InstantTunnelsPage() {
             </h2>
             <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
               <FeatureCard
-                icon="/assets/icons/speed.svg"
-                title="No Custody"
-                description="Tunnels are cryptographically bound and cannot do anything the user does not intend"
-              />
-              <FeatureCard
-                icon="/assets/icons/security.svg"
-                title="Bank-Grade Security"
-                description="End-to-end encryption with near-zero-latency multi-party cryptography"
-              />
-              <FeatureCard
-                icon="/assets/icons/scalability.svg"
+                icon="/assets/icons/ghost.svg"
                 title="Frontrun Prevention"
                 description="The user's final intent is not revealed until it is executed"
               />
               <FeatureCard
-                icon="/assets/icons/compatibility.svg"
+                icon="/assets/icons/globe.svg"
                 title="Universal Compatibility"
                 description="Works with any common blockchain architecture, even Bitcoin"
               />
               <FeatureCard
-                icon="/assets/icons/simplicity.svg"
-                title="Simple Integration"
-                description="Embed a link to easily onboard users to your ecosystem"
-              />
-              <FeatureCard
-                icon="/assets/icons/cost.svg"
+                icon="/assets/icons/luggage.svg"
                 title="Users From Anywhere"
                 description="Even users with no wallet experience can get your asset with instant, non-custodial single sign-on accounts"
               />
@@ -144,7 +129,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-lg bg-[#1A1A1A] p-6 text-center">
+    <div className="flex flex-col items-center gap-4 rounded-lg bg-background p-6 text-center">
       <Image src={icon} alt={title} width={48} height={48} />
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="text-gray-300">{description}</p>
