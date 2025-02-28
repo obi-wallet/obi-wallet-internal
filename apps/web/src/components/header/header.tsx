@@ -68,8 +68,9 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/"
                 className={cn(
-                  "text-white hover:text-primary relative py-2",
-                  pathname === "/" && "after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
                 )}
               >
                 For Users
@@ -79,8 +80,9 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/instant-tunnels"
                 className={cn(
-                  "text-white hover:text-primary relative py-2",
-                  pathname === "/instant-tunnels" && "after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/instant-tunnels" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
                 )}
               >
                 HyperJump
@@ -90,8 +92,9 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/ai-agents"
                 className={cn(
-                  "text-white hover:text-primary relative py-2",
-                  pathname === "/ai-agents" && "after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary"
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/ai-agents" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
                 )}
               >
                 For AI Agents
@@ -100,7 +103,10 @@ export const Header = observer(function Header() {
           </ul>
         </nav>
         <div className="flex items-center">
-          <button className="text-2xl text-white lg:hidden" onClick={toggleMenu}>
+          <button
+            className="text-2xl text-white lg:hidden"
+            onClick={toggleMenu}
+          >
             &#9776;
           </button>
           <nav
@@ -112,8 +118,8 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/"
                 className={cn(
-                  "block py-2 text-white hover:text-primary",
-                  pathname === "/" && "text-primary"
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/" && "text-primary",
                 )}
               >
                 For Users
@@ -121,8 +127,8 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/instant-tunnels"
                 className={cn(
-                  "block py-2 text-white hover:text-primary",
-                  pathname === "/instant-tunnels" && "text-primary"
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/instant-tunnels" && "text-primary",
                 )}
               >
                 HyperJump
@@ -130,8 +136,8 @@ export const Header = observer(function Header() {
               <PrimaryLink
                 href="/ai-agents"
                 className={cn(
-                  "block py-2 text-white hover:text-primary",
-                  pathname === "/ai-agents" && "text-primary"
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/ai-agents" && "text-primary",
                 )}
               >
                 For AIs

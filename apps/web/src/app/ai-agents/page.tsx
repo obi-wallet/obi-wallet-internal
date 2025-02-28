@@ -5,7 +5,6 @@ import { MainContainer } from "@/layouts/root";
 import Image from "next/image";
 import Link from "next/link";
 
-
 export default function AIAgentsPage() {
   return (
     <>
@@ -16,11 +15,13 @@ export default function AIAgentsPage() {
           <section className="bg-background relative flex min-h-screen flex-col justify-center gap-8 px-6 py-20 text-center text-white lg:flex-row lg:items-center lg:px-28 lg:text-left">
             <div className="lg:w-2/3">
               <h1 className="text-4xl font-normal uppercase lg:text-5xl">
-                SECURE CRYPTO ACCESS<br />
+                SECURE CRYPTO ACCESS
+                <br />
                 <span className="font-bold">for AI Agents with Guardrails</span>
               </h1>
               <p className="mt-6 text-xl font-light">
-                Enable your AI agents to interact with crypto networks while maintaining security and control
+                Enable your AI agents to interact with crypto networks while
+                maintaining security and control
               </p>
               <div className="mt-6 flex flex-col gap-5 lg:flex-row">
                 <Link
@@ -107,7 +108,9 @@ deposit_address = tunnel.open({
 
           {/* Safety Measures */}
           <section className="flex flex-col gap-12 px-6 py-12 lg:px-28">
-            <h2 className="text-center text-3xl font-bold">Safety First Approach</h2>
+            <h2 className="text-center text-3xl font-bold">
+              Safety First Approach
+            </h2>
             <div className="flex flex-col gap-8">
               <SafetyFeature
                 number="1"
@@ -134,7 +137,9 @@ deposit_address = tunnel.open({
 
           {/* Use Cases */}
           <section className="flex flex-col items-center gap-12 px-6 py-12 lg:px-28">
-            <h2 className="text-center text-3xl font-bold">AI Agent Use Cases</h2>
+            <h2 className="text-center text-3xl font-bold">
+              AI Agent Use Cases
+            </h2>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <UseCaseCard
                 title="Customer Service Agents"
@@ -161,7 +166,8 @@ deposit_address = tunnel.open({
               Ready to Empower Your AI Agents?
             </h2>
             <p className="text-xl">
-              Get started with secure, controlled crypto access for your AI systems.
+              Get started with secure, controlled crypto access for your AI
+              systems.
             </p>
             <Link
               href="https://docs.obi.money/ai-agents"
@@ -170,7 +176,6 @@ deposit_address = tunnel.open({
               Start Integration
             </Link>
           </section>
-
         </section>
       </MainContainer>
     </>
@@ -207,7 +212,7 @@ function SafetyFeature({
   return (
     <div className="flex flex-col gap-4 rounded-lg bg-[#1A1A1A] p-6">
       <div className="flex items-center gap-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xl font-bold text-black">
+        <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-full text-xl font-bold text-black">
           {number}
         </div>
         <h3 className="text-xl font-bold">{title}</h3>
@@ -230,4 +235,4 @@ function UseCaseCard({
       <p className="text-gray-300">{description}</p>
     </div>
   );
-} 
+}

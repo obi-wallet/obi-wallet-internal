@@ -1,4 +1,3 @@
-/// <reference types="vitest" />
 /// <vitest-environment happy-dom />
 
 import { runTests } from "@/tests";
