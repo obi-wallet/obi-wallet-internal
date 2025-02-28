@@ -25,12 +25,14 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
-  const items = useQuery(AssetRegistry.getInstance().cosmosFeeTokensQuery({}));
+  const items = useQuery(
+    AssetRegistry.getInstance().squidSupportedTokensQuery({}),
+  );
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: "cosmos:phoenix-1/native:uluna",
+      asset: state.from,
       prettyAmount: "",
     },
   });
