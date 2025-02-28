@@ -5,6 +5,7 @@ import { MainContainer } from "@/layouts/root";
 import Image from "next/image";
 import Link from "next/link";
 
+
 export default function AIAgentsPage() {
   return (
     <>
@@ -50,7 +51,7 @@ tunnel = Digger(restrictions={
 
 deposit_address = tunnel.open({
     "from": tunnel.from(
-      popcat, Chain.SOL, "1500"),
+      popcat, Chain.SOL, "1500brav"),
     "to": tunnel.to(
       usdc(Chain.BASE),
       DEST_ADDRESS
@@ -169,6 +170,7 @@ deposit_address = tunnel.open({
               Start Integration
             </Link>
           </section>
+
         </section>
       </MainContainer>
     </>

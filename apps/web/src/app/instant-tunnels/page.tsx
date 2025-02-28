@@ -5,9 +5,12 @@ import { MainContainer } from "@/layouts/root";
 import Image from "next/image";
 import Link from "next/link";
 
+import ChainAssetSelector from "./chain-asset-selector";
+const TUNNEL_EMBED_URL = "https://obi-wallet-web-git-staging-obi-money.vercel.app/embed/tunnel?_vercel_share=ALB7lr3errPjcJ2TiIXCV7tAzXDJBcym";
+
 export default function InstantTunnelsPage() {
   return (
-    <>
+    <>s
       <Header />
       <MainContainer>
         <section className="flex w-full flex-col gap-24 text-white">
@@ -38,7 +41,7 @@ export default function InstantTunnelsPage() {
             </div>
             <div className="lg:w-1/3">
               <iframe
-                src="https://obi.money/embed/tunnel"
+                src={TUNNEL_EMBED_URL}
                 className="mx-auto h-[600px] w-full max-w-[400px] rounded-lg border-0 bg-transparent"
                 allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
               />
@@ -98,32 +101,38 @@ export default function InstantTunnelsPage() {
                 number="2"
                 title="Paste"
                 description="Embed it in your app or webpage"
-                code={"No code!"}
+                code="No code!"
               />
               <Step
                 number="3"
                 title="Tweak"
                 description="Specify your destination asset and a default origin asset"
-                code={`https://obi.money/embed/tunnel?to=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr&from=ETH`}
+                code="https://obi.money/embed/tunnel?to=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr&from=ETH"
               />
             </div>
           </section>
 
           {/* CTA Section */}
-          <section className="flex flex-col items-center gap-8 px-6 py-12 text-center lg:px-28">
+          <section className="flex flex-col items-center gap-8 px-6 py-12 lg:px-28">
             <h2 className="text-3xl font-bold">
               Customize, Test, and Embed Now
             </h2>
-            <div className="lg:w-1/3">
-              <iframe
-                src="https://obi.money/embed/tunnel"
-                className="mx-auto h-[600px] w-full max-w-[400px] rounded-lg border-0 bg-transparent"
-                allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
-              />
+            <div className="w-full flex flex-col md:flex-row md:items-center md:justify-center gap-8 max-w-6xl mx-auto">
+              <div className="w-full md:w-5/12 md:max-w-md">
+                <ChainAssetSelector iframeId="tunnel-embed-demo" />
+              </div>
+              <div className="w-full md:w-7/12 md:max-w-xl">
+                <iframe
+                  id="tunnel-embed-demo"
+                  src={TUNNEL_EMBED_URL}
+                  className="mx-auto h-[600px] w-full rounded-lg border-0 bg-transparent"
+                  allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
+                />
+              </div>
             </div>
             <Link
               href="https://docs.obi.money/instant-tunnels"
-              className="bg-primary flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow"
+              className="bg-primary flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow mt-8"
             >
               GET THE WIDGET
             </Link>
@@ -178,62 +187,3 @@ function Step({
     </div>
   );
 }
-
-function PricingCard({
-  title,
-  price,
-  features,
-  ctaText,
-  ctaLink,
-  highlighted = false,
-}: {
-  title: string;
-  price: string;
-  features: string[];
-  ctaText: string;
-  ctaLink: string;
-  highlighted?: boolean;
-}) {
-  return (
-    <div
-      className={`flex flex-col gap-6 rounded-lg p-6 ${
-        highlighted ? "bg-primary text-black" : "bg-[#1A1A1A] text-white"
-      }`}
-    >
-      <div className="text-center">
-        <h3 className="text-xl font-bold">{title}</h3>
-        <div className="mt-4 text-3xl font-bold">{price}</div>
-      </div>
-      <ul className="flex flex-col gap-4">
-        {features.map((feature, index) => {return (
-          <li key={index} className="flex items-center gap-2">
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            {feature}
-          </li>
-        )})}
-      </ul>
-      <Link
-        href={ctaLink}
-        className={`mt-auto rounded px-6 py-3 text-center ${
-          highlighted
-            ? "bg-black text-white"
-            : "bg-primary text-black"
-        }`}
-      >
-        {ctaText}
-      </Link>
-    </div>
-  );
-} 
