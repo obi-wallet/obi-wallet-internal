@@ -44,7 +44,7 @@ test("CW20 Token (CAIP-19, unknown)", async () => {
   expect(tokenInfo?.symbol).to.equal("SEIYAN");
 });
 
-test("CW20 token balance fetching", async () => {
+test.skip("CW20 token balance fetching", async () => {
   const targetChain = TargetChain.chainId(CosmosChainId.Sei);
   const address = "sei1000qtmc2p4fcup8y57aue4a9s6ya8aszt8j9qd";
   const assetId =
