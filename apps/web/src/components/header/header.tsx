@@ -6,7 +6,7 @@ import { useStore } from "@/contexts";
 import { cn } from "@/lib/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 
 export const DashboardHeader = observer(function DashboardHeader() {
@@ -38,6 +38,7 @@ export const DashboardHeader = observer(function DashboardHeader() {
 
 export const Header = observer(function Header() {
   const { mpcWalletsStore } = useStore();
+  const pathname = usePathname();
 
   const primaryLinkHref = mpcWalletsStore.currentWallet ? "/dashboard" : "/";
   const authChildren = mpcWalletsStore.currentWallet ? <LogOut /> : <LogIn />;
@@ -50,24 +51,102 @@ export const Header = observer(function Header() {
 
   return (
     <header className="mb-6 flex items-center justify-between px-6 py-3">
-      <PrimaryLink href={primaryLinkHref}>
-        <Image
-          alt="landing-logo"
-          width="68"
-          height="50"
-          src="/assets/icons/landing-logo.svg"
-        />
-      </PrimaryLink>
-      <button className="text-2xl text-white lg:hidden" onClick={toggleMenu}>
-        &#9776;
-      </button>
-      <nav
-        className={`${
-          menuOpen ? "flex" : "hidden"
-        } absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:bg-[#070707] lg:p-0`}
-      >
-        {authChildren}
-      </nav>
+      <div className="flex items-center">
+        <PrimaryLink href={primaryLinkHref}>
+          <Image
+            alt="landing-logo"
+            width="68"
+            height="50"
+            src="/assets/icons/landing-logo.svg"
+          />
+        </PrimaryLink>
+      </div>
+      <div className="flex items-center gap-8">
+        <nav className="hidden lg:block">
+          <ul className="flex items-center space-x-8">
+            <li>
+              <PrimaryLink
+                href="/"
+                className={cn(
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
+                )}
+              >
+                For Users
+              </PrimaryLink>
+            </li>
+            <li>
+              <PrimaryLink
+                href="/instant-tunnels"
+                className={cn(
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/instant-tunnels" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
+                )}
+              >
+                HyperJump
+              </PrimaryLink>
+            </li>
+            <li>
+              <PrimaryLink
+                href="/ai-agents"
+                className={cn(
+                  "hover:text-primary relative py-2 text-white",
+                  pathname === "/ai-agents" &&
+                    "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
+                )}
+              >
+                For AI Agents
+              </PrimaryLink>
+            </li>
+          </ul>
+        </nav>
+        <div className="flex items-center">
+          <button
+            className="text-2xl text-white lg:hidden"
+            onClick={toggleMenu}
+          >
+            &#9776;
+          </button>
+          <nav
+            className={`${
+              menuOpen ? "flex" : "hidden"
+            } absolute right-6 top-12 z-10 flex-col space-y-4 bg-[#0a1124] p-4 opacity-90 lg:static lg:flex lg:w-auto lg:flex-row lg:space-x-6 lg:space-y-0 lg:bg-[#070707] lg:p-0`}
+          >
+            <div className="lg:hidden">
+              <PrimaryLink
+                href="/"
+                className={cn(
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/" && "text-primary",
+                )}
+              >
+                For Users
+              </PrimaryLink>
+              <PrimaryLink
+                href="/instant-tunnels"
+                className={cn(
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/instant-tunnels" && "text-primary",
+                )}
+              >
+                HyperJump
+              </PrimaryLink>
+              <PrimaryLink
+                href="/ai-agents"
+                className={cn(
+                  "hover:text-primary block py-2 text-white",
+                  pathname === "/ai-agents" && "text-primary",
+                )}
+              >
+                For AIs
+              </PrimaryLink>
+            </div>
+            {authChildren}
+          </nav>
+        </div>
+      </div>
     </header>
   );
 });
@@ -104,7 +183,7 @@ const LogIn = observer(function LogIn() {
           }
         }}
       >
-        Log in
+        Connect
       </TextButton>
       {modalOpen
         ? renderModal(
