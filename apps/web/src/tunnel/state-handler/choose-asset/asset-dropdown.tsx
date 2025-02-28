@@ -15,7 +15,7 @@ import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 
 export interface FuseItem {
   id: Caip19AssetId;
-  chainInfo: { name: string; image: string };
+  chainInfo: { name: string };
   assetInfo: AssetInfo;
 }
 
