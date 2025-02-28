@@ -16,6 +16,7 @@ export class TunnelState extends Context.Tag("TunnelState")<
 export class ChooseAssetState extends Data.TaggedClass(
   TunnelStateType.ChooseAsset,
 )<{
+  from: Caip19AssetId;
   to: Caip19AssetId;
 }> {
   public setSimulationResponse({

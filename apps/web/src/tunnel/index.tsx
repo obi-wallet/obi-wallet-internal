@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffectState } from "@/effect/effect-state";
+import { Caip19AssetId } from "@obi-wallet/sdk-caip";
 import { observer } from "mobx-react-lite";
 
 import { ChooseAssetState, TunnelState, TunnelStateType } from "./state";
@@ -8,11 +9,20 @@ import { ChooseAddress } from "./state-handler/choose-address";
 import { ChooseAsset } from "./state-handler/choose-asset";
 import { Status } from "./state-handler/status";
 
-export const TunnelEmbed = observer(function TunnelEmbed() {
+export interface TunnelEmbedProps {
+  from?: Caip19AssetId | undefined;
+  to?: Caip19AssetId | undefined;
+}
+
+export const TunnelEmbed = observer<TunnelEmbedProps>(function TunnelEmbed({
+  from = "cosmos:phoenix-1/native:uluna",
+  to = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
+}: TunnelEmbedProps) {
   const { state, dispatch } = useEffectState(
     TunnelState,
     new ChooseAssetState({
-      to: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:DEf93bSt8dx58gDFCcz4CwbjYZzjwaRBYAciJYLfdCA9",
+      from,
+      to,
     }),
   );
 

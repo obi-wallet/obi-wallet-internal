@@ -5,6 +5,7 @@ import {
   Caip2ChainIdSchema,
 } from "@obi-wallet/sdk-caip";
 import BigNumber from "bignumber.js";
+import { toPairs } from "ramda";
 import { z } from "zod";
 
 export const AssetInfo = z.object({
@@ -100,6 +101,81 @@ export class AssetRegistry {
       },
       staleTime: {
         minute: 1,
+      },
+    });
+  }
+
+  public async getCosmosFeeTokens() {
+    return await queryClient.fetchQuery(this.cosmosFeeTokensQuery({}));
+  }
+
+  public get cosmosFeeTokensQuery() {
+    return this.queryNamespace.createQuery({
+      name: "cosmos-fee-tokens",
+      fn: async (): Promise<
+        {
+          id: Caip19AssetId;
+          chainInfo: { name: string; image: string };
+          assetInfo: AssetInfo;
+        }[]
+      > => {
+        const url = `https://asset-registry.obiwallet.workers.dev/index/cosmos-fee-tokens`;
+        const response = await fetch(url);
+        const pairs = await response.json();
+
+        return toPairs(pairs).flatMap(([chainId, chain]) => {
+          return toPairs(chain.feeAssets).flatMap(([assetId, assetInfo]) => {
+            return {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              id: `${chainId}/${assetId}` as Caip19AssetId,
+              chainInfo: {
+                name: chain.name,
+                image: chain.image,
+              },
+              assetInfo,
+            };
+          });
+        });
+      },
+      staleTime: {
+        hour: 1,
+      },
+    });
+  }
+
+  public async getSquidSupportedTokens() {
+    return await queryClient.fetchQuery(this.squidSupportedTokensQuery({}));
+  }
+
+  public get squidSupportedTokensQuery() {
+    return this.queryNamespace.createQuery({
+      name: "squid-supported-tokens",
+      fn: async (): Promise<
+        {
+          id: Caip19AssetId;
+          chainInfo: { name: string };
+          assetInfo: AssetInfo;
+        }[]
+      > => {
+        const url = `https://asset-registry.obiwallet.workers.dev/index/squid`;
+        const response = await fetch(url);
+        const pairs = await response.json();
+
+        return toPairs(pairs).flatMap(([chainId, chain]) => {
+          return toPairs(chain.assets).flatMap(([assetId, assetInfo]) => {
+            return {
+              // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+              id: `${chainId}/${assetId}` as Caip19AssetId,
+              chainInfo: {
+                name: chain.name,
+              },
+              assetInfo,
+            };
+          });
+        });
+      },
+      staleTime: {
+        hour: 1,
       },
     });
   }
