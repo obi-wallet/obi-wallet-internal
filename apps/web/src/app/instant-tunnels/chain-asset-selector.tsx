@@ -141,10 +141,10 @@ function ChainAssetSelector(props: ChainAssetSelectorProps): React.ReactElement 
       return;
     }
     
-    const baseUrl = "https://obi-wallet-web-git-staging-obi-money.vercel.app/embed/tunnel";
+    const baseUrl = "https://obi.money/embed/tunnel";
     const url = new URL(baseUrl);
+    url.searchParams.set('from', 'eip155:42161/slip44:60');
     url.searchParams.set('to', destinationAsset);
-    url.searchParams.set('_vercel_share', 'ALB7lr3errPjcJ2TiIXCV7tAzXDJBcym');
     
     // Using safer DOM manipulation without type assertions
     const iframe = document.getElementById(iframeId);

@@ -6,11 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 import ChainAssetSelector from "./chain-asset-selector";
-const TUNNEL_EMBED_URL = "https://obi-wallet-web-git-staging-obi-money.vercel.app/embed/tunnel?_vercel_share=ALB7lr3errPjcJ2TiIXCV7tAzXDJBcym";
+const BASE_TUNNEL_EMBED_URL = "https://obi.money/embed/tunnel";
+const url = new URL(BASE_TUNNEL_EMBED_URL);
+url.searchParams.set('from', 'eip155:42161/native:0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE');
+const TUNNEL_EMBED_URL = url.toString();
+
 
 export default function InstantTunnelsPage() {
   return (
-    <>s
+    <>
       <Header />
       <MainContainer>
         <section className="flex w-full flex-col gap-24 text-white">
