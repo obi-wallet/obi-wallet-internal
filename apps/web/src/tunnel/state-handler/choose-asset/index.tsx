@@ -47,7 +47,9 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
 
   useEffect(() => {
     if (s.status === "error") {
-      alert.showError(s.error);
+      console.log("Tunnel error state:", s.error);
+      // Display all simulation errors in our custom message
+      // No error alerts for simulation errors
     }
   }, [s, alert]);
 
@@ -97,6 +99,11 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
               </div>
             }
           />
+          {s.status === "error" && (
+            <span className="flex items-center text-sm font-normal leading-none mt-2 text-red-500">
+              Many bridges are currently paused due to the Bybit hack. Please try again soon.
+            </span>
+          )}
         </label>
       </div>
 
@@ -109,7 +116,9 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             ? "Simulating…"
             : s.status === "done"
               ? `${s.to.prettyAmount} ${toSymbol}`
-              : ""}
+              : s.status === "error"
+                ? "Many bridges are currently paused due to the Bybit hack. Please try again soon."
+                : ""}
         </div>
       </div>
 
