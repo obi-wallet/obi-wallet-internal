@@ -96,7 +96,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             </span>
           )}
         </label>
-
       </div>
 
       <div className="mt-6 flex flex-col">
