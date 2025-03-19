@@ -2,11 +2,12 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "./asset-dropdown";
@@ -16,17 +17,20 @@ import { ChooseAssetState, TunnelState } from "../../state";
 export interface ChooseAssetProps {
   state: ChooseAssetState;
   dispatch: EffectStateDispatch<typeof TunnelState>;
+  overrideErrorState?: (state: TunnelServiceState) => TunnelServiceState;
 }
 
 export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
+  overrideErrorState,
 }) {
+  const alert = useAlert();
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: state.from,
+      asset: "cosmos:phoenix-1/native:uluna",
       prettyAmount: "",
     },
   });
@@ -37,11 +41,22 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       s.from.prettyAmount,
       (state) => {
         if (isMounted()) {
-          setState(state);
+          // Apply error override if the function exists and the state has an error
+          const finalState = overrideErrorState
+            ? overrideErrorState(state)
+            : state;
+          setState(finalState);
         }
       },
     );
   });
+
+  useEffect(() => {
+    if (s.status === "error") {
+      console.log("Tunnel error state:", s.error);
+      // No alerts for errors in demo mode
+    }
+  }, [s, alert]);
 
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
@@ -91,8 +106,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
           />
           {s.status === "error" && (
             <span className="mt-2 flex items-center text-sm font-normal leading-none text-red-500">
-              Many bridges are currently paused due to the Bybit hack. Please
-              try again soon.
+              {s.error}
             </span>
           )}
         </label>
@@ -108,7 +122,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             : s.status === "done"
               ? `${s.to.prettyAmount} ${toSymbol}`
               : s.status === "error"
-                ? "Many bridges are currently paused due to the Bybit hack. Please try again soon."
+                ? s.error
                 : ""}
         </div>
       </div>

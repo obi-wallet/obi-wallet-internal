@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 import { ChooseAssetState, TunnelState, TunnelStateType } from "./state";
 import { ChooseAddress } from "./state-handler/choose-address";
 import { ChooseAsset } from "./state-handler/choose-asset";
+import { TunnelServiceState } from "./state-handler/choose-asset/tunnel-service";
 import { Status } from "./state-handler/status";
 
 export interface TunnelEmbedProps {
@@ -26,6 +27,23 @@ export const TunnelEmbed = observer<TunnelEmbedProps>(function TunnelEmbed({
     }),
   );
 
+  // Function to override error messages in demo mode
+  const overrideErrorState = (
+    state: TunnelServiceState,
+  ): TunnelServiceState => {
+    if (state.status === "error") {
+      // Log original error for debugging
+      console.log("Original error intercepted:", state.error);
+
+      // Return state with custom error message
+      return {
+        ...state,
+        error: "RPC calls are disabled in demo mode.",
+      };
+    }
+    return state;
+  };
+
   //   const handleSubmit = async () => {
   //     console.log("Submitting...", window.opener, window.parent);
   //     if (window.opener) {
@@ -37,7 +55,13 @@ export const TunnelEmbed = observer<TunnelEmbedProps>(function TunnelEmbed({
   //   };
 
   if (state._tag === TunnelStateType.ChooseAsset) {
-    return <ChooseAsset state={state} dispatch={dispatch} />;
+    return (
+      <ChooseAsset
+        state={state}
+        dispatch={dispatch}
+        overrideErrorState={overrideErrorState}
+      />
+    );
   }
   if (state._tag === TunnelStateType.ChooseAddress) {
     return <ChooseAddress state={state} dispatch={dispatch} />;
