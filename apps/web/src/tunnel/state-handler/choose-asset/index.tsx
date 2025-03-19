@@ -100,8 +100,9 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             }
           />
           {s.status === "error" && (
-            <span className="flex items-center text-sm font-normal leading-none mt-2 text-red-500">
-              Many bridges are currently paused due to the Bybit hack. Please try again soon.
+            <span className="mt-2 flex items-center text-sm font-normal leading-none text-red-500">
+              Many bridges are currently paused due to the Bybit hack. Please
+              try again soon.
             </span>
           )}
         </label>

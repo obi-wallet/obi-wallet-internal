@@ -68,8 +68,8 @@ export default function InstantTunnelsPage() {
                     allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
                   />
                   {/* Overlay to prevent interaction with iframe */}
-                  <div 
-                    className="absolute inset-0 z-10 cursor-not-allowed bg-transparent" 
+                  <div
+                    className="absolute inset-0 z-10 cursor-not-allowed bg-transparent"
                     aria-label="Preview only - use the controls on the left to customize"
                   />
                 </div>
