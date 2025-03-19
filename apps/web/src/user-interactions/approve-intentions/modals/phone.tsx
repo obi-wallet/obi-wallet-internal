@@ -265,7 +265,7 @@ export const PhoneKeyModal = observer<PhoneKeyModalProps>(
               />
             ) : null}
             <DropDown
-              className="text-md max-w-96 max-sm:w-full [&[aria-disabled=true]]:select-none [&[aria-disabled=true]]:appearance-none"
+              className="max-w-96 text-base max-sm:w-full [&[aria-disabled=true]]:select-none [&[aria-disabled=true]]:appearance-none"
               contentContainerClassname="max-w-96 max-sm:w-full"
               description="Security Question"
               options={securityQuestions}

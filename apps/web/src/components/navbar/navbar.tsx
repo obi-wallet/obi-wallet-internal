@@ -124,7 +124,7 @@ export const Navbar = observer(function Navbar() {
                         </div>
                         <div
                           className={cn(
-                            "text-md shrink grow basis-0 font-normal",
+                            "shrink grow basis-0 text-base font-normal",
                             mainURISegment === navItem.module
                               ? "text-black"
                               : "text-white",

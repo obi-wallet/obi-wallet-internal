@@ -544,7 +544,7 @@ const SendInner = observer<{
                             className="h-6 w-6"
                           />
                         </div>
-                        <div className="text-md flex flex-col items-end font-normal">
+                        <div className="flex flex-col items-end text-base font-normal">
                           <div>
                             {`${selected.item.assetInfo.symbol.toUpperCase()} (on ${selected.item.network})`}
                           </div>

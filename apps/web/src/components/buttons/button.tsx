@@ -70,7 +70,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size === "sm" &&
         "px-1 py-1 text-xs md:text-sm h-standardButton max-h-standardButton",
       size === "md" &&
-        "px-3 md:text-sm lg:text-md lg:py-1.5 max-md:py-1 max-sm:text-xs h-standardButton max-h-standardButton",
+        "px-3 md:text-sm lg:text-base lg:py-1.5 max-md:py-1 max-sm:text-xs h-standardButton max-h-standardButton",
       size === "tall" &&
         "px-3 py-2 text-sm md:text-base h-tallButton max-h-tallButton",
       // size === "lg" && "h-12 px-6 text-base",
@@ -178,8 +178,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 width={16}
                 height={16}
                 className={cn(
-                  size === "base" && "text-md md:text-md",
-                  size === "sm" && "md:text-md text-sm",
+                  size === "base" && "text-base md:text-base",
+                  size === "sm" && "text-sm md:text-base",
                   classNames?.leftIcon,
                 )}
               />
@@ -197,8 +197,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 width={16}
                 height={16}
                 className={cn(
-                  size === "base" && "text-md md:text-md",
-                  size === "sm" && "md:text-md text-sm",
+                  size === "base" && "text-base md:text-base",
+                  size === "sm" && "text-sm md:text-base",
                   classNames?.rightIcon,
                 )}
               />
