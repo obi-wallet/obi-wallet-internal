@@ -1,20 +1,19 @@
-Limited Access License (LAL) v1.0
-1. License Grant
-You are permitted to:
+Fair Source License, version 0.9 Copyright © 2023 Obi Technologies LLC
 
-- View, review, and provide feedback on the code.
-- Use the code for personal, educational, or non-commercial purposes.
-- Use the code for commercial purposes only if the total number of users does not exceed five (5).
+Licensor: Obi Technologies LLC
 
-2. Restrictions
-You may not distribute, sublicense, or modify the code without explicit permission.
-If your commercial use exceeds five (5) users, you must obtain a commercial license from the author.
-This license does not grant you rights under any open-source license, nor does it imply the right to derivative works.
+Software: Obi Wallet, v2
 
-4. Disclaimer
-This code is provided "as is" without warranty of any kind. The author is not responsible for any issues arising from its use.
+Use Limitation: 5 users
 
-5. Enforcement
-Unauthorized use beyond the scope of this license may result in legal action.
+License Grant. Licensor hereby grants to each recipient of the Software (“you”) a non-exclusive, non-transferable, royalty-free and fully-paid-up license, under all of the Licensor’s copyright and patent rights, to use, copy, distribute, prepare derivative works of, publicly perform and display the Software, subject to the Use Limitation and the conditions set forth below.
 
-(c) 2022 Obi – All Rights Reserved.
+Use Limitation. The license granted above allows use by up to the number of users per entity set forth above (the “Use Limitation”). For determining the number of users, “you” includes all affiliates, meaning legal entities controlling, controlled by, or under common control with you. If you exceed the Use Limitation, your use is subject to payment of Licensor’s then-current list price for licenses.
+
+Conditions. Redistribution in source code or other forms must include a copy of this license document to be provided in a reasonable manner. Any redistribution of the Software is only allowed subject to this license.
+
+Trademarks. This license does not grant you any right in the trademarks, service marks, brand names or logos of Licensor.
+
+DISCLAIMER. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OR CONDITION, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. LICENSORS HEREBY DISCLAIM ALL LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE.
+
+Termination. If you violate the terms of this license, your rights will terminate automatically and will not be reinstated without the prior written consent of Licensor. Any such termination will not affect the right of others who may have received copies of the Software from you.
