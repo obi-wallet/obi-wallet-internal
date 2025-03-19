@@ -4,10 +4,7 @@ import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
-import { Fieldset } from "@/ui/fieldset";
-import { BaseInput } from "@/ui/input";
-import { useQuery } from "@obi-wallet/headless-ui";
-import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
+import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useGetIsMounted } from "rooks";
@@ -25,9 +22,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
-  const items = useQuery(
-    AssetRegistry.getInstance().squidSupportedTokensQuery({}),
-  );
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
@@ -49,13 +43,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
     );
   });
 
-  useEffect(() => {
-    if (s.status === "error") {
-      console.log("Tunnel error state:", s.error);
-      // Display all simulation errors in our custom message
-      // No error alerts for simulation errors
-    }
-  }, [s, alert]);
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
 
@@ -90,7 +77,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             rightComponent={
               <div className="flex w-full justify-end">
                 <AssetDropdown
-                  items={["cosmos:phoenix-1/native:uluna"]}
+                  items={[]}
                   selectedItem={s.from.asset || null}
                   onSelectedItemChange={(value) => {
                     console.log(value);
@@ -103,12 +90,12 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             }
           />
           {s.status === "error" && (
-            <span className="flex items-center text-sm font-normal leading-none mt-2 text-red-500">
-              Many bridges are currently paused due to the Bybit hack. Please try again soon.
+            <span className="mt-2 flex items-center text-sm font-normal leading-none text-red-500">
+              Many bridges are currently paused due to the Bybit hack. Please
+              try again soon.
             </span>
           )}
         </label>
-
       </div>
 
       <div className="mt-6 flex flex-col">
