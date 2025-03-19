@@ -19,9 +19,9 @@ export default function InstantTunnelsPage() {
     <>
       <Header />
       <MainContainer>
-        <section className="flex w-full flex-col gap-24 text-white">
+        <section className="flex w-full flex-col gap-12 text-white">
           {/* Hero Section */}
-          <section className="bg-background relative flex min-h-screen flex-col justify-center gap-8 px-6 py-20 text-center text-white lg:flex-row lg:items-center lg:px-28 lg:text-left">
+          <section className="bg-background relative flex min-h-[80vh] flex-col justify-center gap-8 px-6 py-16 text-center text-white lg:flex-row lg:items-center lg:px-28 lg:text-left">
             <div className="lg:w-2/3">
               <h1 className="text-4xl font-normal uppercase lg:text-5xl">
                 Onboard Users and Liquidity
@@ -47,12 +47,33 @@ export default function InstantTunnelsPage() {
                 </Link>
               </div>
             </div>
-            <div className="lg:w-1/3">
-              <iframe
-                src={TUNNEL_EMBED_URL}
-                className="mx-auto h-[600px] w-full max-w-[400px] rounded-lg border-0 bg-transparent"
-                allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
-              />
+            <div className="hidden lg:block lg:w-1/3"></div>
+          </section>
+
+          {/* CTA Section */}
+          <section className="mt-[-2rem] flex flex-col items-center gap-8 px-6 py-12 lg:px-28">
+            <h2 className="text-3xl font-bold">
+              Customize, Test, and Embed Now
+            </h2>
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 md:flex-row md:items-center md:justify-center">
+              <div className="w-full md:w-5/12 md:max-w-md">
+                <ChainAssetSelector iframeId="tunnel-embed-demo" />
+              </div>
+              <div className="w-full md:w-7/12 md:max-w-xl">
+                <div className="relative">
+                  <iframe
+                    id="tunnel-embed-demo"
+                    src={TUNNEL_EMBED_URL}
+                    className="mx-auto h-[600px] w-full rounded-lg border-0 bg-transparent"
+                    allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
+                  />
+                  {/* Overlay to prevent interaction with iframe */}
+                  <div
+                    className="absolute inset-0 z-10 cursor-not-allowed bg-transparent"
+                    aria-label="Preview only - use the controls on the left to customize"
+                  />
+                </div>
+              </div>
             </div>
           </section>
 
@@ -103,32 +124,6 @@ export default function InstantTunnelsPage() {
                 code="https://obi.money/embed/tunnel?to=7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr&from=ETH"
               />
             </div>
-          </section>
-
-          {/* CTA Section */}
-          <section className="flex flex-col items-center gap-8 px-6 py-12 lg:px-28">
-            <h2 className="text-3xl font-bold">
-              Customize, Test, and Embed Now
-            </h2>
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 md:flex-row md:items-center md:justify-center">
-              <div className="w-full md:w-5/12 md:max-w-md">
-                <ChainAssetSelector iframeId="tunnel-embed-demo" />
-              </div>
-              <div className="w-full md:w-7/12 md:max-w-xl">
-                <iframe
-                  id="tunnel-embed-demo"
-                  src={TUNNEL_EMBED_URL}
-                  className="mx-auto h-[600px] w-full rounded-lg border-0 bg-transparent"
-                  allow="camera *; clipboard-write *; accelerometer *; autoplay *; encrypted-media *"
-                />
-              </div>
-            </div>
-            <Link
-              href="https://docs.obi.money/instant-tunnels"
-              className="bg-primary mt-8 flex items-center justify-center rounded px-10 py-5 text-xl font-normal text-[#070707] shadow"
-            >
-              GET THE WIDGET
-            </Link>
           </section>
         </section>
       </MainContainer>

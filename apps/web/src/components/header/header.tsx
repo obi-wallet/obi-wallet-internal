@@ -85,7 +85,7 @@ export const Header = observer(function Header() {
                     "after:bg-primary after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full",
                 )}
               >
-                HyperJump
+                For Apps
               </PrimaryLink>
             </li>
             <li>
@@ -131,7 +131,7 @@ export const Header = observer(function Header() {
                   pathname === "/instant-tunnels" && "text-primary",
                 )}
               >
-                HyperJump
+                For Apps
               </PrimaryLink>
               <PrimaryLink
                 href="/ai-agents"

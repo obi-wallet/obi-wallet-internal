@@ -2,14 +2,12 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
+import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
-import { Fieldset } from "@/ui/fieldset";
-import { BaseInput } from "@/ui/input";
-import { useQuery } from "@obi-wallet/headless-ui";
-import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
+import { Input } from "@/ui/input";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "./asset-dropdown";
@@ -19,20 +17,20 @@ import { ChooseAssetState, TunnelState } from "../../state";
 export interface ChooseAssetProps {
   state: ChooseAssetState;
   dispatch: EffectStateDispatch<typeof TunnelState>;
+  overrideErrorState?: (state: TunnelServiceState) => TunnelServiceState;
 }
 
 export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
+  overrideErrorState,
 }) {
-  const items = useQuery(
-    AssetRegistry.getInstance().squidSupportedTokensQuery({}),
-  );
+  const alert = useAlert();
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: state.from,
+      asset: "cosmos:phoenix-1/native:uluna",
       prettyAmount: "",
     },
   });
@@ -43,11 +41,22 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       s.from.prettyAmount,
       (state) => {
         if (isMounted()) {
-          setState(state);
+          // Apply error override if the function exists and the state has an error
+          const finalState = overrideErrorState
+            ? overrideErrorState(state)
+            : state;
+          setState(finalState);
         }
       },
     );
   });
+
+  useEffect(() => {
+    if (s.status === "error") {
+      console.log("Tunnel error state:", s.error);
+      // No alerts for errors in demo mode
+    }
+  }, [s, alert]);
 
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
@@ -67,39 +76,40 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       </Text>
 
       <div className="mt-6 flex flex-col">
-        <Fieldset
-          legend="How much are you depositing?"
-          footer={
-            s.status === "error" && (
-              <Text size="sm" className="mt-2 text-red-500">
-                {s.error}
-              </Text>
-            )
-          }
-        >
-          <div className="flex h-[96px] flex-col p-6 md:h-[48px] md:flex-row md:items-center">
-            <div className="flex flex-grow">
-              <BaseInput
-                id="assetAmount"
-                placeholder="0.5"
-                className="max-sm:flex-grow"
-                value={s.from.prettyAmount}
-                onChange={(e) => {
-                  service.setPrettyAmount(e.target.value);
-                }}
-              />
-            </div>
-            <AssetDropdown
-              items={items.data ?? []}
-              selectedItem={s.from.asset || null}
-              onSelectedItemChange={(value) => {
-                if (value) {
-                  service.setAsset(value);
-                }
-              }}
-            />
-          </div>
-        </Fieldset>
+        <label>
+          <Text size="sm" className="mb-2 text-gray-200">
+            How much are you depositing?
+          </Text>
+          <Input
+            id="assetAmount"
+            labelClassname="bg-background-secondary"
+            className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+            placeholder="0.5"
+            value={s.from.prettyAmount}
+            onChange={(value) => {
+              service.setPrettyAmount(value);
+            }}
+            rightComponent={
+              <div className="flex w-full justify-end">
+                <AssetDropdown
+                  items={[]}
+                  selectedItem={s.from.asset || null}
+                  onSelectedItemChange={(value) => {
+                    console.log(value);
+                    if (value) {
+                      service.setAsset(value);
+                    }
+                  }}
+                />
+              </div>
+            }
+          />
+          {s.status === "error" && (
+            <span className="mt-2 flex items-center text-sm font-normal leading-none text-red-500">
+              {s.error}
+            </span>
+          )}
+        </label>
       </div>
 
       <div className="mt-6 flex flex-col">
@@ -111,7 +121,9 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             ? "Simulating…"
             : s.status === "done"
               ? `${s.to.prettyAmount} ${toSymbol}`
-              : ""}
+              : s.status === "error"
+                ? s.error
+                : ""}
         </div>
       </div>
 
