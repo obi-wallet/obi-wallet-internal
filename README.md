@@ -1,4 +1,5 @@
 # obi-wallet-internal
+Recoverable account and chain abstraction with an easy, multi-chain dashboard with WalletConnect.
 
 See docs.obi.money
 
