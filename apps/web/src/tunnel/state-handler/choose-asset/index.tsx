@@ -49,6 +49,13 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
     );
   });
 
+  useEffect(() => {
+    if (s.status === "error") {
+      console.log("Tunnel error state:", s.error);
+      // Display all simulation errors in our custom message
+      // No error alerts for simulation errors
+    }
+  }, [s, alert]);
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
 
@@ -67,39 +74,41 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       </Text>
 
       <div className="mt-6 flex flex-col">
-        <Fieldset
-          legend="How much are you depositing?"
-          footer={
-            s.status === "error" && (
-              <Text size="sm" className="mt-2 text-red-500">
-                {s.error}
-              </Text>
-            )
-          }
-        >
-          <div className="flex h-[96px] flex-col p-6 md:h-[48px] md:flex-row md:items-center">
-            <div className="flex flex-grow">
-              <BaseInput
-                id="assetAmount"
-                placeholder="0.5"
-                className="max-sm:flex-grow"
-                value={s.from.prettyAmount}
-                onChange={(e) => {
-                  service.setPrettyAmount(e.target.value);
-                }}
-              />
-            </div>
-            <AssetDropdown
-              items={items.data ?? []}
-              selectedItem={s.from.asset || null}
-              onSelectedItemChange={(value) => {
-                if (value) {
-                  service.setAsset(value);
-                }
-              }}
-            />
-          </div>
-        </Fieldset>
+        <label>
+          <Text size="sm" className="mb-2 text-gray-200">
+            How much are you depositing?
+          </Text>
+          <Input
+            id="assetAmount"
+            labelClassname="bg-background-secondary"
+            className="h-[48px] w-full rounded-[5px] border border-[#32c9af]"
+            placeholder="0.5"
+            value={s.from.prettyAmount}
+            onChange={(value) => {
+              service.setPrettyAmount(value);
+            }}
+            rightComponent={
+              <div className="flex w-full justify-end">
+                <AssetDropdown
+                  items={["cosmos:phoenix-1/native:uluna"]}
+                  selectedItem={s.from.asset || null}
+                  onSelectedItemChange={(value) => {
+                    console.log(value);
+                    if (value) {
+                      service.setAsset(value);
+                    }
+                  }}
+                />
+              </div>
+            }
+          />
+          {s.status === "error" && (
+            <span className="flex items-center text-sm font-normal leading-none mt-2 text-red-500">
+              Many bridges are currently paused due to the Bybit hack. Please try again soon.
+            </span>
+          )}
+        </label>
+
       </div>
 
       <div className="mt-6 flex flex-col">
@@ -111,7 +120,9 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             ? "Simulating…"
             : s.status === "done"
               ? `${s.to.prettyAmount} ${toSymbol}`
-              : ""}
+              : s.status === "error"
+                ? "Many bridges are currently paused due to the Bybit hack. Please try again soon."
+                : ""}
         </div>
       </div>
 

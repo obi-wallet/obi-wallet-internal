@@ -113,6 +113,18 @@ export function genericSimulateRequest({
           return `Failed to parse JSON: ${error.message}`;
         },
       });
+
+      // Check for Squid route error
+      const errorMessage =
+        typeof json === "object" && json !== null ? json.error : json;
+      if (errorMessage === "No valid Squid route found") {
+        // Log the original error for debugging
+        console.error("Original Squid error:", errorMessage);
+        return yield* Effect.fail(
+          "Many bridges are currently paused due to the Bybit hack. Please try again soon.",
+        );
+      }
+
       return yield* Effect.fail(json === "Unknown error" ? json : json.error);
     }
     const simulationResponse = yield* Effect.tryPromise({
