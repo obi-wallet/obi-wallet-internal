@@ -93,7 +93,6 @@ export class TunnelService {
       ).pipe(
         Stream.map(([asset, prettyAmount]) => {
           const amount = Number.parseFloat(prettyAmount);
-
           if (asset !== null && !Number.isNaN(amount)) {
             return {
               asset,
@@ -146,47 +145,61 @@ export class TunnelService {
             ? fromAsset.prettyAmountToRawAmount(params.prettyAmount)
             : params.prettyAmount;
 
-          const nextState = yield* pipe(
-            simulate({
-              from: {
-                asset: params.asset,
-                rawAmount: fromAssetRawAmount,
-              },
-              to: {
-                asset: this.to,
-              },
-              slippage: "5",
-            }),
-            Effect.match({
-              onFailure: (error): TunnelServiceState => {
-                return {
-                  status: "error",
-                  error,
+          const minAmount = fromAsset?.priceInfo?.usdValue
+            ? 20 / parseFloat(fromAsset.priceInfo.usdValue)
+            : 0;
+
+          const nextState =
+            parseFloat(params.prettyAmount) < minAmount
+              ? {
+                  status: "error" as const,
+                  error: `Due to bridge costs, amounts under ${minAmount} ${fromAsset?.assetInfo?.symbol} are likely to temporarily fail.`,
                   from: {
                     asset: params.asset,
                     prettyAmount: params.prettyAmount,
                   },
-                };
-              },
-              onSuccess: (toRawAmount): TunnelServiceState => {
-                return {
-                  status: "done",
-                  from: {
-                    prettyAmount: params.prettyAmount,
-                    rawAmount: fromAssetRawAmount,
-                    asset: params.asset,
-                  },
-                  to: {
-                    rawAmount: toRawAmount,
-                    prettyAmount: toAsset
-                      ? toAsset.rawAmountToPrettyAmount(toRawAmount)
-                      : toRawAmount,
-                    asset: this.to,
-                  },
-                };
-              },
-            }),
-          );
+                }
+              : yield* pipe(
+                  simulate({
+                    from: {
+                      asset: params.asset,
+                      rawAmount: fromAssetRawAmount,
+                    },
+                    to: {
+                      asset: this.to,
+                    },
+                    slippage: "5",
+                  }),
+                  Effect.match({
+                    onFailure: (error): TunnelServiceState => {
+                      return {
+                        status: "error",
+                        error,
+                        from: {
+                          asset: params.asset,
+                          prettyAmount: params.prettyAmount,
+                        },
+                      };
+                    },
+                    onSuccess: (toRawAmount): TunnelServiceState => {
+                      return {
+                        status: "done",
+                        from: {
+                          prettyAmount: params.prettyAmount,
+                          rawAmount: fromAssetRawAmount,
+                          asset: params.asset,
+                        },
+                        to: {
+                          rawAmount: toRawAmount,
+                          prettyAmount: toAsset
+                            ? toAsset.rawAmountToPrettyAmount(toRawAmount)
+                            : toRawAmount,
+                          asset: this.to,
+                        },
+                      };
+                    },
+                  }),
+                );
 
           // Skip state update if the inputs changed in the meantime
           const currentAsset = yield* SubscriptionRef.get(this.assetRef);

@@ -79,8 +79,8 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
               height={16}
               className={cn(
                 [
-                  size === "base" && "md:text-md text-md",
-                  size === "sm" && "md:text-md text-sm",
+                  size === "base" && "text-base md:text-base",
+                  size === "sm" && "text-sm md:text-base",
                 ],
                 classNames?.leftIcon,
               )}
@@ -100,8 +100,8 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
               height={16}
               className={cn(
                 [
-                  size === "base" && "text-md md:text-md",
-                  size === "sm" && "md:text-md text-sm",
+                  size === "base" && "text-base md:text-base",
+                  size === "sm" && "text-sm md:text-base",
                 ],
                 classNames?.rightIcon,
               )}

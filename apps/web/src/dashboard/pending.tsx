@@ -248,14 +248,14 @@ function StepDetailsList({ step }: { step: StepAndTx }) {
       case "Squid": {
         const isEmpty = EmptyObject.safeParse(step.status);
         if (isEmpty.success) {
-          return <div className="text-md">Not started</div>;
+          return <div className="text-base">Not started</div>;
         }
 
         const squidStatus = SquidStatus.safeParse(step.status.status);
         if (squidStatus.success) {
           return (
             <>
-              <div className="text-md uppercase">
+              <div className="text-base uppercase">
                 {squidStatus.data.squidTransactionStatus}
               </div>
               <div className="text-ellipsis text-sm">
@@ -308,7 +308,7 @@ function SkipDetailsItem({ step }: { step: StepAndTx }) {
     }
   };
 
-  return <div className="text-md"> {getSkipStatus()}</div>;
+  return <div className="text-base"> {getSkipStatus()}</div>;
 }
 
 function StepDetailsItem({ step }: { step: StepAndTx }) {
@@ -472,7 +472,7 @@ function AmountEstimate({
 }) {
   return (
     <div className="flex flex-col items-end">
-      <div className="text-md font-bold">{amount}</div>
+      <div className="text-base font-bold">{amount}</div>
       <div className="text-xs opacity-60">Estimate ${estimate}</div>
     </div>
   );

@@ -2,12 +2,14 @@
 
 import { Text } from "@/components";
 import { EffectStateDispatch } from "@/effect/effect-state";
-import { useAlert } from "@/hooks/alert";
 import { useAssets } from "@/hooks/assets";
 import { AsyncButton } from "@/ui/button";
-import { Input } from "@/ui/input";
+import { Fieldset } from "@/ui/fieldset";
+import { BaseInput } from "@/ui/input";
+import { useQuery } from "@obi-wallet/headless-ui";
+import { AssetRegistry } from "@obi-wallet/sdk-asset-registry";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetIsMounted } from "rooks";
 
 import { AssetDropdown } from "./asset-dropdown";
@@ -23,12 +25,14 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
   state,
   dispatch,
 }) {
-  const alert = useAlert();
+  const items = useQuery(
+    AssetRegistry.getInstance().squidSupportedTokensQuery({}),
+  );
   const isMounted = useGetIsMounted();
   const [s, setState] = useState<TunnelServiceState>({
     status: "idle",
     from: {
-      asset: "cosmos:phoenix-1/native:uluna",
+      asset: state.from,
       prettyAmount: "",
     },
   });
@@ -52,7 +56,6 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
       // No error alerts for simulation errors
     }
   }, [s, alert]);
-
   const assets = useAssets([state.to, ...(s.from.asset ? [s.from.asset] : [])]);
   const toAsset = assets[state.to];
 
@@ -106,6 +109,7 @@ export const ChooseAsset = observer<ChooseAssetProps>(function ChooseAsset({
             </span>
           )}
         </label>
+
       </div>
 
       <div className="mt-6 flex flex-col">

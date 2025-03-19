@@ -52,9 +52,11 @@ export const Status = observer<StatusProps>(function Deposit({
 
   const transaction = status.data?.find((transaction) => {
     const intent = deserialize(transaction.transaction.intent);
+    // TODO: also filter by maxSlippage
     return (
       transaction.transaction.deposit_address === state.from.address &&
-      intent.destinationAddress === state.to.address
+      intent.destinationAddress === state.to.address &&
+      state.to.asset.includes(intent.destinationAsset)
     );
   });
   const rawTransactionStatus = transaction?.transaction.status;
@@ -118,14 +120,16 @@ export const Status = observer<StatusProps>(function Deposit({
       </Text>
       <Text className="mt-2">
         {state.to.address}{" "}
-        <button
-          onClick={async () => {
-            await dispatch(state.back());
-          }}
-          className="ml-2 px-1"
-        >
-          <FaRegCircleXmark title="Disconnect" />
-        </button>
+        {currentStepIndex === 0 ? (
+          <button
+            onClick={async () => {
+              await dispatch(state.back());
+            }}
+            className="ml-2 px-1"
+          >
+            <FaRegCircleXmark title="Disconnect" />
+          </button>
+        ) : null}
       </Text>
 
       <AsyncButton
@@ -146,35 +150,37 @@ export const Status = observer<StatusProps>(function Deposit({
 
       <TerraStationModal />
 
-      <div className="mt-4 flex flex-col gap-2">
-        <Text size="sm" className="text-gray-400">
-          Transaction Steps:
-        </Text>
-        {transaction?.step_statuses.map((step, index) => {
-          return (
-            <div
-              key={index}
-              className="bg-background-secondary flex items-center gap-2 rounded-md p-2"
-            >
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-sm">
-                {index + 1}
+      {currentStepIndex > 0 ? (
+        <div className="mt-4 flex flex-col gap-2">
+          <Text size="sm" className="text-gray-400">
+            Transaction Steps:
+          </Text>
+          {transaction?.step_statuses.map((step, index) => {
+            return (
+              <div
+                key={index}
+                className="bg-background-secondary flex items-center gap-2 rounded-md p-2"
+              >
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-sm">
+                  {index + 1}
+                </div>
+                <div className="flex flex-col">
+                  <Text size="sm">{toTitleCase(step.action)}</Text>
+                </div>
+                <div className="ml-auto">
+                  {index < currentStepIndex ? (
+                    <FaCheck className="text-green-500" />
+                  ) : index === currentStepIndex ? (
+                    <FaArrowsRotate className="animate-spin" />
+                  ) : (
+                    <FaClock className="text-gray-400" />
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col">
-                <Text size="sm">{toTitleCase(step.action)}</Text>
-              </div>
-              <div className="ml-auto">
-                {index < currentStepIndex ? (
-                  <FaCheck className="text-green-500" />
-                ) : index === currentStepIndex ? (
-                  <FaArrowsRotate className="animate-spin" />
-                ) : (
-                  <FaClock className="text-gray-400" />
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 });

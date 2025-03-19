@@ -157,13 +157,15 @@ export function genericSimulateRequest({
 }
 
 const JupiterSwapStrategy = Schema.Struct({
-  JupiterSwapStrategy: Schema.Array(
-    Schema.Struct({
-      swapInfo: Schema.Struct({
-        outAmount: Schema.String,
+  JupiterSwapStrategy: Schema.Struct({
+    routePlan: Schema.Array(
+      Schema.Struct({
+        swapInfo: Schema.Struct({
+          outAmount: Schema.String,
+        }),
       }),
-    }),
-  ),
+    ),
+  }),
 });
 
 const SkipStrategy = Schema.Struct({
@@ -190,55 +192,42 @@ const SimulationStrategyLeaf = Schema.Union(
   ),
 );
 
-const HybridStrategy = Schema.Struct({
-  HybridStrategy: Schema.Array(SimulationStrategyLeaf),
-});
-
-const SimulationStrategy = Schema.Union(
-  HybridStrategy.pipe(Schema.attachPropertySignature("kind", "HybridStrategy")),
-  SimulationStrategyLeaf,
-);
-
 const SimulationResponse = Schema.Struct({
   response: Schema.Struct({
     deposit_address: Schema.NullOr(Schema.String),
   }),
-  simulationOutput: SimulationStrategy,
+  simulationOutput: Schema.Array(SimulationStrategyLeaf),
 });
 
 export function parseSimulationResponse(response: unknown) {
   return Effect.gen(function* () {
     const decoded = yield* Schema.decodeUnknown(SimulationResponse)(response);
+    const lastStrategy =
+      decoded.simulationOutput[decoded.simulationOutput.length - 1];
     return {
       depositAddress: decoded.response.deposit_address,
-      toRawAmount: parseSimulationStrategy(decoded.simulationOutput),
+      toRawAmount: lastStrategy ? parseSimulationStrategy(lastStrategy) : null,
     };
   });
 }
 
 export function parseSimulationStrategy(
-  strategy: typeof SimulationStrategy.Type,
+  strategy: typeof SimulationStrategyLeaf.Type,
 ): string | null {
   switch (strategy.kind) {
     case "JupiterSwapStrategy":
       return parseJupiterSwapStrategy(strategy);
-    case "HybridStrategy":
-      return parseHybridStrategy(strategy);
     default:
       return null;
   }
-}
-
-export function parseHybridStrategy(strategy: typeof HybridStrategy.Type) {
-  const lastStrategy =
-    strategy.HybridStrategy[strategy.HybridStrategy.length - 1];
-  return lastStrategy ? parseSimulationStrategy(lastStrategy) : null;
 }
 
 export function parseJupiterSwapStrategy(
   strategy: typeof JupiterSwapStrategy.Type,
 ): string | null {
   const lastStep =
-    strategy.JupiterSwapStrategy[strategy.JupiterSwapStrategy.length - 1];
+    strategy.JupiterSwapStrategy.routePlan[
+      strategy.JupiterSwapStrategy.routePlan.length - 1
+    ];
   return lastStep ? lastStep.swapInfo.outAmount : null;
 }
